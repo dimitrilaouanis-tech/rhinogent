@@ -8,7 +8,7 @@ export function Footer() {
           <div className="max-w-xs">
             <div className="flex items-center gap-2.5">
               <Seal className="h-6 w-6" />
-              <span className="font-semibold tracking-tight">Signet</span>
+              <span className="font-semibold tracking-tight">Rhino Signet</span>
             </div>
             <p className="mt-3 text-sm leading-relaxed text-muted">
               The identity wallet for agents. Self-custody by design — keys never
@@ -33,7 +33,7 @@ export function Footer() {
         </div>
 
         <div className="mt-10 flex flex-col gap-2 border-t border-border/60 pt-6 text-xs text-muted-2 sm:flex-row sm:items-center sm:justify-between">
-          <span>© {2026} Signet · Powered by 0n1x</span>
+          <span>© {2026} Rhino Signet · Powered by 0n1x</span>
           <span className="font-mono">
             Self-custody · Ed25519 · Base · x402
           </span>
