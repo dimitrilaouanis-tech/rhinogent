@@ -46,7 +46,7 @@ function Hero() {
 
         <div className="animate-rise delay-3 mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <a
-            href="/dashboard"
+            href="/dashboard/"
             className="w-full rounded-full bg-foreground px-7 py-3.5 text-sm font-semibold text-background transition-opacity hover:opacity-90 sm:w-auto"
           >
             Get Rhinogent
@@ -457,7 +457,7 @@ function CTA() {
         </p>
         <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <a
-            href="/dashboard"
+            href="/dashboard/"
             className="w-full rounded-full bg-foreground px-7 py-3.5 text-sm font-semibold text-background transition-opacity hover:opacity-90 sm:w-auto"
           >
             Get Rhinogent

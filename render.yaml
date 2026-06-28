@@ -1,0 +1,18 @@
+# Render Blueprint — Rhinogent static site
+# New > Blueprint on Render, point at this repo, and it deploys automatically.
+services:
+  - type: web
+    name: rhinogent
+    runtime: static
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./out
+    # SPA-style not needed — Next exports a real HTML file per route.
+    routes:
+      - type: rewrite
+        source: /dashboard
+        destination: /dashboard/index.html
+    envVars:
+      # Set this in the Render dashboard to switch the demo button to real
+      # Google sign-in. Leave unset and the dashboard uses the demo login.
+      - key: NEXT_PUBLIC_GOOGLE_CLIENT_ID
+        sync: false
