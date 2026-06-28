@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Nav } from "@/components/nav";
 import { Footer } from "@/components/footer";
 import { RhinoMark, RhinoMascot } from "@/components/rhino";
@@ -45,12 +46,12 @@ function Hero() {
         </p>
 
         <div className="animate-rise delay-3 mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <a
-            href="/dashboard/"
+          <Link
+            href="/dashboard"
             className="w-full rounded-full bg-foreground px-7 py-3.5 text-sm font-semibold text-background transition-opacity hover:opacity-90 sm:w-auto"
           >
             Get Rhinogent
-          </a>
+          </Link>
           <a
             href="#developers"
             className="w-full rounded-full border border-border bg-surface/50 px-7 py-3.5 text-sm font-medium text-foreground transition-colors hover:border-muted-2 sm:w-auto"
@@ -456,12 +457,12 @@ function CTA() {
           prove who it is — in one import.
         </p>
         <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <a
-            href="/dashboard/"
+          <Link
+            href="/dashboard"
             className="w-full rounded-full bg-foreground px-7 py-3.5 text-sm font-semibold text-background transition-opacity hover:opacity-90 sm:w-auto"
           >
             Get Rhinogent
-          </a>
+          </Link>
           <a
             href="#docs"
             className="w-full rounded-full border border-border bg-surface/50 px-7 py-3.5 text-sm font-medium text-foreground transition-colors hover:border-muted-2 sm:w-auto"
