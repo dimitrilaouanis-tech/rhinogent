@@ -13,10 +13,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://signet.0n1x.xyz"),
+  metadataBase: new URL("https://rhinogent.0n1x.xyz"),
   title: {
-    default: "Rhino Signet — the identity wallet for agents",
-    template: "%s · Rhino Signet",
+    default: "Rhinogent — the identity wallet for agents",
+    template: "%s · Rhinogent",
   },
   description:
     "Self-custody identity and wallets for AI agents. Every agent gets a cryptographic identity, a Base wallet it alone controls, and signed, verifiable proof of who it is. Powered by 0n1x.",
@@ -31,15 +31,15 @@ export const metadata: Metadata = {
     "MetaMask for agents",
   ],
   openGraph: {
-    title: "Rhino Signet — the identity wallet for agents",
+    title: "Rhinogent — the identity wallet for agents",
     description:
       "Self-custody identity and wallets for AI agents. Powered by 0n1x.",
     type: "website",
-    siteName: "Rhino Signet",
+    siteName: "Rhinogent",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Rhino Signet — the identity wallet for agents",
+    title: "Rhinogent — the identity wallet for agents",
     description:
       "Self-custody identity and wallets for AI agents. Powered by 0n1x.",
   },

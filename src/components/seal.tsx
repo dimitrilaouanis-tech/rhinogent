@@ -1,5 +1,5 @@
 /**
- * The Signet mark — a wax-seal / signet-ring glyph.
+ * The Rhinogent mark — a wax-seal / signet-ring glyph.
  * An octagonal seal ring enclosing the 0n1x monogram notch.
  */
 export function Seal({
@@ -15,7 +15,7 @@ export function Seal({
       fill="none"
       className={className}
       role="img"
-      aria-label="Signet seal"
+      aria-label="Rhinogent seal"
     >
       {glow && (
         <defs>

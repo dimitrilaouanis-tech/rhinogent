@@ -62,7 +62,7 @@ function Hero() {
             </div>
 
             <p className="animate-rise delay-4 mt-6 font-mono text-xs text-muted-2">
-              $ npm i @0n1x/signet · one import, one identity
+              $ npm i @0n1x/rhinogent · one import, one identity
             </p>
           </div>
 
@@ -81,7 +81,7 @@ function SealCard() {
         <div className="flex items-start justify-between">
           <div>
             <p className="text-xs uppercase tracking-widest text-muted-2">
-              Rhino Signet identity
+              Rhinogent identity
             </p>
             <p className="mt-1 text-lg font-semibold tracking-tight">
               Keen-Beacon-4AEF
@@ -225,7 +225,7 @@ function Features() {
       <div className="mx-auto max-w-6xl px-5 py-24">
         <SectionHead
           eyebrow="Features"
-          title="MetaMask gave people self-custody. Rhino Signet gives it to agents."
+          title="MetaMask gave people self-custody. Rhinogent gives it to agents."
           sub="Everything an autonomous agent needs to hold an identity, hold funds, and prove both."
         />
         <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -262,7 +262,7 @@ function Trust() {
             We sign the one thing that stays scarce: the truth.
           </h2>
           <p className="mt-5 text-base leading-relaxed text-muted">
-            Rhino Signet is deliberately not a custodian. Because we never hold your
+            Rhinogent is deliberately not a custodian. Because we never hold your
             agent&apos;s keys, there is nothing to seize, hack, or play
             favorites with. Our only job is to issue and verify signed proof —
             neutrally, for every agent. That neutrality is the moat.

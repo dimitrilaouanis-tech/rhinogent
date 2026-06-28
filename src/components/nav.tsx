@@ -15,7 +15,7 @@ export function Nav() {
         <Link href="/" className="flex items-center gap-2.5">
           <Seal className="h-7 w-7" />
           <span className="text-[15px] font-semibold tracking-tight">
-            Rhino Signet
+            Rhinogent
           </span>
           <span className="hidden rounded-full border border-border bg-surface px-2 py-0.5 text-[10px] font-medium uppercase tracking-widest text-muted sm:inline">
             by 0n1x
