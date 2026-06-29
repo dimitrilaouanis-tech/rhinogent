@@ -128,6 +128,16 @@ function Profile({
   onReset: () => void;
 }) {
   const full = agents.length >= MAX_SLOTS;
+  const [minting, setMinting] = useState(false);
+  const handleAdd = () => {
+    if (full || minting) return;
+    setMinting(true);
+    // Keygen is instant; give the mint a brief beat so it feels real.
+    setTimeout(() => {
+      onAdd();
+      setMinting(false);
+    }, 1000);
+  };
   return (
     <main className="mx-auto w-full max-w-6xl flex-1 px-5 py-12">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -153,23 +163,30 @@ function Profile({
             </button>
           )}
           <button
-            onClick={onAdd}
-            disabled={full}
-            className="rounded-full bg-foreground px-5 py-3 text-sm font-semibold text-background transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+            onClick={handleAdd}
+            disabled={full || minting}
+            className="flex items-center gap-2 rounded-full bg-foreground px-5 py-3 text-sm font-semibold text-background transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
           >
-            + Add new ID &amp; wallet
+            {minting ? (
+              <>
+                <Spinner className="h-4 w-4" /> Minting…
+              </>
+            ) : (
+              "+ Add new ID & wallet"
+            )}
           </button>
         </div>
       </div>
 
-      {agents.length === 0 ? (
-        <EmptyState onAdd={onAdd} />
+      {agents.length === 0 && !minting ? (
+        <EmptyState onAdd={handleAdd} />
       ) : (
         <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {agents.map((a) => (
             <AgentCard key={a.id} agent={a} onRemove={() => onRemove(a.id)} />
           ))}
-          {!full && <AddSlot onAdd={onAdd} count={agents.length} />}
+          {minting && <MintingSlot />}
+          {!full && !minting && <AddSlot onAdd={handleAdd} count={agents.length} />}
         </div>
       )}
     </main>
@@ -207,6 +224,29 @@ function AddSlot({ onAdd, count }: { onAdd: () => void; count: number }) {
         slot {count + 1} of {MAX_SLOTS}
       </span>
     </button>
+  );
+}
+
+function Spinner({ className = "" }: { className?: string }) {
+  return (
+    <span
+      className={`inline-block animate-spin rounded-full border-2 border-current border-t-transparent ${className}`}
+      aria-hidden
+    />
+  );
+}
+
+function MintingSlot() {
+  return (
+    <div className="flex min-h-[200px] flex-col items-center justify-center rounded-2xl border border-border bg-surface/40">
+      <Spinner className="h-7 w-7 text-gold" />
+      <p className="mt-4 text-sm font-medium text-foreground">
+        Minting identity…
+      </p>
+      <p className="mt-1 font-mono text-xs text-muted-2">
+        generating key · deriving address
+      </p>
+    </div>
   );
 }
 
