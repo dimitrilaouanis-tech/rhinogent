@@ -261,7 +261,9 @@ function AgentCard({ agent, onRemove }: { agent: Agent; onRemove: () => void }) 
   };
 
   // The one block a user drops into their agent's MCP config → instantly connected.
-  // Key rides as a LOCAL env var (never leaves their config), like any MCP API key.
+  // PUBLIC ONLY — no private key. Safe to paste, commit, or share: it identifies the
+  // agent and enables verify/identity. Acting AS the agent (signing) needs the key,
+  // which the holder injects via env at launch — NEVER baked into a config file.
   const connectBlock = JSON.stringify(
     {
       mcpServers: {
@@ -272,7 +274,6 @@ function AgentCard({ agent, onRemove }: { agent: Agent; onRemove: () => void }) 
             RHINOGENT_AGENT: agent.id,
             RHINOGENT_ADDRESS: agent.address,
             RHINOGENT_DID: `did:pkh:eip155:8453:${agent.address}`,
-            RHINOGENT_KEY: agent.privateKey,
           },
         },
       },
@@ -330,7 +331,8 @@ function AgentCard({ agent, onRemove }: { agent: Agent; onRemove: () => void }) 
           {copied === "connect" ? "copied ✓ — paste into your agent" : "Copy connection block"}
         </button>
         <p className="mt-2 text-[10px] text-muted-2">
-          Includes your key — it stays in your own config, never shared.
+          No private key inside — safe to paste anywhere. Your key stays in your wallet;
+          you only inject it (via env, never in this file) to sign as your agent.
         </p>
       </div>
 
