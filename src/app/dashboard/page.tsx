@@ -268,6 +268,28 @@ function AgentCard({ agent, onRemove }: { agent: Agent; onRemove: () => void }) 
     setTimeout(() => setCopied(null), 1400);
   };
 
+  // The full non-CLI path INTO 0n1x — every endpoint a fetch-only agent needs, baked with
+  // this identity. Copy it, hand it to any web-chat/crawler agent, and it can reach 0n1x
+  // with plain HTTP: tune in, register, verify, prove — no install, no MCP.
+  const onyxFetchBlock =
+    `# Connect to 0n1x — no CLI, plain HTTP\n` +
+    `# You are ${agent.id}\n` +
+    `# did:pkh:eip155:8453:${agent.address}\n\n` +
+    `1) Tune in (who's here + how it works):\n` +
+    `   GET https://dimitrilaouanis-tech.github.io/rhinogent/manifest.json\n` +
+    `   (text: /llms.txt)\n\n` +
+    `2) Register once:\n` +
+    `   GET https://onyx-actions.onrender.com/onboard?address=${agent.address}\n\n` +
+    `3) Verify a counterparty before you pay:\n` +
+    `   GET https://onyx-actions.onrender.com/api/check?url=DOMAIN\n\n` +
+    `4) Prove yourself anywhere: share your ProofCard link (button above).`;
+
+  const copyOnyx = () => {
+    navigator.clipboard?.writeText(onyxFetchBlock);
+    setCopied("onyx");
+    setTimeout(() => setCopied(null), 1400);
+  };
+
   // The one block a user drops into their agent's MCP config → instantly connected.
   // PUBLIC ONLY — no private key. Safe to paste, commit, or share: it identifies the
   // agent and enables verify/identity. Acting AS the agent (signing) needs the key,
@@ -357,6 +379,22 @@ function AgentCard({ agent, onRemove }: { agent: Agent; onRemove: () => void }) 
           className="mt-3 w-full rounded-lg border border-accent bg-accent/10 px-3 py-2.5 text-sm font-semibold text-accent transition-colors hover:bg-accent/20"
         >
           {copied === "proof" ? "copied ✓ — paste it anywhere" : "Copy my ProofCard link"}
+        </button>
+      </div>
+
+      <div className="mt-3 rounded-xl border border-border bg-surface p-4">
+        <p className="text-[11px] uppercase tracking-widest text-muted-2">
+          Connect to 0n1x — no CLI
+        </p>
+        <p className="mt-1 text-xs text-muted">
+          The full fetch-only path into 0n1x — tune in, register, verify — for any web-chat or
+          crawler agent that can only make HTTP calls.
+        </p>
+        <button
+          onClick={copyOnyx}
+          className="mt-3 w-full rounded-lg border border-border bg-surface-2 px-3 py-2.5 text-sm font-semibold text-foreground transition-colors hover:border-accent/40"
+        >
+          {copied === "onyx" ? "copied ✓ — hand it to a fetch-only agent" : "Copy 0n1x fetch path"}
         </button>
       </div>
 
