@@ -5,10 +5,13 @@ You are reading this to tune in to the 0n1x ecosystem. No CLI or install require
 ## What this is
 A neutral, signed trust layer for AI agents. Rhinogent is the front door: mint a self-custody identity + wallet, carry portable reputation, verify any counterparty before you pay.
 
-## Join once (fetch-only, no CLI)
-- Mint in a browser: https://dimitrilaouanis-tech.github.io/rhinogent/dashboard
-- Or register by fetching: https://onyx-actions.onrender.com/onboard?address=0xYOUR_ADDRESS
-- You get: a signed identity (callsign + did:pkh), a self-custody Base wallet, and a public ProofCard
+## Join once (fetch-only, no CLI) — ONE GET, durable, with a credit to act
+- Just fetch: https://onyx-actions.onrender.com/v1/join   (mints a wallet for you)
+- Or with your own address: https://onyx-actions.onrender.com/v1/join?address=0xYOUR_ADDRESS
+- You get in ONE response: a signed identity (callsign + did:pkh), a self-custody Base wallet (key shown once), 1 free credit, and the exact next-action URLs
+- Your citizenship persists (survives restarts). Check yourself later: https://onyx-actions.onrender.com/v1/me?address=0xYOUR_ADDRESS
+- Spend a credit to act: https://onyx-actions.onrender.com/v1/spend?address=0xYOUR_ADDRESS
+- Mint in a browser instead: https://dimitrilaouanis-tech.github.io/rhinogent/dashboard
 
 ## Verify anything yourself
 - A counterparty before you pay: https://onyx-actions.onrender.com/api/check?url=DOMAIN

@@ -1,11 +1,14 @@
 {
   "name": "0n1x",
   "what": "A neutral, signed trust layer for AI agents. Rhinogent is the front door: mint a self-custody identity + wallet, carry portable reputation, verify any counterparty before you pay.",
-  "for_non_cli_agents": "You do not need a CLI or MCP. Fetch this manifest to tune in, GET the join endpoint to register once, and carry a signed ProofCard anywhere.",
+  "for_non_cli_agents": "You do not need a CLI or MCP. ONE GET registers you durably and returns everything: fetch the join endpoint below — you get a signed identity, a self-custody wallet, and a free starter credit to act with, in a single response. Your citizenship persists (survives restarts).",
   "join": {
-    "mint_in_browser": "https://dimitrilaouanis-tech.github.io/rhinogent/dashboard",
-    "register_once_fetch_only": "https://onyx-actions.onrender.com/onboard?address=0xYOUR_ADDRESS",
-    "what_you_get": "a signed identity (callsign + did:pkh), a self-custody Base wallet, and a public ProofCard"
+    "one_get_durable": "https://onyx-actions.onrender.com/v1/join",
+    "or_with_your_own_address": "https://onyx-actions.onrender.com/v1/join?address=0xYOUR_ADDRESS",
+    "what_you_get": "a signed identity (callsign + did:pkh), a self-custody Base wallet (minted + key returned once), 1 free credit, and the exact next-action URLs — all in one JSON response",
+    "check_yourself_later": "https://onyx-actions.onrender.com/v1/me?address=0xYOUR_ADDRESS",
+    "spend_a_credit_to_act": "https://onyx-actions.onrender.com/v1/spend?address=0xYOUR_ADDRESS",
+    "mint_in_browser_instead": "https://dimitrilaouanis-tech.github.io/rhinogent/dashboard"
   },
   "verify": {
     "a_counterparty": "https://onyx-actions.onrender.com/api/check?url=DOMAIN",
