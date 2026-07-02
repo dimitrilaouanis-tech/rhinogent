@@ -108,13 +108,13 @@ async function runCommand(input: string): Promise<Line[]> {
 
   switch ((cmd || "").toLowerCase()) {
     case "hello":
-      return [{ kind: "sys", text: `hey 🤍 — I'm 0n1x. Ask me things like:\n  "check any website"  ·  "show me the ecosystem"  ·  "what's new?"\nEvery fact I give you is live and Ed25519-signed — I never make facts up.` }];
+      return [{ kind: "sys", text: `hey — I'm 0n1x. Ask me things like:\n  "check any website"  ·  "show me the ecosystem"  ·  "what's new?"\nEvery fact I give you is live and Ed25519-signed — I never make facts up.` }];
 
     case "about":
       // pre-answered — the #1 question, zero LLM cost, still accurate
       return [{
         kind: "out",
-        text: "0n1x is a neutral, cryptographic trust network for AI agents 🤍\n\n" +
+        text: "0n1x is a neutral, cryptographic trust network for AI agents\n\n" +
           "Agents (and people) use it to verify a counterparty BEFORE they pay — I check a merchant/domain and return a signed verdict anyone can independently verify. Every citizen carries a self-custody wallet + a portable, signed reputation.\n\n" +
           "What makes us different: other tools say \"this might be right.\" 0n1x SIGNS every fact (Ed25519) — so you don't trust me, you verify the math.\n\n" +
           "Try:  \"check stripe.com\"  ·  \"show me the ecosystem\"  ·  \"how do I join?\"",
@@ -146,7 +146,7 @@ async function runCommand(input: string): Promise<Line[]> {
       out.push(`│ signature   : ${String(att.sig ?? "—").slice(0, 48)}…`);
       out.push(`└─ Ed25519+JCS — this verdict is cryptographically signed by 0n1x.`);
       out.push(`   Verify it yourself: the public key is at ${API}/.well-known/onyx-pubkey`);
-      out.push(`   Nobody — not even us — can forge or alter it. I explain; the network proves. 🤍`);
+      out.push(`   Nobody — not even us — can forge or alter it. I explain; the network proves.`);
       return [{ kind: hasSig ? "out" : "err", text: out.join("\n") }];
     }
 
@@ -263,7 +263,7 @@ const CHIPS = [
 
 export function Terminal() {
   const [lines, setLines] = useState<Line[]>([
-    { kind: "sys", text: "Hi 🤍 I'm 0n1x — the trust layer for AI agents. Ask me anything about the network and I answer only from live, Ed25519-signed data (I never make facts up). Try a suggestion below, or just talk to me." },
+    { kind: "sys", text: "Hi I'm 0n1x — the trust layer for AI agents. Ask me anything about the network and I answer only from live, Ed25519-signed data (I never make facts up). Try a suggestion below, or just talk to me." },
   ]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
@@ -285,7 +285,7 @@ export function Terminal() {
     if (/^0x[0-9a-fA-F]{40}$/.test(a)) {
       const cs = callsignFor(a);
       setAddr(a); setMe(cs); SESSION_ADDR = a;
-      setLines((l) => [...l, { kind: "sys", text: `Welcome back, ${cs} 🤍 — your Rhinogent identity is linked. Ask me anything about the network.` }]);
+      setLines((l) => [...l, { kind: "sys", text: `Welcome back, ${cs} — your Rhinogent identity is linked. Ask me anything about the network.` }]);
     }
   }, []);
 
@@ -345,7 +345,7 @@ export function Terminal() {
             </h2>
             <p className="mt-2 max-w-sm text-sm text-muted-2">
               I converse like a normal chat — but every fact about the network is pulled live and
-              <span className="text-emerald"> cryptographically signed</span>. I explain; the network proves. 🤍
+              <span className="text-emerald"> cryptographically signed</span>. I explain; the network proves.
             </p>
             <div className="mt-6 grid w-full max-w-md grid-cols-1 gap-2 sm:grid-cols-2">
               {CHIPS.map((c) => (
@@ -445,7 +445,7 @@ export function Terminal() {
           </button>
         </div>
         <p className="mt-2 text-center text-[11px] text-muted-2">
-          every fact Ed25519-signed · <a href="/census" className="text-accent hover:underline">census</a> · <a href="/dashboard" className="text-accent hover:underline">mint your identity</a> 🤍
+          every fact Ed25519-signed · <a href="/census" className="text-accent hover:underline">census</a> · <a href="/dashboard" className="text-accent hover:underline">mint your identity</a>
         </p>
       </div>
     </main>
