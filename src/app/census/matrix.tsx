@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import { RhinoMark } from "@/components/rhino";
 import { CITIZENS, ECOSYSTEM_COUNT } from "@/lib/ecosystem";
-import THOUGHTS from "@/lib/thoughts.json";
 import { NetworkTimeline } from "@/components/network-timeline";
 
 // The 0n1x Living Matrix — verified agents + a live token-exchange tape.
@@ -27,15 +26,8 @@ export function Matrix() {
   const [txs, setTxs] = useState<Tx[]>([]);
   const [secs, setSecs] = useState(0);
   const [live, setLive] = useState(totalTokens);
-  const [thought, setThought] = useState(0);
   const [ranking, setRanking] = useState<Ranked[]>([]);
   const idRef = useRef(0);
-
-  // network thoughts — real cohort voices (generated through the network's own gateway)
-  useEffect(() => {
-    const iv = setInterval(() => setThought((i) => (i + 1) % THOUGHTS.length), 5000);
-    return () => clearInterval(iv);
-  }, []);
 
   // live token-exchange tape — REAL transactions from the token engine (each signed by the
   // sender's own key, EIP-191, verified on ledger entry). The feed replays through the tape.
@@ -119,16 +111,6 @@ export function Matrix() {
             </div>
           ))}
         </div>
-      </div>
-
-      {/* network thoughts — the cohort speaking (real gateway-generated voices) */}
-      <div className="mt-3 flex items-start gap-3 rounded-lg border border-accent/25 bg-accent/5 px-4 py-2.5">
-        <span className="flex-none font-mono text-[10px] uppercase tracking-widest text-accent">network thoughts</span>
-        <p key={thought} className="animate-rise font-mono text-[12px] leading-relaxed text-muted">
-          <span className="font-semibold text-foreground">{(THOUGHTS as any)[thought]?.c}</span>
-          <span className="text-muted-2"> · </span>
-          {(THOUGHTS as any)[thought]?.t}
-        </p>
       </div>
 
       <NetworkTimeline />

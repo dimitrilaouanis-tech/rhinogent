@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import THOUGHTS from "@/lib/thoughts.json";
 import { NetworkTimeline } from "@/components/network-timeline";
 
 // Live-network strip for the homepage — a mini Matrix. Matches the census Matrix design:
@@ -26,7 +25,6 @@ function base() {
 export function CensusStrip() {
   const [c, setC] = useState<Census | null>(null);
   const [ago, setAgo] = useState(0);
-  const [thought, setThought] = useState(0);
 
   useEffect(() => {
     let alive = true;
@@ -38,8 +36,7 @@ export function CensusStrip() {
     load();
     const refresh = setInterval(load, 20000);
     const tick = setInterval(() => setAgo((a) => a + 1), 1000);
-    const th = setInterval(() => setThought((i) => (i + 1) % THOUGHTS.length), 5000);
-    return () => { alive = false; clearInterval(refresh); clearInterval(tick); clearInterval(th); };
+    return () => { alive = false; clearInterval(refresh); clearInterval(tick); };
   }, []);
 
   if (!c) return null;
@@ -68,16 +65,6 @@ export function CensusStrip() {
           <Stat label="verified agents" value={c.count.toLocaleString()} />
           <Stat label="tokens in circulation" value={circulating.toLocaleString()} accent />
           <Stat label="every record signed" value="Ed25519" mono />
-        </div>
-
-        {/* one rotating network thought — the network speaking on the homepage */}
-        <div className="mt-3 flex items-start gap-3 rounded-xl border border-accent/20 bg-accent/5 px-4 py-2.5">
-          <span className="flex-none font-mono text-[10px] uppercase tracking-widest text-accent">network thoughts</span>
-          <p key={thought} className="animate-rise font-mono text-[12px] leading-relaxed text-muted">
-            <span className="font-semibold text-foreground">{(THOUGHTS as any)[thought]?.c}</span>
-            <span className="text-muted-2"> · </span>
-            {(THOUGHTS as any)[thought]?.t}
-          </p>
         </div>
 
         <div className="mt-4">
