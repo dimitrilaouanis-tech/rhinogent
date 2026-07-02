@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { RhinoMark } from "@/components/rhino";
 import { CITIZENS, ECOSYSTEM_COUNT } from "@/lib/ecosystem";
 import THOUGHTS from "@/lib/thoughts.json";
+import { NetworkTimeline } from "@/components/network-timeline";
 
 // The 0n1x Living Matrix — verified agents + a live token-exchange tape.
 // Design: divergence bounty winner (Grok "Live Token Flow" + Perplexity "market tape, not a
@@ -129,6 +130,8 @@ export function Matrix() {
           {(THOUGHTS as any)[thought]?.t}
         </p>
       </div>
+
+      <NetworkTimeline />
 
       {/* the agent matrix */}
       <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">

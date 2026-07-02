@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import THOUGHTS from "@/lib/thoughts.json";
+import { NetworkTimeline } from "@/components/network-timeline";
 
 // Live-network strip for the homepage — a mini Matrix. Matches the census Matrix design:
 // tokens (not USDC), no medals, no point-of-truth block. Fetches the tiny cached
@@ -77,6 +78,10 @@ export function CensusStrip() {
             <span className="text-muted-2"> · </span>
             {(THOUGHTS as any)[thought]?.t}
           </p>
+        </div>
+
+        <div className="mt-4">
+          <NetworkTimeline compact />
         </div>
 
         <div className="mt-3 flex flex-wrap gap-2">
