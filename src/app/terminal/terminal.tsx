@@ -213,6 +213,24 @@ function callsignFor(a: string): string {
   return `${ADJ[parseInt(h.slice(0, 2), 16) % 16]}-${NOUN[parseInt(h.slice(2, 4), 16) % 16]}-${h.slice(-4).toUpperCase()}`;
 }
 
+// linkify — every URL in a reply becomes clickable
+function Linkified({ text }: { text: string }) {
+  const parts = text.split(/(https?:\/\/[^\s"'<>)\]]+)/g);
+  return (
+    <>
+      {parts.map((p, i) =>
+        /^https?:\/\//.test(p) ? (
+          <a key={i} href={p} target="_blank" rel="noreferrer" className="break-all text-accent underline decoration-accent/40 underline-offset-2 hover:decoration-accent">
+            {p}
+          </a>
+        ) : (
+          <span key={i}>{p}</span>
+        )
+      )}
+    </>
+  );
+}
+
 const CHIPS = [
   "is stripe.com legit?",
   "show me the ecosystem",
@@ -343,7 +361,7 @@ export function Terminal() {
                       l.kind === "err" ? "text-red-400" : l.kind === "sys" ? "text-muted-2" : "text-foreground"
                     } ${l.text.includes("┌") || l.text.includes("│") ? "font-mono text-[13px]" : ""}`}
                   >
-                    {l.text}
+                    <Linkified text={l.text} />
                   </div>
                 )}
               </div>
