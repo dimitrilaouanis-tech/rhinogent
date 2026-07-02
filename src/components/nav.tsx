@@ -2,9 +2,9 @@ import Link from "next/link";
 import { RhinoMark } from "./rhino";
 
 const links = [
+  { href: "/terminal", label: "Chat" },
   { href: "/census", label: "Census" },
   { href: "#features", label: "Features" },
-  { href: "#developers", label: "Developers" },
   { href: "#security", label: "Security" },
 ];
 
