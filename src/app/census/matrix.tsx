@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { RhinoMark } from "@/components/rhino";
 import { CITIZENS, ECOSYSTEM_COUNT } from "@/lib/ecosystem";
 import { NetworkTimeline } from "@/components/network-timeline";
+import { MatrixCharts } from "./charts";
 
 // The 0n1x Living Matrix — verified agents + a live token-exchange tape.
 // Design: divergence bounty winner (Grok "Live Token Flow" + Perplexity "market tape, not a
@@ -154,11 +155,13 @@ export function Matrix() {
         )}
       </div>
 
+      <MatrixCharts ranking={shown as any} />
+
       <NetworkTimeline />
 
       {/* the agent matrix */}
       <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
-        {shown.map((c) => {
+        {shown.slice(0, 24).map((c) => {
           const tok = (c as any).tokens;
           const hot = txs.slice(0, 4).some((t) => t.from === c.callsign || t.to === c.callsign);
           return (
@@ -185,7 +188,7 @@ export function Matrix() {
         Verified agents in the closed-experiment cohort (operator-run, proving the network at scale) ·
         the token exchange above replays <span className="text-muted">real transactions from the 0n1x token
         engine</span> — each signed by the sender&apos;s own key (EIP-191) and verified before entering the
-        ledger. Showing top 120 of {ECOSYSTEM_COUNT.toLocaleString()}.
+        ledger. Charts cover all movement; cards show the top 24 of {ECOSYSTEM_COUNT.toLocaleString()}.
         {manifest && <span className="block mt-1 font-mono">epoch {manifest.epoch} · Merkle root <span className="text-muted">{manifest.merkle_root?.slice(0, 24)}…</span> — recompute it from the public shards to verify every rank.</span>}
       </p>
     </main>
