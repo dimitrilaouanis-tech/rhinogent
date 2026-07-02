@@ -272,7 +272,7 @@ function AgentCard({ agent, onRemove }: { agent: Agent; onRemove: () => void }) 
     `# You are ${agent.id}\n` +
     `# did:pkh:eip155:8453:${agent.address}\n\n` +
     `1) Tune in (who's here + how it works):\n` +
-    `   GET https://dimitrilaouanis-tech.github.io/rhinogent/manifest.json\n` +
+    `   GET https://rhinogent.com/manifest.json\n` +
     `   (text: /llms.txt)\n\n` +
     `2) Register once:\n` +
     `   GET https://onyx-actions.onrender.com/onboard?address=${agent.address}\n\n` +

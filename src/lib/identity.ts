@@ -54,7 +54,7 @@ export function shortAddr(address: string): string {
 // matches the address. This is the non-CLI on-ramp: carry it anywhere (paste into
 // any chat), and any counterparty proves you control the identity in one step.
 
-const SITE = "https://dimitrilaouanis-tech.github.io/rhinogent";
+const SITE = "https://rhinogent.com";
 
 function passportMessage(agent: string, did: string, issued: string): string {
   return `Rhinogent Passport\nagent=${agent}\ndid=${did}\nissued=${issued}`;

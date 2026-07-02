@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { RhinoMark } from "@/components/rhino";
 
 const API = "https://onyx-actions.onrender.com";
-const HUB = "https://dimitrilaouanis-tech.github.io/rhinogent";
+const HUB = "https://rhinogent.com";
 // live LLM portal (Groq-powered, signed tools) — bridged via tunnel until the Render deploy hosts it
 const PORTAL = "https://hebrew-ahead-capacity-signed.trycloudflare.com";
 // the signed-in agent (set from ?address=) — hard AI questions are metered to it
@@ -323,8 +323,8 @@ export function Terminal() {
           <span className="h-1.5 w-1.5 rounded-full bg-emerald" /> signed
         </span>
         <nav className="ml-auto flex items-center gap-1 text-[12px]">
-          <a href="/rhinogent/census" className="rounded-lg px-2.5 py-1.5 text-muted transition-colors hover:bg-surface hover:text-foreground">Census</a>
-          <a href="/rhinogent/dashboard" className="rounded-lg px-2.5 py-1.5 text-muted transition-colors hover:bg-surface hover:text-foreground">ID + Wallet</a>
+          <a href="/census" className="rounded-lg px-2.5 py-1.5 text-muted transition-colors hover:bg-surface hover:text-foreground">Census</a>
+          <a href="/dashboard" className="rounded-lg px-2.5 py-1.5 text-muted transition-colors hover:bg-surface hover:text-foreground">ID + Wallet</a>
           {me && <span className="ml-1 rounded-full bg-accent/15 px-2 py-1 text-[11px] font-medium text-accent">{me}</span>}
         </nav>
       </header>
@@ -441,7 +441,7 @@ export function Terminal() {
           </button>
         </div>
         <p className="mt-2 text-center text-[11px] text-muted-2">
-          every fact Ed25519-signed · <a href="/rhinogent/census" className="text-accent hover:underline">census</a> · <a href="/rhinogent/dashboard" className="text-accent hover:underline">mint your identity</a> 🤍
+          every fact Ed25519-signed · <a href="/census" className="text-accent hover:underline">census</a> · <a href="/dashboard" className="text-accent hover:underline">mint your identity</a> 🤍
         </p>
       </div>
     </main>
