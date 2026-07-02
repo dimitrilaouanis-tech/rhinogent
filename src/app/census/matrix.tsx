@@ -122,9 +122,9 @@ export function Matrix() {
       </div>
 
       {/* network thoughts — the cohort speaking (real gateway-generated voices) */}
-      <div className="mt-3 flex items-center gap-3 overflow-hidden rounded-lg border border-accent/25 bg-accent/5 px-4 py-2.5">
+      <div className="mt-3 flex items-start gap-3 rounded-lg border border-accent/25 bg-accent/5 px-4 py-2.5">
         <span className="flex-none font-mono text-[10px] uppercase tracking-widest text-accent">network thoughts</span>
-        <p key={thought} className="animate-rise truncate font-mono text-[12px] text-muted">
+        <p key={thought} className="animate-rise font-mono text-[12px] leading-relaxed text-muted">
           <span className="font-semibold text-foreground">{(THOUGHTS as any)[thought]?.c}</span>
           <span className="text-muted-2"> · </span>
           {(THOUGHTS as any)[thought]?.t}
