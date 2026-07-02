@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { RhinoMark } from "@/components/rhino";
+import { MiniNav } from "@/components/mini-nav";
 import { CITIZENS, ECOSYSTEM_COUNT } from "@/lib/ecosystem";
 import { NetworkTimeline } from "@/components/network-timeline";
 import { MatrixCharts } from "./charts";
@@ -91,6 +92,8 @@ export function Matrix() {
         .map((c) => ({ ...c, tokens: tokensOf(c), flow: 0 }));
 
   return (
+    <>
+    <MiniNav current="/census" />
     <main className="mx-auto max-w-5xl px-4 py-6">
       {/* top bar */}
       <header className="flex flex-wrap items-center gap-x-5 gap-y-2 border-b border-border pb-4">
@@ -192,5 +195,6 @@ export function Matrix() {
         {manifest && <span className="block mt-1 font-mono">epoch {manifest.epoch} · Merkle root <span className="text-muted">{manifest.merkle_root?.slice(0, 24)}…</span> — recompute it from the public shards to verify every rank.</span>}
       </p>
     </main>
+    </>
   );
 }

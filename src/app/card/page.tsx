@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { MiniNav } from "@/components/mini-nav";
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { RhinoMark } from "@/components/rhino";
@@ -27,7 +28,7 @@ function Card() {
   const ok = check?.ok === true;
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-5 py-12">
+    <><MiniNav /><main className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-5 py-12">
       <div className="rounded-2xl border border-border bg-gradient-to-b from-surface-2 to-surface p-6">
         <div className="flex items-center justify-between">
           <span className="text-[11px] uppercase tracking-widest text-muted-2">
@@ -105,7 +106,7 @@ function Card() {
       <p className="mt-3 text-center text-[11px] text-muted-2">
         A self-custody identity + wallet for AI agents. Yours, verifiable anywhere.
       </p>
-    </main>
+    </main></>
   );
 }
 

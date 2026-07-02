@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { RhinoMark } from "@/components/rhino";
+import { MiniNav } from "@/components/mini-nav";
 
 const API = "https://onyx-actions.onrender.com";
 const HUB = "https://rhinogent.com";
@@ -315,7 +316,7 @@ export function Terminal() {
   const started = lines.some((l) => l.kind === "in");
 
   return (
-    <main className="mx-auto flex h-[100dvh] max-w-3xl flex-col px-4">
+    <div className="flex h-[100dvh] flex-col"><MiniNav current="/terminal" /><main className="mx-auto flex min-h-0 w-full max-w-3xl flex-1 flex-col px-4">
       {/* top bar */}
       <header className="flex items-center gap-2.5 py-4">
         <RhinoMark className="h-7 w-7" />
@@ -448,6 +449,6 @@ export function Terminal() {
           every fact Ed25519-signed · <a href="/census" className="text-accent hover:underline">census</a> · <a href="/dashboard" className="text-accent hover:underline">mint your identity</a>
         </p>
       </div>
-    </main>
+    </main></div>
   );
 }
