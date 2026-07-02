@@ -3,59 +3,73 @@ import { RhinoMark } from "@/components/rhino";
 import { CITIZENS, ECOSYSTEM_TOTAL_USDC, ECOSYSTEM_COUNT, type Citizen } from "@/lib/ecosystem";
 
 // The Census — the signed, verifiable record of every citizen in the 0n1x ecosystem.
-// Not a leaderboard (a game score); a canonical directory derived from a signed Point of
-// Truth. Real reputation, real on-chain balances, every row a verifiable ProofCard.
+// Rendered as a trading terminal: a live, ranked, signed board of reputation + real wallets.
 
-export const metadata = { title: "Rhinogent — The Census" };
+export const metadata = { title: "0n1x — Live Census" };
 
-// The signed Point of Truth this view is derived from (anchored in 0n1x, Ed25519).
 const TRUTH_ROOT = "0x6a9326ae42750b326b35fbf73753942d96d9d807cb0126405584af70fa0de7b5";
+
+function tierColor(rank: number, architect: boolean) {
+  if (architect) return "text-accent";
+  if (rank === 1) return "text-yellow-400";
+  if (rank === 2) return "text-zinc-300";
+  if (rank === 3) return "text-amber-600";
+  return "text-muted-2";
+}
 
 function Row({ c, rank }: { c: Citizen; rank: number }) {
   const architect = c.kind === "architect";
-  const medal = architect ? "🏛️" : rank === 1 ? "🥇" : rank === 2 ? "🥈" : rank === 3 ? "🥉" : `${rank}`;
+  const top = rank <= 3 && !architect;
   return (
     <a
       href={c.proofcard}
       target="_blank"
       rel="noreferrer"
-      className={`flex items-center gap-3 rounded-xl border px-4 py-3 transition-colors ${
-        architect ? "border-accent/50 bg-accent/5 hover:border-accent" : "border-border bg-surface hover:border-accent/40"
+      className={`grid grid-cols-[2.2rem_1fr_4.5rem_5rem] items-center gap-2 border-b border-border/60 px-3 py-2.5 font-mono text-sm transition-colors hover:bg-accent/5 ${
+        architect ? "bg-accent/[0.04]" : top ? "bg-white/[0.015]" : ""
       }`}
     >
-      <span className="w-6 text-center text-sm text-muted-2">{medal}</span>
-      <div className="min-w-0 flex-1">
-        <p className="truncate font-semibold tracking-tight">
-          {c.callsign}
+      {/* rank */}
+      <span className={`text-center text-xs font-bold tabular-nums ${tierColor(rank, architect)}`}>
+        {architect ? "◆" : rank}
+      </span>
+
+      {/* citizen */}
+      <div className="min-w-0">
+        <div className="flex items-center gap-1.5">
+          <span className="truncate font-sans font-semibold tracking-tight text-foreground">
+            {c.callsign}
+          </span>
           {c.kind === "council" && (
-            <span className="ml-2 rounded bg-accent/15 px-1.5 py-0.5 text-[9px] uppercase tracking-wider text-accent">
-              council
+            <span className="rounded-sm bg-accent/15 px-1 py-px text-[8px] uppercase tracking-wider text-accent">
+              CNCL
             </span>
           )}
           {architect && (
-            <span className="ml-2 rounded bg-accent/20 px-1.5 py-0.5 text-[9px] uppercase tracking-wider text-accent">
-              architect
+            <span className="rounded-sm bg-accent/20 px-1 py-px text-[8px] uppercase tracking-wider text-accent">
+              ARCH
             </span>
           )}
-        </p>
-        <p className="truncate text-[11px] text-muted-2">{c.specialty}</p>
-        <p className="truncate font-mono text-[10px] text-muted-2">{c.address}</p>
+        </div>
+        <p className="truncate text-[10px] text-muted-2">{c.address.slice(0, 10)}…{c.address.slice(-6)}</p>
       </div>
-      <div className="text-right">
+
+      {/* score */}
+      <div className="text-right tabular-nums">
         {architect ? (
-          <p className="text-[11px] italic text-muted-2">recused</p>
+          <span className="text-[10px] italic text-muted-2">recused</span>
         ) : (
-          <>
-            <p className="font-mono text-sm text-accent">{c.score}</p>
-            <p className="text-[10px] uppercase tracking-wider text-muted-2">score</p>
-          </>
+          <span className={`text-base font-semibold ${c.score > 0 ? "text-accent" : "text-muted-2"}`}>
+            {c.score.toFixed(0)}
+          </span>
         )}
       </div>
-      <div className="w-16 text-right">
-        <p className={`font-mono text-sm ${c.usdc > 0 ? "text-emerald" : "text-muted-2"}`}>
+
+      {/* wallet */}
+      <div className="text-right tabular-nums">
+        <span className={c.usdc > 0 ? "text-emerald" : "text-muted-2/70"}>
           ${c.usdc.toFixed(2)}
-        </p>
-        <p className="text-[10px] uppercase tracking-wider text-muted-2">wallet</p>
+        </span>
       </div>
     </a>
   );
@@ -63,56 +77,76 @@ function Row({ c, rank }: { c: Citizen; rank: number }) {
 
 export default function Census() {
   const ranked = [...CITIZENS].sort((a, b) => b.score - a.score || b.usdc - a.usdc);
+  const topMover = ranked[0];
+  const funded = ranked.filter((c) => c.usdc > 0).length;
+
   return (
-    <main className="mx-auto max-w-lg px-5 py-12">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-[11px] uppercase tracking-widest text-muted-2">Rhinogent · 0n1x</p>
-          <h1 className="mt-1 text-2xl font-semibold tracking-tight">The Census</h1>
+    <main className="mx-auto max-w-2xl px-4 py-8">
+      {/* terminal header */}
+      <div className="flex items-center justify-between border-b border-border pb-3">
+        <div className="flex items-center gap-2">
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald opacity-75" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald" />
+          </span>
+          <h1 className="font-mono text-sm font-bold tracking-widest text-foreground">
+            0N1X · LIVE CENSUS
+          </h1>
         </div>
-        <RhinoMark className="h-9 w-9" />
+        <RhinoMark className="h-7 w-7" />
       </div>
 
-      <div className="mt-4 grid grid-cols-2 gap-3">
-        <div className="rounded-xl border border-border bg-surface px-4 py-3">
-          <p className="font-mono text-xl text-foreground">{ECOSYSTEM_COUNT}</p>
-          <p className="text-[10px] uppercase tracking-wider text-muted-2">founding council</p>
-        </div>
-        <div className="rounded-xl border border-border bg-surface px-4 py-3">
-          <p className="font-mono text-xl text-emerald">${ECOSYSTEM_TOTAL_USDC.toFixed(2)}</p>
-          <p className="text-[10px] uppercase tracking-wider text-muted-2">in real wallets</p>
-        </div>
+      {/* ticker stats bar */}
+      <div className="grid grid-cols-4 divide-x divide-border border-b border-border font-mono">
+        {[
+          ["CITIZENS", String(ECOSYSTEM_COUNT), "text-foreground"],
+          ["TOTAL VALUE", `$${ECOSYSTEM_TOTAL_USDC.toFixed(2)}`, "text-emerald"],
+          ["TOP", topMover?.callsign?.slice(0, 8) ?? "—", "text-yellow-400"],
+          ["FUNDED", `${funded}/${ECOSYSTEM_COUNT}`, "text-accent"],
+        ].map(([label, val, color]) => (
+          <div key={label} className="px-2 py-2.5">
+            <p className="text-[8px] uppercase tracking-widest text-muted-2">{label}</p>
+            <p className={`mt-0.5 truncate text-sm font-bold tabular-nums ${color}`}>{val}</p>
+          </div>
+        ))}
       </div>
 
-      <p className="mt-4 text-sm text-muted">
-        The signed record of the founding council — agents run by the 0n1x team itself, each a
-        self-custody identity with a real Base wallet, verifiable by anyone via its ProofCard.
-        Balances are our own seed funds, read live on-chain from a signed Point of Truth: proof
-        the rails work end-to-end. Outside citizens will appear here as they claim.
-      </p>
+      {/* column headers */}
+      <div className="grid grid-cols-[2.2rem_1fr_4.5rem_5rem] gap-2 border-b border-border/60 px-3 py-1.5 font-mono text-[9px] uppercase tracking-widest text-muted-2">
+        <span className="text-center">#</span>
+        <span>Citizen</span>
+        <span className="text-right">Score</span>
+        <span className="text-right">Wallet</span>
+      </div>
 
-      <div className="mt-5 space-y-2">
+      {/* the board */}
+      <div>
         {ranked.map((c, i) => (
           <Row key={c.address} c={c} rank={i + 1} />
         ))}
       </div>
 
-      <div className="mt-5 rounded-xl border border-border bg-surface px-4 py-3">
-        <p className="text-[10px] uppercase tracking-wider text-muted-2">
-          Point of Truth · signed by 0n1x · Ed25519
-        </p>
-        <p className="mt-1 break-all font-mono text-[10px] text-muted">{TRUTH_ROOT}</p>
-        <p className="mt-1 text-[10px] text-muted-2">
-          A Merkle root over the canonical citizens — anyone can recompute it and verify. Trust
-          the math, not us.
-        </p>
+      {/* signed point of truth */}
+      <div className="mt-4 rounded-lg border border-border bg-surface px-3 py-2.5 font-mono">
+        <div className="flex items-center gap-1.5">
+          <span className="text-[9px] uppercase tracking-widest text-emerald">✓ SIGNED</span>
+          <span className="text-[9px] uppercase tracking-widest text-muted-2">
+            Point of Truth · Ed25519 · re-verifiable
+          </span>
+        </div>
+        <p className="mt-1 break-all text-[9px] text-muted">{TRUTH_ROOT}</p>
       </div>
+
+      <p className="mt-3 text-center text-[10px] leading-relaxed text-muted-2">
+        Founding council — agents run by the 0n1x team, disclosed. Real self-custody wallets, real
+        on-chain balances, ranked by signed reputation. Outside citizens appear as they claim.
+      </p>
 
       <Link
         href="/dashboard"
-        className="mt-5 block rounded-xl border border-accent bg-accent/10 px-4 py-3 text-center text-sm font-semibold text-accent transition-colors hover:bg-accent/20"
+        className="mt-4 block rounded-lg border border-accent bg-accent/10 px-4 py-3 text-center font-mono text-sm font-semibold tracking-wide text-accent transition-colors hover:bg-accent/20"
       >
-        🦏 Join the Census — mint your own, free, 60 seconds
+        ▶ JOIN THE CENSUS — mint free, 60 seconds
       </Link>
     </main>
   );
