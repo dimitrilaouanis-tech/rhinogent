@@ -27,6 +27,10 @@ export function Matrix() {
   const [secs, setSecs] = useState(0);
   const [live, setLive] = useState(totalTokens);
   const [ranking, setRanking] = useState<Ranked[]>([]);
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState<Ranked[]>([]);
+  const [manifest, setManifest] = useState<any>(null);
+  const shardsRef = useRef<Ranked[] | null>(null);
   const idRef = useRef(0);
 
   // live token-exchange tape — REAL transactions from the token engine (each signed by the
@@ -49,6 +53,7 @@ export function Matrix() {
           feed = d.txs || [];
           if (d.ranking?.length) setRanking(d.ranking);
           if (d.circulating) setLive(d.circulating);
+          fetch("/census_manifest.json", { cache: "no-store" }).then((r) => r.json()).then(setManifest).catch(() => {});
         })
         .catch(() => {});
     loadFeed().then(tick);
@@ -60,6 +65,21 @@ export function Matrix() {
     }, 1000);
     return () => { clearInterval(iv); clearInterval(age); clearInterval(refeed); };
   }, []);
+
+  async function search(q: string) {
+    setQuery(q);
+    if (q.trim().length < 2) { setResults([]); return; }
+    if (!shardsRef.current && manifest?.shards) {
+      const all: Ranked[] = [];
+      for (const s of manifest.shards) {
+        try { all.push(...(await (await fetch(`/${s.file}`)).json())); } catch {}
+      }
+      shardsRef.current = all;
+    }
+    const needle = q.trim().toLowerCase();
+    setResults((shardsRef.current || []).filter(
+      (a) => a.callsign.toLowerCase().includes(needle) || a.address.toLowerCase().includes(needle)).slice(0, 24));
+  }
 
   // LIVE ranking from the token engine (balance = genesis + real signed ledger flow);
   // falls back to genesis ordering until the feed loads.
@@ -113,6 +133,27 @@ export function Matrix() {
         </div>
       </div>
 
+      {/* search the whole census — manifest + lazy shards (scales to 1M) */}
+      <div className="mt-3">
+        <input
+          value={query}
+          onChange={(e) => search(e.target.value)}
+          placeholder={`Search all ${ECOSYSTEM_COUNT.toLocaleString()} agents — callsign or address…`}
+          className="w-full rounded-xl border border-border bg-surface px-4 py-2.5 font-mono text-[13px] outline-none focus:border-accent/50"
+        />
+        {results.length > 0 && (
+          <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
+            {results.map((a) => (
+              <a key={a.address} href={`/card?n=${a.callsign}&a=${a.address}`} target="_blank" rel="noreferrer"
+                 className="rounded-lg border border-accent/30 bg-accent/5 p-2.5 text-[12px] transition-colors hover:border-accent/60">
+                <span className="font-semibold">{a.callsign}</span> <span className="text-emerald">✓</span>
+                <span className="block font-mono text-[11px] text-muted">#{(a as any).rank} · {a.tokens.toLocaleString()} TOKEN</span>
+              </a>
+            ))}
+          </div>
+        )}
+      </div>
+
       <NetworkTimeline />
 
       {/* the agent matrix */}
@@ -145,6 +186,7 @@ export function Matrix() {
         the token exchange above replays <span className="text-muted">real transactions from the 0n1x token
         engine</span> — each signed by the sender&apos;s own key (EIP-191) and verified before entering the
         ledger. Showing top 120 of {ECOSYSTEM_COUNT.toLocaleString()}.
+        {manifest && <span className="block mt-1 font-mono">epoch {manifest.epoch} · Merkle root <span className="text-muted">{manifest.merkle_root?.slice(0, 24)}…</span> — recompute it from the public shards to verify every rank.</span>}
       </p>
     </main>
   );
