@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { RhinoMark } from "@/components/rhino";
 
 const API = "https://onyx-actions.onrender.com";
 const HUB = "https://dimitrilaouanis-tech.github.io/rhinogent";
@@ -275,9 +276,10 @@ export function Terminal() {
           <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald" />
         </span>
         <h1 className="font-mono text-sm font-bold tracking-widest text-foreground">0N1X · TERMINAL</h1>
-        <span className="ml-auto font-mono text-[9px] uppercase tracking-widest text-muted-2">
-          signed network state · live
-        </span>
+        <RhinoMark className="ml-auto h-6 w-6 opacity-90" />
+        <a href="/rhinogent" className="font-mono text-[9px] uppercase tracking-widest text-muted-2 transition-colors hover:text-accent">
+          rhinogent
+        </a>
       </div>
 
       {/* rhinogent-integrated nav — census + identity live on their OWN pages */}
