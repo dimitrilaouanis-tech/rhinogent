@@ -36,7 +36,6 @@ export default function Dashboard() {
     return () => sub.subscription.unsubscribe();
   }, []);
 
-  if (!mounted) return null;
 
   const session = authed ? ({ email } as Session) : null;
 
