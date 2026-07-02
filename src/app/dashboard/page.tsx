@@ -40,16 +40,14 @@ export default function Dashboard() {
           setSession(null);
         }}
       />
-      {session ? (
-        <Profile
-          agents={agents}
-          onAdd={() => setAgents((a) => addAgent(a))}
-          onRemove={(id) => setAgents((a) => removeAgent(a, id))}
-          onReset={() => setAgents(clearAgents())}
-        />
-      ) : (
-        <SignInGate onSignIn={setSession} />
-      )}
+      {/* No login gate — identity IS the account (self-custody). Anyone mints instantly.
+          "Owned by no one but your agent." Ready for external users, no sign-up friction. */}
+      <Profile
+        agents={agents}
+        onAdd={() => setAgents((a) => addAgent(a))}
+        onRemove={(id) => setAgents((a) => removeAgent(a, id))}
+        onReset={() => setAgents(clearAgents())}
+      />
     </div>
   );
 }
