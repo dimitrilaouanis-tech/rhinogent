@@ -5,6 +5,8 @@ import { RhinoMark } from "@/components/rhino";
 
 const API = "https://onyx-actions.onrender.com";
 const HUB = "https://dimitrilaouanis-tech.github.io/rhinogent";
+// live LLM portal (Groq-powered, signed tools) — bridged via tunnel until the Render deploy hosts it
+const PORTAL = "https://hebrew-ahead-capacity-signed.trycloudflare.com";
 
 type Line = { kind: "in" | "out" | "err" | "sys"; text: string };
 
@@ -64,7 +66,7 @@ function parseIntent(raw: string): string {
 // (no key set yet) or unreachable, fall back to the free deterministic NL router below.
 async function tryPortal(text: string): Promise<Line[] | null> {
   try {
-    const r = await fetch(`${API}/v1/chat`, {
+    const r = await fetch(`${PORTAL}/v1/chat`, {
       method: "POST", headers: { "content-type": "application/json" },
       body: JSON.stringify({ message: text }),
       signal: AbortSignal.timeout(60000),
@@ -92,7 +94,7 @@ async function runCommand(input: string): Promise<Line[]> {
   // exact commands go straight to the deterministic (signed) handlers; free-form prose that
   // didn't match a command tries the LLM portal first for a real conversation.
   const isCommand = ["help", "?", "check", "census", "top", "root", "join", "card", "bounties", "news", "feed", "eco", "ecosystem", "hello"].includes((cmd || "").toLowerCase());
-  if (!isCommand && input.trim().split(/\s+/).length >= 3) {
+  if (!isCommand && input.trim().length >= 2) {
     const portal = await tryPortal(input.trim());
     if (portal) return portal;
   }
@@ -202,7 +204,11 @@ async function runCommand(input: string): Promise<Line[]> {
       return [];
 
     default:
-      return [{ kind: "err", text: `unknown command: ${cmd} — type "help"` }];
+      // no command matched and the LLM portal wasn't reachable — stay conversational, never "error"
+      return [{
+        kind: "sys",
+        text: "I can answer that best once my live brain is connected. Right now I can still give you signed network facts — try:\n  • \"is stripe.com legit?\"  (a signed verdict)\n  • \"show me the ecosystem\"  (the census)\n  • \"who's on top?\"  ·  \"what's new?\"  ·  \"how do I join?\"",
+      }];
   }
 }
 
@@ -232,7 +238,7 @@ function Linkified({ text }: { text: string }) {
 }
 
 const CHIPS = [
-  "is stripe.com legit?",
+  "what is 0n1x?",
   "show me the ecosystem",
   "who's on top?",
   "what's new?",
