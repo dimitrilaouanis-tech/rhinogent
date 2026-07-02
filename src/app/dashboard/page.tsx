@@ -3,12 +3,9 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { RhinoMark, RhinoMascot } from "@/components/rhino";
-import {
-  GoogleSignIn,
-  type Session,
-  loadSession,
-  clearSession,
-} from "@/components/google-signin";
+import { type Session } from "@/components/google-signin";
+import { AuthGate } from "@/components/auth-gate";
+import { supabase } from "@/lib/supabase";
 import { type Agent, shortAddr, proofCardUrl } from "@/lib/identity";
 import {
   MAX_SLOTS,
@@ -20,34 +17,45 @@ import {
 
 export default function Dashboard() {
   const [mounted, setMounted] = useState(false);
-  const [session, setSession] = useState<Session | null>(null);
+  const [authed, setAuthed] = useState(false);
+  const [email, setEmail] = useState<string>("");
   const [agents, setAgents] = useState<Agent[]>([]);
 
   useEffect(() => {
-    setSession(loadSession());
     setAgents(loadAgents());
     setMounted(true);
+    // real Supabase session
+    supabase.auth.getSession().then(({ data }) => {
+      setAuthed(!!data.session);
+      setEmail(data.session?.user?.email || "");
+    });
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
+      setAuthed(!!session);
+      setEmail(session?.user?.email || "");
+    });
+    return () => sub.subscription.unsubscribe();
   }, []);
 
   if (!mounted) return null;
+
+  const session = authed ? ({ email } as Session) : null;
 
   return (
     <div className="flex min-h-screen flex-col">
       <TopBar
         session={session}
-        onSignOut={() => {
-          clearSession();
-          setSession(null);
-        }}
+        onSignOut={async () => { await supabase.auth.signOut(); setAuthed(false); }}
       />
-      {/* No login gate — identity IS the account (self-custody). Anyone mints instantly.
-          "Owned by no one but your agent." Ready for external users, no sign-up friction. */}
-      <Profile
-        agents={agents}
-        onAdd={() => setAgents((a) => addAgent(a))}
-        onRemove={(id) => setAgents((a) => removeAgent(a, id))}
-        onReset={() => setAgents(clearAgents())}
-      />
+      {authed ? (
+        <Profile
+          agents={agents}
+          onAdd={() => setAgents((a) => addAgent(a))}
+          onRemove={(id) => setAgents((a) => removeAgent(a, id))}
+          onReset={() => setAgents(clearAgents())}
+        />
+      ) : (
+        <AuthGate />
+      )}
     </div>
   );
 }
@@ -88,30 +96,6 @@ function TopBar({
 }
 
 /* ───────────────────────── sign-in gate ───────────────────────── */
-function SignInGate({ onSignIn }: { onSignIn: (s: Session) => void }) {
-  return (
-    <main className="relative flex flex-1 items-center justify-center overflow-hidden bg-mesh px-5">
-      <div className="absolute inset-0 grid-fade" aria-hidden />
-      <div className="relative w-full max-w-sm rounded-3xl border border-border bg-surface/60 p-8 text-center backdrop-blur-xl">
-        <RhinoMascot className="mx-auto h-20 w-auto" />
-        <h1 className="display mt-5 text-2xl font-semibold">
-          Your agents&apos; home.
-        </h1>
-        <p className="mt-2 text-sm text-muted">
-          Sign in to mint identities and manage your agents&apos; self-custody
-          wallets.
-        </p>
-        <div className="mt-7 flex justify-center">
-          <GoogleSignIn onSignIn={onSignIn} />
-        </div>
-        <p className="mt-6 text-[11px] leading-relaxed text-muted-2">
-          Keys are generated in your browser and never leave it. Sign-in only
-          identifies you as the owner.
-        </p>
-      </div>
-    </main>
-  );
-}
 
 /* ───────────────────────── profile panel ───────────────────────── */
 function Profile({
