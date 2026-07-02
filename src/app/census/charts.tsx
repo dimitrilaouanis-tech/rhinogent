@@ -30,7 +30,7 @@ function Spark({ vals, color = "#635bff" }: { vals: number[]; color?: string }) 
   );
 }
 
-export function MatrixCharts({ ranking, agents }: { ranking: Mover[]; agents: number }) {
+export function MatrixCharts({ ranking, agents, metrics }: { ranking: Mover[]; agents: number; metrics?: any }) {
   const [hist, setHist] = useState<Snap[]>([]);
   const [countdown, setCountdown] = useState(60);
 
@@ -100,6 +100,22 @@ export function MatrixCharts({ ranking, agents }: { ranking: Mover[]; agents: nu
           ))}
         </div>
       </div>
+
+      {/* ── WALL-STREET ROW — council metrics, Apple-clear captions (ⓘ = plain English) ── */}
+      {metrics && (
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
+          <Metric v={`${(metrics.velocity_epoch * 100).toFixed(3)}%`} l="velocity"
+                  hint="share of all tokens that changed hands this epoch — higher = more alive" />
+          <Metric v={metrics.gini.toFixed(3)} l="gini"
+                  hint="wealth equality: 0 = everyone equal, 1 = one whale owns it all" good={metrics.gini < 0.5} />
+          <Metric v={`${(metrics.top5_share * 100).toFixed(2)}%`} l="top-5 share"
+                  hint="how much the 5 richest agents hold — lower = healthier network" good={metrics.top5_share < 0.05} />
+          <Metric v={`${(metrics.active_ratio * 100).toFixed(1)}%`} l="active this epoch"
+                  hint="agents that sent or received tokens in the last heartbeat" />
+          <Metric v={metrics.avg_tx_size.toFixed(1)} l="avg transfer"
+                  hint="average tokens per transaction this epoch" />
+        </div>
+      )}
 
       <div className="grid gap-3 lg:grid-cols-2">
         {/* token supply history — area chart, "now" accent */}
@@ -198,6 +214,21 @@ function FlowBar({ name, flow, maxAbs }: { name: string; flow: number; maxAbs: n
       </div>
       <span className={`w-12 text-right tabular-nums ${pos ? "text-emerald" : "text-[#f04438]"}`}>
         {pos ? "+" : ""}{flow}
+      </span>
+    </div>
+  );
+}
+
+
+function Metric({ v, l, hint, good }: { v: string; l: string; hint: string; good?: boolean }) {
+  return (
+    <div className="group relative rounded-xl border border-border bg-surface px-3 py-2.5" title={hint}>
+      <p className={`font-mono text-base font-bold tabular-nums ${good === undefined ? "text-foreground" : good ? "text-emerald" : "text-[#f04438]"}`}>{v}</p>
+      <p className="flex items-center gap-1 font-mono text-[9px] uppercase tracking-widest text-muted-2">
+        {l} <span className="text-muted-2/70">ⓘ</span>
+      </p>
+      <span className="pointer-events-none absolute left-0 top-full z-10 mt-1 hidden w-56 rounded-lg border border-border bg-background p-2 text-[11px] normal-case leading-snug text-muted shadow-lg group-hover:block">
+        {hint}
       </span>
     </div>
   );

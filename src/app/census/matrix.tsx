@@ -32,6 +32,7 @@ export function Matrix() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Ranked[]>([]);
   const [manifest, setManifest] = useState<any>(null);
+  const [metrics, setMetrics] = useState<any>(null);
   const shardsRef = useRef<Ranked[] | null>(null);
   const idRef = useRef(0);
 
@@ -55,6 +56,7 @@ export function Matrix() {
           feed = d.txs || [];
           if (d.ranking?.length) setRanking(d.ranking);
           if (d.circulating) setLive(d.circulating);
+          if (d.metrics) setMetrics(d.metrics);
           fetch("/census_manifest.json", { cache: "no-store" }).then((r) => r.json()).then(setManifest).catch(() => {});
         })
         .catch(() => {});
@@ -158,7 +160,7 @@ export function Matrix() {
         )}
       </div>
 
-      <MatrixCharts ranking={shown as any} agents={ECOSYSTEM_COUNT} />
+      <MatrixCharts ranking={shown as any} agents={ECOSYSTEM_COUNT} metrics={metrics} />
 
       <NetworkTimeline />
 
