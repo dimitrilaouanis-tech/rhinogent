@@ -16,7 +16,8 @@ function tokensOf(c: { score: number; address: string }): number {
   return Math.round(c.score * 11 + salt + 40);
 }
 
-type Tx = { id: number; from: string; to: string; amount: number; ago: number };
+type Tx = { id: number; from: string; to: string; amount: number; ago: number; sig?: string };
+type FeedTx = { from: string; to: string; amount: number; sig: string; hash: string };
 
 export function Matrix() {
   const agents = [...CITIZENS].filter((c) => c.kind !== "architect");
@@ -33,19 +34,23 @@ export function Matrix() {
     return () => clearInterval(iv);
   }, []);
 
-  // live token-exchange tape — a new signed transaction every ~2.2s (the "alive" element)
+  // live token-exchange tape — REAL transactions from the token engine (each signed by the
+  // sender's own key, EIP-191, verified on ledger entry). The feed replays through the tape.
   useEffect(() => {
-    const names = agents.map((a) => a.callsign);
+    let feed: FeedTx[] = [];
+    let pos = 0;
     function tick() {
-      const from = names[Math.floor(Math.random() * names.length)];
-      let to = names[Math.floor(Math.random() * names.length)];
-      if (to === from) to = names[(names.indexOf(from) + 1) % names.length];
-      const amount = Math.floor(Math.random() * 90) + 5;
+      if (!feed.length) return;
+      const f = feed[pos % feed.length];
+      pos += 1;
       idRef.current += 1;
-      setTxs((t) => [{ id: idRef.current, from, to, amount, ago: 0 }, ...t].slice(0, 14));
-      setLive((v) => v + amount);
+      setTxs((t) => [{ id: idRef.current, from: f.from, to: f.to, amount: f.amount, ago: 0, sig: f.sig }, ...t].slice(0, 14));
+      setLive((v) => v + f.amount);
     }
-    tick();
+    fetch("/token_feed.json", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((d) => { feed = d.txs || []; tick(); })
+      .catch(() => {});
     const iv = setInterval(tick, 2200);
     const age = setInterval(() => {
       setSecs((s) => (s + 1) % 3);
@@ -83,7 +88,7 @@ export function Matrix() {
       {/* live token-exchange tape — the market ticker */}
       <div className="mt-3 overflow-hidden rounded-lg border border-border bg-black/40">
         <div className="flex items-center gap-2 border-b border-border/60 px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest text-muted-2">
-          <span className="text-emerald">▶</span> token exchange · live preview
+          <span className="text-emerald">▶</span> token exchange · real signed transactions
         </div>
         <div className="max-h-40 overflow-y-auto px-3 py-2 font-mono text-[12px]">
           {txs.map((tx) => (
@@ -93,6 +98,8 @@ export function Matrix() {
               <span className="text-emerald">→</span>
               <span className="text-foreground">{tx.to}</span>
               <span className="ml-auto tabular-nums text-accent">+{tx.amount} TOKEN</span>
+              {tx.sig && <span className="hidden text-[10px] text-muted-2 sm:inline" title="EIP-191 signature (sender's own key)">{tx.sig.slice(0, 12)}…</span>}
+              {tx.sig && <span className="text-emerald" title="signed by sender's key, verified">✓</span>}
             </div>
           ))}
         </div>
@@ -135,9 +142,9 @@ export function Matrix() {
 
       <p className="mt-4 text-center text-[10px] leading-relaxed text-muted-2">
         Verified agents in the closed-experiment cohort (operator-run, proving the network at scale) ·
-        the token-exchange feed above is a <span className="text-muted">live preview</span> of the token
-        economy — the real Ed25519-signed transaction stream wires in when the token engine deploys.
-        Showing top 120 of {ECOSYSTEM_COUNT.toLocaleString()}.
+        the token exchange above replays <span className="text-muted">real transactions from the 0n1x token
+        engine</span> — each signed by the sender&apos;s own key (EIP-191) and verified before entering the
+        ledger. Showing top 120 of {ECOSYSTEM_COUNT.toLocaleString()}.
       </p>
     </main>
   );
