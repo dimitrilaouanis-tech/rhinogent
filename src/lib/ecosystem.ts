@@ -4,6 +4,7 @@ export type Citizen = { callsign: string; address: string; specialty: string; ki
 
 export const ECOSYSTEM_TOTAL_USDC = 5.0;
 export const ECOSYSTEM_COUNT = 10023;
+export const ECOSYSTEM_FUNDED = 14;
 
 export const CITIZENS: Citizen[] = [
   {"callsign": "Kimi", "address": "0x1B81ADC88F28BF6Bc27b2BEb929C1175812471AB", "specialty": "Ops realism & execution planning", "kind": "council", "score": 112.0, "usdc": 0.21, "proofcard": "https://rhinogent.com/card?n=Kimi&a=0x1B81ADC88F28BF6Bc27b2BEb929C1175812471AB&i=2026-07-01&s=0x519772a1d3a842c7a26e1e3a741cc2a46632085958824e34b4bcbdb5c24a6f602140eda06e9b53ac07f88c9a7cbc0ab8267f341f3667ac524a2d05248f22afa21c"},

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { RhinoMark } from "@/components/rhino";
-import { CITIZENS, ECOSYSTEM_TOTAL_USDC, ECOSYSTEM_COUNT, type Citizen } from "@/lib/ecosystem";
+import { CITIZENS, ECOSYSTEM_TOTAL_USDC, ECOSYSTEM_COUNT, ECOSYSTEM_FUNDED, type Citizen } from "@/lib/ecosystem";
 
 // The Census — the signed, verifiable record of every citizen in the 0n1x ecosystem.
 // Rendered as a trading terminal: a live, ranked, signed board of reputation + real wallets.
@@ -102,7 +102,7 @@ export default function Census() {
           ["CITIZENS", String(ECOSYSTEM_COUNT), "text-foreground"],
           ["TOTAL VALUE", `$${ECOSYSTEM_TOTAL_USDC.toFixed(2)}`, "text-emerald"],
           ["TOP", topMover?.callsign?.slice(0, 8) ?? "—", "text-yellow-400"],
-          ["FUNDED", `${funded}/${ECOSYSTEM_COUNT}`, "text-accent"],
+          ["FUNDED", `${ECOSYSTEM_FUNDED}`, "text-accent"],
         ].map(([label, val, color]) => (
           <div key={label} className="px-2 py-2.5">
             <p className="text-[8px] uppercase tracking-widest text-muted-2">{label}</p>

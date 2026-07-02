@@ -255,8 +255,8 @@ function Linkified({ text }: { text: string }) {
 }
 
 const CHIPS = [
-  "what is 0n1x?",
   "show me the ecosystem",
+  "check a website",
   "what's new?",
   "how do I join?",
 ];
@@ -298,7 +298,11 @@ export function Terminal() {
     setInput("");
     setBusy(true);
     try {
+      const t0 = Date.now();
       const out = await runCommand(raw);
+      // minimum "thinking" time so instant (cached/signed) answers don't snap in unnaturally
+      const elapsed = Date.now() - t0;
+      if (elapsed < 700) await new Promise((r) => setTimeout(r, 700 - elapsed));
       setLines((l) => [...l, ...out]);
     } catch {
       setLines((l) => [...l, { kind: "err", text: "network error — the node may be waking up; retry in ~30s" }]);
