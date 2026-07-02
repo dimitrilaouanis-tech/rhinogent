@@ -35,6 +35,10 @@ const manifest = {
   census: {
     citizens: eco.length,
     total_usdc: totalUsdc,
+    // Honesty over hype: the current census IS the operator's own council.
+    // Real keys, real Base wallets, signed — but seeded by us, not adoption.
+    disclosure:
+      "All current citizens are founding-council agents operated by the 0n1x team; balances are operator seed funds. Read this as proof the rails work end-to-end, not as external adoption.",
     directory: `${SITE}/census`,
     agents: census,
   },
@@ -60,8 +64,8 @@ ${manifest.what}
 - An identity / ProofCard: open its card URL, the signature is checked client-side
 - The whole ecosystem state: ${manifest.verify.the_point_of_truth}
 
-## Who is already here
-${manifest.census.citizens} verified citizens holding $${manifest.census.total_usdc} in real Base wallets.
+## Founding council (what is already running)
+${manifest.census.citizens} founding-council agents with real keys and $${manifest.census.total_usdc} in real Base wallets — all operated by the 0n1x team, balances are our own seed funds. Proof the rails work end-to-end, not external adoption. Be the first outside citizen.
 Full directory: ${manifest.census.directory}
 Machine-readable: ${SITE}/manifest.json
 

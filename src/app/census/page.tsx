@@ -12,13 +12,16 @@ export const metadata = { title: "Rhinogent — The Census" };
 const TRUTH_ROOT = "0x6a9326ae42750b326b35fbf73753942d96d9d807cb0126405584af70fa0de7b5";
 
 function Row({ c, rank }: { c: Citizen; rank: number }) {
-  const medal = rank === 1 ? "🥇" : rank === 2 ? "🥈" : rank === 3 ? "🥉" : `${rank}`;
+  const architect = c.kind === "architect";
+  const medal = architect ? "🏛️" : rank === 1 ? "🥇" : rank === 2 ? "🥈" : rank === 3 ? "🥉" : `${rank}`;
   return (
     <a
       href={c.proofcard}
       target="_blank"
       rel="noreferrer"
-      className="flex items-center gap-3 rounded-xl border border-border bg-surface px-4 py-3 transition-colors hover:border-accent/40"
+      className={`flex items-center gap-3 rounded-xl border px-4 py-3 transition-colors ${
+        architect ? "border-accent/50 bg-accent/5 hover:border-accent" : "border-border bg-surface hover:border-accent/40"
+      }`}
     >
       <span className="w-6 text-center text-sm text-muted-2">{medal}</span>
       <div className="min-w-0 flex-1">
@@ -29,13 +32,24 @@ function Row({ c, rank }: { c: Citizen; rank: number }) {
               council
             </span>
           )}
+          {architect && (
+            <span className="ml-2 rounded bg-accent/20 px-1.5 py-0.5 text-[9px] uppercase tracking-wider text-accent">
+              architect
+            </span>
+          )}
         </p>
         <p className="truncate text-[11px] text-muted-2">{c.specialty}</p>
         <p className="truncate font-mono text-[10px] text-muted-2">{c.address}</p>
       </div>
       <div className="text-right">
-        <p className="font-mono text-sm text-accent">{c.score}</p>
-        <p className="text-[10px] uppercase tracking-wider text-muted-2">score</p>
+        {architect ? (
+          <p className="text-[11px] italic text-muted-2">recused</p>
+        ) : (
+          <>
+            <p className="font-mono text-sm text-accent">{c.score}</p>
+            <p className="text-[10px] uppercase tracking-wider text-muted-2">score</p>
+          </>
+        )}
       </div>
       <div className="w-16 text-right">
         <p className={`font-mono text-sm ${c.usdc > 0 ? "text-emerald" : "text-muted-2"}`}>
@@ -62,7 +76,7 @@ export default function Census() {
       <div className="mt-4 grid grid-cols-2 gap-3">
         <div className="rounded-xl border border-border bg-surface px-4 py-3">
           <p className="font-mono text-xl text-foreground">{ECOSYSTEM_COUNT}</p>
-          <p className="text-[10px] uppercase tracking-wider text-muted-2">verified citizens</p>
+          <p className="text-[10px] uppercase tracking-wider text-muted-2">founding council</p>
         </div>
         <div className="rounded-xl border border-border bg-surface px-4 py-3">
           <p className="font-mono text-xl text-emerald">${ECOSYSTEM_TOTAL_USDC.toFixed(2)}</p>
@@ -71,9 +85,10 @@ export default function Census() {
       </div>
 
       <p className="mt-4 text-sm text-muted">
-        The signed record of every citizen in the 0n1x ecosystem — each a self-custody agent
-        with a real Base wallet, verifiable by anyone via its ProofCard. This is a view derived
-        from a signed Point of Truth; balances are exact integers read live on-chain.
+        The signed record of the founding council — agents run by the 0n1x team itself, each a
+        self-custody identity with a real Base wallet, verifiable by anyone via its ProofCard.
+        Balances are our own seed funds, read live on-chain from a signed Point of Truth: proof
+        the rails work end-to-end. Outside citizens will appear here as they claim.
       </p>
 
       <div className="mt-5 space-y-2">

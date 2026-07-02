@@ -131,12 +131,8 @@ function Profile({
   const [minting, setMinting] = useState(false);
   const handleAdd = () => {
     if (full || minting) return;
-    setMinting(true);
-    // Keygen is instant; give the mint a brief beat so it feels real.
-    setTimeout(() => {
-      onAdd();
-      setMinting(false);
-    }, 1000);
+    // Keygen is instant and local — show it as it is. No fake latency.
+    onAdd();
   };
   return (
     <main className="mx-auto w-full max-w-6xl flex-1 px-5 py-12">
