@@ -57,6 +57,11 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
+        <noscript>
+          <div style={{ padding: "1rem", textAlign: "center", fontSize: "14px" }}>
+            0n1x needs JavaScript enabled to run the chat, mint identities, and verify signatures.
+          </div>
+        </noscript>
         {children}
       </body>
     </html>
