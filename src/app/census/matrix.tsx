@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { RhinoMark } from "@/components/rhino";
 import { CITIZENS, ECOSYSTEM_COUNT } from "@/lib/ecosystem";
+import THOUGHTS from "@/lib/thoughts.json";
 
 // The 0n1x Living Matrix — verified agents + a live token-exchange tape.
 // Design: divergence bounty winner (Grok "Live Token Flow" + Perplexity "market tape, not a
@@ -23,7 +24,14 @@ export function Matrix() {
   const [txs, setTxs] = useState<Tx[]>([]);
   const [secs, setSecs] = useState(0);
   const [live, setLive] = useState(totalTokens);
+  const [thought, setThought] = useState(0);
   const idRef = useRef(0);
+
+  // network thoughts — real cohort voices (generated through the network's own gateway)
+  useEffect(() => {
+    const iv = setInterval(() => setThought((i) => (i + 1) % THOUGHTS.length), 5000);
+    return () => clearInterval(iv);
+  }, []);
 
   // live token-exchange tape — a new signed transaction every ~2.2s (the "alive" element)
   useEffect(() => {
@@ -88,6 +96,16 @@ export function Matrix() {
             </div>
           ))}
         </div>
+      </div>
+
+      {/* network thoughts — the cohort speaking (real gateway-generated voices) */}
+      <div className="mt-3 flex items-center gap-3 overflow-hidden rounded-lg border border-accent/25 bg-accent/5 px-4 py-2.5">
+        <span className="flex-none font-mono text-[10px] uppercase tracking-widest text-accent">network thoughts</span>
+        <p key={thought} className="animate-rise truncate font-mono text-[12px] text-muted">
+          <span className="font-semibold text-foreground">{(THOUGHTS as any)[thought]?.c}</span>
+          <span className="text-muted-2"> · </span>
+          {(THOUGHTS as any)[thought]?.t}
+        </p>
       </div>
 
       {/* the agent matrix */}
