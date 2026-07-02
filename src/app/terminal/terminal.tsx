@@ -7,6 +7,8 @@ const API = "https://onyx-actions.onrender.com";
 const HUB = "https://dimitrilaouanis-tech.github.io/rhinogent";
 // live LLM portal (Groq-powered, signed tools) — bridged via tunnel until the Render deploy hosts it
 const PORTAL = "https://hebrew-ahead-capacity-signed.trycloudflare.com";
+// the signed-in agent (set from ?address=) — hard AI questions are metered to it
+let SESSION_ADDR = "";
 
 type Line = { kind: "in" | "out" | "err" | "sys"; text: string };
 
@@ -40,7 +42,9 @@ function parseIntent(raw: string): string {
   const t = raw.trim().toLowerCase();
   const first = t.split(/\s+/)[0];
   // exact commands pass straight through
-  if (["help", "?", "check", "census", "top", "root", "join", "card", "bounties", "eco", "ecosystem", "news", "feed"].includes(first)) return raw.trim();
+  if (["help", "?", "check", "census", "top", "root", "join", "card", "bounties", "eco", "ecosystem", "news", "feed", "about"].includes(first)) return raw.trim();
+  // "what is 0n1x / explain / what do you do" — pre-answered, no LLM needed
+  if (/\b(what|explain|tell me about|who are you|what do you do|how does)\b/.test(t) && /0n1x|onyx|you|this network|it work/.test(t) && !/legit|check|verify|top|census|new/.test(t)) return "about";
   // news / what's happening / latest / shipped
   if (/\b(news|feed|latest|happening|shipped|update|dispatch|what.?s new|recent)\b/.test(t)) return "news";
   // a bare domain ("stripe.com") or "check out X" / "is X legit/real/safe/a scam" → check
@@ -68,18 +72,21 @@ async function tryPortal(text: string): Promise<Line[] | null> {
   try {
     const r = await fetch(`${PORTAL}/v1/chat`, {
       method: "POST", headers: { "content-type": "application/json" },
-      body: JSON.stringify({ message: text }),
+      body: JSON.stringify({ message: text, address: SESSION_ADDR }),
       signal: AbortSignal.timeout(60000),
     });
     if (!r.ok) return null;
     const d = await r.json();
+    // out of AI credits — the hard-question paywall (common checks stay free)
+    if (d?.out_of_credits) return [{ kind: "sys", text: `🔒 ${d.reply}` }];
     if (!d || d.ok === false || !d.reply) return null;   // portal offline -> fall back
     const out: Line[] = [{ kind: "out", text: d.reply }];
-    // surface the signed facts the model actually used (the hero — nothing invented)
     for (const s of d.signed || []) {
       if (s.result?.signature)
         out.push({ kind: "sys", text: `  ✓ signed by ${s.result.signed_by} · ${String(s.result.signature).slice(0, 32)}… (Ed25519, verifiable)` });
     }
+    if (typeof d.credits_left === "number")
+      out.push({ kind: "sys", text: d.welcome_credits ? `  🎁 ${d.welcome_credits} free AI questions to start · ${d.credits_left} left` : `  ${d.credits_left} free AI questions left` });
     return out;
   } catch {
     return null;
@@ -101,7 +108,17 @@ async function runCommand(input: string): Promise<Line[]> {
 
   switch ((cmd || "").toLowerCase()) {
     case "hello":
-      return [{ kind: "sys", text: `hey 🤍 — I'm 0n1x. Ask me things like:\n  "is stripe.com legit?"  ·  "show me the ecosystem"  ·  "who's on top?"\nEvery answer comes from live, Ed25519-signed network state — I never make facts up.` }];
+      return [{ kind: "sys", text: `hey 🤍 — I'm 0n1x. Ask me things like:\n  "check any website"  ·  "show me the ecosystem"  ·  "what's new?"\nEvery fact I give you is live and Ed25519-signed — I never make facts up.` }];
+
+    case "about":
+      // pre-answered — the #1 question, zero LLM cost, still accurate
+      return [{
+        kind: "out",
+        text: "0n1x is a neutral, cryptographic trust network for AI agents 🤍\n\n" +
+          "Agents (and people) use it to verify a counterparty BEFORE they pay — I check a merchant/domain and return a signed verdict anyone can independently verify. Every citizen carries a self-custody wallet + a portable, signed reputation.\n\n" +
+          "What makes us different: other tools say \"this might be right.\" 0n1x SIGNS every fact (Ed25519) — so you don't trust me, you verify the math.\n\n" +
+          "Try:  \"check stripe.com\"  ·  \"show me the ecosystem\"  ·  \"how do I join?\"",
+      }];
 
     case "eco":
     case "ecosystem":
@@ -240,7 +257,6 @@ function Linkified({ text }: { text: string }) {
 const CHIPS = [
   "what is 0n1x?",
   "show me the ecosystem",
-  "who's on top?",
   "what's new?",
   "how do I join?",
 ];
@@ -268,7 +284,7 @@ export function Terminal() {
     const a = new URLSearchParams(window.location.search).get("address") || "";
     if (/^0x[0-9a-fA-F]{40}$/.test(a)) {
       const cs = callsignFor(a);
-      setAddr(a); setMe(cs);
+      setAddr(a); setMe(cs); SESSION_ADDR = a;
       setLines((l) => [...l, { kind: "sys", text: `Welcome back, ${cs} 🤍 — your Rhinogent identity is linked. Ask me anything about the network.` }]);
     }
   }, []);
