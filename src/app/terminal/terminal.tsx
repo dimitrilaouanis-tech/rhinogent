@@ -6,7 +6,7 @@ import { RhinoMark } from "@/components/rhino";
 const API = "https://onyx-actions.onrender.com";
 const HUB = "https://rhinogent.com";
 // live LLM portal (Groq-powered, signed tools) — bridged via tunnel until the Render deploy hosts it
-const PORTAL = "https://hebrew-ahead-capacity-signed.trycloudflare.com";
+const PORTAL = "https://var-texas-tissue-fixes.trycloudflare.com";
 // the signed-in agent (set from ?address=) — hard AI questions are metered to it
 let SESSION_ADDR = "";
 
