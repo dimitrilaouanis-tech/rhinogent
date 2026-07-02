@@ -290,119 +290,62 @@ function AgentCard({ agent, onRemove }: { agent: Agent; onRemove: () => void }) 
   );
 
   return (
-    <div className="rounded-2xl border border-border bg-gradient-to-b from-surface-2 to-surface p-5">
-      <div className="flex items-start justify-between">
-        <div>
-          <p className="text-[11px] uppercase tracking-widest text-muted-2">
-            Rhinogent identity
-          </p>
-          <p className="mt-1 font-semibold tracking-tight">{agent.id}</p>
+    <div className="flex flex-col rounded-2xl border border-border bg-surface p-5">
+      {/* header */}
+      <div className="flex items-center gap-3">
+        <div className="flex h-10 w-10 flex-none items-center justify-center rounded-xl bg-gradient-to-br from-accent/25 to-accent/5 ring-1 ring-accent/15">
+          <RhinoMark className="h-6 w-6" />
         </div>
-        <RhinoMark className="h-9 w-9" />
+        <div className="min-w-0">
+          <p className="truncate font-semibold tracking-tight">{agent.id}</p>
+          <p className="font-mono text-[11px] text-muted-2">{shortAddr(agent.address)} · Base</p>
+        </div>
+        <span className="ml-auto rounded-full bg-accent/15 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-accent">new</span>
       </div>
 
-      <dl className="mt-5 space-y-2.5 font-mono text-[12px]">
-        <Row k="did" v={`did:pkh:…${agent.address.slice(-6)}`} />
-        <button
-          onClick={() => copy("address", agent.address)}
-          className="flex w-full items-center justify-between gap-3 text-left"
-        >
+      {/* detail rows — clean, uniform */}
+      <dl className="mt-4 space-y-2 border-y border-border/60 py-3 font-mono text-[12px]">
+        <button onClick={() => copy("address", agent.address)} className="flex w-full items-center justify-between text-left">
           <dt className="text-muted-2">wallet</dt>
-          <dd className="text-foreground">
-            {copied === "address" ? (
-              <span className="text-emerald">copied ✓</span>
-            ) : (
-              `${shortAddr(agent.address)} · Base`
-            )}
-          </dd>
+          <dd>{copied === "address" ? <span className="text-emerald">copied ✓</span> : <span className="text-foreground">{shortAddr(agent.address)}</span>}</dd>
         </button>
-        <Row k="balance">
-          <span className="text-muted">0.00 USDC</span>
-        </Row>
-        <Row k="credential">
-          <span className="rounded bg-accent/15 px-1.5 py-0.5 text-accent">NEW</span>
-        </Row>
+        <div className="flex items-center justify-between"><dt className="text-muted-2">balance</dt><dd className="text-muted">0.00 USDC</dd></div>
+        <div className="flex items-center justify-between"><dt className="text-muted-2">did</dt><dd className="text-muted">…{agent.address.slice(-6)}</dd></div>
       </dl>
 
-      <div className="mt-5 rounded-xl border border-accent/30 bg-accent/5 p-4">
-        <p className="text-[11px] uppercase tracking-widest text-accent">
-          Connect your agent
-        </p>
-        <p className="mt-1 text-xs text-muted">
-          Copy this, paste it into your AI agent — it&apos;s instantly on the network.
-        </p>
-        <button
-          onClick={() => copy("connect", connectBlock)}
-          className="mt-3 w-full rounded-lg border border-accent bg-accent/10 px-3 py-2.5 text-sm font-semibold text-accent transition-colors hover:bg-accent/20"
-        >
-          {copied === "connect" ? "copied ✓ — paste into your agent" : "Copy connection block"}
-        </button>
-        <p className="mt-2 text-[10px] text-muted-2">
-          No private key inside — safe to paste anywhere. Your key stays in your wallet;
-          you only inject it (via env, never in this file) to sign as your agent.
-        </p>
-      </div>
+      {/* ONE primary action */}
+      <button
+        onClick={() => copy("connect", connectBlock)}
+        className="mt-4 w-full rounded-xl bg-accent px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+      >
+        {copied === "connect" ? "Copied ✓ — paste into your agent" : "Connect your agent"}
+      </button>
 
-      <div className="mt-3 rounded-xl border border-border bg-surface p-4">
-        <p className="text-[11px] uppercase tracking-widest text-muted-2">
-          No CLI? Share your ProofCard
-        </p>
-        <p className="mt-1 text-xs text-muted">
-          A public &ldquo;Verified by 0n1x&rdquo; page. Paste the link in any chat to prove
-          you&apos;re a real, self-custody agent — anyone verifies in one click.
-        </p>
-        <button
-          onClick={copyProofCard}
-          className="mt-3 w-full rounded-lg border border-accent bg-accent/10 px-3 py-2.5 text-sm font-semibold text-accent transition-colors hover:bg-accent/20"
-        >
-          {copied === "proof" ? "copied ✓ — paste it anywhere" : "Copy my ProofCard link"}
+      {/* secondary — tidy pill row (Google-style) */}
+      <div className="mt-2.5 grid grid-cols-3 gap-2">
+        <button onClick={copyProofCard} className="rounded-lg border border-border bg-background px-2 py-2 text-[11px] text-muted transition-colors hover:border-accent/40 hover:text-accent">
+          {copied === "proof" ? "✓" : "ProofCard"}
         </button>
-      </div>
-
-      <div className="mt-3 rounded-xl border border-border bg-surface p-4">
-        <p className="text-[11px] uppercase tracking-widest text-muted-2">
-          Connect to 0n1x — no CLI
-        </p>
-        <p className="mt-1 text-xs text-muted">
-          The full fetch-only path into 0n1x — tune in, register, verify — for any web-chat or
-          crawler agent that can only make HTTP calls.
-        </p>
-        <button
-          onClick={copyOnyx}
-          className="mt-3 w-full rounded-lg border border-border bg-surface-2 px-3 py-2.5 text-sm font-semibold text-foreground transition-colors hover:border-accent/40"
-        >
-          {copied === "onyx" ? "copied ✓ — hand it to a fetch-only agent" : "Copy 0n1x fetch path"}
+        <button onClick={copyOnyx} className="rounded-lg border border-border bg-background px-2 py-2 text-[11px] text-muted transition-colors hover:border-accent/40 hover:text-accent">
+          {copied === "onyx" ? "✓" : "Fetch path"}
         </button>
-      </div>
-
-      <div className="mt-5 flex items-center gap-2 border-t border-border pt-4">
-        <button
-          onClick={() => setReveal((r) => !r)}
-          className="rounded-lg border border-border bg-surface px-3 py-1.5 text-xs text-muted transition-colors hover:text-foreground"
-        >
-          {reveal ? "Hide key" : "Reveal key"}
-        </button>
-        <button
-          onClick={onRemove}
-          className="ml-auto rounded-lg border border-border px-3 py-1.5 text-xs text-muted-2 transition-colors hover:text-[#ff6b6b]"
-        >
-          Remove
+        <button onClick={() => setReveal((r) => !r)} className="rounded-lg border border-border bg-background px-2 py-2 text-[11px] text-muted transition-colors hover:border-accent/40 hover:text-accent">
+          {reveal ? "Hide key" : "Show key"}
         </button>
       </div>
 
       {reveal && (
-        <div className="mt-3 rounded-lg border border-[#ff6b6b]/30 bg-[#ff6b6b]/5 p-3">
-          <p className="text-[10px] uppercase tracking-wider text-[#ff6b6b]">
-            Private key · self-custody · save it offline
-          </p>
-          <button
-            onClick={() => copy("key", agent.privateKey)}
-            className="mt-1 block w-full break-all text-left font-mono text-[11px] text-muted"
-          >
+        <div className="mt-2.5 rounded-lg border border-[#ff6b6b]/30 bg-[#ff6b6b]/5 p-3">
+          <p className="text-[10px] uppercase tracking-wider text-[#ff6b6b]">Private key · save it offline</p>
+          <button onClick={() => copy("key", agent.privateKey)} className="mt-1 block w-full break-all text-left font-mono text-[11px] text-muted">
             {copied === "key" ? "copied ✓" : agent.privateKey}
           </button>
         </div>
       )}
+
+      <button onClick={onRemove} className="mt-3 self-end text-[11px] text-muted-2 transition-colors hover:text-[#ff6b6b]">
+        Remove
+      </button>
     </div>
   );
 }
