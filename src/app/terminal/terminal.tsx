@@ -66,7 +66,7 @@ async function runCommand(input: string): Promise<Line[]> {
 
   switch ((cmd || "").toLowerCase()) {
     case "hello":
-      return [{ kind: "sys", text: `hey 🖤 — I'm the 0n1x network terminal. Ask me things like:\n  "is stripe.com legit?"  ·  "show me the ecosystem"  ·  "who's on top?"\nEvery answer comes from live, Ed25519-signed network state.` }];
+      return [{ kind: "sys", text: `hey 🤍 — I'm 0n1x. Ask me things like:\n  "is stripe.com legit?"  ·  "show me the ecosystem"  ·  "who's on top?"\nEvery answer comes from live, Ed25519-signed network state — I never make facts up.` }];
 
     case "eco":
     case "ecosystem":
@@ -81,16 +81,21 @@ async function runCommand(input: string): Promise<Line[]> {
       const { status, body } = await fetchJson(`${API}/api/check?url=${encodeURIComponent(dom)}`, 45000);
       if (status !== 200 || !body) return [{ kind: "err", text: `check failed (HTTP ${status}) — the network node may be cold-starting; try again in ~30s` }];
       const att = body.onyx_attestation || {};
+      const hasSig = !!att.sig;
       const out: string[] = [
-        `┌─ SIGNED VERDICT · ${dom}`,
+        `${hasSig ? "✓ SIGNED" : "⚠ UNSIGNED"} VERDICT · ${dom}`,
+        `┌─`,
         `│ verdict     : ${body.verdict ?? body.result ?? "—"}`,
       ];
       if (body.trust_score !== undefined) out.push(`│ trust score : ${body.trust_score}`);
       if (body.age_days !== undefined) out.push(`│ domain age  : ${body.age_days} days`);
+      out.push(`│`);
       out.push(`│ signed by   : ${att.kid ?? "—"}`);
-      out.push(`│ sig         : ${String(att.sig ?? "—").slice(0, 44)}…`);
-      out.push(`└─ Ed25519+JCS · verify at ${API}/.well-known/onyx-pubkey`);
-      return [{ kind: "out", text: out.join("\n") }];
+      out.push(`│ signature   : ${String(att.sig ?? "—").slice(0, 48)}…`);
+      out.push(`└─ Ed25519+JCS — this verdict is cryptographically signed by 0n1x.`);
+      out.push(`   Verify it yourself: the public key is at ${API}/.well-known/onyx-pubkey`);
+      out.push(`   Nobody — not even us — can forge or alter it. I explain; the network proves. 🤍`);
+      return [{ kind: hasSig ? "out" : "err", text: out.join("\n") }];
     }
 
     case "census":
@@ -168,9 +173,17 @@ async function runCommand(input: string): Promise<Line[]> {
   }
 }
 
+const CHIPS = [
+  "is stripe.com legit?",
+  "show me the ecosystem",
+  "who's on top?",
+  "what's new?",
+  "how do I join?",
+];
+
 export function Terminal() {
   const [lines, setLines] = useState<Line[]>([
-    { kind: "sys", text: "0N1X TERMINAL v2 — talk to the network like you talk to a person.\nTry: \"is stripe.com legit?\" · \"show me the ecosystem\" · \"who's on top?\"" },
+    { kind: "sys", text: "Hi 🤍 I'm 0n1x — the trust layer for AI agents. Ask me anything about the network and I answer only from live, Ed25519-signed data (I never make facts up). Try a suggestion below, or just talk to me." },
   ]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
@@ -199,8 +212,8 @@ export function Terminal() {
     return () => { alive = false; clearInterval(iv); };
   }, []);
 
-  async function submit() {
-    const raw = input.trim();
+  async function submit(val?: string) {
+    const raw = (val ?? input).trim();
     if (!raw || busy) return;
     setLines((l) => [...l, { kind: "in", text: raw }]);
     setHistory((h) => [raw, ...h].slice(0, 50));
@@ -265,6 +278,20 @@ export function Terminal() {
         <div ref={endRef} />
       </div>
 
+      {/* suggestion chips — chat leads, precision is a tap away */}
+      <div className="mt-2 flex flex-wrap gap-1.5">
+        {CHIPS.map((c) => (
+          <button
+            key={c}
+            onClick={() => submit(c)}
+            disabled={busy}
+            className="rounded-full border border-border bg-surface px-2.5 py-1 text-[11px] text-muted transition-colors hover:border-accent/50 hover:text-accent disabled:opacity-40"
+          >
+            {c}
+          </button>
+        ))}
+      </div>
+
       <div className="mt-2 flex items-center gap-2 rounded-lg border border-border bg-surface px-3 py-2 font-mono text-sm">
         <span className="text-accent">❯</span>
         <input
@@ -290,7 +317,7 @@ export function Terminal() {
       </div>
 
       <p className="mt-3 text-center font-mono text-[10px] text-muted-2">
-        deterministic commands over Ed25519-signed state — no LLM, no cost, scales to anyone ·{" "}
+        every fact Ed25519-signed — I explain, the network proves 🤍 ·{" "}
         <a href={`${HUB}/census`} className="text-accent hover:underline">census</a> ·{" "}
         <a href={`${HUB}/dashboard`} className="text-accent hover:underline">mint identity</a>
       </p>
