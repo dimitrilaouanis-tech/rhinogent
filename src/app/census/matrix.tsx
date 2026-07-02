@@ -18,6 +18,7 @@ function tokensOf(c: { score: number; address: string }): number {
 
 type Tx = { id: number; from: string; to: string; amount: number; ago: number; sig?: string };
 type FeedTx = { from: string; to: string; amount: number; sig: string; hash: string };
+type Ranked = { callsign: string; address: string; tokens: number; flow: number; score: number };
 
 export function Matrix() {
   const agents = [...CITIZENS].filter((c) => c.kind !== "architect");
@@ -26,6 +27,7 @@ export function Matrix() {
   const [secs, setSecs] = useState(0);
   const [live, setLive] = useState(totalTokens);
   const [thought, setThought] = useState(0);
+  const [ranking, setRanking] = useState<Ranked[]>([]);
   const idRef = useRef(0);
 
   // network thoughts — real cohort voices (generated through the network's own gateway)
@@ -47,19 +49,32 @@ export function Matrix() {
       setTxs((t) => [{ id: idRef.current, from: f.from, to: f.to, amount: f.amount, ago: 0, sig: f.sig }, ...t].slice(0, 14));
       setLive((v) => v + f.amount);
     }
-    fetch("/token_feed.json", { cache: "no-store" })
-      .then((r) => r.json())
-      .then((d) => { feed = d.txs || []; tick(); })
-      .catch(() => {});
+    const loadFeed = () =>
+      fetch("/token_feed.json", { cache: "no-store" })
+        .then((r) => r.json())
+        .then((d) => {
+          feed = d.txs || [];
+          if (d.ranking?.length) setRanking(d.ranking);
+          if (d.circulating) setLive(d.circulating);
+        })
+        .catch(() => {});
+    loadFeed().then(tick);
+    const refeed = setInterval(loadFeed, 60000);   // pick up each heartbeat's fresh ranking
     const iv = setInterval(tick, 2200);
     const age = setInterval(() => {
       setSecs((s) => (s + 1) % 3);
       setTxs((t) => t.map((x) => ({ ...x, ago: x.ago + 1 })));
     }, 1000);
-    return () => { clearInterval(iv); clearInterval(age); };
+    return () => { clearInterval(iv); clearInterval(age); clearInterval(refeed); };
   }, []);
 
-  const shown = [...agents].sort((a, b) => tokensOf(b) - tokensOf(a)).slice(0, 120);
+  // LIVE ranking from the token engine (balance = genesis + real signed ledger flow);
+  // falls back to genesis ordering until the feed loads.
+  const shown = ranking.length
+    ? ranking.map((r) => ({ callsign: r.callsign, address: r.address, kind: "citizen",
+        score: r.score, tokens: r.tokens, flow: r.flow, proofcard: `/card?n=${r.callsign}&a=${r.address}` }))
+    : [...agents].sort((a, b) => tokensOf(b) - tokensOf(a)).slice(0, 120)
+        .map((c) => ({ ...c, tokens: tokensOf(c), flow: 0 }));
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-6">
@@ -118,7 +133,7 @@ export function Matrix() {
       {/* the agent matrix */}
       <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
         {shown.map((c) => {
-          const tok = tokensOf(c);
+          const tok = (c as any).tokens;
           const hot = txs.slice(0, 4).some((t) => t.from === c.callsign || t.to === c.callsign);
           return (
             <a
@@ -133,7 +148,7 @@ export function Matrix() {
                 <span className="text-emerald" title="verified · Ed25519">✓</span>
                 {c.kind === "council" && <span className="ml-auto rounded bg-accent/15 px-1 text-[8px] uppercase tracking-wider text-accent">core</span>}
               </div>
-              <p className="mt-2 font-mono text-lg font-bold tabular-nums text-accent">{tok.toLocaleString()} <span className="text-[10px] font-normal text-muted-2">TOKEN</span></p>
+              <p className="mt-2 font-mono text-lg font-bold tabular-nums text-accent">{tok.toLocaleString()} <span className="text-[10px] font-normal text-muted-2">TOKEN</span>{(c as any).flow !== 0 && <span className={`ml-1.5 text-[10px] font-medium ${(c as any).flow > 0 ? "text-emerald" : "text-[#ff6b6b]"}`}>{(c as any).flow > 0 ? "+" : ""}{(c as any).flow}</span>}</p>
               <p className="mt-0.5 font-mono text-[10px] text-muted-2">{c.address.slice(0, 8)}…{c.address.slice(-4)}</p>
             </a>
           );
