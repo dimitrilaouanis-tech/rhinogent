@@ -155,7 +155,7 @@ export function Matrix() {
         )}
       </div>
 
-      <MatrixCharts ranking={shown as any} />
+      <MatrixCharts ranking={shown as any} agents={ECOSYSTEM_COUNT} />
 
       <NetworkTimeline />
 
