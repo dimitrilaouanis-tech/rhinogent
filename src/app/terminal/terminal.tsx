@@ -205,6 +205,13 @@ async function runCommand(input: string): Promise<Line[]> {
   }
 }
 
+const ADJ = ["Keen","Bright","Iron","Swift","Bold","Quiet","Sharp","Stone","Onyx","Vast","Lone","Prime","True","Grave","Wild","Steel"];
+const NOUN = ["Beacon","Warden","Monolith","Horn","Sentinel","Rampart","Cipher","Bastion","Anchor","Forge","Vault","Ridge","Pillar","Crest","Spire","Tusk"];
+function callsignFor(a: string): string {
+  const h = a.toLowerCase().replace(/^0x/, "");
+  return `${ADJ[parseInt(h.slice(0, 2), 16) % 16]}-${NOUN[parseInt(h.slice(2, 4), 16) % 16]}-${h.slice(-4).toUpperCase()}`;
+}
+
 const CHIPS = [
   "is stripe.com legit?",
   "show me the ecosystem",
@@ -221,7 +228,8 @@ export function Terminal() {
   const [busy, setBusy] = useState(false);
   const [history, setHistory] = useState<string[]>([]);
   const [hIdx, setHIdx] = useState(-1);
-  const [ticker, setTicker] = useState<any>(null);
+  const [me, setMe] = useState<string>("");
+  const [addr, setAddr] = useState<string>("");
   const endRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -229,19 +237,15 @@ export function Terminal() {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [lines, busy]);
 
-  // LIVE ecosystem ticker — refreshes itself every 30s (real-time feel, CDN-cheap)
+  // identity-aware: if the agent arrives with ?address= (from their Rhinogent ID/wallet),
+  // greet them by their address-derived callsign and thread it into the conversation.
   useEffect(() => {
-    let alive = true;
-    async function pull() {
-      try {
-        const r = await fetch(`${HUB}/census.json`);
-        const b = await r.json();
-        if (alive) setTicker(b);
-      } catch {}
+    const a = new URLSearchParams(window.location.search).get("address") || "";
+    if (/^0x[0-9a-fA-F]{40}$/.test(a)) {
+      const cs = callsignFor(a);
+      setAddr(a); setMe(cs);
+      setLines((l) => [...l, { kind: "sys", text: `Welcome back, ${cs} 🤍 — your Rhinogent identity is linked. Ask me anything about the network.` }]);
     }
-    pull();
-    const iv = setInterval(pull, 30000);
-    return () => { alive = false; clearInterval(iv); };
   }, []);
 
   async function submit(val?: string) {
@@ -276,21 +280,13 @@ export function Terminal() {
         </span>
       </div>
 
-      {/* LIVE ECOSYSTEM TICKER — self-refreshing every 30s */}
-      {ticker && (
-        <div className="mt-2 flex items-center gap-3 overflow-x-auto whitespace-nowrap rounded-lg border border-border bg-surface px-3 py-1.5 font-mono text-[11px]">
-          <span className="text-emerald">● ECOSYSTEM</span>
-          <span className="text-muted-2">{ticker.count} citizens</span>
-          <span className="text-emerald">${ticker.total_usdc}</span>
-          {(ticker.top || []).slice(0, 5).map((c: any, i: number) => (
-            <span key={c.callsign} className="text-muted-2">
-              <span className={i === 0 ? "text-yellow-400" : "text-foreground"}>{c.callsign}</span>{" "}
-              <span className="text-accent">{c.score}</span>
-            </span>
-          ))}
-          <span className="text-muted-2/60">auto-refresh 30s</span>
-        </div>
-      )}
+      {/* rhinogent-integrated nav — census + identity live on their OWN pages */}
+      <div className="mt-2 flex items-center gap-2 font-mono text-[11px]">
+        <span className="text-muted-2">go:</span>
+        <a href="/rhinogent/census" className="rounded border border-border px-2 py-0.5 text-muted transition-colors hover:border-accent/50 hover:text-accent">📊 Census</a>
+        <a href="/rhinogent/dashboard" className="rounded border border-border px-2 py-0.5 text-muted transition-colors hover:border-accent/50 hover:text-accent">🦏 Your ID + Wallet</a>
+        {me && <span className="ml-auto text-emerald">● {me}</span>}
+      </div>
 
       <div
         className="mt-3 h-[28rem] overflow-y-auto rounded-lg border border-border bg-black/40 p-3 font-mono text-[13px] leading-relaxed"
