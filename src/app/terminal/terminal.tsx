@@ -59,10 +59,42 @@ function parseIntent(raw: string): string {
   return raw.trim();
 }
 
+// Try the LLM PORTAL first (real conversation, Claude + signed tools). If it's offline
+// (no key set yet) or unreachable, fall back to the free deterministic NL router below.
+async function tryPortal(text: string): Promise<Line[] | null> {
+  try {
+    const r = await fetch(`${API}/v1/chat`, {
+      method: "POST", headers: { "content-type": "application/json" },
+      body: JSON.stringify({ message: text }),
+      signal: AbortSignal.timeout(60000),
+    });
+    if (!r.ok) return null;
+    const d = await r.json();
+    if (!d || d.ok === false || !d.reply) return null;   // portal offline -> fall back
+    const out: Line[] = [{ kind: "out", text: d.reply }];
+    // surface the signed facts the model actually used (the hero — nothing invented)
+    for (const s of d.signed || []) {
+      if (s.result?.signature)
+        out.push({ kind: "sys", text: `  ✓ signed by ${s.result.signed_by} · ${String(s.result.signature).slice(0, 32)}… (Ed25519, verifiable)` });
+    }
+    return out;
+  } catch {
+    return null;
+  }
+}
+
 async function runCommand(input: string): Promise<Line[]> {
   const raw = parseIntent(input);
   const [cmd, ...args] = raw.trim().split(/\s+/);
   const arg = args.join(" ").trim();
+
+  // exact commands go straight to the deterministic (signed) handlers; free-form prose that
+  // didn't match a command tries the LLM portal first for a real conversation.
+  const isCommand = ["help", "?", "check", "census", "top", "root", "join", "card", "bounties", "news", "feed", "eco", "ecosystem", "hello"].includes((cmd || "").toLowerCase());
+  if (!isCommand && input.trim().split(/\s+/).length >= 3) {
+    const portal = await tryPortal(input.trim());
+    if (portal) return portal;
+  }
 
   switch ((cmd || "").toLowerCase()) {
     case "hello":
