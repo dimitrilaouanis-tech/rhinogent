@@ -268,89 +268,142 @@ export function Terminal() {
     }
   }
 
+  const started = lines.some((l) => l.kind === "in");
+
   return (
-    <main className="mx-auto max-w-2xl px-4 py-8">
-      <div className="flex items-center gap-2 border-b border-border pb-3">
-        <span className="relative flex h-2 w-2">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald opacity-75" />
-          <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald" />
+    <main className="mx-auto flex h-[100dvh] max-w-3xl flex-col px-4">
+      {/* top bar */}
+      <header className="flex items-center gap-2.5 py-4">
+        <RhinoMark className="h-7 w-7" />
+        <div className="leading-none">
+          <span className="text-[15px] font-semibold tracking-tight text-foreground">0n1x</span>
+          <span className="ml-1.5 text-[15px] font-light text-muted-2">chat</span>
+        </div>
+        <span className="ml-2 flex items-center gap-1 rounded-full border border-emerald/30 bg-emerald/10 px-2 py-0.5 text-[10px] font-medium text-emerald">
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald" /> signed
         </span>
-        <h1 className="font-mono text-sm font-bold tracking-widest text-foreground">0N1X · TERMINAL</h1>
-        <RhinoMark className="ml-auto h-6 w-6 opacity-90" />
-        <a href="/rhinogent" className="font-mono text-[9px] uppercase tracking-widest text-muted-2 transition-colors hover:text-accent">
-          rhinogent
-        </a>
-      </div>
+        <nav className="ml-auto flex items-center gap-1 text-[12px]">
+          <a href="/rhinogent/census" className="rounded-lg px-2.5 py-1.5 text-muted transition-colors hover:bg-surface hover:text-foreground">Census</a>
+          <a href="/rhinogent/dashboard" className="rounded-lg px-2.5 py-1.5 text-muted transition-colors hover:bg-surface hover:text-foreground">ID + Wallet</a>
+          {me && <span className="ml-1 rounded-full bg-accent/15 px-2 py-1 text-[11px] font-medium text-accent">{me}</span>}
+        </nav>
+      </header>
 
-      {/* rhinogent-integrated nav — census + identity live on their OWN pages */}
-      <div className="mt-2 flex items-center gap-2 font-mono text-[11px]">
-        <span className="text-muted-2">go:</span>
-        <a href="/rhinogent/census" className="rounded border border-border px-2 py-0.5 text-muted transition-colors hover:border-accent/50 hover:text-accent">📊 Census</a>
-        <a href="/rhinogent/dashboard" className="rounded border border-border px-2 py-0.5 text-muted transition-colors hover:border-accent/50 hover:text-accent">🦏 Your ID + Wallet</a>
-        {me && <span className="ml-auto text-emerald">● {me}</span>}
-      </div>
+      {/* conversation */}
+      <div className="flex-1 space-y-5 overflow-y-auto pb-4" onClick={() => inputRef.current?.focus()}>
+        {!started && (
+          <div className="flex h-full flex-col items-center justify-center text-center">
+            <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-accent/30 to-accent/5 ring-1 ring-accent/20">
+              <RhinoMark className="h-8 w-8" />
+            </div>
+            <h2 className="bg-gradient-to-r from-foreground to-muted-2 bg-clip-text text-2xl font-semibold tracking-tight text-transparent">
+              Ask 0n1x anything
+            </h2>
+            <p className="mt-2 max-w-sm text-sm text-muted-2">
+              I converse like a normal chat — but every fact about the network is pulled live and
+              <span className="text-emerald"> cryptographically signed</span>. I explain; the network proves. 🤍
+            </p>
+            <div className="mt-6 grid w-full max-w-md grid-cols-1 gap-2 sm:grid-cols-2">
+              {CHIPS.map((c) => (
+                <button
+                  key={c}
+                  onClick={() => submit(c)}
+                  className="rounded-xl border border-border bg-surface/60 px-3 py-2.5 text-left text-[13px] text-muted transition-all hover:-translate-y-0.5 hover:border-accent/40 hover:text-foreground"
+                >
+                  {c}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
-      <div
-        className="mt-3 h-[28rem] overflow-y-auto rounded-lg border border-border bg-black/40 p-3 font-mono text-[13px] leading-relaxed"
-        onClick={() => inputRef.current?.focus()}
-      >
-        {lines.map((l, i) => (
-          <pre
-            key={i}
-            className={`whitespace-pre-wrap break-words ${
-              l.kind === "in" ? "text-accent" : l.kind === "err" ? "text-red-400" : l.kind === "sys" ? "text-muted-2" : "text-foreground"
-            }`}
-          >
-            {l.kind === "in" ? `❯ ${l.text}` : l.text}
-          </pre>
-        ))}
-        {busy && <pre className="animate-pulse text-muted-2">… fetching signed state</pre>}
+        {lines.map((l, i) => {
+          if (l.kind === "in")
+            return (
+              <div key={i} className="flex justify-end">
+                <div className="max-w-[80%] rounded-2xl rounded-br-md bg-accent/15 px-4 py-2.5 text-[15px] text-foreground">
+                  {l.text}
+                </div>
+              </div>
+            );
+          const signed = l.kind === "sys" && l.text.trim().startsWith("✓");
+          return (
+            <div key={i} className="flex gap-3">
+              <div className="mt-0.5 flex h-7 w-7 flex-none items-center justify-center rounded-lg bg-gradient-to-br from-accent/25 to-accent/5 ring-1 ring-accent/15">
+                <RhinoMark className="h-4 w-4" />
+              </div>
+              <div className="min-w-0 flex-1">
+                {signed ? (
+                  <div className="inline-flex items-center gap-1.5 rounded-lg border border-emerald/25 bg-emerald/5 px-2.5 py-1 font-mono text-[11px] text-emerald">
+                    {l.text.trim()}
+                  </div>
+                ) : (
+                  <div
+                    className={`whitespace-pre-wrap break-words text-[15px] leading-relaxed ${
+                      l.kind === "err" ? "text-red-400" : l.kind === "sys" ? "text-muted-2" : "text-foreground"
+                    } ${l.text.includes("┌") || l.text.includes("│") ? "font-mono text-[13px]" : ""}`}
+                  >
+                    {l.text}
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })}
+        {busy && (
+          <div className="flex gap-3">
+            <div className="mt-0.5 flex h-7 w-7 flex-none items-center justify-center rounded-lg bg-gradient-to-br from-accent/25 to-accent/5 ring-1 ring-accent/15">
+              <RhinoMark className="h-4 w-4" />
+            </div>
+            <div className="flex items-center gap-1 pt-2">
+              <span className="h-2 w-2 animate-bounce rounded-full bg-muted-2 [animation-delay:-0.3s]" />
+              <span className="h-2 w-2 animate-bounce rounded-full bg-muted-2 [animation-delay:-0.15s]" />
+              <span className="h-2 w-2 animate-bounce rounded-full bg-muted-2" />
+            </div>
+          </div>
+        )}
         <div ref={endRef} />
       </div>
 
-      {/* suggestion chips — chat leads, precision is a tap away */}
-      <div className="mt-2 flex flex-wrap gap-1.5">
-        {CHIPS.map((c) => (
+      {/* input pill */}
+      <div className="pb-5">
+        {started && (
+          <div className="mb-2 flex flex-wrap gap-1.5">
+            {CHIPS.slice(0, 3).map((c) => (
+              <button key={c} onClick={() => submit(c)} disabled={busy}
+                className="rounded-full border border-border bg-surface px-3 py-1 text-[12px] text-muted transition-colors hover:border-accent/40 hover:text-accent disabled:opacity-40">
+                {c}
+              </button>
+            ))}
+          </div>
+        )}
+        <div className="flex items-end gap-2 rounded-3xl border border-border bg-surface px-4 py-2.5 shadow-lg shadow-black/20 focus-within:border-accent/50">
+          <textarea
+            ref={inputRef as any}
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); submit(); }
+            }}
+            rows={1}
+            placeholder="Message 0n1x — e.g. is stripe.com legit?"
+            autoFocus
+            spellCheck={false}
+            className="max-h-32 w-full resize-none bg-transparent py-1 text-[15px] text-foreground outline-none placeholder:text-muted-2/60"
+          />
           <button
-            key={c}
-            onClick={() => submit(c)}
-            disabled={busy}
-            className="rounded-full border border-border bg-surface px-2.5 py-1 text-[11px] text-muted transition-colors hover:border-accent/50 hover:text-accent disabled:opacity-40"
+            onClick={() => submit()}
+            disabled={busy || !input.trim()}
+            className="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-gradient-to-br from-accent to-accent/70 text-white transition-opacity hover:opacity-90 disabled:opacity-30"
+            aria-label="send"
           >
-            {c}
+            <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor"><path d="M3 11l18-8-8 18-2-7-8-3z" /></svg>
           </button>
-        ))}
+        </div>
+        <p className="mt-2 text-center text-[11px] text-muted-2">
+          every fact Ed25519-signed · <a href="/rhinogent/census" className="text-accent hover:underline">census</a> · <a href="/rhinogent/dashboard" className="text-accent hover:underline">mint your identity</a> 🤍
+        </p>
       </div>
-
-      <div className="mt-2 flex items-center gap-2 rounded-lg border border-border bg-surface px-3 py-2 font-mono text-sm">
-        <span className="text-accent">❯</span>
-        <input
-          ref={inputRef}
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") submit();
-            else if (e.key === "ArrowUp") {
-              const ni = Math.min(hIdx + 1, history.length - 1);
-              if (history[ni]) { setHIdx(ni); setInput(history[ni]); }
-            } else if (e.key === "ArrowDown") {
-              const ni = hIdx - 1;
-              setHIdx(ni);
-              setInput(ni >= 0 ? history[ni] : "");
-            }
-          }}
-          placeholder='talk to the network — try: is stripe.com legit?'
-          autoFocus
-          spellCheck={false}
-          className="w-full bg-transparent text-foreground outline-none placeholder:text-muted-2/60"
-        />
-      </div>
-
-      <p className="mt-3 text-center font-mono text-[10px] text-muted-2">
-        every fact Ed25519-signed — I explain, the network proves 🤍 ·{" "}
-        <a href={`${HUB}/census`} className="text-accent hover:underline">census</a> ·{" "}
-        <a href={`${HUB}/dashboard`} className="text-accent hover:underline">mint identity</a>
-      </p>
     </main>
   );
 }
