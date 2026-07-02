@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { RhinoMark, RhinoMascot } from "@/components/rhino";
-import { type Session } from "@/components/google-signin";
+type Session = { email: string };
 import { AuthGate } from "@/components/auth-gate";
 import { supabase } from "@/lib/supabase";
 import { type Agent, shortAddr, proofCardUrl } from "@/lib/identity";
