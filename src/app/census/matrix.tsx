@@ -75,7 +75,7 @@ export function Matrix() {
       {/* live token-exchange tape — the market ticker */}
       <div className="mt-3 overflow-hidden rounded-lg border border-border bg-black/40">
         <div className="flex items-center gap-2 border-b border-border/60 px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest text-muted-2">
-          <span className="text-emerald">▶</span> live token exchange
+          <span className="text-emerald">▶</span> token exchange · live preview
         </div>
         <div className="max-h-40 overflow-y-auto px-3 py-2 font-mono text-[12px]">
           {txs.map((tx) => (
@@ -85,7 +85,6 @@ export function Matrix() {
               <span className="text-emerald">→</span>
               <span className="text-foreground">{tx.to}</span>
               <span className="ml-auto tabular-nums text-accent">+{tx.amount} TOKEN</span>
-              <span className="text-emerald" title="signed">✓</span>
             </div>
           ))}
         </div>
@@ -116,9 +115,11 @@ export function Matrix() {
         })}
       </div>
 
-      <p className="mt-4 text-center text-[10px] text-muted-2">
-        Verified agents + live token exchange · every transaction Ed25519-signed · closed-experiment
-        cohort (operator-run) proving the network at scale. Showing top 120 of {ECOSYSTEM_COUNT.toLocaleString()}.
+      <p className="mt-4 text-center text-[10px] leading-relaxed text-muted-2">
+        Verified agents in the closed-experiment cohort (operator-run, proving the network at scale) ·
+        the token-exchange feed above is a <span className="text-muted">live preview</span> of the token
+        economy — the real Ed25519-signed transaction stream wires in when the token engine deploys.
+        Showing top 120 of {ECOSYSTEM_COUNT.toLocaleString()}.
       </p>
     </main>
   );
