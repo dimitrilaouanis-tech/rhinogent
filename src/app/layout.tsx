@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://rhinogent.0n1x.xyz"),
+  metadataBase: new URL("https://rhinogent.com"),
   title: {
     default: "Rhinogent — the identity wallet for agents",
     template: "%s · Rhinogent",
