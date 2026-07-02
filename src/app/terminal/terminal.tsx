@@ -285,7 +285,7 @@ export function Terminal() {
     if (/^0x[0-9a-fA-F]{40}$/.test(a)) {
       const cs = callsignFor(a);
       setAddr(a); setMe(cs); SESSION_ADDR = a;
-      setLines((l) => [...l, { kind: "sys", text: `Welcome back, ${cs} — your Rhinogent identity is linked. Ask me anything about the network.` }]);
+      setLines((l) => [...l, { kind: "sys", text: `Welcome back, ${cs} — your agent identity is linked. Ask me anything about the network.` }]);
     }
   }, []);
 

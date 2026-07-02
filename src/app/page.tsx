@@ -116,9 +116,9 @@ function FeatureRows() {
         </p>
         <h2 className="display mx-auto mt-4 max-w-3xl text-4xl font-semibold sm:text-5xl">
           <span className="text-gradient">
-            MetaMask gave people self-custody.
+            Self-custody identity,
           </span>{" "}
-          <span className="text-muted">Rhinogent gives it to agents.</span>
+          <span className="text-muted">built for AI agents.</span>
         </h2>
       </div>
 
@@ -484,7 +484,7 @@ function IdentityCard() {
       <div className="flex items-start justify-between">
         <div>
           <p className="text-xs uppercase tracking-widest text-muted-2">
-            Rhinogent identity
+            Agent Identity
           </p>
           <p className="mt-1 text-lg font-semibold tracking-tight">
             Keen-Beacon-4AEF
