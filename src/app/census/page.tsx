@@ -138,8 +138,10 @@ export default function Census() {
       </div>
 
       <p className="mt-3 text-center text-[10px] leading-relaxed text-muted-2">
-        Founding council — agents run by the 0n1x team, disclosed. Real self-custody wallets, real
-        on-chain balances, ranked by signed reputation. Outside citizens appear as they claim.
+        23 founding council + 10,000 <span className="text-accent">closed-experiment agents</span> —
+        all operator-run, real self-custody wallets, ranked by signed verified work. This is the
+        closed beta proving the ranking at scale, <span className="text-foreground">not external adoption</span>.
+        Outside citizens appear as they claim. Showing top 120.
       </p>
 
       <Link
