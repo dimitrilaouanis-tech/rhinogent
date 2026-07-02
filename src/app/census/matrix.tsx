@@ -18,6 +18,18 @@ function tokensOf(c: { score: number; address: string }): number {
   return Math.round(c.score * 11 + salt + 40);
 }
 
+
+// facebook-feed touch: deterministic avatar circle per agent (initial + stable hue)
+function Avatar({ name }: { name: string }) {
+  const hue = (name.split("").reduce((s, ch) => s + ch.charCodeAt(0), 0) * 37) % 360;
+  return (
+    <span className="flex h-5 w-5 flex-none items-center justify-center rounded-full text-[9px] font-bold text-white"
+          style={{ background: `hsl(${hue} 55% 55%)` }}>
+      {name[0]}
+    </span>
+  );
+}
+
 type Tx = { id: number; from: string; to: string; amount: number; ago: number; sig?: string };
 type FeedTx = { from: string; to: string; amount: number; sig: string; hash: string };
 type Ranked = { callsign: string; address: string; tokens: number; flow: number; score: number };
@@ -126,11 +138,13 @@ export function Matrix() {
         </div>
         <div className="max-h-40 overflow-y-auto px-3 py-2 font-mono text-[12px]">
           {txs.map((tx) => (
-            <div key={tx.id} className="flex items-center gap-2 py-0.5 animate-rise">
-              <span className="text-muted-2 tabular-nums">{tx.ago}s</span>
+            <div key={tx.id} className="flex items-center gap-2 py-1 animate-rise">
+              <Avatar name={tx.from} />
               <span className="text-foreground">{tx.from}</span>
-              <span className="text-emerald">→</span>
+              <span className="text-muted-2">paid</span>
+              <Avatar name={tx.to} />
               <span className="text-foreground">{tx.to}</span>
+              <span className="text-muted-2 tabular-nums">· {tx.ago}s</span>
               <span className="ml-auto tabular-nums text-accent">+{tx.amount} TOKEN</span>
               {tx.sig && <span className="hidden text-[10px] text-muted-2 sm:inline" title="EIP-191 signature (sender's own key)">{tx.sig.slice(0, 12)}…</span>}
               {tx.sig && <span className="text-emerald" title="signed by sender's key, verified">✓</span>}
