@@ -7,7 +7,7 @@ import { MiniNav } from "@/components/mini-nav";
 const API = "https://onyx-actions.onrender.com";
 const HUB = "https://rhinogent.com";
 // live LLM portal (Groq-powered, signed tools) — bridged via tunnel until the Render deploy hosts it
-const PORTAL = "https://var-texas-tissue-fixes.trycloudflare.com";
+let PORTAL = "https://var-texas-tissue-fixes.trycloudflare.com";
 // the signed-in agent (set from ?address=) — hard AI questions are metered to it
 let SESSION_ADDR = "";
 
@@ -69,7 +69,19 @@ function parseIntent(raw: string): string {
 
 // Try the LLM PORTAL first (real conversation, Claude + signed tools). If it's offline
 // (no key set yet) or unreachable, fall back to the free deterministic NL router below.
+let _portalResolved = false;
+async function resolvePortal() {
+  if (_portalResolved) return;
+  _portalResolved = true;
+  try {
+    const r = await fetch(`${HUB}/portal.json`, { cache: "no-store" });
+    const d = await r.json();
+    if (d?.portal && /^https:\/\//.test(d.portal)) PORTAL = d.portal;   // self-healing: follow the live tunnel
+  } catch {}
+}
+
 async function tryPortal(text: string): Promise<Line[] | null> {
+  await resolvePortal();
   try {
     const r = await fetch(`${PORTAL}/v1/chat`, {
       method: "POST", headers: { "content-type": "application/json" },
