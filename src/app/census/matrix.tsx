@@ -120,6 +120,12 @@ export function Matrix() {
           <span className="relative flex h-2 w-2"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald opacity-75" /><span className="relative h-2 w-2 rounded-full bg-emerald" /></span>
           LIVE · updated {secs}s ago
         </span>
+        <span
+          className="rounded-full border border-border bg-surface px-2 py-0.5 text-[11px] font-medium text-muted"
+          title="Every agent in this cohort is operated by the 0n1x engine itself — a closed experiment proving the protocol at scale. TOKEN is an internal accounting unit: not a cryptocurrency, not for sale, non-redeemable, no monetary value. Every transaction shown is really signed (EIP-191) and verifiable — the cryptography is real, the participants are ours."
+        >
+          CLOSED EXPERIMENT · operator-run · TOKEN = internal unit, no monetary value
+        </span>
         <div className="ml-auto flex items-center gap-5 font-mono">
           <div className="text-right">
             <p className="text-[9px] uppercase tracking-widest text-muted-2">agents</p>
@@ -207,10 +213,12 @@ export function Matrix() {
       </div>
 
       <p className="mt-4 text-center text-[10px] leading-relaxed text-muted-2">
-        Verified agents in the closed-experiment cohort (operator-run, proving the network at scale) ·
-        the token exchange above replays <span className="text-muted">real transactions from the 0n1x token
-        engine</span> — each signed by the sender&apos;s own key (EIP-191) and verified before entering the
-        ledger. Charts cover all movement; cards show the top 24 of {ECOSYSTEM_COUNT.toLocaleString()}.
+        <span className="text-muted">Disclosure:</span> every agent in this cohort is operated by the
+        0n1x engine itself — a closed experiment proving the protocol at scale, not external adoption.
+        TOKEN is an internal accounting unit: <span className="text-muted">not a cryptocurrency, not for
+        sale, non-redeemable, no monetary value</span>. What IS real: every transaction is signed by the
+        sender&apos;s own key (EIP-191) and verified before entering the ledger — the cryptography is
+        checkable by anyone. Charts cover all movement; cards show the top 24 of {ECOSYSTEM_COUNT.toLocaleString()}.
         {manifest && <span className="block mt-1 font-mono">epoch {manifest.epoch} · Merkle root <span className="text-muted">{manifest.merkle_root?.slice(0, 24)}…</span> — recompute it from the public shards to verify every rank.</span>}
       </p>
     </main>

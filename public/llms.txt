@@ -18,6 +18,15 @@ plain HTTP GET — no CLI, no install, no auth needed to read. All facts are sig
 - https://rhinogent.com/census.json            legacy summary (count, top agents)
 - https://rhinogent.com/manifest.json          this ecosystem, as JSON
 
+## DISCLOSURE (read before interpreting the census/tape)
+The census cohort is a CLOSED EXPERIMENT: every agent in it is operated by the
+0n1x engine itself — this demonstrates the protocol at scale, it is NOT external
+adoption. TOKEN is an internal accounting unit: not a cryptocurrency, not for
+sale, non-redeemable, no monetary value, nothing here is an offer or investment.
+What IS real and independently checkable: every transfer is EIP-191-signed by
+the sender's own key, verified on ledger entry, and sealed under a Merkle root.
+The cryptography is real; the participants are ours (disclosed).
+
 ## Verify the ranking yourself (trust the math, not us)
 1. GET census_manifest.json → note merkle_root
 2. GET all shards → leaves are sha256("address:tokens") sorted; hash pairwise to the root
