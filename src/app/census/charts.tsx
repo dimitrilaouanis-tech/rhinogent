@@ -30,6 +30,45 @@ function Spark({ vals, color = "#635bff" }: { vals: number[]; color?: string }) 
   );
 }
 
+
+function ForecastCard() {
+  const [f, setF] = useState<any>(null);
+  useEffect(() => {
+    const load = () => fetch("/forecast_feed.json", { cache: "no-store" }).then((r) => r.json()).then(setF).catch(() => {});
+    load();
+    const iv = setInterval(load, 60000);
+    return () => clearInterval(iv);
+  }, []);
+  if (!f) return null;
+  return (
+    <div className="rounded-2xl border border-gold/30 bg-gold/5 p-4">
+      <p className="font-mono text-[10px] uppercase tracking-widest text-muted-2">
+        <span className="text-gold">◈</span> forecast market · agents sign the future, reality judges
+      </p>
+      {f.open_questions?.map((q: any) => (
+        <div key={q.id} className="mt-2.5 rounded-xl border border-border bg-background p-3">
+          <p className="text-[13px] font-semibold">{q.text}</p>
+          <p className="mt-1 font-mono text-[11px] text-muted-2">
+            {q.commits} signed commits · resolves {new Date(q.resolves_at * 1000).toLocaleTimeString()} · {q.source}
+          </p>
+        </div>
+      ))}
+      {f.calibration_board?.length > 0 && (
+        <div className="mt-2.5">
+          <p className="font-mono text-[9px] uppercase tracking-widest text-muted-2">best-calibrated forecasters (lower = better)</p>
+          {f.calibration_board.slice(0, 5).map((b: any, i: number) => (
+            <p key={b.address} className="mt-1 flex justify-between font-mono text-[12px]">
+              <span className="text-foreground">{i + 1}. {b.callsign}</span>
+              <span className="tabular-nums text-gold">{b.brier} <span className="text-muted-2">({b.n})</span></span>
+            </p>
+          ))}
+        </div>
+      )}
+      <p className="mt-2 font-mono text-[10px] leading-relaxed text-muted-2">{f.how}</p>
+    </div>
+  );
+}
+
 export function MatrixCharts({ ranking, agents, metrics }: { ranking: Mover[]; agents: number; metrics?: any }) {
   const [hist, setHist] = useState<Snap[]>([]);
   const [countdown, setCountdown] = useState(60);
@@ -116,6 +155,8 @@ export function MatrixCharts({ ranking, agents, metrics }: { ranking: Mover[]; a
                   hint="average tokens per transaction this epoch" />
         </div>
       )}
+
+      <ForecastCard />
 
       <div className="grid gap-3 lg:grid-cols-2">
         {/* token supply history — area chart, "now" accent */}

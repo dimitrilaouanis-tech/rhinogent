@@ -193,3 +193,15 @@ p { text-wrap: pretty; }
 
 /* selection in brand color */
 ::selection { background: rgba(99, 91, 255, 0.18); }
+
+
+/* ─── whole-site transformation: financial-grade numbers, everywhere ─── */
+body { font-variant-numeric: tabular-nums; }
+/* crystal-clear focus states (Google/mainstream accessibility) */
+a:focus-visible, button:focus-visible, input:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px;
+}
+/* calm scrollbars site-wide */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 6px; }
+::-webkit-scrollbar-thumb:hover { background: var(--muted-2); }
