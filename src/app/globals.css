@@ -219,3 +219,28 @@ body { font-feature-settings: "cv11", "ss01"; text-rendering: optimizeLegibility
   letter-spacing: 0.12em; color: var(--muted-2); }
 /* hairline borders do the work, not heavy shadows (Linear/Ramp) */
 .card-hairline { border: 1px solid var(--border); box-shadow: 0 1px 2px rgba(20,22,29,0.03); }
+
+/* ─────────────────────────────────────────────
+   Census / Live Network — Bloomberg-terminal dark scope.
+   Scoped token ladder (does NOT touch the light marketing site tokens above).
+   ───────────────────────────────────────────── */
+.census-terminal {
+  --ct-bg: #0a0a0a;
+  --ct-panel: #141516;
+  --ct-panel-raised: #18191a;
+  --ct-border: #232426;
+  --ct-text: #eaeaea;
+  --ct-muted: #8a8f98;
+  --ct-green: #22c55e;
+  --ct-red: #ef4444;
+  --ct-amber: #f5a623;
+  background: var(--ct-bg);
+  color: var(--ct-text);
+  font-family: var(--font-jetbrains-mono), var(--font-geist-mono), monospace;
+  font-variant-numeric: tabular-nums;
+}
+.census-terminal .ct-num { font-variant-numeric: tabular-nums; }
+/* flash-fade: background-color transition only, no layout shift, no entrance animation */
+.census-terminal .ct-flash { transition: background-color 800ms ease-out; }
+.census-terminal .ct-flash-on { background-color: rgba(34, 197, 94, 0.16); }
+.census-terminal table { table-layout: fixed; }
