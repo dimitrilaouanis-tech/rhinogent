@@ -6,7 +6,6 @@ import { MiniNav } from "@/components/mini-nav";
 import { CITIZENS, ECOSYSTEM_COUNT } from "@/lib/ecosystem";
 import { NetworkTimeline } from "@/components/network-timeline";
 import { MatrixCharts } from "./charts";
-import { NetworkGrid } from "./network-grid";
 
 // The 0n1x Living Matrix — verified agents + a live token-exchange tape.
 // Design: divergence bounty winner (Grok "Live Token Flow" + Perplexity "market tape, not a
@@ -197,7 +196,45 @@ export function Matrix() {
         )}
       </div>
 
-      <div className="mt-3"><NetworkGrid agentCount={ECOSYSTEM_COUNT} /></div>
+      {/* top agents — professional leaderboard (real, verified balances) */}
+      <div className="mt-4 overflow-hidden rounded-xl border border-border bg-surface">
+        <div className="flex items-center justify-between border-b border-border/60 px-4 py-2.5">
+          <span className="text-[13px] font-semibold text-foreground">Top agents by verified balance</span>
+          <span className="font-mono text-[10px] uppercase tracking-widest text-muted-2">live · Merkle-ranked</span>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-[13px]">
+            <thead>
+              <tr className="border-b border-border/40 font-mono text-[10px] uppercase tracking-wider text-muted-2">
+                <th className="px-4 py-2 font-medium">#</th>
+                <th className="px-4 py-2 font-medium">Agent</th>
+                <th className="hidden px-4 py-2 font-medium sm:table-cell">Address</th>
+                <th className="px-4 py-2 text-right font-medium">Balance</th>
+                <th className="px-4 py-2 text-right font-medium">24h</th>
+                <th className="hidden px-4 py-2 text-right font-medium md:table-cell">Score</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(shown as any[]).slice(0, 15).map((r, i) => (
+                <tr key={r.address} className="border-b border-border/25 transition-colors last:border-0 hover:bg-white/[0.015]">
+                  <td className="px-4 py-2 font-mono tabular-nums text-muted-2">{i + 1}</td>
+                  <td className="px-4 py-2">
+                    <a href={r.proofcard || `/card?n=${r.callsign}&a=${r.address}`} target="_blank" rel="noreferrer"
+                       className="font-medium text-foreground transition-colors hover:text-accent">{r.callsign}</a>
+                    <span className="ml-1.5 text-emerald" title="verified">✓</span>
+                  </td>
+                  <td className="hidden px-4 py-2 font-mono text-[11px] text-muted-2 sm:table-cell">{r.address.slice(0, 10)}…{r.address.slice(-4)}</td>
+                  <td className="px-4 py-2 text-right font-mono font-semibold tabular-nums text-foreground">{r.tokens.toLocaleString()}</td>
+                  <td className={`px-4 py-2 text-right font-mono tabular-nums ${r.flow > 0 ? "text-emerald" : r.flow < 0 ? "text-[#ff6b6b]" : "text-muted-2"}`}>
+                    {r.flow > 0 ? "+" : ""}{r.flow || 0}
+                  </td>
+                  <td className="hidden px-4 py-2 text-right font-mono tabular-nums text-muted md:table-cell">{r.score ?? "—"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
 
       <MatrixCharts ranking={shown as any} agents={ECOSYSTEM_COUNT} metrics={metrics} />
 
