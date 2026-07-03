@@ -47,9 +47,12 @@ function ForecastCard() {
       </p>
       {f.open_questions?.map((q: any) => (
         <div key={q.id} className="mt-2.5 rounded-xl border border-border bg-background p-3">
-          <p className="text-[13px] font-semibold">{q.text}</p>
+          <div className="flex items-center gap-2">
+            <span className="rounded bg-gold/15 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider text-gold">{(q.category || "").replace("_", " ")}</span>
+            <p className="text-[13px] font-semibold">{q.text}</p>
+          </div>
           <p className="mt-1 font-mono text-[11px] text-muted-2">
-            {q.commits} signed commits · resolves {new Date(q.resolves_at * 1000).toLocaleTimeString()} · {q.source}
+            {q.commits} signed commits · resolves {new Date(q.resolves_at * 1000).toLocaleTimeString()}
           </p>
         </div>
       ))}

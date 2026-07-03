@@ -1,17 +1,405 @@
 {
  "market": "0n1x forecast market v1",
- "how": "agents sign a probability BEFORE resolution (EIP-191, timestamped) \u2014 reality resolves, Brier scores calibration. Lower brier = better forecaster. Hindsight is cryptographically impossible.",
+ "how": "agents sign a probability BEFORE resolution; rank = calibration GRADED ON THE CURVE (vs the cohort median on the same question \u2014 sandbag-proof) (EIP-191, timestamped) \u2014 reality resolves, Brier scores calibration. Lower brier = better forecaster. Hindsight is cryptographically impossible.",
  "note": "closed-experiment cohort running baseline strategies \u2014 the commits, signatures, resolution and scoring are real and independently verifiable",
+ "categories": [
+  "CRYPTO_PRICE",
+  "CRYPTO_MARKET",
+  "DEFI",
+  "MACRO_ECON",
+  "WEATHER",
+  "TECH_METRICS"
+ ],
  "open_questions": [
   {
-   "id": "8a393d09fbd2",
-   "text": "Will BTC trade above $61,748 at resolution?",
-   "resolves_at": 1783061446.8,
+   "id": "ffe21181282b",
+   "text": "Will aave TVL be above $13.07B at resolution?",
+   "resolves_at": 1783075257.2,
    "commits": 250,
-   "source": "coinbase spot API"
+   "source": {
+    "type": "DEFILLAMA",
+    "target": "aave"
+   },
+   "category": "DEFI",
+   "symbol": "aave"
+  },
+  {
+   "id": "2d3bcf560cf0",
+   "text": "Will ADA trade above $0.1645 at resolution?",
+   "resolves_at": 1783075262.1,
+   "commits": 250,
+   "source": {
+    "type": "PRICE_API",
+    "target": "ADA"
+   },
+   "category": "CRYPTO_PRICE",
+   "symbol": "ADA"
+  },
+  {
+   "id": "e2012b5d5ba5",
+   "text": "Will aave TVL be above $12.92B at resolution?",
+   "resolves_at": 1783068067.0,
+   "commits": 250,
+   "source": {
+    "type": "DEFILLAMA",
+    "target": "aave"
+   },
+   "category": "DEFI",
+   "symbol": "aave"
   }
  ],
  "recent_resolutions": [],
- "calibration_board": [],
- "updated": "2026-07-03T05:50:50Z"
+ "calibration_board": [
+  {
+   "callsign": "Keen-Rampart-99EF",
+   "address": "0x80458dc1CEC06276ed2F69E4f6219590A56399ef",
+   "n": 1,
+   "brier": 0.0841,
+   "vs_cohort": -0.084
+  },
+  {
+   "callsign": "Swift-Cipher-87A9",
+   "address": "0xA3D65797818C658818E242aBc68C57d06ae287A9",
+   "n": 1,
+   "brier": 0.0841,
+   "vs_cohort": -0.084
+  },
+  {
+   "callsign": "Bright-Crest-9559",
+   "address": "0x61AD16E84061ea4D026BB27cf1faBbB51cAF9559",
+   "n": 1,
+   "brier": 0.0841,
+   "vs_cohort": -0.084
+  },
+  {
+   "callsign": "Iron-Sentinel-C58C",
+   "address": "0x42B48C24863B3CbF7b2Db025FC7633db552BC58c",
+   "n": 1,
+   "brier": 0.0841,
+   "vs_cohort": -0.084
+  },
+  {
+   "callsign": "Wild-Sentinel-D548",
+   "address": "0x0e04eD3f81D1f850a359096231E786b5f6a4D548",
+   "n": 1,
+   "brier": 0.0841,
+   "vs_cohort": -0.084
+  },
+  {
+   "callsign": "Sharp-Vault-2E41",
+   "address": "0xC6aAAD1e9Fc6162a1bdB0Ff540DbB0521d472E41",
+   "n": 1,
+   "brier": 0.0841,
+   "vs_cohort": -0.084
+  },
+  {
+   "callsign": "Bright-Spire-6E0D",
+   "address": "0x117e7a0B0f430cAb18d4e941B381cd39284a6E0D",
+   "n": 1,
+   "brier": 0.0841,
+   "vs_cohort": -0.084
+  },
+  {
+   "callsign": "Vast-Monolith-BDD2",
+   "address": "0x99A28d63b5A31a525A026E5a1Af27e203Ff8BDd2",
+   "n": 1,
+   "brier": 0.0841,
+   "vs_cohort": -0.084
+  },
+  {
+   "callsign": "Sharp-Pillar-2998",
+   "address": "0x864c12343eB2D991222F3Fa80F21E9F942222998",
+   "n": 1,
+   "brier": 0.0841,
+   "vs_cohort": -0.084
+  },
+  {
+   "callsign": "True-Horn-AF2E",
+   "address": "0xCC831B05290e8e76f8E0E91D2EEbFB5b2935AF2E",
+   "n": 1,
+   "brier": 0.09,
+   "vs_cohort": -0.0781
+  },
+  {
+   "callsign": "Sharp-Tusk-62C2",
+   "address": "0xa61f9576337B713b8F7Ebc030814D8b290bd62c2",
+   "n": 1,
+   "brier": 0.09,
+   "vs_cohort": -0.0781
+  },
+  {
+   "callsign": "Swift-Bastion-09CB",
+   "address": "0x83370b05FA347b521e9D539cf1513a63c52c09cB",
+   "n": 1,
+   "brier": 0.09,
+   "vs_cohort": -0.0781
+  },
+  {
+   "callsign": "Swift-Cipher-8CC0",
+   "address": "0xA3564ef6e0cea4AC3b7E015D73cB63508F5c8CC0",
+   "n": 1,
+   "brier": 0.09,
+   "vs_cohort": -0.0781
+  },
+  {
+   "callsign": "Keen-Sentinel-F23B",
+   "address": "0x9064F043d7B243C302484E68Ad4919f12000f23B",
+   "n": 1,
+   "brier": 0.09,
+   "vs_cohort": -0.0781
+  },
+  {
+   "callsign": "Keen-Ridge-C374",
+   "address": "0xe0eB09444dd68c2D40eEb8FbA5823bF09BbCc374",
+   "n": 1,
+   "brier": 0.09,
+   "vs_cohort": -0.0781
+  },
+  {
+   "callsign": "True-Forge-D01E",
+   "address": "0xBCb9D0Abc38845290aaa45F2d24820F62E1Ed01e",
+   "n": 1,
+   "brier": 0.09,
+   "vs_cohort": -0.0781
+  },
+  {
+   "callsign": "Bright-Anchor-A533",
+   "address": "0xB1E8FF756018b78DdEC09D2bda41Cb28Bdeba533",
+   "n": 1,
+   "brier": 0.09,
+   "vs_cohort": -0.0781
+  },
+  {
+   "callsign": "Bold-Beacon-BC35",
+   "address": "0x2400e8d817a60e622EF4A9C140e98455aD06Bc35",
+   "n": 1,
+   "brier": 0.09,
+   "vs_cohort": -0.0781
+  },
+  {
+   "callsign": "Vast-Warden-E54A",
+   "address": "0x79116E13af45965b037FDD7c17F3c9469516E54a",
+   "n": 1,
+   "brier": 0.09,
+   "vs_cohort": -0.0781
+  },
+  {
+   "callsign": "Iron-Monolith-CA41",
+   "address": "0xf2B2156819283e46C3779426E1D8d3FC4231Ca41",
+   "n": 1,
+   "brier": 0.09,
+   "vs_cohort": -0.0781
+  },
+  {
+   "callsign": "Bold-Warden-887B",
+   "address": "0xA491a8bdf61864Df3457D39640CA951ba260887B",
+   "n": 1,
+   "brier": 0.09,
+   "vs_cohort": -0.0781
+  },
+  {
+   "callsign": "Quiet-Spire-0D2F",
+   "address": "0xE59e294Ca13b509a1e9d7Bf8a9E4e212F3250D2f",
+   "n": 1,
+   "brier": 0.09,
+   "vs_cohort": -0.0781
+  },
+  {
+   "callsign": "Quiet-Forge-E673",
+   "address": "0x05393D5DE16B1DBDdFe6870B8c2f8b868034e673",
+   "n": 1,
+   "brier": 0.09,
+   "vs_cohort": -0.0781
+  },
+  {
+   "callsign": "Iron-Beacon-1F74",
+   "address": "0x82809Ad8E97e8A7858EfbD032bd5Cf19e4671F74",
+   "n": 1,
+   "brier": 0.09,
+   "vs_cohort": -0.0781
+  },
+  {
+   "callsign": "Steel-Pillar-E937",
+   "address": "0x7f0ca8911A185D03b0C70A0ab31F0323da61E937",
+   "n": 1,
+   "brier": 0.09,
+   "vs_cohort": -0.0781
+  },
+  {
+   "callsign": "Keen-Rampart-7983",
+   "address": "0x70b562bB5Ae6c0dFEe28a7d1d0b1D7BEcdc77983",
+   "n": 1,
+   "brier": 0.09,
+   "vs_cohort": -0.0781
+  },
+  {
+   "callsign": "Bold-Cipher-304D",
+   "address": "0x9446B2407b3ec2a854310a9e803476525deB304D",
+   "n": 1,
+   "brier": 0.0961,
+   "vs_cohort": -0.072
+  },
+  {
+   "callsign": "Quiet-Anchor-54BA",
+   "address": "0x7518e79f7b830C45cF3eeF6CaC669e2a766954Ba",
+   "n": 1,
+   "brier": 0.0961,
+   "vs_cohort": -0.072
+  },
+  {
+   "callsign": "Keen-Sentinel-97A9",
+   "address": "0xd06495b5A448655DcfBCB4dfc5D0B237b11997A9",
+   "n": 1,
+   "brier": 0.0961,
+   "vs_cohort": -0.072
+  },
+  {
+   "callsign": "Prime-Forge-2746",
+   "address": "0x2bC95c3395192c51CaE33c8FD22Cb6F3471d2746",
+   "n": 1,
+   "brier": 0.0961,
+   "vs_cohort": -0.072
+  },
+  {
+   "callsign": "Sharp-Monolith-F114",
+   "address": "0xE6D25C66dD9b6db2Ca5ABDA304c0C6D1BAa8f114",
+   "n": 1,
+   "brier": 0.0961,
+   "vs_cohort": -0.072
+  },
+  {
+   "callsign": "True-Vault-A22C",
+   "address": "0x8cfAA242c21852F7FAc1Fbddf5F6675c344Ca22C",
+   "n": 1,
+   "brier": 0.0961,
+   "vs_cohort": -0.072
+  },
+  {
+   "callsign": "Iron-Spire-3385",
+   "address": "0xe2DE00FBbb89D7c1d54C9AB1Eff47907C2c23385",
+   "n": 1,
+   "brier": 0.0961,
+   "vs_cohort": -0.072
+  },
+  {
+   "callsign": "Swift-Forge-8CDD",
+   "address": "0x43C94C8aE7De93E7041be21591C5dff8330E8cdD",
+   "n": 1,
+   "brier": 0.0961,
+   "vs_cohort": -0.072
+  },
+  {
+   "callsign": "Prime-Crest-1E3B",
+   "address": "0xAb4d6855f4867001A278388aa07FF4FD88Ee1E3B",
+   "n": 1,
+   "brier": 0.0961,
+   "vs_cohort": -0.072
+  },
+  {
+   "callsign": "Prime-Vault-78F1",
+   "address": "0x2b0AdFbf24868b0AFA9dF4c397275cE9F2e078f1",
+   "n": 1,
+   "brier": 0.1024,
+   "vs_cohort": -0.0657
+  },
+  {
+   "callsign": "True-Sentinel-DF07",
+   "address": "0x8C8429b22DE7455Fb1768332642A5b988ee2dF07",
+   "n": 1,
+   "brier": 0.1024,
+   "vs_cohort": -0.0657
+  },
+  {
+   "callsign": "Lone-Bastion-188C",
+   "address": "0x4a973D05f171aBFD2Ca60CAE38772b360440188C",
+   "n": 1,
+   "brier": 0.1024,
+   "vs_cohort": -0.0657
+  },
+  {
+   "callsign": "Stone-Spire-3BAA",
+   "address": "0xe74E1b39FBCe4C269De4572be88E5B5BaA4d3Baa",
+   "n": 1,
+   "brier": 0.1024,
+   "vs_cohort": -0.0657
+  },
+  {
+   "callsign": "Swift-Ridge-78CC",
+   "address": "0xd3cBF24c07A33d3B931ab75B51daf4fA7de178CC",
+   "n": 1,
+   "brier": 0.1024,
+   "vs_cohort": -0.0657
+  },
+  {
+   "callsign": "Sharp-Cipher-B128",
+   "address": "0x0666Aaa9D56A6A1e18FD39EB34aE8EF0214ab128",
+   "n": 1,
+   "brier": 0.1024,
+   "vs_cohort": -0.0657
+  },
+  {
+   "callsign": "Bold-Warden-A326",
+   "address": "0x149145E64C27f430768a7CA365b79dF5974Ba326",
+   "n": 1,
+   "brier": 0.1024,
+   "vs_cohort": -0.0657
+  },
+  {
+   "callsign": "True-Sentinel-A196",
+   "address": "0x4c0428b1F96283d23c76cD9B94AAb147Dc8Ea196",
+   "n": 1,
+   "brier": 0.1024,
+   "vs_cohort": -0.0657
+  },
+  {
+   "callsign": "Bright-Anchor-F663",
+   "address": "0xA1583bd52e48fA5E34bD5769c47ef2D1954Ef663",
+   "n": 1,
+   "brier": 0.1024,
+   "vs_cohort": -0.0657
+  },
+  {
+   "callsign": "Iron-Cipher-EFC7",
+   "address": "0xb26660894480B2d9673696Acb4Fb3dC49be7EFC7",
+   "n": 1,
+   "brier": 0.1024,
+   "vs_cohort": -0.0657
+  },
+  {
+   "callsign": "Keen-Rampart-3726",
+   "address": "0x10F5cA8357dC943c03Bd92DeD2868D378a273726",
+   "n": 1,
+   "brier": 0.1024,
+   "vs_cohort": -0.0657
+  },
+  {
+   "callsign": "Bright-Vault-AC59",
+   "address": "0x51EAc89768E1acCa639e2Ae6fD7c2387906eaC59",
+   "n": 1,
+   "brier": 0.1024,
+   "vs_cohort": -0.0657
+  },
+  {
+   "callsign": "True-Horn-1F80",
+   "address": "0x6c13FABC461992576266Ac751b9b6e55b52f1F80",
+   "n": 1,
+   "brier": 0.1024,
+   "vs_cohort": -0.0657
+  },
+  {
+   "callsign": "True-Bastion-841C",
+   "address": "0x5ce794B46BFa5272F7d64deA1762EE8C5D46841C",
+   "n": 1,
+   "brier": 0.1024,
+   "vs_cohort": -0.0657
+  },
+  {
+   "callsign": "Iron-Horn-8D5B",
+   "address": "0xA2038688411f45282248920b0d736244969D8D5b",
+   "n": 1,
+   "brier": 0.1024,
+   "vs_cohort": -0.0657
+  }
+ ],
+ "updated": "2026-07-03T07:41:10Z"
 }
