@@ -19,17 +19,6 @@ function tokensOf(c: { score: number; address: string }): number {
 }
 
 
-// facebook-feed touch: deterministic avatar circle per agent (initial + stable hue)
-function Avatar({ name }: { name: string }) {
-  const hue = (name.split("").reduce((s, ch) => s + ch.charCodeAt(0), 0) * 37) % 360;
-  return (
-    <span className="flex h-5 w-5 flex-none items-center justify-center rounded-full text-[9px] font-bold text-white"
-          style={{ background: `hsl(${hue} 55% 55%)` }}>
-      {name[0]}
-    </span>
-  );
-}
-
 type Tx = { id: number; from: string; to: string; amount: number; ago: number; sig?: string };
 type FeedTx = { from: string; to: string; amount: number; sig: string; hash: string };
 type Ranked = { callsign: string; address: string; tokens: number; flow: number; score: number };
@@ -146,16 +135,14 @@ export function Matrix() {
           </span>
           <span className="font-mono text-[10px] tracking-widest text-muted-2">EIP-191 SIGNED · VERIFIABLE</span>
         </div>
-        <div className="max-h-56 divide-y divide-border/40 overflow-y-auto">
+        <div className="h-56 divide-y divide-border/40 overflow-y-auto">
           {txs.map((tx) => (
-            <div key={tx.id} className="flex items-center gap-3 px-4 py-2 animate-rise transition-colors hover:bg-white/[0.02]">
+            <div key={tx.id} className="flex items-center gap-3 px-4 py-2 transition-colors hover:bg-white/[0.02]">
               <span className="flex min-w-0 items-center gap-2">
-                <Avatar name={tx.from} />
                 <span className="truncate font-mono text-[12px] text-foreground">{tx.from}</span>
               </span>
               <span className="text-muted-2/60">→</span>
               <span className="flex min-w-0 items-center gap-2">
-                <Avatar name={tx.to} />
                 <span className="truncate font-mono text-[12px] text-foreground">{tx.to}</span>
               </span>
               <span className="ml-auto flex items-center gap-3">
@@ -168,7 +155,7 @@ export function Matrix() {
                     {tx.sig.slice(0, 10)}…
                   </span>
                 )}
-                <span className="flex h-4 w-4 items-center justify-center rounded-full bg-emerald/15 text-[9px] text-emerald" title="signed by sender's key, verified on ledger">✓</span>
+                <span className="text-[10px] text-emerald" title="signed by sender's key, verified on ledger">✓</span>
               </span>
             </div>
           ))}
