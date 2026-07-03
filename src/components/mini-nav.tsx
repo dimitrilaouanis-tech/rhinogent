@@ -6,7 +6,7 @@ import { RhinoMark } from "./rhino";
 export function MiniNav({ current }: { current?: string }) {
   const links = [
     { href: "/", label: "Home" },
-    { href: "/terminal", label: "Chat" },
+    { href: "/chat", label: "Chat" },
     { href: "/census", label: "Network" },
     { href: "/dashboard", label: "Agents" },
   ];
