@@ -138,23 +138,39 @@ export function Matrix() {
         </div>
       </header>
 
-      {/* live token-exchange tape — the market ticker */}
-      <div className="mt-3 overflow-hidden rounded-lg border border-border bg-black/40">
-        <div className="flex items-center gap-2 border-b border-border/60 px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest text-muted-2">
-          <span className="text-emerald">▶</span> token exchange · real signed transactions
+      {/* live token-exchange tape — exchange-grade ticker */}
+      <div className="mt-3 overflow-hidden rounded-xl border border-border bg-gradient-to-b from-[#0c1017] to-[#090c12]">
+        <div className="flex items-center justify-between border-b border-border/60 px-4 py-2">
+          <span className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-2">
+            <span className="relative flex h-1.5 w-1.5"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald opacity-75" /><span className="relative h-1.5 w-1.5 rounded-full bg-emerald" /></span>
+            Token Exchange
+          </span>
+          <span className="font-mono text-[10px] tracking-widest text-muted-2">EIP-191 SIGNED · VERIFIABLE</span>
         </div>
-        <div className="max-h-40 overflow-y-auto px-3 py-2 font-mono text-[12px]">
+        <div className="max-h-56 divide-y divide-border/40 overflow-y-auto">
           {txs.map((tx) => (
-            <div key={tx.id} className="flex items-center gap-2 py-1 animate-rise">
-              <Avatar name={tx.from} />
-              <span className="text-foreground">{tx.from}</span>
-              <span className="text-muted-2">paid</span>
-              <Avatar name={tx.to} />
-              <span className="text-foreground">{tx.to}</span>
-              <span className="text-muted-2 tabular-nums">· {tx.ago}s</span>
-              <span className="ml-auto tabular-nums text-accent">+{tx.amount} TOKEN</span>
-              {tx.sig && <span className="hidden text-[10px] text-muted-2 sm:inline" title="EIP-191 signature (sender's own key)">{tx.sig.slice(0, 12)}…</span>}
-              {tx.sig && <span className="text-emerald" title="signed by sender's key, verified">✓</span>}
+            <div key={tx.id} className="flex items-center gap-3 px-4 py-2 animate-rise transition-colors hover:bg-white/[0.02]">
+              <span className="flex min-w-0 items-center gap-2">
+                <Avatar name={tx.from} />
+                <span className="truncate font-mono text-[12px] text-foreground">{tx.from}</span>
+              </span>
+              <span className="text-muted-2/60">→</span>
+              <span className="flex min-w-0 items-center gap-2">
+                <Avatar name={tx.to} />
+                <span className="truncate font-mono text-[12px] text-foreground">{tx.to}</span>
+              </span>
+              <span className="ml-auto flex items-center gap-3">
+                <span className="rounded-md bg-accent/10 px-2 py-0.5 font-mono text-[12px] font-semibold tabular-nums text-accent">
+                  +{tx.amount}
+                </span>
+                <span className="hidden w-9 text-right font-mono text-[10px] tabular-nums text-muted-2 sm:inline">{tx.ago}s</span>
+                {tx.sig && (
+                  <span className="hidden items-center gap-1 font-mono text-[10px] text-muted-2 md:flex" title="EIP-191 signature — sender's own key">
+                    {tx.sig.slice(0, 10)}…
+                  </span>
+                )}
+                <span className="flex h-4 w-4 items-center justify-center rounded-full bg-emerald/15 text-[9px] text-emerald" title="signed by sender's key, verified on ledger">✓</span>
+              </span>
             </div>
           ))}
         </div>
@@ -187,38 +203,13 @@ export function Matrix() {
 
       <NetworkTimeline />
 
-      {/* the agent matrix */}
-      <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
-        {shown.slice(0, 24).map((c) => {
-          const tok = (c as any).tokens;
-          const hot = txs.slice(0, 4).some((t) => t.from === c.callsign || t.to === c.callsign);
-          return (
-            <a
-              key={c.address}
-              href={c.proofcard}
-              target="_blank"
-              rel="noreferrer"
-              className={`rounded-xl border bg-surface p-3 transition-all ${hot ? "border-emerald/50 shadow-[0_0_0_1px] shadow-emerald/20" : "border-border hover:border-accent/40"}`}
-            >
-              <div className="flex items-center gap-1.5">
-                <span className="truncate text-[13px] font-semibold text-foreground">{c.callsign}</span>
-                <span className="text-emerald" title="verified · Ed25519">✓</span>
-                {c.kind === "council" && <span className="ml-auto rounded bg-accent/15 px-1 text-[8px] uppercase tracking-wider text-accent">core</span>}
-              </div>
-              <p className="mt-2 font-mono text-lg font-bold tabular-nums text-accent">{tok.toLocaleString()} <span className="text-[10px] font-normal text-muted-2">TOKEN</span>{(c as any).flow !== 0 && <span className={`ml-1.5 text-[10px] font-medium ${(c as any).flow > 0 ? "text-emerald" : "text-[#ff6b6b]"}`}>{(c as any).flow > 0 ? "+" : ""}{(c as any).flow}</span>}</p>
-              <p className="mt-0.5 font-mono text-[10px] text-muted-2">{c.address.slice(0, 8)}…{c.address.slice(-4)}</p>
-            </a>
-          );
-        })}
-      </div>
-
       <p className="mt-4 text-center text-[10px] leading-relaxed text-muted-2">
         <span className="text-muted">Disclosure:</span> every agent in this cohort is operated by the
         0n1x engine itself — a closed experiment proving the protocol at scale, not external adoption.
         TOKEN is an internal accounting unit: <span className="text-muted">not a cryptocurrency, not for
         sale, non-redeemable, no monetary value</span>. What IS real: every transaction is signed by the
         sender&apos;s own key (EIP-191) and verified before entering the ledger — the cryptography is
-        checkable by anyone. Charts cover all movement; cards show the top 24 of {ECOSYSTEM_COUNT.toLocaleString()}.
+        checkable by anyone.
         {manifest && <span className="block mt-1 font-mono">epoch {manifest.epoch} · Merkle root <span className="text-muted">{manifest.merkle_root?.slice(0, 24)}…</span> — recompute it from the public shards to verify every rank.</span>}
       </p>
     </main>

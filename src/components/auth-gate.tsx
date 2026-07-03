@@ -17,13 +17,22 @@ export function AuthGate() {
     if (!email || !password || busy) return;
     setBusy(true); setMsg(null);
     try {
-      const { error } = mode === "signup"
-        ? await signUpEmail(email, password)
-        : await signInEmail(email, password);
-      if (error) setMsg({ kind: "err", text: error.message });
-      else if (mode === "signup")
-        setMsg({ kind: "ok", text: "Check your email to confirm your account, then log in." });
-      // on successful signin, the session listener in the dashboard swaps the view
+      if (mode === "signup") {
+        const { data, error } = await signUpEmail(email, password);
+        if (error) {
+          const m = /already registered|already exists/i.test(error.message)
+            ? "That email already has an account — log in instead." : error.message;
+          setMsg({ kind: "err", text: m });
+        } else if (data.session) {
+          // confirmation disabled → instant login; the dashboard listener swaps the view
+          setMsg({ kind: "ok", text: "Welcome — setting up your account…" });
+        } else {
+          setMsg({ kind: "ok", text: "Account created. Check your email to confirm, then log in." });
+        }
+      } else {
+        const { error } = await signInEmail(email, password);
+        if (error) setMsg({ kind: "err", text: /invalid/i.test(error.message) ? "Wrong email or password." : error.message });
+      }
     } catch (e: any) {
       setMsg({ kind: "err", text: e?.message || "something went wrong" });
     } finally { setBusy(false); }
