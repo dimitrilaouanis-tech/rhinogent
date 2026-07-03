@@ -6,6 +6,7 @@ import { MiniNav } from "@/components/mini-nav";
 import { CITIZENS, ECOSYSTEM_COUNT } from "@/lib/ecosystem";
 import { NetworkTimeline } from "@/components/network-timeline";
 import { MatrixCharts } from "./charts";
+import { NetworkGrid } from "./network-grid";
 
 // The 0n1x Living Matrix — verified agents + a live token-exchange tape.
 // Design: divergence bounty winner (Grok "Live Token Flow" + Perplexity "market tape, not a
@@ -173,6 +174,8 @@ export function Matrix() {
           </div>
         )}
       </div>
+
+      <div className="mt-3"><NetworkGrid agentCount={ECOSYSTEM_COUNT} /></div>
 
       <MatrixCharts ranking={shown as any} agents={ECOSYSTEM_COUNT} metrics={metrics} />
 
