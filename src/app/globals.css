@@ -205,3 +205,17 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 6px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--muted-2); }
+
+/* ─── council-unanimous professionalism pass: type + restraint ─── */
+/* refined display type (Stripe/Linear: tight tracking, light-to-regular weight at scale) */
+.display { letter-spacing: -0.022em; font-feature-settings: "ss01", "cv11"; }
+h1.display { font-weight: 550; }
+/* Inter-grade rendering refinements */
+body { font-feature-settings: "cv11", "ss01"; text-rendering: optimizeLegibility; }
+/* warmer neutrals — never pure black text (Ramp/Mercury) */
+:root { --foreground: #14161d; --muted: #4b515e; }
+/* mono eyebrow labels — the "engineered/deliberate" signal (Supabase pattern) */
+.eyebrow { font-family: var(--font-mono), monospace; font-size: 11px; text-transform: uppercase;
+  letter-spacing: 0.12em; color: var(--muted-2); }
+/* hairline borders do the work, not heavy shadows (Linear/Ramp) */
+.card-hairline { border: 1px solid var(--border); box-shadow: 0 1px 2px rgba(20,22,29,0.03); }
