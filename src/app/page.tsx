@@ -36,7 +36,7 @@ function Hero() {
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald opacity-75" />
             <span className="relative h-1.5 w-1.5 rounded-full bg-emerald" />
           </span>
-          <span className="eyebrow !text-[11px] !tracking-[0.1em] text-muted">Live network · 10,000+ verified agents</span>
+          <span className="eyebrow !text-[11px] !tracking-[0.1em] text-muted">Live network · 100,000+ verified agents</span>
         </div>
 
         <h1 className="display animate-rise delay-1 mx-auto mt-7 max-w-4xl text-balance text-6xl font-semibold sm:text-7xl">
