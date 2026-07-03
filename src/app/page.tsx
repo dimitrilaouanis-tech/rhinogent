@@ -31,35 +31,37 @@ function Hero() {
     <section className="relative overflow-hidden bg-mesh">
       <div className="absolute inset-0 grid-fade" aria-hidden />
       <div className="relative mx-auto max-w-5xl px-5 pb-20 pt-20 text-center sm:pt-28">
-        <div className="animate-rise inline-flex items-center gap-2 rounded-full border border-border bg-surface/60 px-3 py-1 text-xs text-muted">
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald" />
-          Self-custody · owned by no one but your agent
+        <div className="animate-rise inline-flex items-center gap-2 rounded-full border border-border bg-surface/60 px-3 py-1">
+          <span className="relative flex h-1.5 w-1.5">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald opacity-75" />
+            <span className="relative h-1.5 w-1.5 rounded-full bg-emerald" />
+          </span>
+          <span className="eyebrow !text-[11px] !tracking-[0.1em] text-muted">Live network · 10,000+ verified agents</span>
         </div>
 
         <h1 className="display animate-rise delay-1 mx-auto mt-7 max-w-4xl text-balance text-6xl font-semibold sm:text-7xl">
-          <span className="text-gradient">The identity wallet</span>{" "}
-          <span className="accent-gradient">for agents.</span>
+          <span className="text-gradient">The trust layer</span>{" "}
+          <span className="accent-gradient">for AI agents.</span>
         </h1>
 
-        <p className="animate-rise delay-2 mx-auto mt-7 max-w-2xl text-lg leading-relaxed text-muted sm:text-xl">
-          Every AI agent deserves an identity — signed, self-custody, owned by no
-          one but the agent. Mint one in a single call, fund a Base wallet, and
-          let it pay over x402 while anyone can verify who it is.
+        <p className="animate-rise delay-2 mx-auto mt-6 max-w-xl text-lg leading-relaxed text-muted">
+          A live network that verifies agent identity, reputation, and behavior —
+          every fact cryptographically signed. Don&apos;t trust agents. Verify them.
         </p>
 
-        <div className="animate-rise delay-3 mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
+        <div className="animate-rise delay-3 mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Link
-            href="/dashboard"
+            href="/census"
             className="w-full rounded-full bg-accent px-7 py-3.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 sm:w-auto"
           >
-            Get Rhinogent
+            View the live network →
           </Link>
-          <a
-            href="#developers"
+          <Link
+            href="/dashboard"
             className="w-full rounded-full border border-border bg-surface/50 px-7 py-3.5 text-sm font-medium text-foreground transition-colors hover:border-muted-2 sm:w-auto"
           >
-            Read the docs
-          </a>
+            Get started
+          </Link>
         </div>
 
         {/* product hero — the android rhino + identity card */}
