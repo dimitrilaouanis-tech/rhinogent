@@ -12,21 +12,51 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
 });
 
+// Build redirect URLs off the host actually serving the app (rhinogent.com in prod,
+// localhost in dev) — a hardcoded host breaks the moment the origin differs.
+// NOTE: each of these must also be in Supabase → Auth → URL Configuration → Redirect URLs,
+// otherwise Supabase silently falls back to the project's Site URL.
+function siteOrigin(): string {
+  return typeof window !== "undefined" ? window.location.origin : "https://rhinogent.com";
+}
+
+// "Has this browser signed in before?" — used to default the auth card to Sign in.
+const RETURNING_KEY = "rhinogent.returning.v1";
+export function markReturning() {
+  try { window.localStorage.setItem(RETURNING_KEY, "1"); } catch { /* private mode */ }
+}
+export function hasAccountHint(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    if (window.localStorage.getItem(RETURNING_KEY)) return true;
+    // fallback: a live/stale Supabase session key also proves a prior login here
+    for (let i = 0; i < window.localStorage.length; i++) {
+      const k = window.localStorage.key(i);
+      if (k && k.startsWith("sb-") && k.endsWith("-auth-token")) return true;
+    }
+  } catch { /* private mode */ }
+  return false;
+}
+
 // convenience wrappers used by the auth UI
 export async function signUpEmail(email: string, password: string) {
-  return supabase.auth.signUp({ email, password });
+  const res = await supabase.auth.signUp({ email, password });
+  if (!res.error) markReturning();
+  return res;
 }
 export async function signInEmail(email: string, password: string) {
-  return supabase.auth.signInWithPassword({ email, password });
+  const res = await supabase.auth.signInWithPassword({ email, password });
+  if (!res.error) markReturning();
+  return res;
 }
 export async function signInGoogle() {
   return supabase.auth.signInWithOAuth({
     provider: "google",
-    options: { redirectTo: "https://rhinogent.com/dashboard/" },
+    options: { redirectTo: `${siteOrigin()}/dashboard/` },
   });
 }
 export async function signInMagicLink(email: string) {
-  return supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: "https://rhinogent.com/dashboard/" } });
+  return supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: `${siteOrigin()}/dashboard/` } });
 }
 export async function signOut() {
   return supabase.auth.signOut();
@@ -35,7 +65,7 @@ export async function signOut() {
 // establishes a session there (Supabase parses it client-side, detectSessionInUrl: true).
 export async function requestPasswordReset(email: string) {
   return supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: "https://rhinogent.com/reset-password/",
+    redirectTo: `${siteOrigin()}/reset-password/`,
   });
 }
 // Called from the reset-password page once a recovery session is active.

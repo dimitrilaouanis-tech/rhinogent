@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { RhinoMark } from "./rhino";
-import { signUpEmail, signInEmail, signInGoogle, requestPasswordReset } from "@/lib/supabase";
+import { signUpEmail, signInEmail, signInGoogle, requestPasswordReset, hasAccountHint } from "@/lib/supabase";
 
 type Mode = "signin" | "signup" | "forgot";
 
@@ -12,6 +12,11 @@ const GITHUB_ENABLED = false;
 
 export function AuthGate() {
   const [mode, setMode] = useState<Mode>("signup");
+  // Returning browsers land on Sign in; brand-new ones on Create account.
+  // Done in an effect (not initial state) so the static-export HTML stays deterministic.
+  useEffect(() => {
+    if (hasAccountHint()) setMode("signin");
+  }, []);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [show, setShow] = useState(false);
@@ -77,31 +82,47 @@ export function AuthGate() {
 
         {/* heading */}
         <h1 className="display mt-6 text-center text-[28px] font-semibold tracking-tight text-foreground">
-          {isForgot ? "Reset your password" : isSignup ? "Create a Rhinogent account" : "Log in to Rhinogent"}
+          {isForgot ? "Reset your password" : isSignup ? "Create a Rhinogent account" : "Sign in to Rhinogent"}
         </h1>
-        <p className="mt-2 text-center text-sm text-muted">
-          {isForgot ? (
-            <>
-              Remembered it?{" "}
-              <button
-                onClick={() => { setMode("signin"); setMsg(null); }}
-                className="font-semibold text-foreground underline-offset-2 hover:underline"
-              >
-                Log in
-              </button>.
-            </>
-          ) : (
-            <>
-              {isSignup ? "Already have an account? " : "New to Rhinogent? "}
-              <button
-                onClick={() => { setMode(isSignup ? "signin" : "signup"); setMsg(null); }}
-                className="font-semibold text-foreground underline-offset-2 hover:underline"
-              >
-                {isSignup ? "Log in" : "Sign up"}
-              </button>.
-            </>
-          )}
-        </p>
+        {isForgot && (
+          <p className="mt-2 text-center text-sm text-muted">
+            Remembered it?{" "}
+            <button
+              onClick={() => { setMode("signin"); setMsg(null); }}
+              className="font-semibold text-foreground underline-offset-2 hover:underline"
+            >
+              Sign in
+            </button>.
+          </p>
+        )}
+
+        {/* mode tabs — equal-weight segmented control so Sign in is impossible to miss */}
+        {!isForgot && (
+          <div
+            role="tablist"
+            aria-label="Sign in or create account"
+            className="mt-6 grid grid-cols-2 gap-1 rounded-xl border border-border bg-surface p-1"
+          >
+            {(["signin", "signup"] as const).map((m) => {
+              const active = mode === m;
+              return (
+                <button
+                  key={m}
+                  role="tab"
+                  aria-selected={active}
+                  onClick={() => { setMode(m); setMsg(null); }}
+                  className={`rounded-lg px-4 py-2 text-sm font-semibold transition-colors ${
+                    active
+                      ? "bg-accent text-white"
+                      : "text-muted hover:text-foreground"
+                  }`}
+                >
+                  {m === "signin" ? "Sign in" : "Create account"}
+                </button>
+              );
+            })}
+          </div>
+        )}
 
         {/* OAuth (side by side, shown when configured) */}
         {anyOAuth && !isForgot && (
@@ -129,7 +150,7 @@ export function AuthGate() {
         )}
 
         {/* email + password */}
-        <div className={anyOAuth ? "" : "mt-8"}>
+        <div className={anyOAuth ? "" : "mt-6"}>
           <label className="block text-sm font-medium text-muted">Email</label>
           <input
             type="email" value={email} onChange={(e) => setEmail(e.target.value)}
