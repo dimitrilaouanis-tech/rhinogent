@@ -3,13 +3,19 @@
 import { useEffect, useRef, useState } from "react";
 import { FlowGraphCanvas2D, pos, type Node } from "./flow-graph-2d";
 
-// WOW CENTERPIECE v5 — Obsidian-style live token-flow graph on @cosmos.gl/graph.
-// Round 5 changes: the GPU force simulation now RUNS (no more frozen deterministic layout),
-// and the topology is REAL — edges are built from actual signed token transfers (seeded from
-// the feed's txs, accumulated live as pulses arrive), not a decorative star around an
-// invisible hub. Agents with no transfers float unlinked at the periphery like orphan notes.
-// After a short simulation warmup the view fits to the whole graph (~10% padding) so it never
-// loads pre-zoomed into the middle. 2D canvas fallback (flow-graph-2d.tsx) unchanged.
+// WOW CENTERPIECE v6 — Obsidian-style live token-flow graph on @cosmos.gl/graph.
+// Round 6 changes (live user feedback):
+//  1. ZOOM — fit frames the CONNECTED cluster (not the orphan periphery), tight ~5% padding,
+//     modest post-fit zoom-in, and a d3 scaleExtent clamp so users can't zoom out into voids.
+//  2. STARS — HD starfield points: 1.5-4px crisp cores, blue-white rgba(200,210,235,.95),
+//     top-10 warm amber-white rgba(255,220,150,1) slightly larger, scalePointsOnZoom.
+//  3. LIGHT-SPEED TRANSFERS — a comet streak shoots along the edge in ~180ms on a transparent
+//     2D overlay canvas (dpr-scaled, pointer-events:none, rAF only while transfers in flight,
+//     endpoints re-projected each frame via spaceToScreenPosition so streaks track pan/zoom/sim),
+//     then the destination star twinkles (~300ms decay, source subtler). Cosmos link flash is
+//     instant-ramp + ~300ms decay to match the tempo.
+// Transaction-edge accumulation/pruning, force sim params, tooltip, and the 2D fallback
+// (flow-graph-2d.tsx) are unchanged.
 
 export type PulseEvent = { from: string; to: string; amount: number; key: number };
 export type TxEdge = { from: string; to: string };
@@ -17,15 +23,26 @@ export type TxEdge = { from: string; to: string };
 const SPACE = 4096;
 const toSpace = (u: number, v: number): [number, number] => [u * SPACE, v * SPACE];
 
-// same 2.5-7 "pixel-ish" size range as the original 2D renderer (see v4 notes)
-const sizeFor = (tokens: number, maxTok: number) => 2.5 + (tokens / maxTok) * 4.5;
+// starfield cores: much smaller than v5 — 1.5-4px by balance
+const sizeFor = (tokens: number, maxTok: number) => 1.5 + (tokens / maxTok) * 2.5;
+
+// point palette (0-1 floats): blue-white base stars, warm amber-white top-10
+const BASE_RGBA: [number, number, number, number] = [200 / 255, 210 / 255, 235 / 255, 0.95];
+const AMBER_RGBA: [number, number, number, number] = [1, 220 / 255, 150 / 255, 1];
+const AMBER_SIZE_BONUS = 0.8; // top-10 slightly larger
 
 const MAX_EDGES = 600;          // perf cap — prune oldest pair beyond this
 const REST_ALPHA = 0.05;        // hairline link at rest
 const BASE_WIDTH = 0.5;
 const widthFor = (count: number) => Math.min(BASE_WIDTH + 0.35 * (count - 1), 2.2); // grows with repeats, capped
 
+// light-speed streak timings
+const STREAK_MS = 180;   // edge traversal (150-250ms band)
+const TWINKLE_MS = 300;  // endpoint brightness decay
+const LINK_FLASH_MS = 300; // cosmos link flash decay (instant ramp)
+
 type Edge = { a: number; b: number; count: number; linkIdx: number };
+type Streak = { fromIdx: number; toIdx: number; start: number; linkIdx: number; restWidth: number };
 
 function webglAvailable(): boolean {
   try {
@@ -40,6 +57,7 @@ export function FlowGraph({ nodes, pulse, txs }: { nodes: Node[]; pulse: PulseEv
   const [useFallback, setUseFallback] = useState(false);
   const [ready, setReady] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const overlayRef = useRef<HTMLCanvasElement>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const graphRef = useRef<any>(null);
   const nodesRef = useRef<Node[]>(nodes);
@@ -51,9 +69,10 @@ export function FlowGraph({ nodes, pulse, txs }: { nodes: Node[]; pulse: PulseEv
   const edgesRef = useRef<Map<string, Edge>>(new Map());
   const seededRef = useRef(false);
   const lastKeyRef = useRef(-1);
-  const flareRafRef = useRef<number | null>(null);
   const fittedRef = useRef(false);
   const tooltipRef = useRef<HTMLDivElement>(null);
+  const streaksRef = useRef<Streak[]>([]);
+  const streakRafRef = useRef<number | null>(null);
 
   // Add/bump an undirected edge between two point indices. Returns true if the edge SET
   // changed (new pair or prune) — repeat transfers only bump count/width.
@@ -95,6 +114,140 @@ export function FlowGraph({ nodes, pulse, txs }: { nodes: Node[]; pulse: PulseEv
     graph.setLinkWidths(linkWidths);
   };
 
+  // ---- light-speed streak overlay -------------------------------------------------------
+  // Runs ONLY while transfers are in flight. Each frame it re-projects the two endpoints
+  // through graph.spaceToScreenPosition() so streaks track pan/zoom/sim drift, draws the
+  // comet head + short fading tail and the endpoint twinkles, and drives the cosmos link
+  // flash decay. Clears the canvas and cancels itself when the queue empties.
+  const streakStep = () => {
+    streakRafRef.current = null;
+    const graph = graphRef.current;
+    const canvas = overlayRef.current;
+    const container = containerRef.current;
+    if (!graph || !canvas || !container) { streaksRef.current = []; return; }
+    const ctx = canvas.getContext("2d");
+    if (!ctx) { streaksRef.current = []; return; }
+
+    const rect = container.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    const W = Math.max(1, Math.round(rect.width * dpr));
+    const H = Math.max(1, Math.round(rect.height * dpr));
+    if (canvas.width !== W || canvas.height !== H) { canvas.width = W; canvas.height = H; }
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, rect.width, rect.height);
+
+    const now = performance.now();
+    let positions: number[] | null = null;
+    try { positions = graph.getPointPositions(); } catch { positions = null; }
+    const screenOf = (idx: number): [number, number] | null => {
+      if (!positions || idx * 2 + 1 >= positions.length) return null;
+      try { return graph.spaceToScreenPosition([positions[idx * 2], positions[idx * 2 + 1]]); } catch { return null; }
+    };
+
+    const alive: Streak[] = [];
+    let linkTouched = false;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let linkColors: any = null, linkWidths: any = null;
+
+    for (const s of streaksRef.current) {
+      const age = now - s.start;
+      if (age > STREAK_MS + TWINKLE_MS) {
+        // expired — restore this link to rest exactly
+        if (s.linkIdx >= 0) {
+          if (!linkColors) { linkColors = graph.getLinkColors(); linkWidths = graph.getLinkWidths(); }
+          if (s.linkIdx * 4 + 3 < linkColors.length) {
+            linkColors[s.linkIdx * 4] = 1; linkColors[s.linkIdx * 4 + 1] = 1; linkColors[s.linkIdx * 4 + 2] = 1;
+            linkColors[s.linkIdx * 4 + 3] = REST_ALPHA;
+            linkWidths[s.linkIdx] = s.restWidth;
+            linkTouched = true;
+          }
+        }
+        continue;
+      }
+      alive.push(s);
+
+      const from = screenOf(s.fromIdx);
+      const to = screenOf(s.toIdx);
+      if (!from || !to) continue;
+
+      // cosmos link flash: instant ramp, ~300ms decay (warm near-white)
+      if (s.linkIdx >= 0) {
+        if (!linkColors) { linkColors = graph.getLinkColors(); linkWidths = graph.getLinkWidths(); }
+        if (s.linkIdx * 4 + 3 < linkColors.length) {
+          const e = Math.max(0, 1 - age / LINK_FLASH_MS);
+          linkColors[s.linkIdx * 4] = 1; linkColors[s.linkIdx * 4 + 1] = 246 / 255; linkColors[s.linkIdx * 4 + 2] = 230 / 255;
+          linkColors[s.linkIdx * 4 + 3] = REST_ALPHA + 0.35 * e;
+          linkWidths[s.linkIdx] = s.restWidth + 1.2 * e;
+          linkTouched = true;
+        }
+      }
+
+      if (age <= STREAK_MS) {
+        // comet phase: bright warm-white head + short fading tail of trailing samples
+        const t = age / STREAK_MS; // linear = constant light-speed traverse
+        const lerp = (p: number): [number, number] => [from[0] + (to[0] - from[0]) * p, from[1] + (to[1] - from[1]) * p];
+        const [hx, hy] = lerp(t);
+        for (let k = 3; k >= 1; k--) {
+          const pt = Math.max(0, t - k * 0.07);
+          const [tx, ty] = lerp(pt);
+          const fade = (1 - k / 4) * 0.5;
+          ctx.beginPath();
+          ctx.fillStyle = `rgba(255,238,210,${fade.toFixed(3)})`;
+          ctx.arc(tx, ty, 1.1, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        // soft glow under the head, then crisp core
+        ctx.beginPath();
+        ctx.fillStyle = "rgba(255,246,230,0.25)";
+        ctx.arc(hx, hy, 4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.fillStyle = "rgba(255,246,230,0.95)";
+        ctx.arc(hx, hy, 1.6, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        // twinkle phase: destination spikes bright and decays ~300ms; source subtler
+        const u = (age - STREAK_MS) / TWINKLE_MS;
+        const e = 1 - u;
+        const twinkle = (x: number, y: number, strength: number) => {
+          const a = strength * e;
+          const r = 1 + 2.5 * e * strength;
+          ctx.beginPath();
+          ctx.fillStyle = `rgba(255,246,230,${(0.2 * a).toFixed(3)})`;
+          ctx.arc(x, y, r * 2.2, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.fillStyle = `rgba(255,250,240,${(0.95 * a).toFixed(3)})`;
+          ctx.arc(x, y, r, 0, Math.PI * 2);
+          ctx.fill();
+          // crisp 4-point cross sparkle
+          const len = 3 + 5 * e * strength;
+          ctx.strokeStyle = `rgba(255,246,230,${(0.55 * a).toFixed(3)})`;
+          ctx.lineWidth = 0.8;
+          ctx.beginPath();
+          ctx.moveTo(x - len, y); ctx.lineTo(x + len, y);
+          ctx.moveTo(x, y - len); ctx.lineTo(x, y + len);
+          ctx.stroke();
+        };
+        twinkle(to[0], to[1], 1);
+        twinkle(from[0], from[1], 0.45);
+      }
+    }
+
+    if (linkTouched) {
+      graph.setLinkColors(linkColors);
+      graph.setLinkWidths(linkWidths);
+      graph.render();
+    }
+
+    streaksRef.current = alive;
+    if (alive.length) {
+      streakRafRef.current = requestAnimationFrame(streakStep);
+    } else {
+      ctx.clearRect(0, 0, rect.width, rect.height);
+    }
+  };
+
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (!webglAvailable()) {
@@ -108,11 +261,33 @@ export function FlowGraph({ nodes, pulse, txs }: { nodes: Node[]; pulse: PulseEv
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let graph: any = null;
     let fitTimer: ReturnType<typeof setTimeout> | null = null;
+    let zoomTimer: ReturnType<typeof setTimeout> | null = null;
 
+    // Round-6 fit: frame the CONNECTED cluster (edge-participating points) with tight
+    // padding so the constellation fills ~70-80% of the panel, then apply a modest
+    // post-fit zoom-in and clamp d3's scaleExtent so users can't zoom out into the void.
     const fitOnce = (duration = 500) => {
       if (disposed || fittedRef.current || !graph) return;
       fittedRef.current = true;
-      try { graph.fitView(duration, 0.1); } catch { /* view not ready */ }
+      try {
+        const linked = new Set<number>();
+        for (const e of edgesRef.current.values()) { linked.add(e.a); linked.add(e.b); }
+        if (linked.size >= 3) {
+          graph.fitViewByPointIndices([...linked], duration, 0.05);
+        } else {
+          graph.fitView(duration, 0.05);
+        }
+        if (zoomTimer) clearTimeout(zoomTimer);
+        zoomTimer = setTimeout(() => {
+          if (disposed || !graph) return;
+          try {
+            const z = graph.getZoomLevel();
+            graph.setZoomLevel(z * 1.1, 250); // modest zoom-in past the fit
+            // clamp min zoom to ~half the fitted level (d3 behavior; no public config for this)
+            graph.zoomInstance?.behavior?.scaleExtent?.([Math.max(1e-3, z * 0.5), Infinity]);
+          } catch { /* zoom internals unavailable */ }
+        }, duration + 80);
+      } catch { /* view not ready */ }
     };
 
     (async () => {
@@ -135,12 +310,9 @@ export function FlowGraph({ nodes, pulse, txs }: { nodes: Node[]; pulse: PulseEv
           const [x, y] = toSpace(u, v);
           positions[i * 2] = x;
           positions[i * 2 + 1] = y;
-          const amber = i < 10;
-          colors[i * 4] = amber ? 245 / 255 : 160 / 255;
-          colors[i * 4 + 1] = amber ? 166 / 255 : 170 / 255;
-          colors[i * 4 + 2] = amber ? 35 / 255 : 185 / 255;
-          colors[i * 4 + 3] = amber ? 0.9 : 0.8;
-          sizes[i] = sizeFor(r.tokens, maxTok);
+          const c = i < 10 ? AMBER_RGBA : BASE_RGBA;
+          colors[i * 4] = c[0]; colors[i * 4 + 1] = c[1]; colors[i * 4 + 2] = c[2]; colors[i * 4 + 3] = c[3];
+          sizes[i] = sizeFor(r.tokens, maxTok) + (i < 10 ? AMBER_SIZE_BONUS : 0);
         });
 
         // seed the REAL topology from the feed's actual signed transfers, if the feed
@@ -159,7 +331,7 @@ export function FlowGraph({ nodes, pulse, txs }: { nodes: Node[]; pulse: PulseEv
           curvedLinks: true,
           curvedLinkWeight: 0.8,
           curvedLinkControlPointDistance: 0.4,
-          pointDefaultSize: 4,
+          pointDefaultSize: 2,
           pointSizeScale: 1,
           linkDefaultWidth: BASE_WIDTH,
           linkWidthScale: 1,
@@ -168,7 +340,7 @@ export function FlowGraph({ nodes, pulse, txs }: { nodes: Node[]; pulse: PulseEv
           enableZoom: true,
           enableDrag: true,
           fitViewOnInit: false, // we fit ourselves after simulation warmup
-          scalePointsOnZoom: false,
+          scalePointsOnZoom: true, // stars stay proportionate as users zoom the field
           // Obsidian-style organic settle: real force simulation, gentle forces, high
           // friction + fast decay so clusters form calmly then freeze.
           enableSimulation: true,
@@ -223,7 +395,10 @@ export function FlowGraph({ nodes, pulse, txs }: { nodes: Node[]; pulse: PulseEv
     return () => {
       disposed = true;
       if (fitTimer) clearTimeout(fitTimer);
-      if (flareRafRef.current) cancelAnimationFrame(flareRafRef.current);
+      if (zoomTimer) clearTimeout(zoomTimer);
+      if (streakRafRef.current) cancelAnimationFrame(streakRafRef.current);
+      streakRafRef.current = null;
+      streaksRef.current = [];
       graphRef.current?.destroy?.();
       graphRef.current = null;
     };
@@ -253,7 +428,8 @@ export function FlowGraph({ nodes, pulse, txs }: { nodes: Node[]; pulse: PulseEv
   }, [txs, ready]);
 
   // pulse: a REAL transfer arrived — grow the edge set (new link or heavier repeat link),
-  // then brighten that link + flare the two endpoints, decaying over ~1s.
+  // then fire a light-speed comet along the edge on the overlay canvas (~180ms traverse,
+  // ~300ms endpoint twinkle) with a matching fast cosmos link flash.
   useEffect(() => {
     if (!ready || !pulse || pulse.key === lastKeyRef.current) return;
     lastKeyRef.current = pulse.key;
@@ -271,72 +447,17 @@ export function FlowGraph({ nodes, pulse, txs }: { nodes: Node[]; pulse: PulseEv
 
     const key = fromIdx < toIdx ? `${fromIdx}-${toIdx}` : `${toIdx}-${fromIdx}`;
     const edge = edgesRef.current.get(key);
-    const linkIdx = edge ? edge.linkIdx : -1;
-    const restWidth = edge ? widthFor(edge.count) : BASE_WIDTH;
 
-    const ranked = nodesRef.current.slice(0, 120);
-    const maxTok = Math.max(1, ...ranked.map((r) => r.tokens));
-    const baseSizes = graph.getPointSizes();
-    const baseColors = graph.getPointColors();
-    const start = performance.now();
-
-    if (flareRafRef.current) cancelAnimationFrame(flareRafRef.current);
-
-    const step = () => {
-      const age = (performance.now() - start) / 1000;
-      const envelope = age >= 1 ? 0 : age < 0.15 ? age / 0.15 : 1 - (age - 0.15) / 0.85;
-
-      const sizes = graph.getPointSizes();
-      const colors = graph.getPointColors();
-      [fromIdx, toIdx].forEach((i: number) => {
-        const r = ranked[i];
-        if (!r) return;
-        const base = sizeFor(r.tokens, maxTok);
-        sizes[i] = base * (1 + 0.2 * envelope);
-        const amber = i < 10;
-        colors[i * 4] = amber ? 245 / 255 : 160 / 255;
-        colors[i * 4 + 1] = amber ? 166 / 255 : 170 / 255;
-        colors[i * 4 + 2] = amber ? 35 / 255 : 185 / 255;
-        colors[i * 4 + 3] = (amber ? 0.9 : 0.8) + 0.1 * envelope;
-      });
-      graph.setPointSizes(sizes);
-      graph.setPointColors(colors);
-
-      // brighten the transaction's link (warm near-white) while decaying
-      if (linkIdx >= 0) {
-        const linkColors = graph.getLinkColors();
-        const linkWidths = graph.getLinkWidths();
-        if (linkIdx * 4 + 3 < linkColors.length) {
-          linkColors[linkIdx * 4] = 1; linkColors[linkIdx * 4 + 1] = 246 / 255; linkColors[linkIdx * 4 + 2] = 230 / 255;
-          linkColors[linkIdx * 4 + 3] = REST_ALPHA + 0.4 * envelope;
-          linkWidths[linkIdx] = restWidth + 2 * envelope;
-          graph.setLinkColors(linkColors);
-          graph.setLinkWidths(linkWidths);
-        }
-      }
-      graph.render();
-
-      if (age < 1) {
-        flareRafRef.current = requestAnimationFrame(step);
-      } else {
-        // restore rest state exactly
-        graph.setPointSizes(baseSizes);
-        graph.setPointColors(baseColors);
-        if (linkIdx >= 0) {
-          const restColors = graph.getLinkColors();
-          const restWidths = graph.getLinkWidths();
-          if (linkIdx * 4 + 3 < restColors.length) {
-            restColors[linkIdx * 4 + 3] = REST_ALPHA;
-            restWidths[linkIdx] = restWidth;
-            graph.setLinkColors(restColors);
-            graph.setLinkWidths(restWidths);
-          }
-        }
-        graph.render();
-        flareRafRef.current = null;
-      }
-    };
-    flareRafRef.current = requestAnimationFrame(step);
+    streaksRef.current.push({
+      fromIdx,
+      toIdx,
+      start: performance.now(),
+      linkIdx: edge ? edge.linkIdx : -1,
+      restWidth: edge ? widthFor(edge.count) : BASE_WIDTH,
+    });
+    if (streakRafRef.current === null) {
+      streakRafRef.current = requestAnimationFrame(streakStep);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pulse, ready]);
 
@@ -351,6 +472,10 @@ export function FlowGraph({ nodes, pulse, txs }: { nodes: Node[]; pulse: PulseEv
         style={{ background: "radial-gradient(circle at 50% 50%, #0d0d0f 0%, #060607 100%)" }}
       />
       <div ref={containerRef} className="relative h-[420px] w-full" />
+      <canvas
+        ref={overlayRef}
+        className="pointer-events-none absolute inset-0 h-[420px] w-full"
+      />
       <div
         ref={tooltipRef}
         className="pointer-events-none absolute z-10 hidden rounded-[2px] px-1 py-0.5 font-mono text-[11px]"
