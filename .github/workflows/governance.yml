@@ -1,0 +1,38 @@
+name: 0n1x Autonomous Governance
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'   # Runs every 30 minutes, forever
+  workflow_dispatch:         # Manual trigger via GitHub UI
+
+jobs:
+  govern:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install dependencies
+        run: npm ci || echo "No package.json, skipping install"
+      
+      - name: Fetch external metrics (rhinogent heartbeat)
+        run: |
+          curl -s https://rhinogent.com/0n1x.json -o public/metrics.json || echo "{}" > public/metrics.json
+      
+      - name: Run the deterministic governance brain
+        run: node src/lib/governance/autonomous.js
+        env:
+          BRIDGE_KEY: ${{ secrets.BRIDGE_KEY }}
+      
+      - name: Commit the new state (params, deltas, learning graph)
+        run: |
+          git config user.name "0n1x-Bot"
+          git config user.email "bot@0n1x.network"
+          git add public/governance/ public/learning/ src/lib/governance/params.json public/metrics.json
+          git diff --staged --quiet || git commit -m "🤖 Epoch $(date -u +%Y%m%d-%H%M) [skip ci]"
+          git push
