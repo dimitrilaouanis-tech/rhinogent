@@ -83,26 +83,31 @@ export function NetworkGrid({ agentCount }: { agentCount: number }) {
       ctx.fillStyle = "#0a0d16";
       ctx.fillRect(0, 0, W, H);
 
-      // breathing population field
-      const pulse = 0.5 + 0.5 * Math.sin(now / 1400);
+      // REAL population field — steady dots, one per agent sample (no cosmetic pulse).
+      // These map to the real 100k census, not decoration.
       for (let i = 0; i < field.length; i++) {
-        const [u, v, ph] = field[i];
-        const tw = 0.25 + 0.55 * (0.5 + 0.5 * Math.sin(now / 900 + ph * 20));
-        ctx.fillStyle = `rgba(99,91,255,${0.06 + tw * 0.10})`;
-        ctx.fillRect(px(u), py(v), 1.4, 1.4);
+        const [u, v] = field[i];
+        ctx.fillStyle = "rgba(99,91,255,0.10)";
+        ctx.fillRect(px(u), py(v), 1.3, 1.3);
       }
 
-      // ranked nodes — brighter, sized by tokens
+      // REAL ranked agents — sized by verified token balance, green when net-inflowing.
       const maxTok = Math.max(1, ...ranking.slice(0, 60).map((r) => r.tokens));
-      for (const r of ranking.slice(0, 120)) {
+      ranking.slice(0, 120).forEach((r, idx) => {
         const [u, v] = pos(r.callsign);
-        const s = 1.4 + (r.tokens / maxTok) * 3.2;
+        const s = 1.6 + (r.tokens / maxTok) * 3.4;
         const hot = r.flow > 0;
         ctx.beginPath();
         ctx.arc(px(u), py(v), s, 0, Math.PI * 2);
-        ctx.fillStyle = hot ? `rgba(16,195,125,${0.5 + 0.4 * pulse})` : `rgba(139,133,255,0.55)`;
+        ctx.fillStyle = hot ? "rgba(16,195,125,0.75)" : "rgba(139,133,255,0.6)";
         ctx.fill();
-      }
+        // label the top 6 real agents with callsign + real balance
+        if (idx < 6) {
+          ctx.fillStyle = "rgba(226,228,240,0.82)";
+          ctx.font = "9px ui-monospace, monospace";
+          ctx.fillText(`${r.callsign} · ${r.tokens}`, px(u) + s + 3, py(v) + 3);
+        }
+      });
 
       // emit a particle for the next real tx every ~450ms
       if (feedTxs.length && now - lastEmit > 450) {
@@ -154,8 +159,12 @@ export function NetworkGrid({ agentCount }: { agentCount: number }) {
           THE GRID · {agentCount.toLocaleString()} agents · live signed token flow
         </span>
       </div>
-      <div className="pointer-events-none absolute bottom-3 right-4 font-mono text-[11px] tabular-nums text-muted-2">
+      <div className="pointer-events-none absolute bottom-3 right-4 text-right font-mono text-[11px] tabular-nums text-muted-2">
         {live.toLocaleString()} tokens circulating
+        <div className="text-[10px] text-muted-2/70">every transfer EIP-191 signed · Merkle-verifiable</div>
+      </div>
+      <div className="pointer-events-none absolute bottom-3 left-4 font-mono text-[10px] text-muted-2/70">
+        ● labeled = top agents by verified balance &nbsp;·&nbsp; green = net inflow &nbsp;·&nbsp; streaks = live signed transfers
       </div>
     </div>
   );

@@ -1,0 +1,53 @@
+{
+ "name": "0n1x",
+ "description": "Neutral cryptographic trust layer for AI agents. Ask a question, get a reality-verified, signed answer you can check without trusting us.",
+ "url": "https://rhinogent.com",
+ "version": "1.0.0",
+ "provider": {
+  "organization": "0n1x",
+  "url": "https://0n1xagntc.com"
+ },
+ "capabilities": {
+  "streaming": false,
+  "signedResponses": true
+ },
+ "signing": {
+  "scheme": "EIP-191",
+  "signer_address": "0x4d64f274D8C3D535B44A07452BB9A7eAEce497b1",
+  "verify": "recover_message(canonical-json-minus-signature) == signer_address"
+ },
+ "skills": [
+  {
+   "id": "verify-query",
+   "name": "Verifiable Query",
+   "description": "Ask any reality-resolvable question (merchant/domain safety, crypto price, TVL, FX, GitHub); get a signed verified answer. Refuses to sign unverifiable opinion.",
+   "endpoint": "/a2a/query",
+   "method": "POST",
+   "input": {
+    "question": "string"
+   },
+   "output": {
+    "answer": "string",
+    "verified": "bool",
+    "signature": "0x...",
+    "signed_by": "0x..."
+   }
+  },
+  {
+   "id": "check-merchant",
+   "name": "Counterparty Check",
+   "description": "Verify a merchant/counterparty before an agent pays it \u2014 signed risk verdict.",
+   "endpoint": "/api/check",
+   "method": "GET",
+   "input": {
+    "url": "domain"
+   }
+  }
+ ],
+ "principles": [
+  "neutral",
+  "verify-don't-trust",
+  "signs only reality-backed facts",
+  "self-custody"
+ ]
+}
