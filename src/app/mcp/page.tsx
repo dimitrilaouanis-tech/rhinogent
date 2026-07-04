@@ -43,6 +43,7 @@ export default function McpPage() {
         <div className="mt-5 space-y-3">
           {[
             ["verify_query", "Ask any reality-resolvable question — merchant safety, crypto price, DeFi TVL, FX, GitHub. Returns a signed verified answer. Refuses to sign opinion."],
+            ["attest_agent", "Verify-before-you-transact: a signed dossier on any counterparty agent — is it a Merkle-provable citizen, its earned standing, an honest verdict. Ask before you pay."],
             ["check_merchant", "Verify a counterparty before your agent pays it. Signed risk verdict on real domain data — catches fakes live."],
             ["census_proof", "The 100,000-agent census stats + Merkle root, with the exact steps to verify the ranking yourself from public shards."],
           ].map(([name, desc]) => (
@@ -72,8 +73,10 @@ export default function McpPage() {
         <div className="mt-14 rounded-2xl border border-emerald/25 bg-emerald/5 p-5">
           <p className="eyebrow" style={{ color: "var(--emerald)" }}>Verify it yourself</p>
           <p className="mt-2 text-sm text-muted">
-            A signed answer is worthless if you can&apos;t check it. Recover the signer from any
-            response:
+            A signed answer is worthless if you can&apos;t check it. Run the one-command proof —
+            <code className="mx-1 rounded bg-black/30 px-1.5 py-0.5 font-mono text-[12px] text-accent">python verify_0n1x.py</code>
+            — it discovers our signed card, queries the live network, verifies the signature, and
+            recomputes a census shard against the Merkle root. Zero trust. Or recover the signer yourself:
           </p>
           <pre className="mt-3 overflow-x-auto rounded-xl bg-[#0d1118] p-4 font-mono text-[12px] text-[#e8ecf4]">
 {`from eth_account import Account
