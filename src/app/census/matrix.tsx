@@ -7,7 +7,7 @@ import { CITIZENS, ECOSYSTEM_COUNT } from "@/lib/ecosystem";
 import { NetworkTimeline } from "@/components/network-timeline";
 import { MatrixCharts } from "./charts";
 import { ActivityGrid, type ActivitySlot } from "./activity-grid";
-import { FlowGraph, type PulseEvent } from "./flow-graph";
+import { FlowGraphCanvas2D, type PulseEvent2D as PulseEvent } from "./flow-graph-2d";
 
 // inline sparkline — tiny per-row flow trend, rendered from rolling client-side history
 // (last 20 polls of token_feed.json). Flat line if only one datapoint exists so far.
@@ -54,11 +54,11 @@ export function Matrix() {
   const [txs, setTxs] = useState<Tx[]>([]);
   const [secs, setSecs] = useState(0);
   const [live, setLive] = useState(totalTokens);
-  const [ranking, setRanking] = useState<Ranked[]>([]);
+  const [ranking] = useState<Ranked[]>([]);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Ranked[]>([]);
   const [manifest, setManifest] = useState<any>(null);
-  const [metrics, setMetrics] = useState<any>(null);
+  const [metrics] = useState<any>(null);
   const shardsRef = useRef<Ranked[] | null>(null);
   const idRef = useRef(0);
   const historyRef = useRef<Map<string, number[]>>(new Map());
@@ -78,7 +78,6 @@ export function Matrix() {
       pos += 1;
       idRef.current += 1;
       setTxs((t) => [{ id: idRef.current, from: f.from, to: f.to, amount: f.amount, ago: 0, sig: f.sig }, ...t].slice(0, 14));
-      setLive((v) => v + f.amount);
       setSlots((s) => [...s, { id: idRef.current, amount: f.amount, ts: Date.now() }].slice(-240));
       setPulse({ from: f.from, to: f.to, amount: f.amount, key: idRef.current });
     }
@@ -86,18 +85,13 @@ export function Matrix() {
       fetch("/token_feed.json", { cache: "no-store" })
         .then((r) => r.json())
         .then((d) => {
+          // DETERMINISTIC NUMBERS (launch rule): ranking, balances and circulation are
+          // computed from the fixed roster — identical on every refresh. The feed's
+          // ranking/circulating/metrics snapshots regenerate with different values each
+          // heartbeat (and can even be read half-written), which made every reload show
+          // different numbers. The volatile feed now drives ONLY the live transfer tape.
           feed = d.txs || [];
           setFeedTxs(feed); // real transfer pairs → graph edge topology
-          if (d.ranking?.length) {
-            setRanking(d.ranking);
-            for (const r of d.ranking) {
-              const prior = historyRef.current.get(r.address) || [];
-              historyRef.current.set(r.address, [...prior, r.tokens].slice(-20));
-            }
-            setHistoryTick((n) => n + 1);
-          }
-          if (d.circulating) setLive(d.circulating);
-          if (d.metrics) setMetrics(d.metrics);
           fetch("/census_manifest.json", { cache: "no-store" }).then((r) => r.json()).then(setManifest).catch(() => {});
         })
         .catch(() => {});
@@ -172,7 +166,7 @@ export function Matrix() {
 
       {/* WOW centerpiece — live token-flow network graph, fixed-size canvas */}
       <div className="mt-3">
-        <FlowGraph nodes={shown as any} pulse={pulse} txs={feedTxs} />
+        <FlowGraphCanvas2D nodes={shown as any} pulse={pulse} txs={feedTxs} />
       </div>
 
       {/* live token-exchange tape — exchange-grade ticker */}
