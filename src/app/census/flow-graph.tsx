@@ -4,9 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import { FlowGraphCanvas2D, pos, type Node } from "./flow-graph-2d";
 
 // WOW CENTERPIECE v6 — Obsidian-style live token-flow graph on @cosmos.gl/graph.
-// Round 6 changes (live user feedback):
-//  1. ZOOM — fit frames the CONNECTED cluster (not the orphan periphery), tight ~5% padding,
-//     modest post-fit zoom-in, and a d3 scaleExtent clamp so users can't zoom out into voids.
+// Round 7 changes (live user feedback):
+//  1. ZOOM — fill-panel default: warmup fit is provisional, FINAL fit at onSimulationEnd
+//     (sim contraction after the early fit was shrinking the cluster inside a frozen
+//     viewport), padding 0 exact-bbox fit + ×1.05 nudge, scaleExtent clamp at half FINAL zoom.
 //  2. STARS — HD starfield points: 1.5-4px crisp cores, blue-white rgba(200,210,235,.95),
 //     top-10 warm amber-white rgba(255,220,150,1) slightly larger, scalePointsOnZoom.
 //  3. LIGHT-SPEED TRANSFERS — a comet streak shoots along the edge in ~180ms on a transparent
@@ -263,32 +264,38 @@ export function FlowGraph({ nodes, pulse, txs }: { nodes: Node[]; pulse: PulseEv
     let fitTimer: ReturnType<typeof setTimeout> | null = null;
     let zoomTimer: ReturnType<typeof setTimeout> | null = null;
 
-    // Round-6 fit: frame the CONNECTED cluster (edge-participating points) with tight
-    // padding so the constellation fills ~70-80% of the panel, then apply a modest
-    // post-fit zoom-in and clamp d3's scaleExtent so users can't zoom out into the void.
-    const fitOnce = (duration = 500) => {
+    // Round-7 fit: fill the panel. Two-phase — the 900ms warmup fit is PROVISIONAL
+    // (the force sim, decay 2500ms, keeps contracting the cluster for ~1.6s after it,
+    // which is why earlier rounds still looked zoomed-out); the FINAL fit fires at
+    // onSimulationEnd when the bounding box is frozen. Padding 0 = exact bbox fit
+    // (cosmos getTransform: scale = min(w/bw,h/bh)*(1-2p), no point-size slack), then
+    // a small deterministic ×1.05 nudge so the cluster spans ~the full 420px with only
+    // a whisker of crop on the extremes. Min-zoom clamped to half the FINAL level.
+    const runFit = (duration: number, final: boolean) => {
       if (disposed || fittedRef.current || !graph) return;
-      fittedRef.current = true;
+      if (final) fittedRef.current = true;
       try {
         const linked = new Set<number>();
         for (const e of edgesRef.current.values()) { linked.add(e.a); linked.add(e.b); }
         if (linked.size >= 3) {
-          graph.fitViewByPointIndices([...linked], duration, 0.05);
+          graph.fitViewByPointIndices([...linked], duration, 0);
         } else {
-          graph.fitView(duration, 0.05);
+          graph.fitView(duration, 0);
         }
+        if (!final) return; // provisional frame only — nudge + clamp wait for the settled fit
         if (zoomTimer) clearTimeout(zoomTimer);
         zoomTimer = setTimeout(() => {
           if (disposed || !graph) return;
           try {
-            const z = graph.getZoomLevel();
-            graph.setZoomLevel(z * 1.1, 250); // modest zoom-in past the fit
-            // clamp min zoom to ~half the fitted level (d3 behavior; no public config for this)
+            const z = graph.getZoomLevel() * 1.05;
+            graph.setZoomLevel(z, 250); // deterministic nudge past the exact fit
+            // clamp min zoom relative to the FINAL level so users can back out a bit, not get lost
             graph.zoomInstance?.behavior?.scaleExtent?.([Math.max(1e-3, z * 0.5), Infinity]);
           } catch { /* zoom internals unavailable */ }
         }, duration + 80);
       } catch { /* view not ready */ }
     };
+    const fitOnce = (duration = 500) => runFit(duration, true);
 
     (async () => {
       try {
@@ -381,8 +388,8 @@ export function FlowGraph({ nodes, pulse, txs }: { nodes: Node[]; pulse: PulseEv
         graph.render();
         graph.start(1); // kick the force simulation from the seeded layout
 
-        // fit the whole graph after warmup even if the sim hasn't fully cooled yet
-        fitTimer = setTimeout(() => fitOnce(600), 900);
+        // provisional frame after warmup (sim still contracting); final fit lands at sim end
+        fitTimer = setTimeout(() => runFit(600, false), 900);
 
         graphRef.current = graph;
         setReady(true);
