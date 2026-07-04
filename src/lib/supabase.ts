@@ -31,3 +31,14 @@ export async function signInMagicLink(email: string) {
 export async function signOut() {
   return supabase.auth.signOut();
 }
+// Forgot password → emails a recovery link to /reset-password; the link's token
+// establishes a session there (Supabase parses it client-side, detectSessionInUrl: true).
+export async function requestPasswordReset(email: string) {
+  return supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: "https://rhinogent.com/reset-password/",
+  });
+}
+// Called from the reset-password page once a recovery session is active.
+export async function updatePassword(password: string) {
+  return supabase.auth.updateUser({ password });
+}

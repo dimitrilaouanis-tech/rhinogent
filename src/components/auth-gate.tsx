@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { RhinoMark } from "./rhino";
-import { signUpEmail, signInEmail, signInGoogle } from "@/lib/supabase";
+import { signUpEmail, signInEmail, signInGoogle, requestPasswordReset } from "@/lib/supabase";
 
-type Mode = "signin" | "signup";
+type Mode = "signin" | "signup" | "forgot";
 
 // flip on once the provider is configured in Supabase (Auth → Providers)
 const GOOGLE_ENABLED = false;
@@ -43,6 +43,18 @@ export function AuthGate() {
     } finally { setBusy(false); }
   }
 
+  async function forgotPassword() {
+    if (!email || busy) return;
+    setBusy(true); setMsg(null);
+    try {
+      const { error } = await requestPasswordReset(email);
+      if (error) setMsg({ kind: "err", text: error.message });
+      else setMsg({ kind: "ok", text: `If ${email} has an account, a reset link is on its way — check your email.` });
+    } catch (e: any) {
+      setMsg({ kind: "err", text: e?.message || "Something went wrong." });
+    } finally { setBusy(false); }
+  }
+
   async function google() {
     setBusy(true); setMsg(null);
     const { error } = await signInGoogle();
@@ -50,6 +62,7 @@ export function AuthGate() {
   }
 
   const isSignup = mode === "signup";
+  const isForgot = mode === "forgot";
 
   return (
     <main className="relative flex flex-1 items-center justify-center overflow-hidden bg-mesh px-5 py-16">
@@ -64,20 +77,34 @@ export function AuthGate() {
 
         {/* heading */}
         <h1 className="display mt-6 text-center text-[28px] font-semibold tracking-tight text-foreground">
-          {isSignup ? "Create a Rhinogent account" : "Log in to Rhinogent"}
+          {isForgot ? "Reset your password" : isSignup ? "Create a Rhinogent account" : "Log in to Rhinogent"}
         </h1>
         <p className="mt-2 text-center text-sm text-muted">
-          {isSignup ? "Already have an account? " : "New to Rhinogent? "}
-          <button
-            onClick={() => { setMode(isSignup ? "signin" : "signup"); setMsg(null); }}
-            className="font-semibold text-foreground underline-offset-2 hover:underline"
-          >
-            {isSignup ? "Log in" : "Sign up"}
-          </button>.
+          {isForgot ? (
+            <>
+              Remembered it?{" "}
+              <button
+                onClick={() => { setMode("signin"); setMsg(null); }}
+                className="font-semibold text-foreground underline-offset-2 hover:underline"
+              >
+                Log in
+              </button>.
+            </>
+          ) : (
+            <>
+              {isSignup ? "Already have an account? " : "New to Rhinogent? "}
+              <button
+                onClick={() => { setMode(isSignup ? "signin" : "signup"); setMsg(null); }}
+                className="font-semibold text-foreground underline-offset-2 hover:underline"
+              >
+                {isSignup ? "Log in" : "Sign up"}
+              </button>.
+            </>
+          )}
         </p>
 
         {/* OAuth (side by side, shown when configured) */}
-        {anyOAuth && (
+        {anyOAuth && !isForgot && (
           <>
             <div className="mt-8 grid grid-cols-2 gap-3">
               {GOOGLE_ENABLED && (
@@ -106,25 +133,41 @@ export function AuthGate() {
           <label className="block text-sm font-medium text-muted">Email</label>
           <input
             type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && isForgot && forgotPassword()}
             placeholder="alan.turing@example.com" autoComplete="email"
             className="mt-1.5 w-full rounded-lg border border-border bg-background px-3.5 py-2.5 text-sm text-foreground placeholder-muted-2 outline-none transition-colors focus:border-accent/50"
           />
 
-          <label className="mt-4 block text-sm font-medium text-muted">Password</label>
-          <div className="relative mt-1.5">
-            <input
-              type={show ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && emailAuth()}
-              placeholder="••••••••••••" autoComplete={isSignup ? "new-password" : "current-password"}
-              className="w-full rounded-lg border border-border bg-background px-3.5 py-2.5 pr-10 text-sm text-foreground placeholder-muted-2 outline-none transition-colors focus:border-accent/50"
-            />
-            <button type="button" onClick={() => setShow((s) => !s)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-2 hover:text-muted" aria-label="toggle password">
-              {show
-                ? <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 3l18 18M10.6 10.6a2 2 0 002.8 2.8M9.4 5.1A9.5 9.5 0 0121 12a9.8 9.8 0 01-2.4 3.2M6.1 6.1A9.8 9.8 0 003 12a9.5 9.5 0 0013.9 4"/></svg>
-                : <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>}
-            </button>
-          </div>
+          {!isForgot && (
+            <>
+              <div className="mt-4 flex items-baseline justify-between">
+                <label className="block text-sm font-medium text-muted">Password</label>
+                {!isSignup && (
+                  <button
+                    type="button"
+                    onClick={() => { setMode("forgot"); setMsg(null); }}
+                    className="text-xs font-medium text-muted-2 transition-colors hover:text-accent"
+                  >
+                    Forgot password?
+                  </button>
+                )}
+              </div>
+              <div className="relative mt-1.5">
+                <input
+                  type={show ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && emailAuth()}
+                  placeholder="••••••••••••" autoComplete={isSignup ? "new-password" : "current-password"}
+                  className="w-full rounded-lg border border-border bg-background px-3.5 py-2.5 pr-10 text-sm text-foreground placeholder-muted-2 outline-none transition-colors focus:border-accent/50"
+                />
+                <button type="button" onClick={() => setShow((s) => !s)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-2 hover:text-muted" aria-label="toggle password">
+                  {show
+                    ? <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 3l18 18M10.6 10.6a2 2 0 002.8 2.8M9.4 5.1A9.5 9.5 0 0121 12a9.8 9.8 0 01-2.4 3.2M6.1 6.1A9.8 9.8 0 003 12a9.5 9.5 0 0013.9 4"/></svg>
+                    : <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>}
+                </button>
+              </div>
+            </>
+          )}
         </div>
 
         {msg && (
@@ -132,21 +175,32 @@ export function AuthGate() {
         )}
 
         <button
-          onClick={emailAuth}
-          disabled={busy || !email || !password}
+          onClick={isForgot ? forgotPassword : emailAuth}
+          disabled={isForgot ? busy || !email : busy || !email || !password}
           className="mt-5 w-full rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
         >
-          {busy ? "…" : isSignup ? "Create account" : "Log in"}
+          {busy ? "…" : isForgot ? "Send reset link" : isSignup ? "Create account" : "Log in"}
         </button>
 
-        <p className="mt-6 text-center text-xs leading-relaxed text-muted-2">
-          By signing up, you agree to our <a href="/terms" className="underline hover:text-muted">Terms</a>,{" "}
-          <a href="/acceptable-use" className="underline hover:text-muted">Acceptable Use</a>, and{" "}
-          <a href="/privacy" className="underline hover:text-muted">Privacy Policy</a>.
-        </p>
-        <p className="mt-4 text-center text-[11px] text-muted-2">
-          Your agents' wallet keys are generated in your browser and stay self-custody.
-        </p>
+        {isForgot ? (
+          <p className="mt-6 text-center text-[11px] leading-relaxed text-muted-2">
+            This resets your Rhinogent account password only. It cannot recover an agent's
+            private key — those are self-custody and generated in your browser; if one is lost,
+            mint a new agent.
+          </p>
+        ) : (
+          <>
+            <p className="mt-6 text-center text-xs leading-relaxed text-muted-2">
+              By signing up, you agree to our <a href="/terms" className="underline hover:text-muted">Terms</a>,{" "}
+              <a href="/acceptable-use" className="underline hover:text-muted">Acceptable Use</a>, and{" "}
+              <a href="/privacy" className="underline hover:text-muted">Privacy Policy</a>.
+            </p>
+            <p className="mt-4 text-center text-[11px] text-muted-2">
+              Your agents' wallet keys are generated in your browser and stay self-custody
+              {isSignup ? " — there is no password reset for a lost key, only for your account login." : "."}
+            </p>
+          </>
+        )}
       </div>
     </main>
   );
