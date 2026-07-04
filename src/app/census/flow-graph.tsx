@@ -7,6 +7,8 @@ import { useEffect, useRef } from "react";
 // polar layout (no physics jitter = no reflow risk); panel is a FIXED-SIZE canvas — only
 // pixels inside it move, the page never shifts. No npm dep: a hand-rolled canvas renderer
 // keyed off the same real feed data already on the page (fastest, zero build risk).
+// Aesthetic: quiet/precise (Linear-network / Stripe-globe / mempool.space) — smaller,
+// thinner, dimmer, sharper. Retina-scaled backing store.
 
 type Node = { callsign: string; tokens: number; flow: number };
 export type PulseEvent = { from: string; to: string; amount: number; key: number };
@@ -38,7 +40,7 @@ export function FlowGraph({ nodes, pulse }: { nodes: Node[]; pulse: PulseEvent |
     const resize = () => {
       const r = canvas.getBoundingClientRect();
       W = r.width; H = r.height;
-      canvas.width = W * dpr; canvas.height = H * dpr;
+      canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
     resize();
@@ -54,34 +56,51 @@ export function FlowGraph({ nodes, pulse }: { nodes: Node[]; pulse: PulseEvent |
 
     const px = (u: number) => u * W;
     const py = (v: number) => v * H;
+    // slight curvature: control point offset perpendicular to the chord (~0.15)
+    const curveCtrl = (x1: number, y1: number, x2: number, y2: number): [number, number] => {
+      const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+      const dx = x2 - x1, dy = y2 - y1;
+      return [mx - dy * 0.15, my + dx * 0.15];
+    };
+    const qPoint = (t: number, x1: number, y1: number, cx: number, cy: number, x2: number, y2: number): [number, number] => {
+      const a = (1 - t) * (1 - t), b = 2 * (1 - t) * t, c = t * t;
+      return [a * x1 + b * cx + c * x2, a * y1 + b * cy + c * y2];
+    };
 
     let raf = 0;
     const draw = () => {
-      ctx.clearRect(0, 0, W, H);
-      ctx.fillStyle = "#0a0a0a";
+      // depth: subtle radial vignette — floats in deep space, not a flat card
+      const bg = ctx.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, Math.max(W, H) * 0.72);
+      bg.addColorStop(0, "#0d0d0f");
+      bg.addColorStop(1, "#060607");
+      ctx.fillStyle = bg;
       ctx.fillRect(0, 0, W, H);
 
       const ranked = nodesRef.current.slice(0, 120);
       const maxTok = Math.max(1, ...ranked.map((r) => r.tokens));
+      const cx0 = px(0.5), cy0 = py(0.5);
 
-      // faint edges from center density ring (structural, not decorative motion)
-      ctx.strokeStyle = "rgba(90,95,102,0.08)";
-      ctx.lineWidth = 1;
+      // hairline curved edges, near-invisible at rest
+      ctx.strokeStyle = "rgba(255,255,255,0.05)";
+      ctx.lineWidth = 0.5;
       for (let i = 0; i < ranked.length; i++) {
         const [u, v] = pos(ranked[i].callsign);
+        const x = px(u), y = py(v);
+        const [qx, qy] = curveCtrl(cx0, cy0, x, y);
         ctx.beginPath();
-        ctx.moveTo(px(0.5), py(0.5));
-        ctx.lineTo(px(u), py(v));
+        ctx.moveTo(cx0, cy0);
+        ctx.quadraticCurveTo(qx, qy, x, y);
         ctx.stroke();
       }
 
-      // nodes — size by balance, amber for top-10, soft glow, transfer-endpoint flare
+      // nodes — restrained: small core dot + soft radial halo + thin rim.
+      // Steel/graphite base; amber reserved for top-10 only. No saturated green/red here.
       const now = performance.now();
       const flares = flareRef.current;
       ranked.forEach((r, idx) => {
         const [u, v] = pos(r.callsign);
-        const s = 2 + (r.tokens / maxTok) * 7;
-        // endpoint flare: ramps up fast then decays over ~1s
+        const x = px(u), y = py(v);
+        // endpoint flare: quick ramp, ~1s decay — subtle, max +20% radius
         let flare = 0;
         const ft = flares.get(r.callsign);
         if (ft !== undefined) {
@@ -89,72 +108,90 @@ export function FlowGraph({ nodes, pulse }: { nodes: Node[]; pulse: PulseEvent |
           if (age >= 1) flares.delete(r.callsign);
           else flare = age < 0.15 ? age / 0.15 : 1 - (age - 0.15) / 0.85;
         }
-        const base =
-          idx < 10
-            ? `rgba(245,166,35,${0.85 + 0.15 * flare})`
-            : r.flow > 0
-              ? `rgba(34,197,94,${0.75 + 0.25 * flare})`
-              : r.flow < 0
-                ? `rgba(239,68,68,${0.55 + 0.35 * flare})`
-                : `rgba(234,234,234,${0.35 + 0.45 * flare})`;
-        ctx.shadowColor = base;
-        ctx.shadowBlur = 10 + 14 * flare;
-        ctx.beginPath();
-        ctx.arc(px(u), py(v), s + s * 0.35 * flare, 0, Math.PI * 2);
-        ctx.fillStyle = base;
+        const s = (2.5 + (r.tokens / maxTok) * 4.5) * (1 + 0.2 * flare);
+        const amber = idx < 10;
+        const cr = amber ? 245 : 160, cg = amber ? 166 : 170, cb = amber ? 35 : 185;
+
+        // halo — radial gradient fading to 0
+        const haloR = s * 3;
+        const halo = ctx.createRadialGradient(x, y, 0, x, y, haloR);
+        halo.addColorStop(0, `rgba(${cr},${cg},${cb},${0.20 + 0.22 * flare})`);
+        halo.addColorStop(1, `rgba(${cr},${cg},${cb},0)`);
+        ctx.fillStyle = halo;
+        ctx.beginPath(); ctx.arc(x, y, haloR, 0, Math.PI * 2); ctx.fill();
+
+        // core
+        ctx.beginPath(); ctx.arc(x, y, s, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${cr},${cg},${cb},${amber ? 0.9 : 0.8})`;
         ctx.fill();
-        ctx.shadowBlur = 0; // keep edges/labels crisp
+        // thin 1px rim
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = `rgba(${cr},${cg},${cb},${0.3 + 0.25 * flare})`;
+        ctx.stroke();
+
         if (idx < 8) {
-          ctx.fillStyle = "rgba(234,234,234,0.75)";
+          ctx.fillStyle = "rgba(138,143,152,0.85)";
           ctx.font = "9px var(--font-jetbrains-mono), monospace";
-          ctx.fillText(r.callsign, px(u) + s + 3, py(v) + 3);
+          ctx.fillText(r.callsign, x + s + 4, y + 3);
         }
       });
 
-      // animate active pulse particles
+      // pulse particles — near-white warm tint, short fading tail (motion blur), curved path
       const particles = particlesRef.current;
       for (const p of particles) {
         p.t += 0.02;
-        const e = Math.min(1, p.t);
-        const ease = e * e * (3 - 2 * e);
-        const x = p.fx + (p.tx - p.fx) * ease;
-        const y = p.fy + (p.ty - p.fy) * ease;
-        ctx.strokeStyle = `rgba(245,166,35,${0.35 * (1 - p.t)})`;
-        ctx.lineWidth = 1.5;
-        ctx.beginPath(); ctx.moveTo(p.fx, p.fy); ctx.lineTo(x, y); ctx.stroke();
-        ctx.beginPath();
-        ctx.arc(x, y, 2 + Math.min(3, p.amt / 20), 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(245,166,35,${0.95 * (1 - p.t * 0.5)})`;
-        ctx.fill();
+        const [qx, qy] = curveCtrl(p.fx, p.fy, p.tx, p.ty);
+        const head = Math.min(1, p.t);
+        const size = 1.2 + Math.min(1.8, p.amt / 30);
+        // edge lights up faintly while the particle travels
+        if (p.t < 1) {
+          ctx.strokeStyle = `rgba(255,246,230,${0.10 * (1 - p.t)})`;
+          ctx.lineWidth = 0.5;
+          ctx.beginPath();
+          ctx.moveTo(p.fx, p.fy);
+          ctx.quadraticCurveTo(qx, qy, p.tx, p.ty);
+          ctx.stroke();
+        }
+        // tail: trailing samples with decaying alpha and size
+        for (let k = 4; k >= 0; k--) {
+          const tt = Math.max(0, head - k * 0.03);
+          const [x, y] = qPoint(tt, p.fx, p.fy, qx, qy, p.tx, p.ty);
+          const a = (k === 0 ? 0.9 : 0.25 * (1 - k / 5)) * Math.max(0, 1 - p.t * 0.6);
+          ctx.beginPath();
+          ctx.arc(x, y, k === 0 ? size : size * (1 - k * 0.12), 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(255,246,230,${a})`;
+          ctx.fill();
+        }
       }
       particlesRef.current = particles.filter((p) => p.t < 1.15);
 
-      // hover tooltip — hit-test nodes, draw callsign + balance near cursor (canvas-only, no layout shift)
+      // hover tooltip — crisp 11px mono, panel-raised bg, 1px border, 4px padding
       const m = mouseRef.current;
       if (m) {
-        let hit: { r: Node; x: number; y: number; s: number } | null = null;
+        let hit: Node | null = null;
         for (let i = ranked.length - 1; i >= 0; i--) {
           const r = ranked[i];
           const [u, v] = pos(r.callsign);
-          const s = 2 + (r.tokens / maxTok) * 7;
+          const s = 2.5 + (r.tokens / maxTok) * 4.5;
           const dx = m.x - px(u), dy = m.y - py(v);
-          if (dx * dx + dy * dy <= (s + 4) * (s + 4)) { hit = { r, x: px(u), y: py(v), s }; break; }
+          if (dx * dx + dy * dy <= (s + 4) * (s + 4)) { hit = r; break; }
         }
         if (hit) {
-          const label = `${hit.r.callsign} · ${hit.r.tokens.toLocaleString("en-US")}`;
-          ctx.font = "10px var(--font-jetbrains-mono), monospace";
+          const label = `${hit.callsign} · ${hit.tokens.toLocaleString("en-US")}`;
+          ctx.font = "11px var(--font-jetbrains-mono), monospace";
           const tw = ctx.measureText(label).width;
-          let bx = m.x + 12, by = m.y - 24;
-          if (bx + tw + 12 > W) bx = m.x - tw - 24;
+          const bw = tw + 8, bh = 19; // 4px padding
+          let bx = m.x + 12, by = m.y - bh - 6;
+          if (bx + bw > W - 4) bx = m.x - bw - 12;
           if (by < 4) by = m.y + 12;
-          ctx.fillStyle = "rgba(24,25,26,0.95)";
-          ctx.strokeStyle = "rgba(35,36,38,1)";
+          ctx.fillStyle = "#18191a";
+          ctx.strokeStyle = "#232426";
           ctx.lineWidth = 1;
           ctx.beginPath();
-          ctx.rect(bx, by, tw + 12, 18);
+          ctx.rect(Math.round(bx) + 0.5, Math.round(by) + 0.5, bw, bh);
           ctx.fill(); ctx.stroke();
           ctx.fillStyle = "rgba(234,234,234,0.95)";
-          ctx.fillText(label, bx + 6, by + 12.5);
+          ctx.fillText(label, bx + 4, by + 13.5);
         }
       }
 
@@ -188,7 +225,7 @@ export function FlowGraph({ nodes, pulse }: { nodes: Node[]; pulse: PulseEvent |
   }, [pulse]);
 
   return (
-    <div className="relative overflow-hidden rounded-xl border" style={{ borderColor: "var(--ct-border)", background: "#0a0a0a" }}>
+    <div className="relative overflow-hidden rounded-xl border" style={{ borderColor: "var(--ct-border)", background: "#060607" }}>
       <canvas ref={ref} className="block h-[420px] w-full" />
       <div className="pointer-events-none absolute left-4 top-3 font-mono text-[11px]" style={{ color: "var(--ct-green)" }}>
         <span className="flex items-center gap-1.5">
