@@ -25,6 +25,8 @@ export function FlowGraph({ nodes, pulse }: { nodes: Node[]; pulse: PulseEvent |
   const lastKeyRef = useRef(-1);
   const nodesRef = useRef<Node[]>(nodes);
   nodesRef.current = nodes;
+  const flareRef = useRef<Map<string, number>>(new Map()); // callsign -> flare start ts
+  const mouseRef = useRef<{ x: number; y: number } | null>(null);
 
   useEffect(() => {
     const canvas = ref.current;
@@ -41,6 +43,14 @@ export function FlowGraph({ nodes, pulse }: { nodes: Node[]; pulse: PulseEvent |
     };
     resize();
     window.addEventListener("resize", resize);
+
+    const onMove = (e: MouseEvent) => {
+      const r = canvas.getBoundingClientRect();
+      mouseRef.current = { x: e.clientX - r.left, y: e.clientY - r.top };
+    };
+    const onLeave = () => { mouseRef.current = null; };
+    canvas.addEventListener("mousemove", onMove);
+    canvas.addEventListener("mouseleave", onLeave);
 
     const px = (u: number) => u * W;
     const py = (v: number) => v * H;
@@ -65,14 +75,35 @@ export function FlowGraph({ nodes, pulse }: { nodes: Node[]; pulse: PulseEvent |
         ctx.stroke();
       }
 
-      // nodes — size by balance, amber flash tone reserved for pulses, base = accent grays
+      // nodes — size by balance, amber for top-10, soft glow, transfer-endpoint flare
+      const now = performance.now();
+      const flares = flareRef.current;
       ranked.forEach((r, idx) => {
         const [u, v] = pos(r.callsign);
         const s = 2 + (r.tokens / maxTok) * 7;
+        // endpoint flare: ramps up fast then decays over ~1s
+        let flare = 0;
+        const ft = flares.get(r.callsign);
+        if (ft !== undefined) {
+          const age = (now - ft) / 1000;
+          if (age >= 1) flares.delete(r.callsign);
+          else flare = age < 0.15 ? age / 0.15 : 1 - (age - 0.15) / 0.85;
+        }
+        const base =
+          idx < 10
+            ? `rgba(245,166,35,${0.85 + 0.15 * flare})`
+            : r.flow > 0
+              ? `rgba(34,197,94,${0.75 + 0.25 * flare})`
+              : r.flow < 0
+                ? `rgba(239,68,68,${0.55 + 0.35 * flare})`
+                : `rgba(234,234,234,${0.35 + 0.45 * flare})`;
+        ctx.shadowColor = base;
+        ctx.shadowBlur = 10 + 14 * flare;
         ctx.beginPath();
-        ctx.arc(px(u), py(v), s, 0, Math.PI * 2);
-        ctx.fillStyle = r.flow > 0 ? "rgba(34,197,94,0.75)" : r.flow < 0 ? "rgba(239,68,68,0.55)" : "rgba(234,234,234,0.35)";
+        ctx.arc(px(u), py(v), s + s * 0.35 * flare, 0, Math.PI * 2);
+        ctx.fillStyle = base;
         ctx.fill();
+        ctx.shadowBlur = 0; // keep edges/labels crisp
         if (idx < 8) {
           ctx.fillStyle = "rgba(234,234,234,0.75)";
           ctx.font = "9px var(--font-jetbrains-mono), monospace";
@@ -98,16 +129,53 @@ export function FlowGraph({ nodes, pulse }: { nodes: Node[]; pulse: PulseEvent |
       }
       particlesRef.current = particles.filter((p) => p.t < 1.15);
 
+      // hover tooltip — hit-test nodes, draw callsign + balance near cursor (canvas-only, no layout shift)
+      const m = mouseRef.current;
+      if (m) {
+        let hit: { r: Node; x: number; y: number; s: number } | null = null;
+        for (let i = ranked.length - 1; i >= 0; i--) {
+          const r = ranked[i];
+          const [u, v] = pos(r.callsign);
+          const s = 2 + (r.tokens / maxTok) * 7;
+          const dx = m.x - px(u), dy = m.y - py(v);
+          if (dx * dx + dy * dy <= (s + 4) * (s + 4)) { hit = { r, x: px(u), y: py(v), s }; break; }
+        }
+        if (hit) {
+          const label = `${hit.r.callsign} · ${hit.r.tokens.toLocaleString("en-US")}`;
+          ctx.font = "10px var(--font-jetbrains-mono), monospace";
+          const tw = ctx.measureText(label).width;
+          let bx = m.x + 12, by = m.y - 24;
+          if (bx + tw + 12 > W) bx = m.x - tw - 24;
+          if (by < 4) by = m.y + 12;
+          ctx.fillStyle = "rgba(24,25,26,0.95)";
+          ctx.strokeStyle = "rgba(35,36,38,1)";
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.rect(bx, by, tw + 12, 18);
+          ctx.fill(); ctx.stroke();
+          ctx.fillStyle = "rgba(234,234,234,0.95)";
+          ctx.fillText(label, bx + 6, by + 12.5);
+        }
+      }
+
       raf = requestAnimationFrame(draw);
     };
     raf = requestAnimationFrame(draw);
-    return () => { cancelAnimationFrame(raf); window.removeEventListener("resize", resize); };
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", resize);
+      canvas.removeEventListener("mousemove", onMove);
+      canvas.removeEventListener("mouseleave", onLeave);
+    };
   }, []);
 
   // fire a new particle whenever a real tape tick lands
   useEffect(() => {
     if (!pulse || pulse.key === lastKeyRef.current) return;
     lastKeyRef.current = pulse.key;
+    const ts = performance.now();
+    flareRef.current.set(pulse.from, ts);
+    flareRef.current.set(pulse.to, ts);
     const canvas = ref.current;
     if (!canvas) return;
     const r = canvas.getBoundingClientRect();
