@@ -65,6 +65,7 @@ export function Matrix() {
   const [historyTick, setHistoryTick] = useState(0);
   const [slots, setSlots] = useState<ActivitySlot[]>([]);
   const [pulse, setPulse] = useState<PulseEvent | null>(null);
+  const [feedTxs, setFeedTxs] = useState<FeedTx[]>([]);
 
   // live token-exchange tape — REAL transactions from the token engine (each signed by the
   // sender's own key, EIP-191, verified on ledger entry). The feed replays through the tape.
@@ -86,6 +87,7 @@ export function Matrix() {
         .then((r) => r.json())
         .then((d) => {
           feed = d.txs || [];
+          setFeedTxs(feed); // real transfer pairs → graph edge topology
           if (d.ranking?.length) {
             setRanking(d.ranking);
             for (const r of d.ranking) {
@@ -170,7 +172,7 @@ export function Matrix() {
 
       {/* WOW centerpiece — live token-flow network graph, fixed-size canvas */}
       <div className="mt-3">
-        <FlowGraph nodes={shown as any} pulse={pulse} />
+        <FlowGraph nodes={shown as any} pulse={pulse} txs={feedTxs} />
       </div>
 
       {/* live token-exchange tape — exchange-grade ticker */}

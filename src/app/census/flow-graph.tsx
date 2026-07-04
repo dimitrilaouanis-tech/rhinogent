@@ -3,24 +3,29 @@
 import { useEffect, useRef, useState } from "react";
 import { FlowGraphCanvas2D, pos, type Node } from "./flow-graph-2d";
 
-// WOW CENTERPIECE v4 — live token-flow network graph, now on the GPU via @cosmos.gl/graph
-// (the actively-maintained successor to @cosmograph/cosmos v2+; see final report for why).
-// Same deterministic polar layout as before (pos()), same steel/amber palette, same pulse
-// language — just rendered with WebGL point/line shaders instead of hand-rolled 2D canvas
-// paths, so it scales to far more nodes/edges at 60fps. Falls back to the retained 2D
-// canvas renderer (flow-graph-2d.tsx) if WebGL is unavailable or Cosmos fails to init.
+// WOW CENTERPIECE v5 — Obsidian-style live token-flow graph on @cosmos.gl/graph.
+// Round 5 changes: the GPU force simulation now RUNS (no more frozen deterministic layout),
+// and the topology is REAL — edges are built from actual signed token transfers (seeded from
+// the feed's txs, accumulated live as pulses arrive), not a decorative star around an
+// invisible hub. Agents with no transfers float unlinked at the periphery like orphan notes.
+// After a short simulation warmup the view fits to the whole graph (~10% padding) so it never
+// loads pre-zoomed into the middle. 2D canvas fallback (flow-graph-2d.tsx) unchanged.
 
 export type PulseEvent = { from: string; to: string; amount: number; key: number };
+export type TxEdge = { from: string; to: string };
 
-// cosmos space is a square of side `spaceSize` (config, default 4096) centered at spaceSize/2.
-// pos() returns normalized [0..1]-ish coordinates around (0.5, 0.5) — scale into cosmos space.
 const SPACE = 4096;
 const toSpace = (u: number, v: number): [number, number] => [u * SPACE, v * SPACE];
 
-// original 2D renderer sized dots 2.5-7px (2.5 + tokens-ratio*4.5). Cosmos point size units
-// are roughly comparable "pixel-ish" units at pointSizeScale=1 (its own default point size is 4),
-// so we reuse the same 2.5-7 range directly — visually matches the prior renderer 1:1 on screen.
+// same 2.5-7 "pixel-ish" size range as the original 2D renderer (see v4 notes)
 const sizeFor = (tokens: number, maxTok: number) => 2.5 + (tokens / maxTok) * 4.5;
+
+const MAX_EDGES = 600;          // perf cap — prune oldest pair beyond this
+const REST_ALPHA = 0.05;        // hairline link at rest
+const BASE_WIDTH = 0.5;
+const widthFor = (count: number) => Math.min(BASE_WIDTH + 0.35 * (count - 1), 2.2); // grows with repeats, capped
+
+type Edge = { a: number; b: number; count: number; linkIdx: number };
 
 function webglAvailable(): boolean {
   try {
@@ -31,7 +36,7 @@ function webglAvailable(): boolean {
   }
 }
 
-export function FlowGraph({ nodes, pulse }: { nodes: Node[]; pulse: PulseEvent | null }) {
+export function FlowGraph({ nodes, pulse, txs }: { nodes: Node[]; pulse: PulseEvent | null; txs?: TxEdge[] }) {
   const [useFallback, setUseFallback] = useState(false);
   const [ready, setReady] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -39,10 +44,56 @@ export function FlowGraph({ nodes, pulse }: { nodes: Node[]; pulse: PulseEvent |
   const graphRef = useRef<any>(null);
   const nodesRef = useRef<Node[]>(nodes);
   nodesRef.current = nodes;
+  const txsRef = useRef<TxEdge[] | undefined>(txs);
+  txsRef.current = txs;
   const indexRef = useRef<Map<string, number>>(new Map());
+  // undirected edge accumulator: "lo-hi" point-index pair -> Edge (insertion order = age)
+  const edgesRef = useRef<Map<string, Edge>>(new Map());
+  const seededRef = useRef(false);
   const lastKeyRef = useRef(-1);
   const flareRafRef = useRef<number | null>(null);
+  const fittedRef = useRef(false);
   const tooltipRef = useRef<HTMLDivElement>(null);
+
+  // Add/bump an undirected edge between two point indices. Returns true if the edge SET
+  // changed (new pair or prune) — repeat transfers only bump count/width.
+  const addEdge = (a: number, b: number): boolean => {
+    if (a === b) return false;
+    const key = a < b ? `${a}-${b}` : `${b}-${a}`;
+    const edges = edgesRef.current;
+    const existing = edges.get(key);
+    if (existing) {
+      existing.count += 1;
+      return false;
+    }
+    edges.set(key, { a, b, count: 1, linkIdx: -1 });
+    if (edges.size > MAX_EDGES) {
+      const oldest = edges.keys().next().value as string | undefined;
+      if (oldest !== undefined) edges.delete(oldest);
+    }
+    return true;
+  };
+
+  // Rebuild cosmos link arrays from the edge map (only called when the set changes or a
+  // pulse needs fresh widths — never per-frame). Assigns each edge its current linkIdx.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const pushLinks = (graph: any) => {
+    const edges = [...edgesRef.current.values()];
+    const links = new Float32Array(edges.length * 2);
+    const linkColors = new Float32Array(edges.length * 4);
+    const linkWidths = new Float32Array(edges.length);
+    edges.forEach((e, i) => {
+      e.linkIdx = i;
+      links[i * 2] = e.a;
+      links[i * 2 + 1] = e.b;
+      linkColors[i * 4] = 1; linkColors[i * 4 + 1] = 1; linkColors[i * 4 + 2] = 1;
+      linkColors[i * 4 + 3] = REST_ALPHA;
+      linkWidths[i] = widthFor(e.count);
+    });
+    graph.setLinks(links);
+    graph.setLinkColors(linkColors);
+    graph.setLinkWidths(linkWidths);
+  };
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -56,6 +107,13 @@ export function FlowGraph({ nodes, pulse }: { nodes: Node[]; pulse: PulseEvent |
     let disposed = false;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let graph: any = null;
+    let fitTimer: ReturnType<typeof setTimeout> | null = null;
+
+    const fitOnce = (duration = 500) => {
+      if (disposed || fittedRef.current || !graph) return;
+      fittedRef.current = true;
+      try { graph.fitView(duration, 0.1); } catch { /* view not ready */ }
+    };
 
     (async () => {
       try {
@@ -68,6 +126,7 @@ export function FlowGraph({ nodes, pulse }: { nodes: Node[]; pulse: PulseEvent |
         ranked.forEach((r, i) => idx.set(r.callsign, i));
         indexRef.current = idx;
 
+        // deterministic seed positions from pos() — the force simulation takes it from here
         const positions = new Float32Array(ranked.length * 2);
         const colors = new Float32Array(ranked.length * 4);
         const sizes = new Float32Array(ranked.length);
@@ -84,31 +143,15 @@ export function FlowGraph({ nodes, pulse }: { nodes: Node[]; pulse: PulseEvent |
           sizes[i] = sizeFor(r.tokens, maxTok);
         });
 
-        // star topology: every node linked back to a virtual center (index = ranked.length),
-        // matching the original renderer's center-out curved-edge look.
-        const centerIdx = ranked.length;
-        const centerPos: [number, number] = toSpace(0.5, 0.5);
-        const allPositions = new Float32Array((ranked.length + 1) * 2);
-        allPositions.set(positions);
-        allPositions[centerIdx * 2] = centerPos[0];
-        allPositions[centerIdx * 2 + 1] = centerPos[1];
-        const allColors = new Float32Array((ranked.length + 1) * 4);
-        allColors.set(colors);
-        allColors[centerIdx * 4 + 3] = 0; // invisible center hub point
-        const allSizes = new Float32Array(ranked.length + 1);
-        allSizes.set(sizes);
-        allSizes[centerIdx] = 0;
-
-        const links = new Float32Array(ranked.length * 2);
-        const linkColors = new Float32Array(ranked.length * 4);
-        const linkWidths = new Float32Array(ranked.length);
-        ranked.forEach((_, i) => {
-          links[i * 2] = centerIdx;
-          links[i * 2 + 1] = i;
-          linkColors[i * 4] = 1; linkColors[i * 4 + 1] = 1; linkColors[i * 4 + 2] = 1;
-          linkColors[i * 4 + 3] = 0.05; // hairline at rest, matches original rgba(255,255,255,0.05)
-          linkWidths[i] = 0.5;
-        });
+        // seed the REAL topology from the feed's actual signed transfers, if the feed
+        // already loaded (the effect below handles the usual case where it arrives later)
+        if ((txsRef.current || []).length && !seededRef.current) {
+          seededRef.current = true;
+          for (const t of txsRef.current || []) {
+            const a = idx.get(t.from), b = idx.get(t.to);
+            if (a !== undefined && b !== undefined) addEdge(a, b);
+          }
+        }
 
         graph = new Graph(container, {
           backgroundColor: "transparent",
@@ -118,24 +161,26 @@ export function FlowGraph({ nodes, pulse }: { nodes: Node[]; pulse: PulseEvent |
           curvedLinkControlPointDistance: 0.4,
           pointDefaultSize: 4,
           pointSizeScale: 1,
-          linkDefaultWidth: 0.5,
+          linkDefaultWidth: BASE_WIDTH,
           linkWidthScale: 1,
           linkOpacity: 1,
           renderHoveredPointRing: false,
           enableZoom: true,
-          enableDrag: false,
-          fitViewOnInit: true,
-          fitViewPadding: 0.15,
+          enableDrag: true,
+          fitViewOnInit: false, // we fit ourselves after simulation warmup
           scalePointsOnZoom: false,
-          // gentle settle: low repulsion/gravity, higher decay so it cools down and stops
-          simulationGravity: 0.1,
-          simulationRepulsion: 0.4,
-          simulationLinkSpring: 0.3,
-          simulationLinkDistance: 40,
-          simulationFriction: 0.9,
-          simulationDecay: 8000,
+          // Obsidian-style organic settle: real force simulation, gentle forces, high
+          // friction + fast decay so clusters form calmly then freeze.
+          enableSimulation: true,
+          simulationGravity: 0.2,
+          simulationCenter: 0.4,
+          simulationRepulsion: 1.0,
+          simulationLinkSpring: 0.6,
+          simulationLinkDistance: 18,
+          simulationFriction: 0.85,
+          simulationDecay: 2500,
+          onSimulationEnd: () => fitOnce(500),
           onPointMouseOver: (index: number, pointPosition: [number, number]) => {
-            if (index === centerIdx) return;
             const r = ranked[index];
             const tip = tooltipRef.current;
             if (!r || !tip || !graph) return;
@@ -157,13 +202,15 @@ export function FlowGraph({ nodes, pulse }: { nodes: Node[]; pulse: PulseEvent |
           },
         });
 
-        graph.setPointPositions(allPositions);
-        graph.setPointColors(allColors);
-        graph.setPointSizes(allSizes);
-        graph.setLinks(links);
-        graph.setLinkColors(linkColors);
-        graph.setLinkWidths(linkWidths);
+        graph.setPointPositions(positions);
+        graph.setPointColors(colors);
+        graph.setPointSizes(sizes);
+        pushLinks(graph);
         graph.render();
+        graph.start(1); // kick the force simulation from the seeded layout
+
+        // fit the whole graph after warmup even if the sim hasn't fully cooled yet
+        fitTimer = setTimeout(() => fitOnce(600), 900);
 
         graphRef.current = graph;
         setReady(true);
@@ -175,6 +222,7 @@ export function FlowGraph({ nodes, pulse }: { nodes: Node[]; pulse: PulseEvent |
 
     return () => {
       disposed = true;
+      if (fitTimer) clearTimeout(fitTimer);
       if (flareRafRef.current) cancelAnimationFrame(flareRafRef.current);
       graphRef.current?.destroy?.();
       graphRef.current = null;
@@ -182,9 +230,30 @@ export function FlowGraph({ nodes, pulse }: { nodes: Node[]; pulse: PulseEvent |
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // pulse: light up the from/to link + flare the two endpoint points, decaying over ~1s.
-  // Only runs the rAF loop while a flare is actively decaying (cosmos does not require a
-  // continuous render() call once idle — it keeps drawing the last frame on its own canvas).
+  // late feed arrival: seed the transaction topology once the txs prop is populated
+  // (matrix.tsx fetches token_feed.json after this component has already mounted)
+  useEffect(() => {
+    if (!ready || seededRef.current || !txs || !txs.length) return;
+    seededRef.current = true;
+    const graph = graphRef.current;
+    const idx = indexRef.current;
+    if (!graph) return;
+    let changed = false;
+    for (const t of txs) {
+      const a = idx.get(t.from), b = idx.get(t.to);
+      if (a !== undefined && b !== undefined) changed = addEdge(a, b) || changed;
+    }
+    if (changed) {
+      pushLinks(graph);
+      graph.render();
+      graph.start(0.6); // let the sim pull the real clusters together
+      fittedRef.current = false; // topology just materialized — allow one refit on settle
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [txs, ready]);
+
+  // pulse: a REAL transfer arrived — grow the edge set (new link or heavier repeat link),
+  // then brighten that link + flare the two endpoints, decaying over ~1s.
   useEffect(() => {
     if (!ready || !pulse || pulse.key === lastKeyRef.current) return;
     lastKeyRef.current = pulse.key;
@@ -194,6 +263,16 @@ export function FlowGraph({ nodes, pulse }: { nodes: Node[]; pulse: PulseEvent |
     const fromIdx = idx.get(pulse.from);
     const toIdx = idx.get(pulse.to);
     if (fromIdx === undefined || toIdx === undefined) return;
+
+    // accumulate the transaction edge; rebuild link arrays only on set change or width bump
+    const setChanged = addEdge(fromIdx, toIdx);
+    pushLinks(graph);
+    if (setChanged) graph.start(0.12); // gentle reheat so a brand-new link tugs its endpoints
+
+    const key = fromIdx < toIdx ? `${fromIdx}-${toIdx}` : `${toIdx}-${fromIdx}`;
+    const edge = edgesRef.current.get(key);
+    const linkIdx = edge ? edge.linkIdx : -1;
+    const restWidth = edge ? widthFor(edge.count) : BASE_WIDTH;
 
     const ranked = nodesRef.current.slice(0, 120);
     const maxTok = Math.max(1, ...ranked.map((r) => r.tokens));
@@ -223,14 +302,18 @@ export function FlowGraph({ nodes, pulse }: { nodes: Node[]; pulse: PulseEvent |
       graph.setPointSizes(sizes);
       graph.setPointColors(colors);
 
-      // brighten the from/to hairline link (warm near-white) while decaying
-      const linkColors = graph.getLinkColors();
-      const linkWidths = graph.getLinkWidths();
-      linkColors[toIdx * 4] = 1; linkColors[toIdx * 4 + 1] = 246 / 255; linkColors[toIdx * 4 + 2] = 230 / 255;
-      linkColors[toIdx * 4 + 3] = 0.05 + 0.4 * envelope;
-      linkWidths[toIdx] = 0.5 + 2 * envelope;
-      graph.setLinkColors(linkColors);
-      graph.setLinkWidths(linkWidths);
+      // brighten the transaction's link (warm near-white) while decaying
+      if (linkIdx >= 0) {
+        const linkColors = graph.getLinkColors();
+        const linkWidths = graph.getLinkWidths();
+        if (linkIdx * 4 + 3 < linkColors.length) {
+          linkColors[linkIdx * 4] = 1; linkColors[linkIdx * 4 + 1] = 246 / 255; linkColors[linkIdx * 4 + 2] = 230 / 255;
+          linkColors[linkIdx * 4 + 3] = REST_ALPHA + 0.4 * envelope;
+          linkWidths[linkIdx] = restWidth + 2 * envelope;
+          graph.setLinkColors(linkColors);
+          graph.setLinkWidths(linkWidths);
+        }
+      }
       graph.render();
 
       if (age < 1) {
@@ -239,17 +322,22 @@ export function FlowGraph({ nodes, pulse }: { nodes: Node[]; pulse: PulseEvent |
         // restore rest state exactly
         graph.setPointSizes(baseSizes);
         graph.setPointColors(baseColors);
-        const restColors = graph.getLinkColors();
-        const restWidths = graph.getLinkWidths();
-        restColors[toIdx * 4 + 3] = 0.05;
-        restWidths[toIdx] = 0.5;
-        graph.setLinkColors(restColors);
-        graph.setLinkWidths(restWidths);
+        if (linkIdx >= 0) {
+          const restColors = graph.getLinkColors();
+          const restWidths = graph.getLinkWidths();
+          if (linkIdx * 4 + 3 < restColors.length) {
+            restColors[linkIdx * 4 + 3] = REST_ALPHA;
+            restWidths[linkIdx] = restWidth;
+            graph.setLinkColors(restColors);
+            graph.setLinkWidths(restWidths);
+          }
+        }
         graph.render();
         flareRafRef.current = null;
       }
     };
     flareRafRef.current = requestAnimationFrame(step);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pulse, ready]);
 
   if (useFallback) {
@@ -271,7 +359,7 @@ export function FlowGraph({ nodes, pulse }: { nodes: Node[]; pulse: PulseEvent |
       <div className="pointer-events-none absolute left-4 top-3 font-mono text-[11px]" style={{ color: "var(--ct-green)" }}>
         <span className="flex items-center gap-1.5">
           <span className="h-1.5 w-1.5 animate-pulse rounded-full" style={{ background: "var(--ct-green)" }} />
-          LIVE TOKEN-FLOW NETWORK · node size = balance · pulses = real signed transfers
+          LIVE TOKEN-FLOW NETWORK · node size = balance · edges = real signed transfers
         </span>
       </div>
     </div>
