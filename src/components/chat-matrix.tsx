@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { getWallet, spend, grant, PRICES } from "@/lib/wallet";
 
 // The chat surface: a DELICATE living matrix (fine lines, low opacity, slow drift — a quiet
 // backdrop, not a toy) with the chat bar underneath. Connected to the 0n1x brain (the signed
@@ -72,14 +73,26 @@ export function ChatMatrix() {
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
+  const [balance, setBalance] = useState<number>(0);
   const scroller = useRef<HTMLDivElement>(null);
 
   useEffect(() => { resolvePortal(); }, []);
+  useEffect(() => {
+    getWallet().then((w) => setBalance(w.balance));
+    const onCh = (e: Event) => setBalance((e as CustomEvent).detail.balance);
+    window.addEventListener("wallet:change", onCh);
+    return () => window.removeEventListener("wallet:change", onCh);
+  }, []);
   useEffect(() => { scroller.current?.scrollTo(0, scroller.current.scrollHeight); }, [msgs, busy]);
 
   async function send() {
     const q = input.trim();
     if (!q || busy) return;
+    const pay = await spend(PRICES.chatMessage, "premium chat");
+    if (!pay.ok) {
+      setMsgs((m) => [...m, { role: "assistant", text: `Premium chat costs ${PRICES.chatMessage} TOKEN per message and your balance is ${pay.balance}. Tap “+250 grant” to top up (demo), then try again.` }]);
+      return;
+    }
     setInput(""); setMsgs((m) => [...m, { role: "user", text: q }]); setBusy(true);
     try {
       await resolvePortal();
@@ -96,6 +109,13 @@ export function ChatMatrix() {
 
   return (
     <div className="mx-auto flex h-[calc(100vh-140px)] w-full max-w-3xl flex-col px-4">
+      <div className="mb-2 flex items-center justify-between rounded-xl border border-border bg-surface/50 px-4 py-2 font-mono text-[12px]">
+        <span className="text-muted">PREMIUM CHAT · <span className="text-foreground">{PRICES.chatMessage} TOKEN</span>/message</span>
+        <span className="flex items-center gap-3">
+          <span className="text-muted">balance <b className="text-accent" style={{ color: "#3fdda0" }}>{balance.toLocaleString()}</b> TOKEN</span>
+          <button onClick={() => grant(250, "demo top-up").then(setBalance)} className="rounded-full border border-border px-2.5 py-0.5 text-[11px] text-muted hover:text-foreground">+250 grant</button>
+        </span>
+      </div>
       {/* delicate matrix backdrop with the conversation over it */}
       <div className="relative flex-1 overflow-hidden rounded-2xl border border-border bg-surface/40">
         <DelicateMatrix />
