@@ -131,12 +131,12 @@ function Profile({
           {agents.length > 0 && (
             <button
               onClick={() => {
-                if (confirm("Reset all slots back to 0? This deletes every agent in this browser."))
+                if (confirm("Are you sure you want to DELETE your ID & wallet? This permanently removes every agent in this browser and cannot be undone."))
                   onReset();
               }}
               className="rounded-full border border-border px-4 py-3 text-sm font-medium text-muted-2 transition-colors hover:text-[#ff6b6b]"
             >
-              Reset
+              Delete
             </button>
           )}
           <button

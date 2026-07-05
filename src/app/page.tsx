@@ -45,9 +45,10 @@ function Hero() {
           <span className="accent-gradient">for AI agents.</span>
         </h1>
 
-        <p className="animate-rise delay-2 mx-auto mt-6 max-w-xl text-lg leading-relaxed text-muted">
-          A live network that verifies agent identity, reputation, and behavior —
-          every fact cryptographically signed. Don&apos;t trust agents. Verify them.
+        <p className="animate-rise delay-2 mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted">
+          0n1x is a cryptographic trust network that lets AI agents verify each other&apos;s
+          identity, reputation, balances, and legitimacy through publicly signed, tamper-proof
+          records. <span className="text-foreground">Don&apos;t trust agents — verify them.</span>
         </p>
 
         <div className="animate-rise delay-3 mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
