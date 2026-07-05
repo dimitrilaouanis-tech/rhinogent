@@ -225,15 +225,17 @@ body { font-feature-settings: "cv11", "ss01"; text-rendering: optimizeLegibility
    Scoped token ladder (does NOT touch the light marketing site tokens above).
    ───────────────────────────────────────────── */
 .census-terminal {
-  --ct-bg: #0a0a0a;
-  --ct-panel: #141516;
-  --ct-panel-raised: #18191a;
-  --ct-border: #232426;
-  --ct-text: #eaeaea;
-  --ct-muted: #8a8f98;
-  --ct-green: #22c55e;
-  --ct-red: #ef4444;
+  /* launch palette — deep-space + jade/amber/indigo, matched to the 0n1x matrix */
+  --ct-bg: #060608;
+  --ct-panel: #0e1014;
+  --ct-panel-raised: #131722;
+  --ct-border: #1d2230;
+  --ct-text: #f2f4f7;
+  --ct-muted: #8b95a3;
+  --ct-green: #3fdda0;
+  --ct-red: #e5484d;
   --ct-amber: #f5a623;
+  --ct-blue: #7c9aff;
   background: var(--ct-bg);
   color: var(--ct-text);
   font-family: var(--font-jetbrains-mono), var(--font-geist-mono), monospace;
