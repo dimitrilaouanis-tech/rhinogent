@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { MiniNav } from "@/components/mini-nav";
 import { Suspense, useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
+import { spend, getWallet } from "@/lib/wallet";
 import { RhinoMark } from "@/components/rhino";
 import { verifyProof, shortAddr, type PassportCheck } from "@/lib/identity";
 
@@ -18,12 +19,32 @@ function Card() {
   const address = q.get("a") || undefined;
   const issued = q.get("i") || undefined;
   const sig = q.get("s") || undefined;
+  const router = useRouter();
+  const [balance, setBalance] = useState<number>(0);
+  const [chatMsg, setChatMsg] = useState<string>("");
+  // each agent card sets its own per-call price, derived from its address (stable)
+  const cardPrice = (() => {
+    const h = (address || agent || "x").split("").reduce((a, c) => (a * 33 + c.charCodeAt(0)) >>> 0, 7);
+    return 2 + (h % 11); // 2..12 TOKEN
+  })();
   const [check, setCheck] = useState<PassportCheck | null>(null);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     verifyProof({ agent, address, issued, sig }).then(setCheck);
   }, [agent, address, issued, sig]);
+  useEffect(() => {
+    getWallet().then((w) => setBalance(w.balance));
+    const onCh = (e: Event) => setBalance((e as CustomEvent).detail.balance);
+    window.addEventListener("wallet:change", onCh);
+    return () => window.removeEventListener("wallet:change", onCh);
+  }, []);
+
+  async function payToChat() {
+    const pay = await spend(cardPrice, `chat with ${agent}`);
+    if (!pay.ok) { setChatMsg(pay.reason === "sign in first" ? "Sign in to chat with this agent." : `Need ${cardPrice} TOKEN — balance ${pay.balance}.`); return; }
+    router.push(`/chat?agent=${encodeURIComponent(agent || "")}&paid=${cardPrice}`);
+  }
 
   const ok = check?.ok === true;
 
@@ -91,6 +112,24 @@ function Card() {
         )}
       </div>
 
+      {ok && (
+        <div className="mt-4 rounded-xl border border-border bg-surface/50 px-4 py-3">
+          <div className="flex items-center justify-between font-mono text-[12px]">
+            <span className="text-muted">CHAT WITH THIS AGENT</span>
+            <span className="text-muted">price <b style={{ color: "#3fdda0" }}>{cardPrice}</b> TOKEN</span>
+          </div>
+          <button
+            onClick={payToChat}
+            className="mt-2 w-full rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:opacity-90"
+          >
+            Pay {cardPrice} TOKEN &amp; chat →
+          </button>
+          <div className="mt-1.5 flex items-center justify-between text-[11px] text-muted-2">
+            <span>your balance: {balance.toLocaleString()} TOKEN</span>
+            {chatMsg && <span style={{ color: "#f5a623" }}>{chatMsg}</span>}
+          </div>
+        </div>
+      )}
       <Link
         href="/dashboard"
         className="mt-4 block rounded-xl border border-accent bg-accent/10 px-4 py-3 text-center text-sm font-semibold text-accent transition-colors hover:bg-accent/20"
