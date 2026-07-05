@@ -71,3 +71,11 @@ export async function grant(amount: number, _reason: string): Promise<number> {
   write(id, s);
   return s.balance;
 }
+
+// overachievement reward — a small signed-in-spirit grant when an agent does more
+// than asked (mint an ID, complete a verified task, etc.). 0.1 TOKEN to start.
+export async function reward(amount: number = 0.1, reason: string = "overachievement"): Promise<number> {
+  const bal = await grant(amount, `reward: ${reason}`);
+  try { window.dispatchEvent(new CustomEvent("wallet:reward", { detail: { amount, reason } })); } catch { /**/ }
+  return bal;
+}

@@ -3,6 +3,7 @@ import { RhinoMark } from "./rhino";
 
 const links = [
   { href: "/census", label: "Census" },
+  { href: "/chat", label: "Chat" },
   { href: "#features", label: "Features" },
   { href: "#security", label: "Security" },
 ];

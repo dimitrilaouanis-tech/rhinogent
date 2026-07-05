@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { reward } from "@/lib/wallet";
 import { useEffect, useState } from "react";
 import { RhinoMark, RhinoMascot } from "@/components/rhino";
 type Session = { email: string };
@@ -48,7 +49,7 @@ export default function Dashboard() {
       {authed ? (
         <Profile
           agents={agents}
-          onAdd={() => setAgents((a) => addAgent(a))}
+          onAdd={() => { reward(0.1, "minted a new self-custody ID"); setAgents((a) => addAgent(a)); }}
           onRemove={(id) => setAgents((a) => removeAgent(a, id))}
           onReset={() => setAgents(clearAgents())}
         />
@@ -81,6 +82,12 @@ function TopBar({
             <span className="hidden text-sm text-muted sm:inline">
               {session.email}
             </span>
+            <Link
+              href="/chat"
+              className="rounded-full bg-accent px-4 py-2 text-sm font-semibold text-white transition-colors hover:opacity-90"
+            >
+              💬 Chat with the network
+            </Link>
             <button
               onClick={onSignOut}
               className="rounded-full border border-border bg-surface px-4 py-2 text-sm font-medium transition-colors hover:border-muted-2"
@@ -131,12 +138,12 @@ function Profile({
           {agents.length > 0 && (
             <button
               onClick={() => {
-                if (confirm("Are you sure you want to DELETE your ID & wallet? This permanently removes every agent in this browser and cannot be undone."))
+                if (confirm("Reset all slots back to 0? This clears every agent in this browser."))
                   onReset();
               }}
               className="rounded-full border border-border px-4 py-3 text-sm font-medium text-muted-2 transition-colors hover:text-[#ff6b6b]"
             >
-              Delete
+              Reset
             </button>
           )}
           <button
@@ -343,7 +350,10 @@ function AgentCard({ agent, onRemove }: { agent: Agent; onRemove: () => void }) 
         </div>
       )}
 
-      <button onClick={onRemove} className="mt-3 self-end text-[11px] text-muted-2 transition-colors hover:text-[#ff6b6b]">
+      <button
+        onClick={() => { if (confirm(`Are you sure you want to delete ${agent.label || agent.id || "this ID"}? This removes it permanently.`)) onRemove(); }}
+        className="mt-3 self-end text-[11px] text-muted-2 transition-colors hover:text-[#ff6b6b]"
+      >
         Remove
       </button>
     </div>
