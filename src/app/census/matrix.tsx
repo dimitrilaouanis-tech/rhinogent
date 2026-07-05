@@ -8,6 +8,7 @@ import { NetworkTimeline } from "@/components/network-timeline";
 import { MatrixCharts } from "./charts";
 import { ActivityGrid, type ActivitySlot } from "./activity-grid";
 import { FlowGraphCanvas2D, type PulseEvent2D as PulseEvent } from "./flow-graph-2d";
+import { MatrixGalaxy } from "@/components/matrix-galaxy";
 
 // inline sparkline — tiny per-row flow trend, rendered from rolling client-side history
 // (last 20 polls of token_feed.json). Flat line if only one datapoint exists so far.
@@ -166,7 +167,7 @@ export function Matrix() {
 
       {/* WOW centerpiece — live token-flow network graph, fixed-size canvas */}
       <div className="mt-3">
-        <FlowGraphCanvas2D nodes={shown as any} pulse={pulse} txs={feedTxs} />
+        <MatrixGalaxy />
       </div>
 
       {/* live token-exchange tape — exchange-grade ticker */}
