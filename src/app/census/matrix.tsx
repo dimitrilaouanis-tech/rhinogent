@@ -155,7 +155,7 @@ export function Matrix() {
         <div className="ml-auto flex items-center gap-5 font-mono">
           <div className="text-right">
             <p className="text-[9px] uppercase tracking-widest" style={{ color: "var(--ct-muted)" }}>agents</p>
-            <p className="text-sm font-bold ct-num" style={{ color: "var(--ct-text)" }}>{ECOSYSTEM_COUNT.toLocaleString()}</p>
+            <p className="text-sm font-bold ct-num" style={{ color: "var(--ct-text)" }}>{(manifest?.count || ECOSYSTEM_COUNT).toLocaleString()}</p>
           </div>
           <div className="text-right">
             <p className="text-[9px] uppercase tracking-widest" style={{ color: "var(--ct-muted)" }}>tokens in circulation</p>
@@ -222,7 +222,7 @@ export function Matrix() {
         <input
           value={query}
           onChange={(e) => search(e.target.value)}
-          placeholder={`Search all ${ECOSYSTEM_COUNT.toLocaleString()} agents — callsign or address…`}
+          placeholder={`Search all ${(manifest?.count || ECOSYSTEM_COUNT).toLocaleString()} agents — callsign or address…`}
           className="w-full rounded-xl border px-4 py-2.5 font-mono text-[13px] outline-none"
           style={{ borderColor: "var(--ct-border)", background: "var(--ct-panel)", color: "var(--ct-text)" }}
         />
