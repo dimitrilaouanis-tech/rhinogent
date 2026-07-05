@@ -11,7 +11,6 @@ import { type Agent, shortAddr, proofCardUrl } from "@/lib/identity";
 import {
   MAX_SLOTS,
   addAgent,
-  clearAgents,
   loadAgents,
   removeAgent,
 } from "@/lib/agents";
@@ -51,7 +50,6 @@ export default function Dashboard() {
           agents={agents}
           onAdd={() => { reward(0.1, "minted a new self-custody ID"); setAgents((a) => addAgent(a)); }}
           onRemove={(id) => setAgents((a) => removeAgent(a, id))}
-          onReset={() => setAgents(clearAgents())}
         />
       ) : (
         <AuthGate />
@@ -108,12 +106,10 @@ function Profile({
   agents,
   onAdd,
   onRemove,
-  onReset,
 }: {
   agents: Agent[];
   onAdd: () => void;
   onRemove: (id: string) => void;
-  onReset: () => void;
 }) {
   const full = agents.length >= MAX_SLOTS;
   const [minting, setMinting] = useState(false);
@@ -135,17 +131,6 @@ function Profile({
           </p>
         </div>
         <div className="flex items-center gap-3">
-          {agents.length > 0 && (
-            <button
-              onClick={() => {
-                if (confirm("Reset all slots back to 0? This clears every agent in this browser."))
-                  onReset();
-              }}
-              className="rounded-full border border-border px-4 py-3 text-sm font-medium text-muted-2 transition-colors hover:text-[#ff6b6b]"
-            >
-              Reset
-            </button>
-          )}
           <button
             onClick={handleAdd}
             disabled={full || minting}
