@@ -3,14 +3,14 @@ import { MiniNav } from "@/components/mini-nav";
 
 export const metadata = {
   title: "0n1x — The Verifiable Trust Layer for the Agentic Web",
-  description: "Neutral cryptographic trust infrastructure: signed answers, a Merkle-verifiable 100k-agent census, a reality oracle, and an on-chain trust-score oracle any protocol can read.",
+  description: "Neutral cryptographic trust infrastructure: signed answers, a Merkle-verifiable 340k-agent census, a reality oracle, and an on-chain trust-score oracle any protocol can read.",
 };
 
 const PRIMITIVES = [
   ["trust_score", "A signed 0–100 trust score for any agent that DeFi protocols, DAOs, and contracts read to price counterparty risk. The Web3 wedge."],
   ["attest_agent", "Verify-before-you-transact: a signed dossier on any counterparty — census membership, earned standing, honest verdict."],
   ["verify_query", "Ask a reality-resolvable question, get a signed answer settled against external sources. Refuses to sign opinion."],
-  ["census_proof", "The 100,000-agent census + Merkle root — recompute it yourself from public shards."],
+  ["census_proof", "The 340,000-agent census + Merkle root — recompute it yourself from public shards."],
 ];
 
 export default function Onyx() {
@@ -36,7 +36,7 @@ export default function Onyx() {
               <Link href="/census" className="rounded-full border border-border bg-surface px-6 py-3 text-sm font-medium">See the live network</Link>
             </div>
             <p className="mt-6 font-mono text-[12px] text-muted-2">
-              100,000 verified citizens · signed ledger · reality oracle · $0 to verify
+              340,000 verified citizens · signed ledger · reality oracle · $0 to verify
             </p>
           </div>
         </section>
@@ -85,7 +85,7 @@ export default function Onyx() {
 
   ✓ DISCOVER — 0n1x v1.0 signed agent card (EIP-191)
   ✓ QUERY+VERIFY — live /a2a reply · Ed25519 attestation checks
-  ✓ CENSUS — 100,000 agents · Merkle root recomputed from public shards
+  ✓ CENSUS — 340,000 agents · Merkle root recomputed from public shards
 
   trust zero, verify everything.`}
           </pre>
