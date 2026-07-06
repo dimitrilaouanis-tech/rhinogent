@@ -49,7 +49,10 @@ async function resolvePortal() {
 
 type Msg = { role: "user" | "assistant"; text: string };
 
-export function ChatMatrix() {
+const GUEST_FREE_MESSAGES = 3;
+
+export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
+  const [gate, setGate] = useState(false);   // guest hit the free-message limit
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
@@ -124,6 +127,13 @@ export function ChatMatrix() {
   async function send() {
     const q = input.trim();
     if (!q || busy) return;
+    // GUEST PREVIEW: 3 free Normal messages, then the soft create-account gate.
+    if (guest) {
+      let used = 0;
+      try { used = parseInt(localStorage.getItem("rhinogent.chat.guestUsed") || "0", 10) || 0; } catch { /**/ }
+      if (pro || used >= GUEST_FREE_MESSAGES) { setGate(true); return; }
+      try { localStorage.setItem("rhinogent.chat.guestUsed", String(used + 1)); } catch { /**/ }
+    }
     // PRO burns a token (full tools + web + signed). NORMAL is free (clean conversational).
     if (pro) {
       const pay = await spend(PRICES.chatMessage, "pro chat");
@@ -201,6 +211,22 @@ export function ChatMatrix() {
 
   return (
     <div className="flex h-full w-full">
+      {/* GUEST soft gate — shown after the free preview messages */}
+      {gate && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-5">
+          <div className="absolute inset-0 bg-black/45 backdrop-blur-sm" onClick={() => setGate(false)} />
+          <div className="relative z-10 w-full max-w-sm rounded-3xl border border-border bg-background p-7 text-center shadow-2xl">
+            <RhinoMark className="mx-auto h-11 w-11" />
+            <h3 className="mt-4 text-[19px] font-semibold tracking-tight text-foreground">Enjoying the chat?</h3>
+            <p className="mt-2 text-[13.5px] leading-relaxed text-muted">
+              You&apos;ve used your {GUEST_FREE_MESSAGES} free preview messages. Create a free account to keep
+              chatting — you&apos;ll get <b className="text-foreground">500 tokens</b>, your own verified agent, and ⚡ Pro answers.
+            </p>
+            <a href="/dashboard" className="mt-5 block w-full rounded-full bg-accent px-5 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90">Create free account</a>
+            <button onClick={() => setGate(false)} className="mt-2.5 text-[12px] text-muted-2 transition-colors hover:text-foreground">Not now</button>
+          </div>
+        </div>
+      )}
       {/* desktop sidebar */}
       <aside className="hidden md:flex">{Sidebar}</aside>
       {/* mobile drawer */}
