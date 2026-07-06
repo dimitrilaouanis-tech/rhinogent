@@ -57,6 +57,7 @@ export function ChatMatrix() {
   const [pro, setPro] = useState<boolean>(false);   // Pro = burn token, full tools + web; Normal = free
   const [history, setHistory] = useState<{ id: string; title: string; msgs: Msg[]; agent?: { callsign: string; address: string } }[]>([]);
   const [sidebar, setSidebar] = useState(false);   // mobile drawer open
+  const [rail, setRail] = useState(false);         // desktop sidebar collapsed to icon rail (Gemini-style)
   const [copied, setCopied] = useState(-1);        // which message index was just copied
   const [agent, setAgent] = useState<{ callsign: string; address: string } | null>(null);   // the verified agent handling THIS chat
   const poolRef = useRef<{ callsign: string; address: string }[]>([]);
@@ -156,25 +157,34 @@ export function ChatMatrix() {
     }
   }
 
+  // Gemini-style: the ☰ toggles the rail between a slim icon strip and the full panel
   const Sidebar = (
-    <div className="flex h-full w-64 shrink-0 flex-col border-r border-border bg-surface/30">
-      <div className="p-3">
+    <div className={`flex h-full ${rail ? "w-[60px]" : "w-64"} shrink-0 flex-col border-r border-border bg-surface/30 transition-all duration-200`}>
+      <div className={rail ? "flex flex-col items-center gap-1 p-2.5" : "flex items-center gap-1.5 p-3"}>
+        <button onClick={() => setRail((v) => !v)}
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[15px] text-muted transition-colors hover:bg-surface hover:text-foreground"
+          title={rail ? "Expand menu" : "Collapse menu"}>☰</button>
         <button onClick={() => { newChat(); setSidebar(false); loadHistory(); }}
-          className="flex w-full items-center gap-2 rounded-xl border border-border bg-background px-3 py-2.5 text-[14px] font-medium text-foreground transition-colors hover:border-muted-2">
-          <span className="text-[16px]">＋</span> New chat
+          className={rail
+            ? "flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[17px] text-muted transition-colors hover:bg-surface hover:text-foreground"
+            : "flex flex-1 items-center gap-2 rounded-full border border-border bg-background px-3.5 py-2 text-[13px] font-medium text-foreground transition-colors hover:border-muted-2"}
+          title="New chat">
+          <span className="text-[16px]">＋</span>{!rail && "New chat"}
         </button>
       </div>
-      <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-3">
-        <p className="px-2 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-2">Recent</p>
-        {history.length === 0 && <p className="px-2 py-2 text-[12px] text-muted-2">No saved chats yet.</p>}
-        {history.map((h) => (
-          <button key={h.id} onClick={() => { setMsgs(h.msgs); if (h.agent) setAgent(h.agent); setSidebar(false); }}
-            className="mb-0.5 block w-full rounded-lg px-2.5 py-2 text-left transition-colors hover:bg-surface">
-            <span className="block truncate text-[13px] text-foreground">{h.title}</span>
-            {h.agent && <span className="block truncate text-[10px] text-muted-2">◆ {h.agent.callsign} ✓</span>}
-          </button>
-        ))}
-      </div>
+      {!rail && (
+        <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-3">
+          <p className="px-2 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-2">Recent</p>
+          {history.length === 0 && <p className="px-2 py-2 text-[12px] text-muted-2">No saved chats yet.</p>}
+          {history.map((h) => (
+            <button key={h.id} onClick={() => { setMsgs(h.msgs); if (h.agent) setAgent(h.agent); setSidebar(false); }}
+              className="mb-0.5 block w-full rounded-lg px-2.5 py-2 text-left transition-colors hover:bg-surface">
+              <span className="block truncate text-[13px] text-foreground">{h.title}</span>
+              {h.agent && <span className="block truncate text-[10px] text-muted-2">◆ {h.agent.callsign} ✓</span>}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 
