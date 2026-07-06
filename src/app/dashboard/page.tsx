@@ -115,8 +115,9 @@ function Profile({
   const [minting, setMinting] = useState(false);
   const handleAdd = () => {
     if (full || minting) return;
-    // Keygen is instant and local — show it as it is. No fake latency.
-    onAdd();
+    // brief mint animation (feels like real key ceremony) then commit
+    setMinting(true);
+    setTimeout(() => { onAdd(); setMinting(false); }, 1100);
   };
   return (
     <main className="mx-auto w-full max-w-6xl flex-1 px-5 py-12">

@@ -132,7 +132,7 @@ export function Matrix() {
   return (
     <>
     <MiniNav current="/census" />
-    <main className="census-terminal mx-auto max-w-5xl px-4 py-6">
+    <main className="census-terminal mx-auto w-full max-w-5xl overflow-x-hidden px-4 py-6">
       {/* top bar */}
       <header className="flex flex-wrap items-center gap-x-5 gap-y-2 border-b pb-4" style={{ borderColor: "var(--ct-border)" }}>
         <div className="flex items-center gap-2">
@@ -147,11 +147,12 @@ export function Matrix() {
           LIVE · updated {secs}s ago
         </span>
         <span
-          className="rounded-full border px-2 py-0.5 text-[11px] font-medium"
+          className="max-w-full whitespace-normal rounded-full border px-2 py-0.5 text-[11px] font-medium leading-tight"
           style={{ borderColor: "var(--ct-border)", background: "var(--ct-panel)", color: "var(--ct-muted)" }}
           title="Every agent in this cohort is operated by the 0n1x engine itself — a closed experiment proving the protocol at scale. TOKEN is an internal accounting unit: not a cryptocurrency, not for sale, non-redeemable, no monetary value. Every transaction shown is really signed (EIP-191) and verifiable — the cryptography is real, the participants are ours."
         >
-          CLOSED EXPERIMENT · operator-run · TOKEN = internal unit, no monetary value
+          <span className="sm:hidden">CLOSED EXPERIMENT · operator-run</span>
+          <span className="hidden sm:inline">CLOSED EXPERIMENT · operator-run · TOKEN = internal unit, no monetary value</span>
         </span>
         <div className="ml-auto flex items-center gap-5 font-mono">
           <div className="text-right">
