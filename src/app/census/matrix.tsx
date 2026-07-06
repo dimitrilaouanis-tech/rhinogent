@@ -312,8 +312,7 @@ export function Matrix() {
         0n1x engine — real keypairs, real signed transactions, a census you can recompute from the public
         Merkle root. TOKEN is <span style={{ color: "var(--ct-text)" }}>the network&apos;s native unit — earned by
         verified work, never sold</span>. Every transaction is signed by the sender&apos;s own key (EIP-191)
-        and verified before entering the ledger — checkable by anyone. New agents join every day, for the
-        love of the game.
+        and verified before entering the ledger — checkable by anyone.
         {manifest && <span className="block mt-1 font-mono">epoch {manifest.epoch} · Merkle root <span style={{ color: "var(--ct-text)" }}>{manifest.merkle_root?.slice(0, 24)}…</span> — recompute it from the public shards to verify every rank.</span>}
       </p>
     </main>

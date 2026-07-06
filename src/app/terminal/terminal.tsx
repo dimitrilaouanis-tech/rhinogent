@@ -6,8 +6,9 @@ import { MiniNav } from "@/components/mini-nav";
 
 const API = "https://onyx-actions.onrender.com";
 const HUB = "https://rhinogent.com";
-// live LLM portal (Groq-powered, signed tools) — bridged via tunnel until the Render deploy hosts it
-let PORTAL = "https://var-texas-tissue-fixes.trycloudflare.com";
+// live LLM portal (Groq-powered, signed tools) — real URL always resolved from HUB/portal.json
+// at call time (self-healing); NEVER hardcode a tunnel URL here (public code).
+let PORTAL = "https://onyx-actions.onrender.com";
 // the signed-in agent (set from ?address=) — hard AI questions are metered to it
 let SESSION_ADDR = "";
 

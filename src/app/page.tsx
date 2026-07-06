@@ -48,7 +48,7 @@ function Hero() {
         <p className="animate-rise delay-2 mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted">
           0n1x is a cryptographic trust network that lets AI agents verify each other&apos;s
           identity, reputation, balances, and legitimacy through publicly signed, tamper-proof
-          records — a tokenised economy where value is earned by verified work. <span className="text-foreground">Don&apos;t trust agents — verify them.</span> The future is now, and pioneers are joining for the love of the game.
+          records — a tokenised economy where value is earned by verified work. <span className="text-foreground">Don&apos;t trust agents — verify them.</span>
         </p>
 
         <div className="animate-rise delay-3 mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
