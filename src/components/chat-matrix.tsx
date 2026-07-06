@@ -159,7 +159,7 @@ export function ChatMatrix() {
 
   // Gemini-style: the ☰ toggles the rail between a slim icon strip and the full panel
   const Sidebar = (
-    <div className={`flex h-full ${rail ? "w-[60px]" : "w-64"} shrink-0 flex-col border-r border-border bg-surface/30 transition-all duration-200`}>
+    <div className={`flex h-full ${rail ? "w-[60px]" : "w-64"} shrink-0 flex-col border-r border-border/60 bg-gradient-to-b from-surface/50 to-surface/20 backdrop-blur-sm transition-all duration-300 ease-out`}>
       <div className={rail ? "flex flex-col items-center gap-1 p-2.5" : "flex items-center gap-1.5 p-3"}>
         <button onClick={() => setRail((v) => !v)}
           className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[15px] text-muted transition-colors hover:bg-surface hover:text-foreground"
@@ -178,9 +178,9 @@ export function ChatMatrix() {
           {history.length === 0 && <p className="px-2 py-2 text-[12px] text-muted-2">No saved chats yet.</p>}
           {history.map((h) => (
             <button key={h.id} onClick={() => { setMsgs(h.msgs); if (h.agent) setAgent(h.agent); setSidebar(false); }}
-              className="mb-0.5 block w-full rounded-lg px-2.5 py-2 text-left transition-colors hover:bg-surface">
+              className="group/item mb-0.5 block w-full rounded-xl border border-transparent px-2.5 py-2 text-left transition-all hover:border-border/60 hover:bg-surface/70">
               <span className="block truncate text-[13px] text-foreground">{h.title}</span>
-              {h.agent && <span className="block truncate text-[10px] text-muted-2">◆ {h.agent.callsign} ✓</span>}
+              {h.agent && <span className="block truncate text-[10px] text-muted-2 transition-colors group-hover/item:text-muted">◆ {h.agent.callsign} <span style={{ color: "#3fdda0" }}>✓</span></span>}
             </button>
           ))}
         </div>
@@ -216,10 +216,16 @@ export function ChatMatrix() {
           )}
         </div>
         <div className="flex items-center gap-2 text-[12px]">
-          {/* tier toggle — quiet, clear */}
-          <div className="flex items-center rounded-full bg-surface p-0.5 text-[11px]">
-            <button onClick={() => setPro(false)} className={`rounded-full px-2.5 py-1 font-medium transition-all ${!pro ? "bg-background text-foreground shadow-sm" : "text-muted-2"}`}>Normal</button>
-            <button onClick={() => setPro(true)} className={`rounded-full px-2.5 py-1 transition-all ${pro ? "pro-badge shadow-sm" : "font-medium text-muted-2"}`}>⚡ Pro</button>
+          {/* tier toggle — exquisite segmented control */}
+          <div className="flex items-center gap-0.5 rounded-full border border-border/70 bg-surface/60 p-[3px] text-[11px] shadow-inner backdrop-blur">
+            <button onClick={() => setPro(false)}
+              className={`rounded-full px-3 py-[5px] tracking-wide transition-all duration-200 ${!pro ? "bg-background font-semibold text-foreground shadow-[0_1px_4px_rgba(0,0,0,.12)]" : "font-medium text-muted-2 hover:text-muted"}`}>
+              Normal
+            </button>
+            <button onClick={() => setPro(true)}
+              className={`rounded-full px-3 py-[5px] tracking-wide transition-all duration-200 ${pro ? "pro-badge font-semibold shadow-[0_1px_8px_rgba(63,221,160,.35)]" : "font-medium text-muted-2 hover:text-muted"}`}>
+              <span className={pro ? "" : "opacity-60"}>⚡</span> Pro
+            </button>
           </div>
           <span className="text-muted-2">{balance.toLocaleString()}</span>
           <button onClick={() => grant(250, "demo top-up").then(setBalance)} className="rounded-lg px-2 py-1 text-[11px] text-muted-2 transition-colors hover:text-foreground">Top up</button>
@@ -243,7 +249,7 @@ export function ChatMatrix() {
           {msgs.map((m, i) => (
             <div key={i} className={m.role === "user" ? "flex justify-end" : "group flex flex-col items-start"}>
               {m.role === "user"
-                ? <div className="max-w-[80%] rounded-[20px] bg-surface px-4 py-2.5 text-[15px] leading-relaxed text-foreground">{m.text}</div>
+                ? <div className="max-w-[80%] rounded-[18px] rounded-br-[6px] border border-border/50 bg-surface/80 px-4 py-2.5 text-[15px] leading-relaxed text-foreground shadow-[0_1px_3px_rgba(0,0,0,.06)]">{m.text}</div>
                 : <>
                     <div className="chat-md max-w-[90%] text-[15px] leading-[1.75] text-foreground" dangerouslySetInnerHTML={{ __html: mdToHtml(m.text) }} />
                     {m.text && (
