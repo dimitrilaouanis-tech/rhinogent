@@ -53,6 +53,7 @@ export function ChatMatrix() {
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [balance, setBalance] = useState<number>(0);
+  const [pro, setPro] = useState<boolean>(false);   // Pro = burn token, full tools + web; Normal = free
   const scroller = useRef<HTMLDivElement>(null);
 
   useEffect(() => { resolvePortal(); }, []);
@@ -64,20 +65,46 @@ export function ChatMatrix() {
   }, []);
   useEffect(() => { scroller.current?.scrollTo(0, scroller.current.scrollHeight); }, [msgs, busy]);
 
+  // SAVE CHATS (Gemini/Claude style) — restore the last conversation on load, persist on change
+  useEffect(() => {
+    try { const s = localStorage.getItem("rhinogent.chat.current"); if (s) setMsgs(JSON.parse(s)); } catch { /**/ }
+  }, []);
+  useEffect(() => {
+    try {
+      if (msgs.length) localStorage.setItem("rhinogent.chat.current", JSON.stringify(msgs.slice(-100)));
+    } catch { /**/ }
+  }, [msgs]);
+  function newChat() {
+    // archive the current thread into history before clearing
+    try {
+      if (msgs.length) {
+        const hist = JSON.parse(localStorage.getItem("rhinogent.chat.history") || "[]");
+        const title = (msgs.find((m) => m.role === "user")?.text || "Chat").slice(0, 48);
+        hist.unshift({ id: `${msgs.length}-${title.length}`, title, msgs: msgs.slice(-100) });
+        localStorage.setItem("rhinogent.chat.history", JSON.stringify(hist.slice(0, 30)));
+      }
+    } catch { /**/ }
+    setMsgs([]);
+    try { localStorage.removeItem("rhinogent.chat.current"); } catch { /**/ }
+  }
+
   async function send() {
     const q = input.trim();
     if (!q || busy) return;
-    const pay = await spend(PRICES.chatMessage, "premium chat");
-    if (!pay.ok) {
-      setMsgs((m) => [...m, { role: "assistant", text: `Premium chat costs ${PRICES.chatMessage} TOKEN per message and your balance is ${pay.balance}. Tap “+250 grant” to top up (demo), then try again.` }]);
-      return;
+    // PRO burns a token (full tools + web + signed). NORMAL is free (clean conversational).
+    if (pro) {
+      const pay = await spend(PRICES.chatMessage, "pro chat");
+      if (!pay.ok) {
+        setMsgs((m) => [...m, { role: "assistant", text: `Pro mode costs ${PRICES.chatMessage} TOKEN per message and your balance is ${pay.balance}. Switch to **Normal** (free) or tap **Top up**.` }]);
+        return;
+      }
     }
     setInput(""); setMsgs((m) => [...m, { role: "user", text: q }]); setBusy(true);
     async function ask(): Promise<string> {
       const portal = await resolvePortal();
       const r = await fetch(`${portal}/v1/chat`, {
         method: "POST", headers: { "content-type": "application/json" },
-        body: JSON.stringify({ message: q }),
+        body: JSON.stringify({ message: q, tier: pro ? "pro" : "free" }),
       });
       if (!r.ok) throw new Error("http " + r.status);
       const d = await r.json();
@@ -105,14 +132,19 @@ export function ChatMatrix() {
 
   return (
     <div className="mx-auto flex h-full w-full max-w-3xl flex-col px-3 sm:px-4">
-      {/* header — compact, always visible */}
-      <div className="flex shrink-0 items-center justify-between py-3">
+      {/* header — 0n1x network + Pro/Normal tier toggle */}
+      <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 py-3">
         <div className="flex items-center gap-2.5">
           <span className="flex h-2 w-2 rounded-full" style={{ background: "#3fdda0", boxShadow: "0 0 10px #3fdda0" }} />
-          <span className="text-[15px] font-semibold tracking-tight text-foreground">Network</span>
-          <span className="hidden text-[12px] text-muted-2 sm:inline">grounded · signed · live web</span>
+          <span className="text-[15px] font-semibold tracking-tight text-foreground">0n1x network</span>
+          <button onClick={newChat} className="rounded-lg border border-border px-2 py-1 text-[11px] text-muted transition-colors hover:text-foreground hover:border-muted-2" title="New chat">+ New</button>
         </div>
         <div className="flex items-center gap-2 text-[12px]">
+          {/* tier toggle */}
+          <div className="flex items-center rounded-full border border-border p-0.5 text-[11px]">
+            <button onClick={() => setPro(false)} className={`rounded-full px-2.5 py-1 transition-colors ${!pro ? "bg-surface text-foreground" : "text-muted-2"}`}>Normal · free</button>
+            <button onClick={() => setPro(true)} className={`rounded-full px-2.5 py-1 transition-colors ${pro ? "text-white" : "text-muted-2"}`} style={pro ? { background: "#3fdda0" } : undefined}>⚡ Pro · {PRICES.chatMessage}</button>
+          </div>
           <span className="text-muted-2">{balance.toLocaleString()}<span className="hidden sm:inline"> TOKEN</span></span>
           <button onClick={() => grant(250, "demo top-up").then(setBalance)} className="rounded-lg border border-border px-2 py-1 text-[11px] text-muted transition-colors hover:text-foreground hover:border-muted-2">Top up</button>
         </div>

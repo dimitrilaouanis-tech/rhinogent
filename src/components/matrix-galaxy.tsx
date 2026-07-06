@@ -22,7 +22,7 @@ export function MatrixGalaxy() {
         feedUrl: "/token_feed.json",
         manifestUrl: "/census_manifest.json",
         theme: "rhino",
-        messages: ["R H I N O G E N T", "THE AGENT YOU OWN", "SELF-CUSTODY IDENTITY", "LIVING IN 0n1x"],
+        messages: ["R H I N O G E N T", "THE AGENT YOU OWN", "SELF-CUSTODY IDENTITY", "LIVING IN 0n1x", "THE FUTURE IS NOW"],
         onStats: (s: { ecoTotal?: number; txsLive?: number; txsVerified?: number; flow?: number }) => {
           setStats((p) => ({
             eco: s.ecoTotal ?? p.eco,
@@ -34,7 +34,7 @@ export function MatrixGalaxy() {
     }
     if (window.OnyxMatrix) { boot(); return () => { mounted = false; }; }
     const sc = document.createElement("script");
-    sc.src = "/matrix-engine.js?v=27";
+    sc.src = "/matrix-engine.js?v=28";
     sc.onload = boot;
     document.body.appendChild(sc);
     return () => { mounted = false; };
