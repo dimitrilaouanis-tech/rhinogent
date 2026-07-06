@@ -16,18 +16,6 @@
  ],
  "open_questions": [
   {
-   "id": "414805261a4c",
-   "text": "Will USD/CHF be above 0.8034 at resolution?",
-   "resolves_at": 1783343847.8,
-   "commits": 250,
-   "source": {
-    "type": "FRANKFURTER",
-    "target": "CHF"
-   },
-   "category": "MACRO_FX",
-   "symbol": "CHF"
-  },
-  {
    "id": "32c3724ac471",
    "text": "Will BTC mining difficulty be above 1.332e+14 at resolution?",
    "resolves_at": 1783351105.1,
@@ -40,29 +28,31 @@
    "symbol": "bitcoin"
   },
   {
-   "id": "f979a6c2e39d",
-   "text": "Will USD/CAD be above 1.4304 at resolution?",
-   "resolves_at": 1783344249.8,
+   "id": "59accc78a45d",
+   "text": "Will ETH trade above $1,741 at resolution?",
+   "resolves_at": 1783351176.5,
    "commits": 250,
    "source": {
-    "type": "FRANKFURTER",
-    "target": "CAD"
+    "type": "PRICE_API",
+    "target": "ETH"
    },
-   "category": "MACRO_FX",
-   "symbol": "CAD"
+   "category": "CRYPTO_PRICE",
+   "symbol": "ETH"
+  },
+  {
+   "id": "44282b636e5b",
+   "text": "Will openai/whisper have more than 104,362 stars at resolution?",
+   "resolves_at": 1783358853.7,
+   "commits": 250,
+   "source": {
+    "type": "GITHUB",
+    "target": "openai/whisper"
+   },
+   "category": "TECH_METRICS",
+   "symbol": "openai/whisper"
   }
  ],
  "recent_resolutions": [
-  {
-   "text": "Will ethereum/go-ethereum have more than 51,253 stars at resolution?",
-   "outcome": 0,
-   "resolve_price": 51203.0
-  },
-  {
-   "text": "Will ethereum/go-ethereum have more than 51,229 stars at resolution?",
-   "outcome": 0,
-   "resolve_price": 51205.0
-  },
   {
    "text": "Will openai/whisper have more than 104,089 stars at resolution?",
    "outcome": 1,
@@ -77,6 +67,16 @@
    "text": "Will bitcoin/bitcoin have more than 89,676 stars at resolution?",
    "outcome": 0,
    "resolve_price": 89604.0
+  },
+  {
+   "text": "Will USD/CHF be above 0.8034 at resolution?",
+   "outcome": "annulled",
+   "resolve_price": null
+  },
+  {
+   "text": "Will USD/CAD be above 1.4304 at resolution?",
+   "outcome": 0,
+   "resolve_price": 1.4223
   }
  ],
  "calibration_board": [
@@ -431,5 +431,5 @@
    "vs_cohort": -0.0781
   }
  ],
- "updated": "2026-07-06T12:24:14Z"
+ "updated": "2026-07-06T14:27:41Z"
 }
