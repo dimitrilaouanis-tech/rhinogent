@@ -56,7 +56,7 @@ export function ChatMatrix() {
   const [balance, setBalance] = useState<number>(0);
   const [pro, setPro] = useState<boolean>(false);   // Pro = burn token, full tools + web; Normal = free
   const [history, setHistory] = useState<{ id: string; title: string; msgs: Msg[] }[]>([]);
-  const [showHist, setShowHist] = useState(false);
+  const [sidebar, setSidebar] = useState(false);   // mobile drawer open
   const scroller = useRef<HTMLDivElement>(null);
   const loadHistory = () => { try { setHistory(JSON.parse(localStorage.getItem("rhinogent.chat.history") || "[]")); } catch { setHistory([]); } };
 
@@ -68,6 +68,7 @@ export function ChatMatrix() {
     return () => window.removeEventListener("wallet:change", onCh);
   }, []);
   useEffect(() => { scroller.current?.scrollTo(0, scroller.current.scrollHeight); }, [msgs, busy]);
+  useEffect(() => { loadHistory(); }, []);   // populate the sidebar chat list
 
   // SAVE CHATS (Gemini/Claude style) — restore the last conversation on load, persist on change
   useEffect(() => {
@@ -134,24 +135,44 @@ export function ChatMatrix() {
     }
   }
 
+  const Sidebar = (
+    <div className="flex h-full w-64 shrink-0 flex-col border-r border-border bg-surface/30">
+      <div className="p-3">
+        <button onClick={() => { newChat(); setSidebar(false); loadHistory(); }}
+          className="flex w-full items-center gap-2 rounded-xl border border-border bg-background px-3 py-2.5 text-[14px] font-medium text-foreground transition-colors hover:border-muted-2">
+          <span className="text-[16px]">＋</span> New chat
+        </button>
+      </div>
+      <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-3">
+        <p className="px-2 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-2">Recent</p>
+        {history.length === 0 && <p className="px-2 py-2 text-[12px] text-muted-2">No saved chats yet.</p>}
+        {history.map((h) => (
+          <button key={h.id} onClick={() => { setMsgs(h.msgs); setSidebar(false); }}
+            className="mb-0.5 block w-full truncate rounded-lg px-2.5 py-2 text-left text-[13px] text-muted transition-colors hover:bg-surface hover:text-foreground">{h.title}</button>
+        ))}
+      </div>
+    </div>
+  );
+
   return (
-    <div className="mx-auto flex h-full w-full max-w-3xl flex-col px-3 sm:px-4">
+    <div className="flex h-full w-full">
+      {/* desktop sidebar */}
+      <aside className="hidden md:flex">{Sidebar}</aside>
+      {/* mobile drawer */}
+      {sidebar && (
+        <div className="fixed inset-0 z-40 flex md:hidden">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setSidebar(false)} />
+          <div className="relative z-50 h-full bg-background">{Sidebar}</div>
+        </div>
+      )}
+
+      <div className="mx-auto flex h-full w-full max-w-3xl flex-col px-3 sm:px-4">
       {/* header — 0n1x network + Pro/Normal tier toggle */}
       <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 py-3">
         <div className="relative flex items-center gap-2.5">
+          <button onClick={() => setSidebar(true)} className="rounded-lg border border-border px-2 py-1 text-[13px] text-muted transition-colors hover:text-foreground hover:border-muted-2 md:hidden" title="Chats">☰</button>
           <span className="flex h-2 w-2 rounded-full" style={{ background: "#3fdda0", boxShadow: "0 0 10px #3fdda0" }} />
           <span className="text-[15px] font-semibold tracking-tight text-foreground">0n1x network</span>
-          <button onClick={() => { loadHistory(); setShowHist((v) => !v); }} className="rounded-lg border border-border px-2 py-1 text-[11px] text-muted transition-colors hover:text-foreground hover:border-muted-2" title="Recent chats">☰</button>
-          <button onClick={newChat} className="rounded-lg border border-border px-2 py-1 text-[11px] text-muted transition-colors hover:text-foreground hover:border-muted-2" title="New chat">+ New</button>
-          {showHist && (
-            <div className="absolute left-0 top-9 z-20 max-h-72 w-64 overflow-y-auto rounded-xl border border-border bg-background p-1.5 shadow-xl">
-              <p className="px-2 py-1 text-[10px] uppercase tracking-wider text-muted-2">Recent chats</p>
-              {history.length === 0 && <p className="px-2 py-2 text-[12px] text-muted-2">No saved chats yet.</p>}
-              {history.map((h) => (
-                <button key={h.id} onClick={() => { setMsgs(h.msgs); setShowHist(false); }} className="block w-full truncate rounded-lg px-2 py-1.5 text-left text-[13px] text-foreground transition-colors hover:bg-surface">{h.title}</button>
-              ))}
-            </div>
-          )}
         </div>
         <div className="flex items-center gap-2 text-[12px]">
           {/* tier toggle — quiet, clear */}
@@ -217,6 +238,7 @@ export function ChatMatrix() {
             ? <><span style={{ color: "#3fdda0" }}>Pro</span> · signed + web-grounded · {PRICES.chatMessage} TOKEN per message</>
             : <>Normal · free · general answers</>}
         </p>
+      </div>
       </div>
     </div>
   );

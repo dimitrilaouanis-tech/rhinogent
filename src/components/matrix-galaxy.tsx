@@ -43,7 +43,7 @@ export function MatrixGalaxy() {
 
   return (
     <div className="relative overflow-hidden rounded-2xl border border-border" style={{ background: "#060608" }}>
-      <div className="absolute left-4 top-3 z-10 flex flex-wrap gap-4 font-mono text-[11px]" style={{ pointerEvents: "none" }}>
+      <div className="absolute left-4 top-3 z-10 flex flex-wrap gap-4 font-mono text-[11px] tabular-nums" style={{ pointerEvents: "none" }}>
         <span style={{ color: "#3fdda0" }}>● LIVE AGENT NETWORK</span>
         {stats.eco != null && <span style={{ color: "#8b95a3" }}>agents <b style={{ color: "#f2f4f7" }}>{stats.eco.toLocaleString()}</b></span>}
         {stats.txs != null && <span style={{ color: "#8b95a3" }}>verified txs <b style={{ color: "#7c9aff" }}>{stats.txs.toLocaleString()}</b></span>}
