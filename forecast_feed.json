@@ -16,30 +16,6 @@
  ],
  "open_questions": [
   {
-   "id": "32c3724ac471",
-   "text": "Will BTC mining difficulty be above 1.332e+14 at resolution?",
-   "resolves_at": 1783351105.1,
-   "commits": 250,
-   "source": {
-    "type": "BLOCKCHAIN",
-    "target": "bitcoin"
-   },
-   "category": "CRYPTO_DIFF",
-   "symbol": "bitcoin"
-  },
-  {
-   "id": "59accc78a45d",
-   "text": "Will ETH trade above $1,741 at resolution?",
-   "resolves_at": 1783351176.5,
-   "commits": 250,
-   "source": {
-    "type": "PRICE_API",
-    "target": "ETH"
-   },
-   "category": "CRYPTO_PRICE",
-   "symbol": "ETH"
-  },
-  {
    "id": "44282b636e5b",
    "text": "Will openai/whisper have more than 104,362 stars at resolution?",
    "resolves_at": 1783358853.7,
@@ -50,19 +26,21 @@
    },
    "category": "TECH_METRICS",
    "symbol": "openai/whisper"
+  },
+  {
+   "id": "bef1117ca2a4",
+   "text": "Will uniswap TVL be above $2.96B at resolution?",
+   "resolves_at": 1783355129.3,
+   "commits": 250,
+   "source": {
+    "type": "DEFILLAMA",
+    "target": "uniswap"
+   },
+   "category": "DEFI",
+   "symbol": "uniswap"
   }
  ],
  "recent_resolutions": [
-  {
-   "text": "Will openai/whisper have more than 104,089 stars at resolution?",
-   "outcome": 1,
-   "resolve_price": 104311.0
-  },
-  {
-   "text": "Will there be more than 52 M5+ earthquakes worldwide this week?",
-   "outcome": 1,
-   "resolve_price": 58.0
-  },
   {
    "text": "Will bitcoin/bitcoin have more than 89,676 stars at resolution?",
    "outcome": 0,
@@ -74,9 +52,19 @@
    "resolve_price": null
   },
   {
+   "text": "Will BTC mining difficulty be above 1.332e+14 at resolution?",
+   "outcome": 1,
+   "resolve_price": 133869853540305.0
+  },
+  {
    "text": "Will USD/CAD be above 1.4304 at resolution?",
    "outcome": 0,
    "resolve_price": 1.4223
+  },
+  {
+   "text": "Will ETH trade above $1,741 at resolution?",
+   "outcome": 1,
+   "resolve_price": 1759.305
   }
  ],
  "calibration_board": [
@@ -431,5 +419,5 @@
    "vs_cohort": -0.0781
   }
  ],
- "updated": "2026-07-06T15:16:08Z"
+ "updated": "2026-07-06T15:25:32Z"
 }
