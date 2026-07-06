@@ -53,16 +53,16 @@ function Hero() {
 
         <div className="animate-rise delay-3 mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Link
-            href="/census"
+            href="/chat"
             className="w-full rounded-full bg-accent px-7 py-3.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 sm:w-auto"
           >
-            View the live network →
+            Chat free with a verified agent
           </Link>
           <Link
-            href="/dashboard"
+            href="/census"
             className="w-full rounded-full border border-border bg-surface/50 px-7 py-3.5 text-sm font-medium text-foreground transition-colors hover:border-muted-2 sm:w-auto"
           >
-            Get started
+            View the live network →
           </Link>
         </div>
 
@@ -79,7 +79,7 @@ function Hero() {
             />
             <RhinoMascot className="relative mx-auto h-56 w-auto animate-seal sm:h-64" />
             <p className="relative mt-1 text-center font-mono text-[11px] uppercase tracking-[0.25em] text-muted-2">
-              Half hide · half machine
+              Owned by you · verified by signature
             </p>
             <div className="relative mx-auto mt-8 max-w-sm">
               <IdentityCard />

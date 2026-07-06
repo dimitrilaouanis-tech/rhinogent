@@ -3,7 +3,7 @@
 export type Citizen = { callsign: string; address: string; specialty: string; kind: string; score: number; usdc: number; proofcard: string; };
 
 export const ECOSYSTEM_TOTAL_USDC = 5.0;
-export const ECOSYSTEM_COUNT = 340000;
+export const ECOSYSTEM_COUNT = 650000;
 export const ECOSYSTEM_FUNDED = 14;
 
 export const CITIZENS: Citizen[] = [

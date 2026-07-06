@@ -8,11 +8,14 @@ import { RhinoMark } from "@/components/rhino";
 // bullet/numbered lists). No deps, escapes HTML first so answers render ordered
 // and advanced like a real assistant.
 function mdToHtml(src: string): string {
-  const esc = (t: string) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  // escape quotes too — the link href lands inside an attribute, and an unescaped " in a
+  // portal reply would break out of it (attribute-injection XSS on an untrusted upstream)
+  const esc = (t: string) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
   const inline = (t: string) => esc(t)
     .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
     .replace(/`([^`]+)`/g, '<code style="background:rgba(127,127,127,.16);padding:1px 5px;border-radius:4px;font-size:.9em">$1</code>')
-    .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2" target="_blank" rel="noreferrer" style="color:#3fdda0">$1</a>');
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, (_all, label, href) =>
+      /["'<>`]/.test(href) ? `${label} (${href})` : `<a href="${href}" target="_blank" rel="noreferrer noopener" style="color:#3fdda0">${label}</a>`);
   const lines = src.split("\n");
   let html = "", list: "ul" | "ol" | null = null;
   const closeList = () => { if (list) { html += `</${list}>`; list = null; } };
@@ -227,10 +230,10 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
           <div className="absolute inset-0 bg-black/45 backdrop-blur-sm" onClick={() => setGate(false)} />
           <div className="relative z-10 w-full max-w-sm rounded-3xl border border-border bg-background p-7 text-center shadow-2xl">
             <RhinoMark className="mx-auto h-11 w-11" />
-            <h3 className="mt-4 text-[19px] font-semibold tracking-tight text-foreground">Enjoying the chat?</h3>
+            <h3 className="mt-4 text-[19px] font-semibold tracking-tight text-foreground">Keep {agent ? (agent.nick || agent.callsign) : "your agent"}.</h3>
             <p className="mt-2 text-[13.5px] leading-relaxed text-muted">
-              You&apos;ve used your {GUEST_FREE_MESSAGES} free preview messages. Create a free account to keep
-              chatting — you&apos;ll get <b className="text-foreground">500 tokens</b>, your own verified agent, and ⚡ Pro answers.
+              You&apos;ve met your agent. Create a free account and it stays <b className="text-foreground">yours</b> —
+              same agent, its memory kept, plus <b className="text-foreground">500 tokens</b> and ⚡ Pro answers.
             </p>
             <a href="/dashboard" className="mt-5 block w-full rounded-full bg-accent px-5 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90">Create free account</a>
             <button onClick={() => setGate(false)} className="mt-2.5 text-[12px] text-muted-2 transition-colors hover:text-foreground">Not now</button>

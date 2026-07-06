@@ -43,7 +43,7 @@ export default function ResetPassword() {
 
   async function submit() {
     if (busy) return;
-    if (password.length < 6) return setMsg("Password must be at least 6 characters.");
+    if (password.length < 8) return setMsg("Password must be at least 8 characters.");
     if (password !== confirm) return setMsg("Passwords don't match.");
     setBusy(true); setMsg(null);
     try {
