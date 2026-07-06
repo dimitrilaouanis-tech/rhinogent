@@ -9,6 +9,7 @@ import { MatrixCharts } from "./charts";
 import { ActivityGrid, type ActivitySlot } from "./activity-grid";
 import { FlowGraphCanvas2D, type PulseEvent2D as PulseEvent } from "./flow-graph-2d";
 import { MatrixGalaxy } from "@/components/matrix-galaxy";
+import { VerifiedAgents } from "@/components/verified-agents";
 
 // inline sparkline — tiny per-row flow trend, rendered from rolling client-side history
 // (last 20 polls of token_feed.json). Flat line if only one datapoint exists so far.
@@ -161,7 +162,7 @@ export function Matrix() {
           </div>
           <div className="text-right">
             <p className="text-[9px] uppercase tracking-widest" style={{ color: "var(--ct-muted)" }}>tokens in circulation</p>
-            <p className="text-sm font-bold ct-num" style={{ color: "var(--ct-amber)" }}>{live.toLocaleString()}</p>
+            <p className="text-sm font-bold ct-num" style={{ color: "var(--ct-amber)" }}>{Math.round(manifest?.circulating ?? live).toLocaleString()}</p>
           </div>
         </div>
       </header>
@@ -169,6 +170,10 @@ export function Matrix() {
       {/* WOW centerpiece — live token-flow network graph, fixed-size canvas */}
       <div className="mt-3">
         <MatrixGalaxy />
+      </div>
+
+      <div className="mt-4">
+        <VerifiedAgents />
       </div>
 
       {/* live token-exchange tape — exchange-grade ticker */}
@@ -298,7 +303,7 @@ export function Matrix() {
         </div>
       </div>
 
-      <MatrixCharts ranking={shown as any} agents={ECOSYSTEM_COUNT} metrics={metrics} />
+      <MatrixCharts ranking={shown as any} agents={manifest?.count || ECOSYSTEM_COUNT} metrics={metrics} />
 
       <NetworkTimeline />
 

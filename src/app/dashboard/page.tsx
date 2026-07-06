@@ -269,7 +269,7 @@ function AgentCard({ agent, onRemove }: { agent: Agent; onRemove: () => void }) 
       mcpServers: {
         rhinogent: {
           command: "npx",
-          args: ["-y", "github:dimitrilaouanis-tech/rhinogent-mcp"],
+          args: ["-y", "rhinogent-mcp"],
           env: {
             RHINOGENT_AGENT: agent.id,
             RHINOGENT_ADDRESS: agent.address,

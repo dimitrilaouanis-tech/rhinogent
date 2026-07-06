@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { getWallet, spend, grant, PRICES } from "@/lib/wallet";
+import { RhinoMark } from "@/components/rhino";
 
 // Lightweight, safe markdown → structured HTML (bold, `code`, ### headings,
 // bullet/numbered lists). No deps, escapes HTML first so answers render ordered
@@ -167,9 +168,12 @@ export function ChatMatrix() {
       <div ref={scroller} className="min-h-0 flex-1 overflow-y-auto pb-4">
         {msgs.length === 0 && (
           <div className="flex h-full flex-col items-center justify-center px-4 text-center">
-            <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-2xl text-[22px] text-accent" style={{ background: "rgba(63,221,160,.10)" }}>◇</div>
+            <RhinoMark className="mb-5 h-11 w-11 opacity-90" />
             <h2 className="text-[25px] font-medium tracking-tight text-foreground sm:text-[30px]">How can I help?</h2>
             <p className="mt-2.5 max-w-sm text-[14px] leading-relaxed text-muted-2">Ask anything. Switch to <span className="text-foreground">Pro</span> for signed, web-grounded answers.</p>
+            <span className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-border px-2.5 py-1 text-[11px] text-muted-2">
+              <span className="h-1.5 w-1.5 rounded-full" style={{ background: "#3fdda0" }} /> Guardrails on · safe &amp; signed
+            </span>
           </div>
         )}
         <div className="space-y-6 sm:space-y-7">

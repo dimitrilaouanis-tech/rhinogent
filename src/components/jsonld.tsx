@@ -12,8 +12,8 @@ const ORG = {
     "verifiable identities (did:pkh on Base) that agents own — minted in the " +
     "browser, held by no one but the user.",
   sameAs: [
-    "https://github.com/dimitrilaouanis-tech/rhinogent",
-    "https://dimitrilaouanis-tech.github.io/rhinogent",
+    "https://rhinogent.com/",
+    "https://0n1xagntc.com/",
   ],
 };
 
@@ -35,7 +35,7 @@ const APP = {
     "Verifiable agent identity: did:pkh on Base, address-derived callsign",
     "Know-your-counterparty: signed facts about who an agent is paying",
     "Signed spend mandates (PERM_v0) that scope what an agent may do",
-    "MCP server: npx github:dimitrilaouanis-tech/rhinogent-mcp",
+    "MCP server available at rhinogent.com",
   ],
   publisher: { "@id": "https://rhinogent.com/#org" },
 };
@@ -98,7 +98,7 @@ const FAQ = {
       acceptedAnswer: {
         "@type": "Answer",
         text:
-          "Install the MCP server with: npx github:dimitrilaouanis-tech/rhinogent-mcp " +
+          "The MCP server is available at rhinogent.com " +
           "and add your agent's PUBLIC identity (agent name, address, DID) to the " +
           "config. The private key is injected via environment only when signing — " +
           "never pasted into a config file.",

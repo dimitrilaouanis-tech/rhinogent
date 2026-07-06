@@ -6,10 +6,11 @@ import { RhinoMark } from "./rhino";
 import { supabase } from "@/lib/supabase";
 
 const links = [
-  { href: "/census", label: "Census" },
+  { href: "/census", label: "Live Network" },
   { href: "/chat", label: "Chat" },
-  { href: "#features", label: "Features" },
-  { href: "#security", label: "Security" },
+  { href: "/mcp", label: "MCP" },
+  { href: "/verify", label: "Verify" },
+  { href: "https://0n1xagntc.com/", label: "0n1x ⇌", external: true },
 ];
 
 export function Nav() {
@@ -34,7 +35,7 @@ export function Nav() {
 
           <div className="hidden items-center gap-8 md:flex">
             {links.map((l) => (
-              <a key={l.href} href={l.href} className="text-sm text-muted transition-colors hover:text-foreground">
+              <a key={l.href} href={l.href} {...(l.external ? { target: "_blank", rel: "noreferrer" } : {})} className="text-sm text-muted transition-colors hover:text-foreground">
                 {l.label}
               </a>
             ))}
