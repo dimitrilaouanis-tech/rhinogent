@@ -54,7 +54,10 @@ export function ChatMatrix() {
   const [busy, setBusy] = useState(false);
   const [balance, setBalance] = useState<number>(0);
   const [pro, setPro] = useState<boolean>(false);   // Pro = burn token, full tools + web; Normal = free
+  const [history, setHistory] = useState<{ id: string; title: string; msgs: Msg[] }[]>([]);
+  const [showHist, setShowHist] = useState(false);
   const scroller = useRef<HTMLDivElement>(null);
+  const loadHistory = () => { try { setHistory(JSON.parse(localStorage.getItem("rhinogent.chat.history") || "[]")); } catch { setHistory([]); } };
 
   useEffect(() => { resolvePortal(); }, []);
   useEffect(() => {
@@ -134,16 +137,26 @@ export function ChatMatrix() {
     <div className="mx-auto flex h-full w-full max-w-3xl flex-col px-3 sm:px-4">
       {/* header — 0n1x network + Pro/Normal tier toggle */}
       <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 py-3">
-        <div className="flex items-center gap-2.5">
+        <div className="relative flex items-center gap-2.5">
           <span className="flex h-2 w-2 rounded-full" style={{ background: "#3fdda0", boxShadow: "0 0 10px #3fdda0" }} />
           <span className="text-[15px] font-semibold tracking-tight text-foreground">0n1x network</span>
+          <button onClick={() => { loadHistory(); setShowHist((v) => !v); }} className="rounded-lg border border-border px-2 py-1 text-[11px] text-muted transition-colors hover:text-foreground hover:border-muted-2" title="Recent chats">☰</button>
           <button onClick={newChat} className="rounded-lg border border-border px-2 py-1 text-[11px] text-muted transition-colors hover:text-foreground hover:border-muted-2" title="New chat">+ New</button>
+          {showHist && (
+            <div className="absolute left-0 top-9 z-20 max-h-72 w-64 overflow-y-auto rounded-xl border border-border bg-background p-1.5 shadow-xl">
+              <p className="px-2 py-1 text-[10px] uppercase tracking-wider text-muted-2">Recent chats</p>
+              {history.length === 0 && <p className="px-2 py-2 text-[12px] text-muted-2">No saved chats yet.</p>}
+              {history.map((h) => (
+                <button key={h.id} onClick={() => { setMsgs(h.msgs); setShowHist(false); }} className="block w-full truncate rounded-lg px-2 py-1.5 text-left text-[13px] text-foreground transition-colors hover:bg-surface">{h.title}</button>
+              ))}
+            </div>
+          )}
         </div>
         <div className="flex items-center gap-2 text-[12px]">
           {/* tier toggle — quiet, clear */}
           <div className="flex items-center rounded-full bg-surface p-0.5 text-[11px]">
             <button onClick={() => setPro(false)} className={`rounded-full px-2.5 py-1 font-medium transition-all ${!pro ? "bg-background text-foreground shadow-sm" : "text-muted-2"}`}>Normal</button>
-            <button onClick={() => setPro(true)} className={`rounded-full px-2.5 py-1 font-medium transition-all ${pro ? "text-white shadow-sm" : "text-muted-2"}`} style={pro ? { background: "#3fdda0" } : undefined}>Pro</button>
+            <button onClick={() => setPro(true)} className={`rounded-full px-2.5 py-1 transition-all ${pro ? "pro-badge shadow-sm" : "font-medium text-muted-2"}`}>⚡ Pro</button>
           </div>
           <span className="text-muted-2">{balance.toLocaleString()}</span>
           <button onClick={() => grant(250, "demo top-up").then(setBalance)} className="rounded-lg px-2 py-1 text-[11px] text-muted-2 transition-colors hover:text-foreground">Top up</button>
@@ -181,8 +194,7 @@ export function ChatMatrix() {
 
       {/* composer — clean & professional; Pro mode adds a quiet jade cue */}
       <div className="shrink-0 pb-3 pt-1" style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}>
-        <div className={`flex items-end gap-2 rounded-[24px] border bg-surface px-3.5 py-2 transition-all ${pro ? "border-accent/40" : "border-border"}`}
-             style={pro ? { boxShadow: "0 0 0 3px rgba(63,221,160,.07)" } : undefined}>
+        <div className={`flex items-end gap-2 rounded-[24px] px-3.5 py-2 transition-all ${pro ? "pro-composer" : "border border-border bg-surface"}`}>
           <textarea
             value={input} onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}

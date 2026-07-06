@@ -258,3 +258,25 @@ body { font-feature-settings: "cv11", "ss01"; text-rendering: optimizeLegibility
 .chat-md table { width: 100%; border-collapse: collapse; margin: .5em 0; font-size: .92em; display: block; overflow-x: auto; }
 .chat-md th, .chat-md td { border: 1px solid var(--border, #1d2230); padding: 6px 9px; text-align: left; }
 .chat-md th { color: var(--muted-2, #8b95a3); font-weight: 600; }
+
+/* EPIC PRO MODE — electric animated composer when Pro is active */
+@keyframes proGlow {
+  0%,100% { box-shadow: 0 0 0 1px rgba(63,221,160,.5), 0 0 22px rgba(63,221,160,.18); }
+  50%     { box-shadow: 0 0 0 1px rgba(124,154,255,.6), 0 0 30px rgba(124,154,255,.24); }
+}
+@keyframes proSheen { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+.pro-composer {
+  animation: proGlow 3.2s ease-in-out infinite;
+  border-color: transparent !important;
+  background:
+    linear-gradient(var(--surface,#0e1014),var(--surface,#0e1014)) padding-box,
+    linear-gradient(110deg,#3fdda0,#7c9aff,#3fdda0) border-box;
+  background-size: 200% 100%;
+  border: 1.5px solid transparent;
+}
+.pro-badge {
+  background: linear-gradient(110deg,#3fdda0,#7c9aff,#3fdda0);
+  background-size: 200% 100%;
+  animation: proSheen 3s linear infinite;
+  color: #04120b; font-weight: 700;
+}

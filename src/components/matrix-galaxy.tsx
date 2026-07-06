@@ -48,6 +48,12 @@ export function MatrixGalaxy() {
         {stats.txs != null && <span style={{ color: "#8b95a3" }}>verified txs <b style={{ color: "#7c9aff" }}>{stats.txs.toLocaleString()}</b></span>}
         {stats.flow != null && <span style={{ color: "#8b95a3" }}>flow <b style={{ color: "#f5a623" }}>+{stats.flow.toLocaleString()}</b></span>}
       </div>
+      {/* bridge to 0n1x */}
+      <a href="https://0n1xagntc.com/" target="_blank" rel="noreferrer"
+         className="absolute right-3 top-3 z-10 rounded-full border px-3 py-1.5 font-mono text-[11px] transition-all hover:scale-105"
+         style={{ borderColor: "rgba(245,166,35,.4)", background: "rgba(245,166,35,.1)", color: "#f5a623" }}>
+        ⇌ Bridge to 0n1x
+      </a>
       <canvas ref={cvRef} className="block w-full" style={{ height: "62dvh", minHeight: 360, cursor: "grab", touchAction: "none" }} />
       <div className="absolute bottom-2 right-3 font-mono text-[10px]" style={{ color: "#8b95a3", pointerEvents: "none" }}>
         scroll = zoom · drag = pan · click a star = focus · double-click = reset
