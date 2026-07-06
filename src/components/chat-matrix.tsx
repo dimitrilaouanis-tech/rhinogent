@@ -128,7 +128,12 @@ export function ChatMatrix() {
       });
       if (!r.ok) throw new Error("http " + r.status);
       const d = await r.json();
-      return d.reply || d.reason || "…";
+      let out = d.reply || d.reason || "…";
+      // strip any leaked tool-call syntax the model emits as text (never show raw tags)
+      out = out.replace(/<\/?(web_search|tool_call|function|tool|invoke)[^>]*>/gi, "")
+               .replace(/\{"query"\s*:\s*"[^"]*"\}/g, "")
+               .replace(/^\s*[\r\n]+/, "").trim();
+      return out || "…";
     }
     try {
       let text = "";
