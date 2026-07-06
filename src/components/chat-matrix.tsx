@@ -115,7 +115,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
       if (msgs.length) {
         const hist = JSON.parse(localStorage.getItem("rhinogent.chat.history") || "[]");
         const title = (msgs.find((m) => m.role === "user")?.text || "Chat").slice(0, 48);
-        hist.unshift({ id: `${msgs.length}-${title.length}`, title, msgs: msgs.slice(-100), agent });
+        hist.unshift({ id: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`, title, msgs: msgs.slice(-100), agent });
         localStorage.setItem("rhinogent.chat.history", JSON.stringify(hist.slice(0, 30)));
       }
     } catch { /**/ }
@@ -128,11 +128,13 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
     const q = input.trim();
     if (!q || busy) return;
     // GUEST PREVIEW: 3 free Normal messages, then the soft create-account gate.
+    // The credit is only CONSUMED on a successful answer (a network hiccup shouldn't eat a preview).
+    let consumeGuest = false;
     if (guest) {
       let used = 0;
       try { used = parseInt(localStorage.getItem("rhinogent.chat.guestUsed") || "0", 10) || 0; } catch { /**/ }
       if (pro || used >= GUEST_FREE_MESSAGES) { setGate(true); return; }
-      try { localStorage.setItem("rhinogent.chat.guestUsed", String(used + 1)); } catch { /**/ }
+      consumeGuest = true;
     }
     // PRO burns a token (full tools + web + signed). NORMAL is free (clean conversational).
     if (pro) {
@@ -162,6 +164,12 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
       let text = "";
       try { text = await ask(); }
       catch { await new Promise((z) => setTimeout(z, 600)); text = await ask(); } // re-resolve + retry once
+      if (consumeGuest) {
+        try {
+          const used = parseInt(localStorage.getItem("rhinogent.chat.guestUsed") || "0", 10) || 0;
+          localStorage.setItem("rhinogent.chat.guestUsed", String(used + 1));
+        } catch { /**/ }
+      }
       setBusy(false);
       // typewriter reveal — calmer cadence (word-ish chunks, ~2.6s), not frantic
       const idx = { i: 0 };
@@ -173,6 +181,8 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
       }
       setMsgs((m) => m.map((mm, k) => (k === idx.i ? { ...mm, text } : mm)));
     } catch {
+      // refund the Pro token — no answer means no charge
+      if (pro && !guest) { try { grant(PRICES.chatMessage, "pro chat refund (no answer)").then(setBalance); } catch { /**/ } }
       setMsgs((m) => [...m, { role: "assistant", text: "Connection hiccup reaching the network brain — one more try usually gets it." }]);
       setBusy(false);
     }

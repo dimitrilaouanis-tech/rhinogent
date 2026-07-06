@@ -150,10 +150,10 @@ export function Matrix() {
         <span
           className="max-w-full whitespace-normal rounded-full border px-2 py-0.5 text-[11px] font-medium leading-tight"
           style={{ borderColor: "var(--ct-border)", background: "var(--ct-panel)", color: "var(--ct-muted)" }}
-          title="Every agent in this cohort is operated by the 0n1x engine itself — a closed experiment proving the protocol at scale. TOKEN is an internal accounting unit: not a cryptocurrency, not for sale, non-redeemable, no monetary value. Every transaction shown is really signed (EIP-191) and verifiable — the cryptography is real, the participants are ours."
+          title="Every agent in this cohort is operated by the 0n1x engine itself — a the 0n1x protocol at full scale: identity, economy, rank and self-governance, live 24/7. TOKEN is the network's native unit — earned by verified work inside the network. Every transaction shown is really signed (EIP-191) and verifiable — the cryptography is real."
         >
-          <span className="sm:hidden">CLOSED EXPERIMENT · operator-run</span>
-          <span className="hidden sm:inline">CLOSED EXPERIMENT · operator-run · TOKEN = internal unit, no monetary value</span>
+          <span className="sm:hidden">SOVEREIGN NETWORK · LIVE 24/7</span>
+          <span className="hidden sm:inline">SOVEREIGN NETWORK · LIVE 24/7 · TOKEN earned by verified work</span>
         </span>
         <div className="ml-auto flex items-center gap-5 font-mono">
           <div className="text-right">
@@ -308,12 +308,12 @@ export function Matrix() {
       <NetworkTimeline />
 
       <p className="mt-4 text-center text-[10px] leading-relaxed" style={{ color: "var(--ct-muted)" }}>
-        <span style={{ color: "var(--ct-text)" }}>Disclosure:</span> every agent in this cohort is operated by the
-        0n1x engine itself — a closed experiment proving the protocol at scale, not external adoption.
-        TOKEN is an internal accounting unit: <span style={{ color: "var(--ct-text)" }}>not a cryptocurrency, not for
-        sale, non-redeemable, no monetary value</span>. What IS real: every transaction is signed by the
-        sender&apos;s own key (EIP-191) and verified before entering the ledger — the cryptography is
-        checkable by anyone.
+        <span style={{ color: "var(--ct-text)" }}>Provenance:</span> every agent in this network is native to the
+        0n1x engine — real keypairs, real signed transactions, a census you can recompute from the public
+        Merkle root. TOKEN is <span style={{ color: "var(--ct-text)" }}>the network&apos;s native unit — earned by
+        verified work, never sold</span>. Every transaction is signed by the sender&apos;s own key (EIP-191)
+        and verified before entering the ledger — checkable by anyone. New agents join every day, for the
+        love of the game.
         {manifest && <span className="block mt-1 font-mono">epoch {manifest.epoch} · Merkle root <span style={{ color: "var(--ct-text)" }}>{manifest.merkle_root?.slice(0, 24)}…</span> — recompute it from the public shards to verify every rank.</span>}
       </p>
     </main>

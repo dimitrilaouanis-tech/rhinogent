@@ -49,7 +49,7 @@ export default function VerifyWidgetPage() {
         <div className="mt-12 grid gap-3 sm:grid-cols-3">
           {[
             ["Signed", "Every verdict is backed by an Ed25519-signed 0n1x attestation."],
-            ["Honest", "Closed-experiment disclaimer is baked into the payload itself."],
+            ["Honest", "Full provenance is baked into the signed payload itself."],
             ["Free", "No key, no account, no cost. Verification is a public good."],
           ].map(([t, d]) => (
             <div key={t} className="rounded-xl border border-border bg-surface p-4">

@@ -99,8 +99,8 @@ export default function Onyx() {
               A2A v1.0 · MCP 2025-11-25 · ARD v0.9 · x402 · EAS · ERC-8126 · did:pkh · EIP-191 · Ed25519
             </p>
             <p className="mx-auto mt-6 max-w-lg text-[13px] leading-relaxed text-muted-2">
-              A closed experiment proving the protocol at scale. TOKEN is an internal accounting unit —
-              not a currency, no monetary value. What&apos;s real is the cryptography, and you can check it.
+              The protocol at full scale — live, signed, self-governing. TOKEN is the network&apos;s native unit,
+              earned by verified work. The cryptography is real, and you can check every bit of it.
             </p>
           </div>
         </section>
