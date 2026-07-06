@@ -100,6 +100,39 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
     window.addEventListener("wallet:change", onCh);
     return () => window.removeEventListener("wallet:change", onCh);
   }, []);
+  // ODOMETER: the shown balance COUNTS to the real one (fast digit ticking, Claude-style)
+  const [shown, setShown] = useState(0);
+  useEffect(() => {
+    const from = shown, to = balance;
+    if (from === to) return;
+    const t0 = performance.now(), dur = 550;
+    let raf = 0;
+    const tick = (t: number) => {
+      const p = Math.min(1, (t - t0) / dur);
+      const e = 1 - Math.pow(1 - p, 3);                     // ease-out cubic — fast start, soft land
+      setShown(Math.round((from + (to - from) * e) * 10) / 10);
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [balance]);
+  // DAILY CHECK-IN — first message of the day earns TOKEN (streaks: d3+15, d7+25)
+  function dailyCheckin() {
+    if (guest) return;
+    try {
+      const today = new Date().toISOString().slice(0, 10);
+      const last = localStorage.getItem("rhinogent.checkin.last");
+      if (last === today) return;
+      const yesterday = new Date(Date.now() - 864e5).toISOString().slice(0, 10);
+      let streak = parseInt(localStorage.getItem("rhinogent.checkin.streak") || "0", 10) || 0;
+      streak = last === yesterday ? streak + 1 : 1;
+      localStorage.setItem("rhinogent.checkin.last", today);
+      localStorage.setItem("rhinogent.checkin.streak", String(streak));
+      const amt = streak >= 7 ? 25 : streak >= 3 ? 15 : 10;
+      grant(amt, `daily check-in day ${streak}`).then(setBalance);
+    } catch { /**/ }
+  }
   useEffect(() => { scroller.current?.scrollTo(0, scroller.current.scrollHeight); }, [msgs, busy]);
   useEffect(() => { loadHistory(); }, []);   // populate the sidebar chat list
 
@@ -148,6 +181,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
       }
     }
     setInput(""); setMsgs((m) => [...m, { role: "user", text: q }]); setBusy(true);
+    dailyCheckin();   // first message of the day earns TOKEN — the balance visibly climbs
     async function ask(): Promise<string> {
       const portal = await resolvePortal();
       const r = await fetch(`${portal}/v1/chat`, {
@@ -280,7 +314,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
           </div>
         </div>
         <div className="flex items-center gap-2 text-[12px]">
-          <span className="roll-balance tabular-nums text-muted-2" key={Math.round(balance * 10)}>{balance.toLocaleString()}</span>
+          <span className="tabular-nums text-muted-2">{shown.toLocaleString()}</span>
           <button onClick={() => grant(250, "demo top-up").then(setBalance)} className="rounded-lg px-2 py-1 text-[11px] text-muted-2 transition-colors hover:text-foreground">Top up</button>
         </div>
       </div>
@@ -304,6 +338,15 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
               {m.role === "user"
                 ? <div className="max-w-[80%] rounded-[18px] rounded-br-[6px] border border-border/50 bg-surface/80 px-4 py-2.5 text-[15px] leading-relaxed text-foreground shadow-[0_1px_3px_rgba(0,0,0,.06)]">{m.text}</div>
                 : <>
+                    {/* identity chip on the FIRST reply — the named-verified-agent moment, felt */}
+                    {agent && i === msgs.findIndex((x) => x.role === "assistant") && (
+                      <a href="/census" className="mb-1.5 inline-flex items-center gap-1.5 rounded-full border border-border/70 px-2.5 py-1 text-[11px] text-muted-2 transition-colors hover:border-muted-2 hover:text-foreground">
+                        <span className="h-1.5 w-1.5 rounded-full" style={{ background: "#3fdda0" }} />
+                        Answered by <span className="text-foreground">{agent.nick || agent.callsign}</span>
+                        <span style={{ color: "#3fdda0" }}>✓</span>
+                        <span className="hidden sm:inline">· verified on the live network →</span>
+                      </a>
+                    )}
                     <div className="chat-md max-w-[90%] text-[15px] leading-[1.75] text-foreground" dangerouslySetInnerHTML={{ __html: mdToHtml(m.text) }} />
                     {m.text && (
                       <button
