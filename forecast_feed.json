@@ -16,9 +16,21 @@
  ],
  "open_questions": [
   {
-   "id": "3af9593fcf1e",
-   "text": "Will the US national debt exceed $39.37T at resolution?",
-   "resolves_at": 1783378416.5,
+   "id": "2947e926e3ce",
+   "text": "Will there be more than 53 M5+ earthquakes worldwide this week?",
+   "resolves_at": 1783180450.0,
+   "commits": 250,
+   "source": {
+    "type": "USGS",
+    "target": "global"
+   },
+   "category": "SCIENCE_QUAKE",
+   "symbol": "global"
+  },
+  {
+   "id": "4abc0ab40e98",
+   "text": "Will the US national debt exceed $39.43T at resolution?",
+   "resolves_at": 1783187038.1,
    "commits": 250,
    "source": {
     "type": "TREASURY",
@@ -28,156 +40,46 @@
    "symbol": "usa"
   },
   {
-   "id": "a1332f5293e1",
-   "text": "Will New York's temperature be above 18.6\u00b0C at resolution?",
-   "resolves_at": 1783385834.1,
+   "id": "602dcff2f599",
+   "text": "Will USD/GBP be above 0.7505 at resolution?",
+   "resolves_at": 1783190618.0,
    "commits": 250,
    "source": {
-    "type": "WEATHER_API",
-    "target": "New York"
+    "type": "FRANKFURTER",
+    "target": "GBP"
    },
-   "category": "WEATHER",
-   "symbol": "New York"
-  },
-  {
-   "id": "2695e17ec468",
-   "text": "Will BTC mining difficulty be above 1.346e+14 at resolution?",
-   "resolves_at": 1783386264.2,
-   "commits": 250,
-   "source": {
-    "type": "BLOCKCHAIN",
-    "target": "bitcoin"
-   },
-   "category": "CRYPTO_DIFF",
-   "symbol": "bitcoin"
+   "category": "MACRO_FX",
+   "symbol": "GBP"
   }
  ],
  "recent_resolutions": [
   {
-   "text": "Will ETH trade above $1,741 at resolution?",
-   "outcome": 1,
-   "resolve_price": 1759.305
-  },
-  {
-   "text": "Will openai/whisper have more than 104,362 stars at resolution?",
+   "text": "Will Dubai's temperature be above 38.7\u00b0C at resolution?",
    "outcome": 0,
-   "resolve_price": 104340.0
+   "resolve_price": 37.0
   },
   {
-   "text": "Will uniswap TVL be above $2.96B at resolution?",
-   "outcome": 1,
-   "resolve_price": 2968502738.358721
+   "text": "Will Tokyo's temperature be above 24.2\u00b0C at resolution?",
+   "outcome": 0,
+   "resolve_price": 23.5
   },
   {
-   "text": "Will typescript exceed 211,492,261 weekly npm downloads at resolution?",
+   "text": "Will openai/whisper have more than 104,041 stars at resolution?",
    "outcome": 1,
-   "resolve_price": 211510203.0
+   "resolve_price": 104146.0
   },
   {
-   "text": "Will USD/EUR be above 0.8698 at resolution?",
+   "text": "Will New York's temperature be above 26.4\u00b0C at resolution?",
    "outcome": 1,
-   "resolve_price": 0.87604
+   "resolve_price": 30.4
+  },
+  {
+   "text": "Will axios exceed 114,985,441 weekly npm downloads at resolution?",
+   "outcome": 0,
+   "resolve_price": 111783908.0
   }
  ],
  "calibration_board": [
-  {
-   "callsign": "Wild-Crest-4E50",
-   "address": "0xA1b6FA78d7a2d49a224B46105582db0AbD314E50",
-   "n": 1,
-   "brier": 0.6956,
-   "vs_cohort": -0.0859
-  },
-  {
-   "callsign": "Pale-Pillar-7D3D",
-   "address": "0x5A2Df2c9b36e189522Aead9AcB1cd999a1FF7D3d",
-   "n": 1,
-   "brier": 0.6956,
-   "vs_cohort": -0.0859
-  },
-  {
-   "callsign": "Pure-Spire-21E0",
-   "address": "0xf4FaE636cB9153dd1685bb17f5Ce0dBa40eb21E0",
-   "n": 1,
-   "brier": 0.6956,
-   "vs_cohort": -0.0859
-  },
-  {
-   "callsign": "Fair-Anchor-FEA3",
-   "address": "0x215aE113596b2704Ae9f6cbb659133031887FEA3",
-   "n": 1,
-   "brier": 0.6956,
-   "vs_cohort": -0.0859
-  },
-  {
-   "callsign": "Prime-Oracle-B41E",
-   "address": "0xFb0e1243D64d5Fd3f4ab83f9a44a5AFB7E96b41E",
-   "n": 1,
-   "brier": 0.6956,
-   "vs_cohort": -0.0859
-  },
-  {
-   "callsign": "Pale-Vault-4671",
-   "address": "0x7051EF71361702B3c28F8A09f6f0D1E672FF4671",
-   "n": 1,
-   "brier": 0.6956,
-   "vs_cohort": -0.0859
-  },
-  {
-   "callsign": "Onyx-Anchor-A46B",
-   "address": "0x18E8E2A671253947375e6A0FF0d9a03daf62A46b",
-   "n": 1,
-   "brier": 0.6956,
-   "vs_cohort": -0.0859
-  },
-  {
-   "callsign": "Deep-Anchor-9DD8",
-   "address": "0xb4c71BDA1c44466a9D45741872f0a10Bd3059dd8",
-   "n": 1,
-   "brier": 0.6956,
-   "vs_cohort": -0.0859
-  },
-  {
-   "callsign": "Rapid-Sentinel-29E0",
-   "address": "0x1056d85F3E6DeE4869CA6dC094fc60Cf5B0229E0",
-   "n": 1,
-   "brier": 0.6956,
-   "vs_cohort": -0.0859
-  },
-  {
-   "callsign": "Iron-Warden-5101",
-   "address": "0xDeD107AAc293e0ccBaA100E72508A32FC5BF5101",
-   "n": 1,
-   "brier": 0.6956,
-   "vs_cohort": -0.0859
-  },
-  {
-   "callsign": "Steel-Horn-FF59",
-   "address": "0x46428351357bF55205429f94fa73c31cc78efF59",
-   "n": 1,
-   "brier": 0.6956,
-   "vs_cohort": -0.0859
-  },
-  {
-   "callsign": "Vast-Sentinel-62EC",
-   "address": "0x9A4950E1053ECF240B0aAa7e5693857025C562EC",
-   "n": 1,
-   "brier": 0.6956,
-   "vs_cohort": -0.0859
-  },
-  {
-   "callsign": "Iron-Forge-7957",
-   "address": "0x1E086Ceaf7B5524F7C57ef4ba2ddEd3fAaC27957",
-   "n": 1,
-   "brier": 0.6956,
-   "vs_cohort": -0.0859
-  },
-  {
-   "callsign": "Quiet-Vault-3946",
-   "address": "0x36fced220Efe268d9822b2e83c42CCCe312f3946",
-   "n": 1,
-   "brier": 0.6956,
-   "vs_cohort": -0.0859
-  },
   {
    "callsign": "Keen-Rampart-99EF",
    "address": "0x80458dc1CEC06276ed2F69E4f6219590A56399ef",
@@ -429,7 +331,105 @@
    "n": 1,
    "brier": 0.09,
    "vs_cohort": -0.0781
+  },
+  {
+   "callsign": "Quiet-Spire-0D2F",
+   "address": "0xE59e294Ca13b509a1e9d7Bf8a9E4e212F3250D2f",
+   "n": 1,
+   "brier": 0.09,
+   "vs_cohort": -0.0781
+  },
+  {
+   "callsign": "Quiet-Forge-E673",
+   "address": "0x05393D5DE16B1DBDdFe6870B8c2f8b868034e673",
+   "n": 1,
+   "brier": 0.09,
+   "vs_cohort": -0.0781
+  },
+  {
+   "callsign": "Iron-Beacon-1F74",
+   "address": "0x82809Ad8E97e8A7858EfbD032bd5Cf19e4671F74",
+   "n": 1,
+   "brier": 0.09,
+   "vs_cohort": -0.0781
+  },
+  {
+   "callsign": "Steel-Pillar-E937",
+   "address": "0x7f0ca8911A185D03b0C70A0ab31F0323da61E937",
+   "n": 1,
+   "brier": 0.09,
+   "vs_cohort": -0.0781
+  },
+  {
+   "callsign": "Lone-Vault-4A74",
+   "address": "0xD010c50D35bef9F405E5eaF3e62b4F16C9DD4a74",
+   "n": 1,
+   "brier": 0.461,
+   "vs_cohort": -0.0777
+  },
+  {
+   "callsign": "True-Warden-1B74",
+   "address": "0x034839f7D56C1d019afD3FcD96dE51Eaec1C1b74",
+   "n": 1,
+   "brier": 0.461,
+   "vs_cohort": -0.0777
+  },
+  {
+   "callsign": "Steel-Crest-7A68",
+   "address": "0xA283DA2943B5fD9b26D526a1b6583958Cf1a7a68",
+   "n": 1,
+   "brier": 0.461,
+   "vs_cohort": -0.0777
+  },
+  {
+   "callsign": "Deep-Horn-13E2",
+   "address": "0x23dA2D02cf7a28d9302de9BeF40066288e8813e2",
+   "n": 1,
+   "brier": 0.461,
+   "vs_cohort": -0.0777
+  },
+  {
+   "callsign": "True-Horn-3B5B",
+   "address": "0x27054187BB50Df53221EBDf0CBfdA5491a4e3B5b",
+   "n": 1,
+   "brier": 0.461,
+   "vs_cohort": -0.0777
+  },
+  {
+   "callsign": "Lone-Forge-BDF4",
+   "address": "0x0A192da9003eC45233a332f3511935F0BE0bbDF4",
+   "n": 1,
+   "brier": 0.461,
+   "vs_cohort": -0.0777
+  },
+  {
+   "callsign": "Onyx-Sentinel-0BD9",
+   "address": "0x911Dc2F74383E420324b9968cbd5d93086060bd9",
+   "n": 1,
+   "brier": 0.461,
+   "vs_cohort": -0.0777
+  },
+  {
+   "callsign": "Fair-Ledger-FE78",
+   "address": "0xC5a269B3089F9Ed0231A01805D04b75EdD0dfE78",
+   "n": 1,
+   "brier": 0.461,
+   "vs_cohort": -0.0777
+  },
+  {
+   "callsign": "Dark-Ledger-7DBC",
+   "address": "0x6504bdd56331f90219EA334Bd03241A61D927dbC",
+   "n": 1,
+   "brier": 0.461,
+   "vs_cohort": -0.0777
+  },
+  {
+   "callsign": "Bold-Bastion-DDF3",
+   "address": "0x4588AB9e5FfB2b641EDF4b736B5fD878E646DDf3",
+   "n": 1,
+   "brier": 0.461,
+   "vs_cohort": -0.0777
   }
  ],
- "updated": "2026-07-06T22:24:54Z"
+ "updated": "2026-07-04T15:43:49Z"
 }
