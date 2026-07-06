@@ -3,6 +3,31 @@
 import { useEffect, useRef, useState } from "react";
 import { getWallet, spend, grant, PRICES } from "@/lib/wallet";
 
+// Lightweight, safe markdown → structured HTML (bold, `code`, ### headings,
+// bullet/numbered lists). No deps, escapes HTML first so answers render ordered
+// and advanced like a real assistant.
+function mdToHtml(src: string): string {
+  const esc = (t: string) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const inline = (t: string) => esc(t)
+    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+    .replace(/`([^`]+)`/g, '<code style="background:rgba(127,127,127,.16);padding:1px 5px;border-radius:4px;font-size:.9em">$1</code>')
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2" target="_blank" rel="noreferrer" style="color:#3fdda0">$1</a>');
+  const lines = src.split("\n");
+  let html = "", list: "ul" | "ol" | null = null;
+  const closeList = () => { if (list) { html += `</${list}>`; list = null; } };
+  for (const raw of lines) {
+    const line = raw.trimEnd();
+    let m;
+    if ((m = line.match(/^#{1,3}\s+(.*)/))) { closeList(); html += `<div style="font-weight:600;margin:.6em 0 .2em">${inline(m[1])}</div>`; }
+    else if ((m = line.match(/^\s*[-*]\s+(.*)/))) { if (list !== "ul") { closeList(); html += '<ul style="margin:.3em 0 .3em 1.1em;list-style:disc">'; list = "ul"; } html += `<li style="margin:.15em 0">${inline(m[1])}</li>`; }
+    else if ((m = line.match(/^\s*\d+\.\s+(.*)/))) { if (list !== "ol") { closeList(); html += '<ol style="margin:.3em 0 .3em 1.2em;list-style:decimal">'; list = "ol"; } html += `<li style="margin:.15em 0">${inline(m[1])}</li>`; }
+    else if (line === "") { closeList(); html += '<div style="height:.5em"></div>'; }
+    else { closeList(); html += `<div>${inline(line)}</div>`; }
+  }
+  closeList();
+  return html;
+}
+
 // The chat surface: a DELICATE living matrix (fine lines, low opacity, slow drift — a quiet
 // backdrop, not a toy) with the chat bar underneath. Connected to the 0n1x brain (the signed
 // LLM portal, self-healing via portal.json). Shown only after sign-in.
@@ -62,10 +87,21 @@ export function ChatMatrix() {
       let text = "";
       try { text = await ask(); }
       catch { await new Promise((z) => setTimeout(z, 600)); text = await ask(); } // re-resolve + retry once
-      setMsgs((m) => [...m, { role: "assistant", text }]);
+      setBusy(false);
+      // typewriter reveal — the answer computes out, char by char
+      const idx = { i: 0 };
+      setMsgs((m) => { idx.i = m.length; return [...m, { role: "assistant", text: "" }]; });
+      const step = Math.max(1, Math.round(text.length / 90));   // ~1.5s regardless of length
+      for (let c = 0; c <= text.length; c += step) {
+        const slice = text.slice(0, c);
+        setMsgs((m) => m.map((mm, k) => (k === idx.i ? { ...mm, text: slice } : mm)));
+        await new Promise((z) => setTimeout(z, 16));
+      }
+      setMsgs((m) => m.map((mm, k) => (k === idx.i ? { ...mm, text } : mm)));
     } catch {
       setMsgs((m) => [...m, { role: "assistant", text: "Connection hiccup reaching the network brain — one more try usually gets it." }]);
-    } finally { setBusy(false); }
+      setBusy(false);
+    }
   }
 
   return (
@@ -102,11 +138,9 @@ export function ChatMatrix() {
               {m.role === "assistant" && (
                 <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[13px]" style={{ background: "rgba(63,221,160,.12)", color: "#3fdda0" }}>◇</div>
               )}
-              <div className={m.role === "user"
-                ? "max-w-[78%] rounded-2xl bg-accent px-4 py-2.5 text-[14.5px] leading-relaxed text-white"
-                : "max-w-[80%] pt-0.5 text-[14.5px] leading-[1.7] text-foreground"}>
-                {m.text}
-              </div>
+              {m.role === "user"
+                ? <div className="max-w-[78%] rounded-2xl bg-accent px-4 py-2.5 text-[14.5px] leading-relaxed text-white">{m.text}</div>
+                : <div className="max-w-[80%] pt-0.5 text-[14.5px] leading-[1.7] text-foreground" dangerouslySetInnerHTML={{ __html: mdToHtml(m.text) }} />}
             </div>
           ))}
           {busy && (
