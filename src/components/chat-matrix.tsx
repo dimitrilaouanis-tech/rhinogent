@@ -57,6 +57,7 @@ export function ChatMatrix() {
   const [pro, setPro] = useState<boolean>(false);   // Pro = burn token, full tools + web; Normal = free
   const [history, setHistory] = useState<{ id: string; title: string; msgs: Msg[]; agent?: { callsign: string; address: string } }[]>([]);
   const [sidebar, setSidebar] = useState(false);   // mobile drawer open
+  const [copied, setCopied] = useState(-1);        // which message index was just copied
   const [agent, setAgent] = useState<{ callsign: string; address: string } | null>(null);   // the verified agent handling THIS chat
   const poolRef = useRef<{ callsign: string; address: string }[]>([]);
   const scroller = useRef<HTMLDivElement>(null);
@@ -230,10 +231,21 @@ export function ChatMatrix() {
         )}
         <div className="space-y-6 sm:space-y-7">
           {msgs.map((m, i) => (
-            <div key={i} className={m.role === "user" ? "flex justify-end" : "flex justify-start"}>
+            <div key={i} className={m.role === "user" ? "flex justify-end" : "group flex flex-col items-start"}>
               {m.role === "user"
                 ? <div className="max-w-[80%] rounded-[20px] bg-surface px-4 py-2.5 text-[15px] leading-relaxed text-foreground">{m.text}</div>
-                : <div className="chat-md max-w-[90%] text-[15px] leading-[1.75] text-foreground" dangerouslySetInnerHTML={{ __html: mdToHtml(m.text) }} />}
+                : <>
+                    <div className="chat-md max-w-[90%] text-[15px] leading-[1.75] text-foreground" dangerouslySetInnerHTML={{ __html: mdToHtml(m.text) }} />
+                    {m.text && (
+                      <button
+                        onClick={() => { navigator.clipboard?.writeText(m.text); setCopied(i); setTimeout(() => setCopied(-1), 1400); }}
+                        className="mt-1.5 flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] text-muted-2 opacity-70 transition-all hover:bg-surface hover:text-foreground hover:opacity-100"
+                        aria-label="Copy"
+                      >
+                        {copied === i ? "✓ Copied" : "⧉ Copy"}
+                      </button>
+                    )}
+                  </>}
             </div>
           ))}
           {busy && (
