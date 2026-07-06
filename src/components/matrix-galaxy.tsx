@@ -35,7 +35,7 @@ export function MatrixGalaxy() {
     }
     if (window.OnyxMatrix) { boot(); return () => { mounted = false; }; }
     const sc = document.createElement("script");
-    sc.src = "/matrix-engine.js?v=33";
+    sc.src = "/matrix-engine.js?v=34";
     sc.onload = boot;
     document.body.appendChild(sc);
     return () => { mounted = false; };
