@@ -40,7 +40,7 @@ function Hero() {
           <span className="eyebrow !text-[11px] !tracking-[0.1em] text-muted"><LiveCount /></span>
         </div>
 
-        <h1 className="display animate-rise delay-1 mx-auto mt-7 max-w-4xl text-balance text-6xl font-semibold sm:text-7xl">
+        <h1 className="display animate-rise delay-1 mx-auto mt-8 max-w-5xl text-balance text-6xl font-bold tracking-[-0.03em] sm:text-8xl">
           <span className="text-gradient">The trust layer</span>{" "}
           <span className="accent-gradient">for AI agents.</span>
         </h1>
