@@ -55,10 +55,24 @@ export function ChatMatrix() {
   const [busy, setBusy] = useState(false);
   const [balance, setBalance] = useState<number>(0);
   const [pro, setPro] = useState<boolean>(false);   // Pro = burn token, full tools + web; Normal = free
-  const [history, setHistory] = useState<{ id: string; title: string; msgs: Msg[] }[]>([]);
+  const [history, setHistory] = useState<{ id: string; title: string; msgs: Msg[]; agent?: { callsign: string; address: string } }[]>([]);
   const [sidebar, setSidebar] = useState(false);   // mobile drawer open
+  const [agent, setAgent] = useState<{ callsign: string; address: string } | null>(null);   // the verified agent handling THIS chat
+  const poolRef = useRef<{ callsign: string; address: string }[]>([]);
   const scroller = useRef<HTMLDivElement>(null);
   const loadHistory = () => { try { setHistory(JSON.parse(localStorage.getItem("rhinogent.chat.history") || "[]")); } catch { setHistory([]); } };
+  // pull a pool of REAL verified agents from the signed census, assign one per chat
+  const assignAgent = () => {
+    const pool = poolRef.current;
+    if (pool.length) { const a = pool[Math.floor((Date.now() / 1000) % pool.length)]; setAgent(a); return a; }
+    return null;
+  };
+  useEffect(() => {
+    fetch("/census2/shard-000.json", { cache: "no-store" }).then((r) => r.json()).then((arr) => {
+      poolRef.current = (arr || []).slice(0, 400).map((x: { callsign: string; address: string }) => ({ callsign: x.callsign, address: x.address }));
+      setAgent((cur) => cur || assignAgent());
+    }).catch(() => {});
+  }, []);
 
   useEffect(() => { resolvePortal(); }, []);
   useEffect(() => {
@@ -85,11 +99,12 @@ export function ChatMatrix() {
       if (msgs.length) {
         const hist = JSON.parse(localStorage.getItem("rhinogent.chat.history") || "[]");
         const title = (msgs.find((m) => m.role === "user")?.text || "Chat").slice(0, 48);
-        hist.unshift({ id: `${msgs.length}-${title.length}`, title, msgs: msgs.slice(-100) });
+        hist.unshift({ id: `${msgs.length}-${title.length}`, title, msgs: msgs.slice(-100), agent });
         localStorage.setItem("rhinogent.chat.history", JSON.stringify(hist.slice(0, 30)));
       }
     } catch { /**/ }
     setMsgs([]);
+    assignAgent();   // fresh chat → a new verified agent takes it
     try { localStorage.removeItem("rhinogent.chat.current"); } catch { /**/ }
   }
 
@@ -147,8 +162,11 @@ export function ChatMatrix() {
         <p className="px-2 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-2">Recent</p>
         {history.length === 0 && <p className="px-2 py-2 text-[12px] text-muted-2">No saved chats yet.</p>}
         {history.map((h) => (
-          <button key={h.id} onClick={() => { setMsgs(h.msgs); setSidebar(false); }}
-            className="mb-0.5 block w-full truncate rounded-lg px-2.5 py-2 text-left text-[13px] text-muted transition-colors hover:bg-surface hover:text-foreground">{h.title}</button>
+          <button key={h.id} onClick={() => { setMsgs(h.msgs); if (h.agent) setAgent(h.agent); setSidebar(false); }}
+            className="mb-0.5 block w-full rounded-lg px-2.5 py-2 text-left transition-colors hover:bg-surface">
+            <span className="block truncate text-[13px] text-foreground">{h.title}</span>
+            {h.agent && <span className="block truncate text-[10px] text-muted-2">◆ {h.agent.callsign} ✓</span>}
+          </button>
         ))}
       </div>
     </div>
@@ -172,7 +190,14 @@ export function ChatMatrix() {
         <div className="relative flex items-center gap-2.5">
           <button onClick={() => setSidebar(true)} className="rounded-lg border border-border px-2 py-1 text-[13px] text-muted transition-colors hover:text-foreground hover:border-muted-2 md:hidden" title="Chats">☰</button>
           <span className="flex h-2 w-2 rounded-full" style={{ background: "#3fdda0", boxShadow: "0 0 10px #3fdda0" }} />
-          <span className="text-[15px] font-semibold tracking-tight text-foreground">0n1x network</span>
+          {agent ? (
+            <span className="flex items-center gap-1.5">
+              <span className="text-[15px] font-semibold tracking-tight text-foreground">{agent.callsign}</span>
+              <span className="text-[12px]" style={{ color: "#3fdda0" }} title="verified agent">✓</span>
+            </span>
+          ) : (
+            <span className="text-[15px] font-semibold tracking-tight text-foreground">0n1x network</span>
+          )}
         </div>
         <div className="flex items-center gap-2 text-[12px]">
           {/* tier toggle — quiet, clear */}
@@ -191,6 +216,7 @@ export function ChatMatrix() {
           <div className="flex h-full flex-col items-center justify-center px-4 text-center">
             <RhinoMark className="mb-5 h-11 w-11 opacity-90" />
             <h2 className="text-[25px] font-medium tracking-tight text-foreground sm:text-[30px]">How can I help?</h2>
+            {agent && <p className="mt-1.5 text-[13px]"><span className="text-muted-2">You're talking with </span><span className="text-foreground">{agent.callsign}</span> <span style={{ color: "#3fdda0" }}>✓ verified agent</span></p>}
             <p className="mt-2.5 max-w-sm text-[14px] leading-relaxed text-muted-2">Ask anything. Switch to <span className="text-foreground">Pro</span> for signed, web-grounded answers.</p>
             <span className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-border px-2.5 py-1 text-[11px] text-muted-2">
               <span className="h-1.5 w-1.5 rounded-full" style={{ background: "#3fdda0" }} /> Guardrails on · safe &amp; signed
