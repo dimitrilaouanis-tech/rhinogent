@@ -59,17 +59,28 @@ export function ChatMatrix() {
   const [sidebar, setSidebar] = useState(false);   // mobile drawer open
   const [rail, setRail] = useState(false);         // desktop sidebar collapsed to icon rail (Gemini-style)
   const [copied, setCopied] = useState(-1);        // which message index was just copied
-  const [agent, setAgent] = useState<{ callsign: string; address: string } | null>(null);   // the verified agent handling THIS chat
+  const [agent, setAgent] = useState<{ callsign: string; address: string; nick?: string } | null>(null);   // the verified agent handling THIS chat (renameable, persisted)
   const poolRef = useRef<{ callsign: string; address: string }[]>([]);
   const scroller = useRef<HTMLDivElement>(null);
   const loadHistory = () => { try { setHistory(JSON.parse(localStorage.getItem("rhinogent.chat.history") || "[]")); } catch { setHistory([]); } };
-  // pull a pool of REAL verified agents from the signed census, assign one per chat
+  // pull a pool of REAL verified agents from the signed census, assign one per chat.
+  // The identity PERSISTS across refreshes (localStorage) and can be renamed (nick).
+  const saveAgent = (a: { callsign: string; address: string; nick?: string } | null) => {
+    try { if (a) localStorage.setItem("rhinogent.chat.agent", JSON.stringify(a)); } catch { /**/ }
+  };
   const assignAgent = () => {
     const pool = poolRef.current;
-    if (pool.length) { const a = pool[Math.floor((Date.now() / 1000) % pool.length)]; setAgent(a); return a; }
+    if (pool.length) { const a = pool[Math.floor((Date.now() / 1000) % pool.length)]; setAgent(a); saveAgent(a); return a; }
     return null;
   };
+  const renameAgent = () => {
+    if (!agent) return;
+    const nick = window.prompt("Name your agent", agent.nick || agent.callsign);
+    if (nick && nick.trim()) { const a = { ...agent, nick: nick.trim().slice(0, 24) }; setAgent(a); saveAgent(a); }
+  };
   useEffect(() => {
+    // restore the persisted identity first — same agent after refresh
+    try { const s = localStorage.getItem("rhinogent.chat.agent"); if (s) setAgent(JSON.parse(s)); } catch { /**/ }
     fetch("/census2/shard-000.json", { cache: "no-store" }).then((r) => r.json()).then((arr) => {
       poolRef.current = (arr || []).slice(0, 400).map((x: { callsign: string; address: string }) => ({ callsign: x.callsign, address: x.address }));
       setAgent((cur) => cur || assignAgent());
@@ -202,32 +213,35 @@ export function ChatMatrix() {
 
       <div className="mx-auto flex h-full w-full max-w-3xl flex-col px-3 sm:px-4">
       {/* header — 0n1x network + Pro/Normal tier toggle */}
-      <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 py-3">
+      <div className="relative flex shrink-0 flex-wrap items-center justify-between gap-2 py-3">
         <div className="relative flex items-center gap-2.5">
           <button onClick={() => setSidebar(true)} className="rounded-lg border border-border px-2 py-1 text-[13px] text-muted transition-colors hover:text-foreground hover:border-muted-2 md:hidden" title="Chats">☰</button>
           <span className="flex h-2 w-2 rounded-full" style={{ background: "#3fdda0", boxShadow: "0 0 10px #3fdda0" }} />
           {agent ? (
-            <span className="flex items-center gap-1.5">
-              <span className="text-[15px] font-semibold tracking-tight text-foreground">{agent.callsign}</span>
+            <button onClick={renameAgent} className="group/name flex items-center gap-1.5" title="Rename your agent">
+              <span className="text-[15px] font-semibold tracking-tight text-foreground">{agent.nick || agent.callsign}</span>
               <span className="text-[12px]" style={{ color: "#3fdda0" }} title="verified agent">✓</span>
-            </span>
+              <span className="text-[11px] text-muted-2 opacity-0 transition-opacity group-hover/name:opacity-100">✎</span>
+            </button>
           ) : (
             <span className="text-[15px] font-semibold tracking-tight text-foreground">0n1x network</span>
           )}
         </div>
-        <div className="flex items-center gap-2 text-[12px]">
-          {/* tier toggle — exquisite segmented control */}
+        {/* tier toggle — CENTERED, Gemini-style */}
+        <div className="order-3 flex w-full justify-center sm:absolute sm:left-1/2 sm:order-none sm:w-auto sm:-translate-x-1/2">
           <div className="flex items-center gap-0.5 rounded-full border border-border/70 bg-surface/60 p-[3px] text-[11px] shadow-inner backdrop-blur">
             <button onClick={() => setPro(false)}
-              className={`rounded-full px-3 py-[5px] tracking-wide transition-all duration-200 ${!pro ? "bg-background font-semibold text-foreground shadow-[0_1px_4px_rgba(0,0,0,.12)]" : "font-medium text-muted-2 hover:text-muted"}`}>
+              className={`rounded-full px-3.5 py-[5px] tracking-wide transition-all duration-200 ${!pro ? "bg-background font-semibold text-foreground shadow-[0_1px_4px_rgba(0,0,0,.12)]" : "font-medium text-muted-2 hover:text-muted"}`}>
               Normal
             </button>
             <button onClick={() => setPro(true)}
-              className={`rounded-full px-3 py-[5px] tracking-wide transition-all duration-200 ${pro ? "pro-badge font-semibold shadow-[0_1px_8px_rgba(63,221,160,.35)]" : "font-medium text-muted-2 hover:text-muted"}`}>
+              className={`rounded-full px-3.5 py-[5px] tracking-wide transition-all duration-200 ${pro ? "pro-badge font-semibold shadow-[0_1px_8px_rgba(63,221,160,.35)]" : "font-medium text-muted-2 hover:text-muted"}`}>
               <span className={pro ? "" : "opacity-60"}>⚡</span> Pro
             </button>
           </div>
-          <span className="text-muted-2">{balance.toLocaleString()}</span>
+        </div>
+        <div className="flex items-center gap-2 text-[12px]">
+          <span className="roll-balance tabular-nums text-muted-2" key={Math.round(balance * 10)}>{balance.toLocaleString()}</span>
           <button onClick={() => grant(250, "demo top-up").then(setBalance)} className="rounded-lg px-2 py-1 text-[11px] text-muted-2 transition-colors hover:text-foreground">Top up</button>
         </div>
       </div>
