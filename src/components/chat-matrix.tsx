@@ -105,7 +105,7 @@ export function ChatMatrix() {
   }
 
   return (
-    <div className="mx-auto flex h-[calc(100vh-120px)] w-full max-w-3xl flex-col px-4">
+    <div className="mx-auto flex h-[calc(100dvh-120px)] w-full max-w-3xl flex-col px-4">
       {/* minimal pro header — balance chip, no clutter */}
       <div className="flex items-center justify-between border-b border-border/60 pb-3 pt-1">
         <div className="flex items-center gap-2.5">

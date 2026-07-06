@@ -116,45 +116,69 @@
     // deterministic), then blitted under the live graph each frame with the
     // pan/zoom transform. 340k dots at 60fps because we never redraw them.
     const galaxy = document.createElement("canvas");
-    const GW = 2048, GH = 2048;
+    const GW = 3200, GH = 3200;                     // HD: higher-res offscreen = crisper when blitted
     galaxy.width = GW; galaxy.height = GH;
     function paintGalaxy(count) {
       const g = galaxy.getContext("2d");
       g.clearRect(0, 0, GW, GH);
+      const CX = GW / 2, CY = GH / 2;
+      const themeCore = THEME.core;                  // gold (0n1x) / violet (rhino)
+      // ── LAYER 1: soft nebula clouds (depth) — a few big blurred blobs, painted first ──
       g.globalCompositeOperation = "lighter";
+      for (let c = 0; c < 7; c++) {
+        const hc = hash("neb" + c, 91);
+        const na = (hc % 1000) / 1000 * Math.PI * 2;
+        const nr = 0.12 + ((hc >>> 10) % 1000) / 1000 * 0.42;
+        const nx = CX + Math.cos(na) * nr * GW * 0.42, ny = CY + Math.sin(na) * nr * GH * 0.42 * 0.7;
+        const nrad = GW * (0.10 + ((hc >>> 5) % 100) / 100 * 0.14);
+        const cool = c % 2 === 0;
+        const col = cool ? "120,150,255" : themeCore;
+        const neb = g.createRadialGradient(nx, ny, 0, nx, ny, nrad);
+        neb.addColorStop(0, `rgba(${col},0.05)`);
+        neb.addColorStop(1, `rgba(${col},0)`);
+        g.fillStyle = neb; g.beginPath(); g.arc(nx, ny, nrad, 0, Math.PI * 2); g.fill();
+      }
+      // ── LAYER 2: the star field — every agent, uniform angle, HD crisp cores ──
       const n = Math.min(count || 340000, 1000000);
-      const BUCKETS = 8;
-      const bx = [], by = [], bs = [];
-      for (let b = 0; b < BUCKETS; b++) { bx.push([]); by.push([]); bs.push([]); }
+      const BUCKETS = 12;                             // finer radial color banding
+      const bx = [], by = [], bs = [], ba = [];
+      for (let b = 0; b < BUCKETS; b++) { bx.push([]); by.push([]); bs.push([]); ba.push([]); }
+      let bright = 0;
       for (let i = 0; i < n; i++) {
         const h1 = (i * 2654435761) >>> 0;
         const h2 = ((i * 40503 + 2699) >>> 0) & 0xffff;
         const h3 = ((i * 22695477 + 1) >>> 0) & 0xffff;
-        // JUST SPACE: uniform random angle (no spiral arms), strong central density
-        const rr = Math.pow((h1 % 100000) / 100000, 0.78);   // more mass hugging the core
+        const h4 = ((i * 3266489917 + 5) >>> 0) & 0xffff;
+        const rr = Math.pow((h1 % 100000) / 100000, 0.80);
         const ang = (h2 / 0xffff) * Math.PI * 2;
         const R = rr * GW * 0.47;
-        const ell = 0.68 + (h3 / 0xffff) * 0.20;             // slight elliptic disc
-        const x = GW / 2 + Math.cos(ang) * R;
-        const y = GH / 2 + Math.sin(ang) * R * ell;
+        const ell = 0.66 + (h3 / 0xffff) * 0.22;
+        const x = CX + Math.cos(ang) * R, y = CY + Math.sin(ang) * R * ell;
         const b = Math.min(BUCKETS - 1, (rr * BUCKETS) | 0);
-        bx[b].push(x); by[b].push(y); bs[b].push(rr < 0.2 ? 1.3 : 0.9);   // HD: small crisp dots
+        // HD: mostly fine 1px dust + a sparse set of brighter, larger "resolved" stars
+        const isBright = (h4 % 22) === 0;
+        bx[b].push(x); by[b].push(y);
+        bs[b].push(isBright ? 2.0 + (h4 % 5) * 0.4 : (rr < 0.2 ? 1.1 : 0.8));
+        ba[b].push(isBright ? 0.9 : 0.4 + (h4 % 100) / 100 * 0.4);   // brightness variety = detail
+        if (isBright) bright++;
       }
       for (let bkt = 0; bkt < BUCKETS; bkt++) {
         const warm = 1 - (bkt + 0.5) / BUCKETS;
-        const a = 0.07 + warm * 0.10;
-        // warm gold core -> cool blue-white rim
-        g.fillStyle = `rgba(${180 + warm * 60 | 0},${190 + warm * 20 | 0},${240 - warm * 60 | 0},${a.toFixed(3)})`;
-        const X = bx[bkt], Y = by[bkt], S = bs[bkt];
-        for (let i = 0; i < X.length; i++) g.fillRect(X[i], Y[i], S[i], S[i]);
+        const cr = 175 + warm * 70 | 0, cg = 195 + warm * 25 | 0, cb = 245 - warm * 70 | 0;
+        const X = bx[bkt], Y = by[bkt], S = bs[bkt], A = ba[bkt];
+        const base = 0.055 + warm * 0.09;
+        for (let i = 0; i < X.length; i++) {
+          g.fillStyle = `rgba(${cr},${cg},${cb},${(base * A[i]).toFixed(3)})`;
+          g.fillRect(X[i], Y[i], S[i], S[i]);
+        }
       }
-      // faint static nebula haze at core (the live supernova is drawn per-frame in draw)
-      const core = g.createRadialGradient(GW / 2, GH / 2, 0, GW / 2, GH / 2, GW * 0.14);
-      core.addColorStop(0, "rgba(255,232,190,0.30)");
-      core.addColorStop(0.5, "rgba(255,200,150,0.10)");
-      core.addColorStop(1, "rgba(255,214,150,0)");
+      // ── LAYER 3: nebula core haze (the live supernova is per-frame) ──
+      const core = g.createRadialGradient(CX, CY, 0, CX, CY, GW * 0.15);
+      core.addColorStop(0, `rgba(${themeCore},0.32)`);
+      core.addColorStop(0.5, `rgba(${themeCore},0.10)`);
+      core.addColorStop(1, `rgba(${themeCore},0)`);
       g.fillStyle = core;
-      g.beginPath(); g.arc(GW / 2, GH / 2, GW * 0.14, 0, Math.PI * 2); g.fill();
+      g.beginPath(); g.arc(CX, CY, GW * 0.15, 0, Math.PI * 2); g.fill();
     }
     paintGalaxy(340000); // provisional; repainted with the live manifest count (510k+ and climbing)
 
@@ -391,9 +415,18 @@
       // 3D FLYING LETTERS — depth-projected words that fly in, hold, fly through.
       // Explains what 0n1x is, cinematically, over the living network.
       if (opts.messages && opts.messages.length) {
-        const CYC = 5.0;                                  // faster cadence per message
-        const mi = Math.floor(t / CYC) % opts.messages.length;
-        const mt = (t % CYC) / CYC;                       // 0..1 within cycle
+        const CYC = 5.0;                                  // seconds per message
+        // RHYTHM: play a few messages, then PAUSE (let the galaxy breathe), then resume.
+        // A "super-cycle" = N messages of screen time + a quiet gap.
+        const RUN = opts.messages.length;                 // one full round = every message once
+        const PAUSE = 7.0;                                // quiet seconds between rounds
+        const SUPER = RUN * CYC + PAUSE;
+        const st = t % SUPER;                             // time within the super-cycle
+        if (st >= RUN * CYC) {
+          // in the pause window — draw nothing (galaxy alone), skip the whole letter block
+        } else {
+        const mi = Math.floor(st / CYC) % RUN;
+        const mt = (st % CYC) / CYC;                      // 0..1 within cycle
         let scale, alpha;
         if (mt < 0.16) { const u = mt / 0.16; scale = 0.25 + 0.75 * (1 - Math.pow(1 - u, 3)); alpha = u; }           // snappier fly-in
         else if (mt < 0.70) { scale = 1 + (mt - 0.16) * 0.06; alpha = 1; }                                          // hold
@@ -443,6 +476,7 @@
           }
         }
         ctx.textAlign = "start";
+        } // end active-message branch
       }
 
       // labels + tooltip render normally (crisp, not additive)
@@ -521,9 +555,18 @@
         }
         agents = [...names].map(n => ({ n, b: (vol.get(n) || 0) + bal(n) * 0.15 }))  // real volume dominates; tiny hash floor so idle agents still show
                            .sort((a, b) => b.b - a.b).slice(0, 120);
-        baseTx = d.total_verified ?? txs.length; liveTx = 0;
-        if (opts.onStats) opts.onStats({ txsVerified: baseTx, agents: agents.length });
+        if (opts.onStats) opts.onStats({ agents: agents.length });
       } catch (e) { /* keep last good frame */ }
+      // REAL cumulative tx count — from census_history (the SAME source the terminal
+      // deck uses) so the HUD and deck show the IDENTICAL number. total_verified is
+      // only the current feed window (~700) and would misalign badly (~127k real).
+      try {
+        const h = await (await fetch("https://rhinogent.com/census_history.json", { cache: "no-store" })).json();
+        if (h && h.length) {
+          baseTx = h[h.length - 1].txs; liveTx = 0;
+          if (opts.onStats) opts.onStats({ txsVerified: baseTx, circulating: h[h.length - 1].circulating });
+        }
+      } catch (e) { /* history optional */ }
       // the EXTENT: live Merkle-rooted manifest → real ecosystem total for the galaxy
       if (opts.manifestUrl) {
         try {

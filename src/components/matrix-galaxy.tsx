@@ -34,7 +34,7 @@ export function MatrixGalaxy() {
     }
     if (window.OnyxMatrix) { boot(); return () => { mounted = false; }; }
     const sc = document.createElement("script");
-    sc.src = "/matrix-engine.js?v=24";
+    sc.src = "/matrix-engine.js?v=26";
     sc.onload = boot;
     document.body.appendChild(sc);
     return () => { mounted = false; };
@@ -48,7 +48,7 @@ export function MatrixGalaxy() {
         {stats.txs != null && <span style={{ color: "#8b95a3" }}>verified txs <b style={{ color: "#7c9aff" }}>{stats.txs.toLocaleString()}</b></span>}
         {stats.flow != null && <span style={{ color: "#8b95a3" }}>flow <b style={{ color: "#f5a623" }}>+{stats.flow.toLocaleString()}</b></span>}
       </div>
-      <canvas ref={cvRef} className="block w-full" style={{ height: "62vh", minHeight: 380, cursor: "grab" }} />
+      <canvas ref={cvRef} className="block w-full" style={{ height: "62dvh", minHeight: 360, cursor: "grab", touchAction: "none" }} />
       <div className="absolute bottom-2 right-3 font-mono text-[10px]" style={{ color: "#8b95a3", pointerEvents: "none" }}>
         scroll = zoom · drag = pan · click a star = focus · double-click = reset
       </div>
