@@ -29,9 +29,10 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <MiniNav current="/chat" />
-      <div className="flex-1 py-4">
+    // full dynamic-viewport column: MiniNav fixed, chat fills the rest (mobile-visible)
+    <div className="flex flex-col overflow-hidden" style={{ height: "100dvh" }}>
+      <div className="shrink-0"><MiniNav current="/chat" /></div>
+      <div className="min-h-0 flex-1">
         <ChatMatrix />
       </div>
     </div>

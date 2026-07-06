@@ -82,9 +82,9 @@ function TopBar({
             </span>
             <Link
               href="/chat"
-              className="rounded-full bg-accent px-4 py-2 text-sm font-semibold text-white transition-colors hover:opacity-90"
+              className="rounded-full border border-border bg-surface px-4 py-2 text-sm font-medium text-muted transition-colors hover:border-muted-2 hover:text-foreground"
             >
-              💬 Chat with the network
+              💬 Chat
             </Link>
             <button
               onClick={onSignOut}

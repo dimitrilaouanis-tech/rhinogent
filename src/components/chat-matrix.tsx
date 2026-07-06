@@ -88,14 +88,13 @@ export function ChatMatrix() {
       try { text = await ask(); }
       catch { await new Promise((z) => setTimeout(z, 600)); text = await ask(); } // re-resolve + retry once
       setBusy(false);
-      // typewriter reveal — the answer computes out, char by char
+      // typewriter reveal — calmer cadence (word-ish chunks, ~2.6s), not frantic
       const idx = { i: 0 };
       setMsgs((m) => { idx.i = m.length; return [...m, { role: "assistant", text: "" }]; });
-      const step = Math.max(1, Math.round(text.length / 90));   // ~1.5s regardless of length
+      const step = Math.max(1, Math.round(text.length / 140));  // finer steps
       for (let c = 0; c <= text.length; c += step) {
-        const slice = text.slice(0, c);
-        setMsgs((m) => m.map((mm, k) => (k === idx.i ? { ...mm, text: slice } : mm)));
-        await new Promise((z) => setTimeout(z, 16));
+        setMsgs((m) => m.map((mm, k) => (k === idx.i ? { ...mm, text: text.slice(0, c) } : mm)));
+        await new Promise((z) => setTimeout(z, 26));             // slower, smoother
       }
       setMsgs((m) => m.map((mm, k) => (k === idx.i ? { ...mm, text } : mm)));
     } catch {
@@ -105,75 +104,71 @@ export function ChatMatrix() {
   }
 
   return (
-    <div className="mx-auto flex h-[calc(100dvh-120px)] w-full max-w-3xl flex-col px-4">
-      {/* minimal pro header — balance chip, no clutter */}
-      <div className="flex items-center justify-between border-b border-border/60 pb-3 pt-1">
+    <div className="mx-auto flex h-full w-full max-w-3xl flex-col px-3 sm:px-4">
+      {/* header — compact, always visible */}
+      <div className="flex shrink-0 items-center justify-between py-3">
         <div className="flex items-center gap-2.5">
-          <span className="flex h-2 w-2 rounded-full bg-emerald" style={{ background: "#3fdda0", boxShadow: "0 0 8px #3fdda0" }} />
+          <span className="flex h-2 w-2 rounded-full" style={{ background: "#3fdda0", boxShadow: "0 0 10px #3fdda0" }} />
           <span className="text-[15px] font-semibold tracking-tight text-foreground">Network</span>
-          <span className="text-[12px] text-muted-2">grounded · signed</span>
+          <span className="hidden text-[12px] text-muted-2 sm:inline">grounded · signed · live web</span>
         </div>
-        <div className="flex items-center gap-2.5 text-[12px]">
-          <span className="text-muted-2">{balance.toLocaleString()} <span className="text-muted-2/70">TOKEN</span></span>
-          <button onClick={() => grant(250, "demo top-up").then(setBalance)} className="rounded-md border border-border px-2 py-1 text-[11px] text-muted transition-colors hover:text-foreground hover:border-muted-2">Top up</button>
+        <div className="flex items-center gap-2 text-[12px]">
+          <span className="text-muted-2">{balance.toLocaleString()}<span className="hidden sm:inline"> TOKEN</span></span>
+          <button onClick={() => grant(250, "demo top-up").then(setBalance)} className="rounded-lg border border-border px-2 py-1 text-[11px] text-muted transition-colors hover:text-foreground hover:border-muted-2">Top up</button>
         </div>
       </div>
 
-      {/* conversation — flat, clean, no backdrop (Gemini/Claude style) */}
-      <div ref={scroller} className="flex-1 overflow-y-auto py-6">
+      {/* conversation — fills remaining space, scrolls, min-h-0 so it never collapses */}
+      <div ref={scroller} className="min-h-0 flex-1 overflow-y-auto pb-4">
         {msgs.length === 0 && (
-          <div className="flex h-full flex-col items-center justify-center text-center">
-            <h2 className="text-[26px] font-semibold tracking-tight text-foreground">How can the network help?</h2>
-            <p className="mt-2 text-[14px] text-muted">Ask about an agent, a merchant, a price — answers are grounded, and where verifiable, cryptographically signed.</p>
-            <div className="mt-6 flex flex-wrap justify-center gap-2">
-              {["Is stripe.com legit?", "Verify this agent's reputation", "What is Proof of Agent Execution?"].map((s) => (
-                <button key={s} onClick={() => setInput(s)} className="rounded-full border border-border px-3.5 py-1.5 text-[13px] text-muted transition-colors hover:border-muted-2 hover:text-foreground">{s}</button>
-              ))}
-            </div>
+          <div className="flex h-full flex-col items-center justify-center px-4 text-center">
+            <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl text-[26px]"
+                 style={{ background: "linear-gradient(135deg,rgba(63,221,160,.18),rgba(124,154,255,.14))", boxShadow: "0 0 40px rgba(63,221,160,.18)" }}>◇</div>
+            <h2 className="text-[24px] font-semibold tracking-tight text-foreground sm:text-[28px]">How can the network help?</h2>
+            <p className="mt-2 max-w-md text-[14px] leading-relaxed text-muted">Ask about an agent, a merchant, a price, or anything live on the web — answers are grounded, and where verifiable, cryptographically signed.</p>
           </div>
         )}
-        <div className="space-y-6">
+        <div className="space-y-5 sm:space-y-6">
           {msgs.map((m, i) => (
-            <div key={i} className={m.role === "user" ? "flex justify-end" : "flex gap-3"}>
+            <div key={i} className={m.role === "user" ? "flex justify-end" : "flex gap-2.5 sm:gap-3"}>
               {m.role === "assistant" && (
-                <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[13px]" style={{ background: "rgba(63,221,160,.12)", color: "#3fdda0" }}>◇</div>
+                <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[13px]"
+                     style={{ background: "linear-gradient(135deg,rgba(63,221,160,.2),rgba(124,154,255,.16))", color: "#3fdda0" }}>◇</div>
               )}
               {m.role === "user"
-                ? <div className="max-w-[78%] rounded-2xl bg-accent px-4 py-2.5 text-[14.5px] leading-relaxed text-white">{m.text}</div>
-                : <div className="max-w-[80%] pt-0.5 text-[14.5px] leading-[1.7] text-foreground" dangerouslySetInnerHTML={{ __html: mdToHtml(m.text) }} />}
+                ? <div className="max-w-[82%] rounded-3xl bg-accent px-4 py-2.5 text-[15px] leading-relaxed text-white shadow-sm">{m.text}</div>
+                : <div className="max-w-[85%] pt-0.5 text-[15px] leading-[1.75] text-foreground" dangerouslySetInnerHTML={{ __html: mdToHtml(m.text) }} />}
             </div>
           ))}
           {busy && (
             <div className="flex gap-3">
-              <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[13px]" style={{ background: "rgba(63,221,160,.12)", color: "#3fdda0" }}>◇</div>
+              <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[13px]" style={{ background: "linear-gradient(135deg,rgba(63,221,160,.2),rgba(124,154,255,.16))", color: "#3fdda0" }}>◇</div>
               <span className="inline-flex items-center gap-1 pt-2.5">
-                <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-2" style={{ animationDelay: "0ms" }} />
-                <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-2" style={{ animationDelay: "150ms" }} />
-                <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-2" style={{ animationDelay: "300ms" }} />
+                <span className="h-1.5 w-1.5 animate-bounce rounded-full" style={{ background: "#3fdda0", animationDelay: "0ms" }} />
+                <span className="h-1.5 w-1.5 animate-bounce rounded-full" style={{ background: "#3fdda0", animationDelay: "150ms" }} />
+                <span className="h-1.5 w-1.5 animate-bounce rounded-full" style={{ background: "#3fdda0", animationDelay: "300ms" }} />
               </span>
             </div>
           )}
         </div>
       </div>
 
-      {/* composer — clean rounded field, send inside */}
-      <div className="mb-3">
-        <div className="flex items-end gap-2 rounded-2xl border border-border bg-surface px-3 py-2 transition-colors focus-within:border-accent/50">
+      {/* composer — 2028 glass: blur, gradient hairline, big touch target, safe-area */}
+      <div className="shrink-0 pb-3 pt-1" style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}>
+        <div className="flex items-end gap-2 rounded-[22px] border border-border/80 bg-surface/70 px-3 py-2 backdrop-blur-xl transition-all focus-within:border-accent/60 focus-within:shadow-[0_0_0_3px_rgba(63,221,160,.08)]">
           <textarea
             value={input} onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
             rows={1} placeholder="Message the network…"
-            className="max-h-40 flex-1 resize-none bg-transparent px-2 py-1.5 text-[14.5px] text-foreground outline-none placeholder:text-muted-2"
+            className="max-h-40 flex-1 resize-none bg-transparent px-2 py-2 text-[16px] text-foreground outline-none placeholder:text-muted-2"
           />
           <button
             onClick={send} disabled={busy || !input.trim()}
-            className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent text-white transition-opacity hover:opacity-90 disabled:opacity-30"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-accent text-[17px] text-white transition-all hover:opacity-90 active:scale-95 disabled:opacity-30"
             aria-label="Send"
-          >
-            ↑
-          </button>
+          >↑</button>
         </div>
-        <p className="mt-2 text-center text-[11px] text-muted-2">{PRICES.chatMessage} TOKEN per message · signed where verifiable</p>
+        <p className="mt-2 text-center text-[11px] text-muted-2">{PRICES.chatMessage} TOKEN / message · signed where verifiable</p>
       </div>
     </div>
   );
