@@ -246,3 +246,15 @@ body { font-feature-settings: "cv11", "ss01"; text-rendering: optimizeLegibility
 .census-terminal .ct-flash { transition: background-color 800ms ease-out; }
 .census-terminal .ct-flash-on { background-color: rgba(34, 197, 94, 0.16); }
 .census-terminal table { table-layout: fixed; }
+
+/* refined chat typography — Gemini/Kimi-clean assistant answers */
+.chat-md { font-feature-settings: "cv02","cv03","cv04","cv11"; -webkit-font-smoothing: antialiased; }
+.chat-md strong { font-weight: 600; color: var(--foreground, #f2f4f7); }
+.chat-md a { text-underline-offset: 2px; }
+.chat-md code { font-size: .88em; }
+.chat-md ul, .chat-md ol { padding-left: 1.15em; }
+.chat-md li { margin: .12em 0; }
+.chat-md li::marker { color: var(--muted-2, #8b95a3); }
+.chat-md table { width: 100%; border-collapse: collapse; margin: .5em 0; font-size: .92em; display: block; overflow-x: auto; }
+.chat-md th, .chat-md td { border: 1px solid var(--border, #1d2230); padding: 6px 9px; text-align: left; }
+.chat-md th { color: var(--muted-2, #8b95a3); font-weight: 600; }

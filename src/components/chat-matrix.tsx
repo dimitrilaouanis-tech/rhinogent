@@ -140,67 +140,67 @@ export function ChatMatrix() {
           <button onClick={newChat} className="rounded-lg border border-border px-2 py-1 text-[11px] text-muted transition-colors hover:text-foreground hover:border-muted-2" title="New chat">+ New</button>
         </div>
         <div className="flex items-center gap-2 text-[12px]">
-          {/* tier toggle */}
-          <div className="flex items-center rounded-full border border-border p-0.5 text-[11px]">
-            <button onClick={() => setPro(false)} className={`rounded-full px-2.5 py-1 transition-colors ${!pro ? "bg-surface text-foreground" : "text-muted-2"}`}>Normal · free</button>
-            <button onClick={() => setPro(true)} className={`rounded-full px-2.5 py-1 transition-colors ${pro ? "text-white" : "text-muted-2"}`} style={pro ? { background: "#3fdda0" } : undefined}>⚡ Pro · {PRICES.chatMessage}</button>
+          {/* tier toggle — quiet, clear */}
+          <div className="flex items-center rounded-full bg-surface p-0.5 text-[11px]">
+            <button onClick={() => setPro(false)} className={`rounded-full px-2.5 py-1 font-medium transition-all ${!pro ? "bg-background text-foreground shadow-sm" : "text-muted-2"}`}>Normal</button>
+            <button onClick={() => setPro(true)} className={`rounded-full px-2.5 py-1 font-medium transition-all ${pro ? "text-white shadow-sm" : "text-muted-2"}`} style={pro ? { background: "#3fdda0" } : undefined}>Pro</button>
           </div>
-          <span className="text-muted-2">{balance.toLocaleString()}<span className="hidden sm:inline"> TOKEN</span></span>
-          <button onClick={() => grant(250, "demo top-up").then(setBalance)} className="rounded-lg border border-border px-2 py-1 text-[11px] text-muted transition-colors hover:text-foreground hover:border-muted-2">Top up</button>
+          <span className="text-muted-2">{balance.toLocaleString()}</span>
+          <button onClick={() => grant(250, "demo top-up").then(setBalance)} className="rounded-lg px-2 py-1 text-[11px] text-muted-2 transition-colors hover:text-foreground">Top up</button>
         </div>
       </div>
 
-      {/* conversation — fills remaining space, scrolls, min-h-0 so it never collapses */}
+      {/* conversation — Gemini/Kimi calm: soft user bubble, clean assistant text, roomy */}
       <div ref={scroller} className="min-h-0 flex-1 overflow-y-auto pb-4">
         {msgs.length === 0 && (
           <div className="flex h-full flex-col items-center justify-center px-4 text-center">
-            <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl text-[26px]"
-                 style={{ background: "linear-gradient(135deg,rgba(63,221,160,.18),rgba(124,154,255,.14))", boxShadow: "0 0 40px rgba(63,221,160,.18)" }}>◇</div>
-            <h2 className="text-[24px] font-semibold tracking-tight text-foreground sm:text-[28px]">How can the network help?</h2>
-            <p className="mt-2 max-w-md text-[14px] leading-relaxed text-muted">Ask about an agent, a merchant, a price, or anything live on the web — answers are grounded, and where verifiable, cryptographically signed.</p>
+            <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-2xl text-[22px] text-accent" style={{ background: "rgba(63,221,160,.10)" }}>◇</div>
+            <h2 className="text-[25px] font-medium tracking-tight text-foreground sm:text-[30px]">How can I help?</h2>
+            <p className="mt-2.5 max-w-sm text-[14px] leading-relaxed text-muted-2">Ask anything. Switch to <span className="text-foreground">Pro</span> for signed, web-grounded answers.</p>
           </div>
         )}
-        <div className="space-y-5 sm:space-y-6">
+        <div className="space-y-6 sm:space-y-7">
           {msgs.map((m, i) => (
-            <div key={i} className={m.role === "user" ? "flex justify-end" : "flex gap-2.5 sm:gap-3"}>
-              {m.role === "assistant" && (
-                <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[13px]"
-                     style={{ background: "linear-gradient(135deg,rgba(63,221,160,.2),rgba(124,154,255,.16))", color: "#3fdda0" }}>◇</div>
-              )}
+            <div key={i} className={m.role === "user" ? "flex justify-end" : "flex justify-start"}>
               {m.role === "user"
-                ? <div className="max-w-[82%] rounded-3xl bg-accent px-4 py-2.5 text-[15px] leading-relaxed text-white shadow-sm">{m.text}</div>
-                : <div className="max-w-[85%] pt-0.5 text-[15px] leading-[1.75] text-foreground" dangerouslySetInnerHTML={{ __html: mdToHtml(m.text) }} />}
+                ? <div className="max-w-[80%] rounded-[20px] bg-surface px-4 py-2.5 text-[15px] leading-relaxed text-foreground">{m.text}</div>
+                : <div className="chat-md max-w-[90%] text-[15px] leading-[1.75] text-foreground" dangerouslySetInnerHTML={{ __html: mdToHtml(m.text) }} />}
             </div>
           ))}
           {busy && (
-            <div className="flex gap-3">
-              <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[13px]" style={{ background: "linear-gradient(135deg,rgba(63,221,160,.2),rgba(124,154,255,.16))", color: "#3fdda0" }}>◇</div>
-              <span className="inline-flex items-center gap-1 pt-2.5">
-                <span className="h-1.5 w-1.5 animate-bounce rounded-full" style={{ background: "#3fdda0", animationDelay: "0ms" }} />
-                <span className="h-1.5 w-1.5 animate-bounce rounded-full" style={{ background: "#3fdda0", animationDelay: "150ms" }} />
-                <span className="h-1.5 w-1.5 animate-bounce rounded-full" style={{ background: "#3fdda0", animationDelay: "300ms" }} />
+            <div className="flex justify-start">
+              <span className="inline-flex items-center gap-1.5 pt-1">
+                <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-2" style={{ animationDelay: "0ms" }} />
+                <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-2" style={{ animationDelay: "150ms" }} />
+                <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-2" style={{ animationDelay: "300ms" }} />
               </span>
             </div>
           )}
         </div>
       </div>
 
-      {/* composer — 2028 glass: blur, gradient hairline, big touch target, safe-area */}
+      {/* composer — clean & professional; Pro mode adds a quiet jade cue */}
       <div className="shrink-0 pb-3 pt-1" style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}>
-        <div className="flex items-end gap-2 rounded-[22px] border border-border/80 bg-surface/70 px-3 py-2 backdrop-blur-xl transition-all focus-within:border-accent/60 focus-within:shadow-[0_0_0_3px_rgba(63,221,160,.08)]">
+        <div className={`flex items-end gap-2 rounded-[24px] border bg-surface px-3.5 py-2 transition-all ${pro ? "border-accent/40" : "border-border"}`}
+             style={pro ? { boxShadow: "0 0 0 3px rgba(63,221,160,.07)" } : undefined}>
           <textarea
             value={input} onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
-            rows={1} placeholder="Message the network…"
+            rows={1} placeholder={pro ? "Ask for a signed, web-grounded answer…" : "Message 0n1x…"}
             className="max-h-40 flex-1 resize-none bg-transparent px-2 py-2 text-[16px] text-foreground outline-none placeholder:text-muted-2"
           />
           <button
             onClick={send} disabled={busy || !input.trim()}
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-accent text-[17px] text-white transition-all hover:opacity-90 active:scale-95 disabled:opacity-30"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[16px] text-white transition-all hover:opacity-90 active:scale-95 disabled:opacity-25"
+            style={{ background: "#3fdda0" }}
             aria-label="Send"
           >↑</button>
         </div>
-        <p className="mt-2 text-center text-[11px] text-muted-2">{PRICES.chatMessage} TOKEN / message · signed where verifiable</p>
+        <p className="mt-2 text-center text-[11px] text-muted-2">
+          {pro
+            ? <><span style={{ color: "#3fdda0" }}>Pro</span> · signed + web-grounded · {PRICES.chatMessage} TOKEN per message</>
+            : <>Normal · free · general answers</>}
+        </p>
       </div>
     </div>
   );
