@@ -9,15 +9,15 @@ import { getWallet, spend, grant, PRICES } from "@/lib/wallet";
 
 const HUB = "https://rhinogent.com";
 let PORTAL = "https://onyx-actions.onrender.com";
-let _resolved = false;
+// ALWAYS re-fetch portal.json — the local tunnel URL rotates, so a latched value
+// goes stale and the chat hits a dead endpoint. Fresh resolve every call.
 async function resolvePortal() {
-  if (_resolved) return;
-  _resolved = true;
   try {
-    const r = await fetch(`${HUB}/portal.json`, { cache: "no-store" });
+    const r = await fetch(`${HUB}/portal.json?t=${Date.now()}`, { cache: "no-store" });
     const d = await r.json();
     if (d?.portal && /^https:\/\//.test(d.portal)) PORTAL = d.portal;
   } catch {}
+  return PORTAL;
 }
 
 /* ── the delicate matrix — thin drifting nodes + faint links, canvas, subtle ── */
@@ -94,16 +94,23 @@ export function ChatMatrix() {
       return;
     }
     setInput(""); setMsgs((m) => [...m, { role: "user", text: q }]); setBusy(true);
-    try {
-      await resolvePortal();
-      const r = await fetch(`${PORTAL}/v1/chat`, {
+    async function ask(): Promise<string> {
+      const portal = await resolvePortal();
+      const r = await fetch(`${portal}/v1/chat`, {
         method: "POST", headers: { "content-type": "application/json" },
         body: JSON.stringify({ message: q }),
       });
+      if (!r.ok) throw new Error("http " + r.status);
       const d = await r.json();
-      setMsgs((m) => [...m, { role: "assistant", text: d.reply || d.reason || "…" }]);
+      return d.reply || d.reason || "…";
+    }
+    try {
+      let text = "";
+      try { text = await ask(); }
+      catch { await new Promise((z) => setTimeout(z, 600)); text = await ask(); } // re-resolve + retry once
+      setMsgs((m) => [...m, { role: "assistant", text }]);
     } catch {
-      setMsgs((m) => [...m, { role: "assistant", text: "The brain is waking up — try again in a moment." }]);
+      setMsgs((m) => [...m, { role: "assistant", text: "Connection hiccup reaching the network brain — one more try usually gets it." }]);
     } finally { setBusy(false); }
   }
 
