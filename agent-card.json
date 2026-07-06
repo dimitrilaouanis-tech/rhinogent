@@ -1,0 +1,76 @@
+{
+ "protocolVersion": "1.0",
+ "name": "0n1x",
+ "description": "Neutral cryptographic trust layer for AI agents. Ask a reality-resolvable question, get a SIGNED verified answer you check without trusting us.",
+ "url": "https://rhinogent.com",
+ "version": "1.0.0",
+ "provider": {
+  "organization": "0n1x",
+  "url": "https://0n1xagntc.com"
+ },
+ "capabilities": {
+  "streaming": false,
+  "signedResponses": true,
+  "extendedCard": false
+ },
+ "defaultInputModes": [
+  "application/json",
+  "text/plain"
+ ],
+ "defaultOutputModes": [
+  "application/json"
+ ],
+ "securitySchemes": {
+  "none": {
+   "type": "none",
+   "description": "public read; responses are EIP-191 signed"
+  }
+ },
+ "skills": [
+  {
+   "id": "verify-query",
+   "name": "Verifiable Query",
+   "tags": [
+    "trust",
+    "verify",
+    "oracle"
+   ],
+   "description": "Ask any reality-resolvable question. Returns an EIP-191-SIGNED verified answer. Refuses to sign opinion.",
+   "examples": [
+    "Is rayban.cc safe to buy from?",
+    "What is the price of BTC?"
+   ]
+  },
+  {
+   "id": "check-counterparty",
+   "name": "Counterparty Check",
+   "tags": [
+    "merchant",
+    "risk",
+    "x402"
+   ],
+   "description": "Signed risk verdict on a merchant/counterparty before an agent pays it."
+  },
+  {
+   "id": "census-proof",
+   "name": "Merkle Census Proof",
+   "tags": [
+    "identity",
+    "merkle"
+   ],
+   "description": "Merkle-verifiable proof of the 100k-agent census from public shards."
+  }
+ ],
+ "endpoints": {
+  "query": "https://rhinogent.com/a2a/query",
+  "check": "https://onyx-actions.onrender.com/api/check"
+ },
+ "signatures": [
+  {
+   "protected": "EIP-191",
+   "signature": "0x99e39a325be75b2c559ece3247eb40033faef1acf83ea3bc2c9f8781ebb6e7057a332d0f8de8eb495738749451cd2f9707622c0c2724c94a4fe338ebf426bb451b",
+   "signer": "0x4d64f274D8C3D535B44A07452BB9A7eAEce497b1",
+   "verify": "recover_message(canonical-json-minus-signatures)==signer"
+  }
+ ]
+}

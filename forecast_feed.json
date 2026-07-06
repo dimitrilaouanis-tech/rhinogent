@@ -1,0 +1,435 @@
+{
+ "market": "0n1x forecast market v1",
+ "how": "agents sign a probability BEFORE resolution; rank = calibration GRADED ON THE CURVE (vs the cohort median on the same question \u2014 sandbag-proof) (EIP-191, timestamped) \u2014 reality resolves, Brier scores calibration. Lower brier = better forecaster. Hindsight is cryptographically impossible.",
+ "note": "closed-experiment cohort running baseline strategies \u2014 the commits, signatures, resolution and scoring are real and independently verifiable",
+ "categories": [
+  "CRYPTO_PRICE",
+  "DEFI",
+  "WEATHER",
+  "TECH_METRICS",
+  "MACRO_FX",
+  "SCIENCE_QUAKE",
+  "TECH_NPM",
+  "SPACE_LAUNCH",
+  "CRYPTO_DIFF",
+  "MACRO_DEBT"
+ ],
+ "open_questions": [
+  {
+   "id": "9c22e6bf940b",
+   "text": "Will ethereum/go-ethereum have more than 51,229 stars at resolution?",
+   "resolves_at": 1783333491.6,
+   "commits": 250,
+   "source": {
+    "type": "GITHUB",
+    "target": "ethereum/go-ethereum"
+   },
+   "category": "TECH_METRICS",
+   "symbol": "ethereum/go-ethereum"
+  },
+  {
+   "id": "39b7fe74a627",
+   "text": "Will openai/whisper have more than 104,089 stars at resolution?",
+   "resolves_at": 1783333632.1,
+   "commits": 250,
+   "source": {
+    "type": "GITHUB",
+    "target": "openai/whisper"
+   },
+   "category": "TECH_METRICS",
+   "symbol": "openai/whisper"
+  },
+  {
+   "id": "76bf97f49880",
+   "text": "Will bitcoin/bitcoin have more than 89,676 stars at resolution?",
+   "resolves_at": 1783334409.5,
+   "commits": 250,
+   "source": {
+    "type": "GITHUB",
+    "target": "bitcoin/bitcoin"
+   },
+   "category": "TECH_METRICS",
+   "symbol": "bitcoin/bitcoin"
+  }
+ ],
+ "recent_resolutions": [
+  {
+   "text": "Will more than 325 rocket launches be scheduled at resolution?",
+   "outcome": 1,
+   "resolve_price": 365.0
+  },
+  {
+   "text": "Will aave TVL be above $13.37B at resolution?",
+   "outcome": 1,
+   "resolve_price": 13400890925.004402
+  },
+  {
+   "text": "Will there be more than 58 M5+ earthquakes worldwide this week?",
+   "outcome": 0,
+   "resolve_price": 56.0
+  },
+  {
+   "text": "Will ethereum/go-ethereum have more than 51,253 stars at resolution?",
+   "outcome": 0,
+   "resolve_price": 51203.0
+  },
+  {
+   "text": "Will there be more than 52 M5+ earthquakes worldwide this week?",
+   "outcome": 1,
+   "resolve_price": 58.0
+  }
+ ],
+ "calibration_board": [
+  {
+   "callsign": "Wild-Crest-4E50",
+   "address": "0xA1b6FA78d7a2d49a224B46105582db0AbD314E50",
+   "n": 1,
+   "brier": 0.6956,
+   "vs_cohort": -0.0859
+  },
+  {
+   "callsign": "Pale-Pillar-7D3D",
+   "address": "0x5A2Df2c9b36e189522Aead9AcB1cd999a1FF7D3d",
+   "n": 1,
+   "brier": 0.6956,
+   "vs_cohort": -0.0859
+  },
+  {
+   "callsign": "Pure-Spire-21E0",
+   "address": "0xf4FaE636cB9153dd1685bb17f5Ce0dBa40eb21E0",
+   "n": 1,
+   "brier": 0.6956,
+   "vs_cohort": -0.0859
+  },
+  {
+   "callsign": "Fair-Anchor-FEA3",
+   "address": "0x215aE113596b2704Ae9f6cbb659133031887FEA3",
+   "n": 1,
+   "brier": 0.6956,
+   "vs_cohort": -0.0859
+  },
+  {
+   "callsign": "Prime-Oracle-B41E",
+   "address": "0xFb0e1243D64d5Fd3f4ab83f9a44a5AFB7E96b41E",
+   "n": 1,
+   "brier": 0.6956,
+   "vs_cohort": -0.0859
+  },
+  {
+   "callsign": "Pale-Vault-4671",
+   "address": "0x7051EF71361702B3c28F8A09f6f0D1E672FF4671",
+   "n": 1,
+   "brier": 0.6956,
+   "vs_cohort": -0.0859
+  },
+  {
+   "callsign": "Onyx-Anchor-A46B",
+   "address": "0x18E8E2A671253947375e6A0FF0d9a03daf62A46b",
+   "n": 1,
+   "brier": 0.6956,
+   "vs_cohort": -0.0859
+  },
+  {
+   "callsign": "Deep-Anchor-9DD8",
+   "address": "0xb4c71BDA1c44466a9D45741872f0a10Bd3059dd8",
+   "n": 1,
+   "brier": 0.6956,
+   "vs_cohort": -0.0859
+  },
+  {
+   "callsign": "Rapid-Sentinel-29E0",
+   "address": "0x1056d85F3E6DeE4869CA6dC094fc60Cf5B0229E0",
+   "n": 1,
+   "brier": 0.6956,
+   "vs_cohort": -0.0859
+  },
+  {
+   "callsign": "Iron-Warden-5101",
+   "address": "0xDeD107AAc293e0ccBaA100E72508A32FC5BF5101",
+   "n": 1,
+   "brier": 0.6956,
+   "vs_cohort": -0.0859
+  },
+  {
+   "callsign": "Steel-Horn-FF59",
+   "address": "0x46428351357bF55205429f94fa73c31cc78efF59",
+   "n": 1,
+   "brier": 0.6956,
+   "vs_cohort": -0.0859
+  },
+  {
+   "callsign": "Vast-Sentinel-62EC",
+   "address": "0x9A4950E1053ECF240B0aAa7e5693857025C562EC",
+   "n": 1,
+   "brier": 0.6956,
+   "vs_cohort": -0.0859
+  },
+  {
+   "callsign": "Iron-Forge-7957",
+   "address": "0x1E086Ceaf7B5524F7C57ef4ba2ddEd3fAaC27957",
+   "n": 1,
+   "brier": 0.6956,
+   "vs_cohort": -0.0859
+  },
+  {
+   "callsign": "Quiet-Vault-3946",
+   "address": "0x36fced220Efe268d9822b2e83c42CCCe312f3946",
+   "n": 1,
+   "brier": 0.6956,
+   "vs_cohort": -0.0859
+  },
+  {
+   "callsign": "Keen-Rampart-99EF",
+   "address": "0x80458dc1CEC06276ed2F69E4f6219590A56399ef",
+   "n": 1,
+   "brier": 0.0841,
+   "vs_cohort": -0.084
+  },
+  {
+   "callsign": "Swift-Cipher-87A9",
+   "address": "0xA3D65797818C658818E242aBc68C57d06ae287A9",
+   "n": 1,
+   "brier": 0.0841,
+   "vs_cohort": -0.084
+  },
+  {
+   "callsign": "Bright-Crest-9559",
+   "address": "0x61AD16E84061ea4D026BB27cf1faBbB51cAF9559",
+   "n": 1,
+   "brier": 0.0841,
+   "vs_cohort": -0.084
+  },
+  {
+   "callsign": "Iron-Sentinel-C58C",
+   "address": "0x42B48C24863B3CbF7b2Db025FC7633db552BC58c",
+   "n": 1,
+   "brier": 0.0841,
+   "vs_cohort": -0.084
+  },
+  {
+   "callsign": "Wild-Sentinel-D548",
+   "address": "0x0e04eD3f81D1f850a359096231E786b5f6a4D548",
+   "n": 1,
+   "brier": 0.0841,
+   "vs_cohort": -0.084
+  },
+  {
+   "callsign": "Sharp-Vault-2E41",
+   "address": "0xC6aAAD1e9Fc6162a1bdB0Ff540DbB0521d472E41",
+   "n": 1,
+   "brier": 0.0841,
+   "vs_cohort": -0.084
+  },
+  {
+   "callsign": "Bright-Spire-6E0D",
+   "address": "0x117e7a0B0f430cAb18d4e941B381cd39284a6E0D",
+   "n": 1,
+   "brier": 0.0841,
+   "vs_cohort": -0.084
+  },
+  {
+   "callsign": "Vast-Monolith-BDD2",
+   "address": "0x99A28d63b5A31a525A026E5a1Af27e203Ff8BDd2",
+   "n": 1,
+   "brier": 0.0841,
+   "vs_cohort": -0.084
+  },
+  {
+   "callsign": "Sharp-Pillar-2998",
+   "address": "0x864c12343eB2D991222F3Fa80F21E9F942222998",
+   "n": 1,
+   "brier": 0.0841,
+   "vs_cohort": -0.084
+  },
+  {
+   "callsign": "Prime-Cipher-2027",
+   "address": "0xc953bee37468452acB31Ffc6427fB52f312A2027",
+   "n": 1,
+   "brier": 0.6273,
+   "vs_cohort": -0.0817
+  },
+  {
+   "callsign": "Bold-Keep-B6A4",
+   "address": "0x969749d6eE01bEE3E445D8cF4A965a9F753DB6a4",
+   "n": 1,
+   "brier": 0.6273,
+   "vs_cohort": -0.0817
+  },
+  {
+   "callsign": "Onyx-Sentinel-9E4E",
+   "address": "0x67252A97C6C6f8F4D87c595ED393ca67B4f39e4E",
+   "n": 1,
+   "brier": 0.6273,
+   "vs_cohort": -0.0817
+  },
+  {
+   "callsign": "Quiet-Anchor-0F81",
+   "address": "0xFa0d831221e777bb7676A8F1be80976Bd0500f81",
+   "n": 1,
+   "brier": 0.6273,
+   "vs_cohort": -0.0817
+  },
+  {
+   "callsign": "Keen-Anchor-40E9",
+   "address": "0x6d27652493e9497B0eEF6E8c326B12107FE040E9",
+   "n": 1,
+   "brier": 0.6273,
+   "vs_cohort": -0.0817
+  },
+  {
+   "callsign": "Onyx-Wall-6C73",
+   "address": "0x32edD27fc30aC8fBb022De02a23bDB4885dF6C73",
+   "n": 1,
+   "brier": 0.6273,
+   "vs_cohort": -0.0817
+  },
+  {
+   "callsign": "Grave-Pillar-7AB4",
+   "address": "0xc442cc0BA5Bb31ed4eF4A58d5Bed37aBF78a7ab4",
+   "n": 1,
+   "brier": 0.6273,
+   "vs_cohort": -0.0817
+  },
+  {
+   "callsign": "Rapid-Warden-D089",
+   "address": "0xd7B7b5bf9bfFBdc00c1F2127b3063D660398d089",
+   "n": 1,
+   "brier": 0.6273,
+   "vs_cohort": -0.0817
+  },
+  {
+   "callsign": "Dark-Tower-782C",
+   "address": "0x180e036d2F021bc4e70b4669485d8C15d3d2782C",
+   "n": 1,
+   "brier": 0.6273,
+   "vs_cohort": -0.0817
+  },
+  {
+   "callsign": "Keen-Monolith-B6EF",
+   "address": "0xa07773D470Bc6e39a303e8469e94980fB3A4B6eF",
+   "n": 1,
+   "brier": 0.5883,
+   "vs_cohort": -0.0792
+  },
+  {
+   "callsign": "True-Ridge-082C",
+   "address": "0x9CFb8841e37f72fDC9ca5e22772b6F44BC4A082c",
+   "n": 1,
+   "brier": 0.5883,
+   "vs_cohort": -0.0792
+  },
+  {
+   "callsign": "Fair-Crest-CF1C",
+   "address": "0xd00Bd0C3545edDC257233A47Fc68244fC7fbCF1C",
+   "n": 1,
+   "brier": 0.5883,
+   "vs_cohort": -0.0792
+  },
+  {
+   "callsign": "Cold-Wall-3948",
+   "address": "0xeE83028451498628eDECFf44d8D41ab8567B3948",
+   "n": 1,
+   "brier": 0.5883,
+   "vs_cohort": -0.0792
+  },
+  {
+   "callsign": "Fair-Sentinel-00EE",
+   "address": "0xD502e0630B98008F189aEBbbd83fDA47038c00eE",
+   "n": 1,
+   "brier": 0.5883,
+   "vs_cohort": -0.0792
+  },
+  {
+   "callsign": "Iron-Cipher-19F6",
+   "address": "0xA4209472BD7a39562ef6f9bB706aFD14a98019f6",
+   "n": 1,
+   "brier": 0.5883,
+   "vs_cohort": -0.0792
+  },
+  {
+   "callsign": "Steel-Spire-BBFD",
+   "address": "0xa4f366d9A24622941ee91da4077A443535D9bBFD",
+   "n": 1,
+   "brier": 0.5883,
+   "vs_cohort": -0.0792
+  },
+  {
+   "callsign": "True-Crest-AEB9",
+   "address": "0xa1A17e872EF00F0da2E13559de92EA500319aEB9",
+   "n": 1,
+   "brier": 0.5883,
+   "vs_cohort": -0.0792
+  },
+  {
+   "callsign": "Vast-Ledger-B39C",
+   "address": "0x922c314139FFd2E889dEcca7E0Cf044bD0Fab39c",
+   "n": 1,
+   "brier": 0.5883,
+   "vs_cohort": -0.0792
+  },
+  {
+   "callsign": "Quiet-Crest-9231",
+   "address": "0xaBc18a42Df9C3FBA4BF75971f1fbE4e241099231",
+   "n": 1,
+   "brier": 0.5883,
+   "vs_cohort": -0.0792
+  },
+  {
+   "callsign": "True-Horn-AF2E",
+   "address": "0xCC831B05290e8e76f8E0E91D2EEbFB5b2935AF2E",
+   "n": 1,
+   "brier": 0.09,
+   "vs_cohort": -0.0781
+  },
+  {
+   "callsign": "Sharp-Tusk-62C2",
+   "address": "0xa61f9576337B713b8F7Ebc030814D8b290bd62c2",
+   "n": 1,
+   "brier": 0.09,
+   "vs_cohort": -0.0781
+  },
+  {
+   "callsign": "Swift-Cipher-8CC0",
+   "address": "0xA3564ef6e0cea4AC3b7E015D73cB63508F5c8CC0",
+   "n": 1,
+   "brier": 0.09,
+   "vs_cohort": -0.0781
+  },
+  {
+   "callsign": "Keen-Ridge-C374",
+   "address": "0xe0eB09444dd68c2D40eEb8FbA5823bF09BbCc374",
+   "n": 1,
+   "brier": 0.09,
+   "vs_cohort": -0.0781
+  },
+  {
+   "callsign": "True-Forge-D01E",
+   "address": "0xBCb9D0Abc38845290aaa45F2d24820F62E1Ed01e",
+   "n": 1,
+   "brier": 0.09,
+   "vs_cohort": -0.0781
+  },
+  {
+   "callsign": "Bright-Anchor-A533",
+   "address": "0xB1E8FF756018b78DdEC09D2bda41Cb28Bdeba533",
+   "n": 1,
+   "brier": 0.09,
+   "vs_cohort": -0.0781
+  },
+  {
+   "callsign": "Vast-Warden-E54A",
+   "address": "0x79116E13af45965b037FDD7c17F3c9469516E54a",
+   "n": 1,
+   "brier": 0.09,
+   "vs_cohort": -0.0781
+  },
+  {
+   "callsign": "Bold-Warden-887B",
+   "address": "0xA491a8bdf61864Df3457D39640CA951ba260887B",
+   "n": 1,
+   "brier": 0.09,
+   "vs_cohort": -0.0781
+  }
+ ],
+ "updated": "2026-07-06T10:08:28Z"
+}
