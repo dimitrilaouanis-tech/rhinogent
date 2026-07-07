@@ -168,7 +168,7 @@ function StatTiles() {
     live?: boolean;
     k?: string;
   }[] = [
-    { n: 1000000, suffix: "+", live: true, label: "signed agents in the network" },
+    { n: 1700000, suffix: "+", live: true, label: "signed agents in the network" },
     { n: 0, label: "keys we custody" },
     { n: 500, label: "free tokens at signup" },
     { k: "EIP-191", label: "signature on every reply" },

@@ -42,7 +42,7 @@ export function StatNumber({
   className?: string;
 }) {
   const ref = useRef<HTMLSpanElement>(null);
-  const [v, setV] = useState(0);
+  const [v, setV] = useState(n);   // initial = the REAL number (SSG/no-JS/crawlers see it, never "0")
 
   useEffect(() => {
     const el = ref.current;
@@ -61,7 +61,7 @@ export function StatNumber({
       const tick = (t: number) => {
         const p = Math.min(1, (t - t0) / dur);
         const ease = 1 - Math.pow(1 - p, 4); // easeOutQuart
-        setV(Math.round(n * ease));
+        setV(Math.round(n * (0.82 + 0.18 * ease)));   // flourish the last 18% — never shows 0 or a drop
         if (p < 1) raf = requestAnimationFrame(tick);
       };
       raf = requestAnimationFrame(tick);

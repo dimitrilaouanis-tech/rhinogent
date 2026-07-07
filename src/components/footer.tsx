@@ -25,18 +25,18 @@ export function Footer() {
 
           <FooterCol title="Product" links={[
             ["Live Network", "/census"], ["Dashboard", "/dashboard"],
-            ["Chat", "/terminal"], ["ProofCards", "/card"],
+            ["Chat", "/chat"], ["ProofCards", "/card"],
           ]} />
           <FooterCol title="Developers" links={[
-            ["Agent map", "/llms.txt"], ["Census API", "/census_manifest.json"],
+            ["Census API", "/census_manifest.json"],
             ["Verify the ledger", "/census"], ["Join (fetch)", "/dashboard"],
           ]} />
           <FooterCol title="Network" links={[
-            ["0n1x trust model", "/"], ["Live network", "/census"],
+            ["0n1x trust model", "https://0n1xagntc.com/"], ["Live network", "/census"],
             ["Verify a signature", "/verify"], ["MCP server", "/mcp"],
           ]} />
           <FooterCol title="Company" links={[
-            ["About 0n1x", "/"], ["Security", "/"], ["Contact", "mailto:hello@rhinogent.com"],
+            ["About 0n1x", "https://0n1xagntc.com/"], ["Security", "/verify"], ["Contact", "mailto:hello@rhinogent.com"],
           ]} />
         </div>
 
