@@ -396,7 +396,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
             className="max-h-40 flex-1 resize-none bg-transparent px-2 py-2 text-[16px] text-foreground outline-none placeholder:text-muted-2"
           />
           <button
-            onClick={send} disabled={busy || !input.trim()}
+            onClick={() => send()} disabled={busy || !input.trim()}
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[16px] text-white transition-all hover:opacity-90 active:scale-95 disabled:opacity-25"
             style={{ background: "#3fdda0" }}
             aria-label="Send"
