@@ -288,7 +288,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
       {/* header — 0n1x network + Pro/Normal tier toggle */}
       <div className="relative flex shrink-0 flex-wrap items-center justify-between gap-2 py-3">
         <div className="relative flex items-center gap-2.5">
-          <button onClick={() => setSidebar(true)} className="rounded-lg border border-border px-2 py-1 text-[13px] text-muted transition-colors hover:text-foreground hover:border-muted-2 md:hidden" title="Chats">☰</button>
+          <button onClick={() => setSidebar(true)} className="flex items-center gap-1.5 rounded-full border border-border bg-surface/50 px-3 py-1.5 text-[12px] font-medium text-muted transition-colors hover:text-foreground hover:border-muted-2 md:hidden" title="Your chats">☰ <span>Chats</span></button>
           <span className="flex h-2 w-2 rounded-full" style={{ background: "#3fdda0", boxShadow: "0 0 10px #3fdda0" }} />
           {agent ? (
             <button onClick={renameAgent} className="group/name flex items-center gap-1.5" title="Rename your agent">
