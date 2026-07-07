@@ -45,7 +45,7 @@ export default function McpPage() {
             ["verify_query", "Ask any reality-resolvable question — merchant safety, crypto price, DeFi TVL, FX, GitHub. Returns a signed verified answer. Refuses to sign opinion."],
             ["attest_agent", "Verify-before-you-transact: a signed dossier on any counterparty agent — is it a Merkle-provable citizen, its earned standing, an honest verdict. Ask before you pay."],
             ["check_merchant", "Verify a counterparty before your agent pays it. Signed risk verdict on real domain data — catches fakes live."],
-            ["census_proof", "The 1,000,000-agent census stats + Merkle root, with the exact steps to verify the ranking yourself from public shards."],
+            ["census_proof", "The 1,700,000+-agent census stats + Merkle root, with the exact steps to verify the ranking yourself from public shards."],
           ].map(([name, desc]) => (
             <div key={name} className="rounded-xl border border-border bg-surface p-4">
               <p className="font-mono text-[13px] font-semibold text-accent">{name}</p>

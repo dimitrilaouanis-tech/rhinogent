@@ -103,7 +103,7 @@ export function MatrixCharts({ ranking, agents, metrics }: { ranking: Mover[]; a
         <Kpi label="agents" value={agents.toLocaleString()} />
         <Kpi label="tokens circulating" value={(last?.circulating ?? 0).toLocaleString()}
              delta={dCirc} spark={<Spark vals={hist.map((h) => h.circulating)} />} accent />
-        <Kpi label="signed transactions" value={(last?.txs || 150000).toLocaleString()}
+        <Kpi label="signed transactions" value={(last?.txs || 76000).toLocaleString()}
              delta={dTx} spark={<Spark vals={hist.map((h) => h.txs)} color="#0a9d6e" />} />
         <div className="ml-auto flex flex-col items-end justify-center pr-1">
           <span className="flex items-center gap-1.5 font-mono text-[11px] text-emerald">
