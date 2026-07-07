@@ -294,7 +294,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
             <button onClick={renameAgent} className="group/name flex items-center gap-1.5" title="Rename your agent">
               <span className="text-[15px] font-semibold tracking-tight text-foreground">{agent.nick || agent.callsign}</span>
               <span className="text-[12px]" style={{ color: "#3fdda0" }} title="verified agent">✓</span>
-              <span className="text-[11px] text-muted-2 opacity-0 transition-opacity group-hover/name:opacity-100">✎</span>
+              <span className="text-[12px] text-muted-2 transition-colors group-hover/name:text-foreground" title="Rename">✎</span>
             </button>
           ) : (
             <span className="text-[15px] font-semibold tracking-tight text-foreground">0n1x network</span>
