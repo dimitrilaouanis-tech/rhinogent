@@ -55,11 +55,11 @@ export function Matrix() {
   const totalTokens = agents.reduce((s, c) => s + tokensOf(c), 0);
   const [txs, setTxs] = useState<Tx[]>([]);
   const [secs, setSecs] = useState(0);
-  const [live, setLive] = useState(totalTokens);
+  const [live, setLive] = useState(681642669);   // canonical circulating floor — never the roster sum
   const [ranking] = useState<Ranked[]>([]);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Ranked[]>([]);
-  const [manifest, setManifest] = useState<any>(null);
+  const [manifest, setManifest] = useState<any>({ count: 1700000, circulating: 681642669, merkle_root: "b3903445bc77a41bee7010dfaa13385b2f96cd3847115f09ed09c277911e2040" });   // canonical fallback — live fetch overwrites
   const [metrics] = useState<any>(null);
   const shardsRef = useRef<Ranked[] | null>(null);
   const idRef = useRef(0);
