@@ -4,10 +4,12 @@ import { Footer } from "@/components/footer";
 import { LiveCount } from "@/components/live-count";
 import { RhinoMark, RhinoMascot } from "@/components/rhino";
 import { CensusStrip } from "@/components/census-strip";
+import { FxObserver, StatNumber } from "@/components/home-fx";
 
 export default function Home() {
   return (
     <>
+      <FxObserver />
       <Nav />
       <main className="flex-1">
         <Hero />
@@ -28,6 +30,7 @@ export default function Home() {
 function Hero() {
   return (
     <section className="relative overflow-hidden bg-mesh">
+      <div className="absolute inset-0 hero-radial" aria-hidden />
       <div className="absolute inset-0 grid-fade" aria-hidden />
       <div className="relative mx-auto max-w-5xl px-5 pb-20 pt-20 text-center sm:pt-28">
         <div className="animate-rise inline-flex items-center gap-2 rounded-full border border-border bg-surface/60 px-3 py-1">
@@ -52,7 +55,7 @@ function Hero() {
         <div className="animate-rise delay-3 mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Link
             href="/chat"
-            className="w-full rounded-full bg-accent px-7 py-3.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 sm:w-auto"
+            className="btn-grad w-full rounded-full px-7 py-3.5 text-sm font-semibold text-white sm:w-auto"
           >
             Chat free — no signup →
           </Link>
@@ -81,6 +84,9 @@ function Hero() {
             </p>
             <div className="relative mx-auto mt-8 max-w-sm">
               <IdentityCard />
+            </div>
+            <div className="relative mx-auto mt-5 max-w-sm">
+              <VerifyCard />
             </div>
           </div>
         </div>
@@ -130,22 +136,24 @@ function WhatYouGet() {
     },
   ];
   return (
-    <section id="features" className="mx-auto max-w-6xl px-5 py-24">
-      <div className="text-center">
-        <p className="text-xs uppercase tracking-widest text-accent">What you get</p>
-        <h2 className="display mx-auto mt-4 max-w-3xl text-4xl font-semibold sm:text-5xl">
-          <span className="text-gradient">A verified agent,</span>{" "}
-          <span className="text-muted">owned by you.</span>
-        </h2>
-      </div>
-      <div className="mt-12 grid gap-5 md:grid-cols-3">
-        {cards.map((c) => (
-          <div key={c.t} className="rounded-2xl border border-border bg-surface/40 p-7">
-            <span className="text-2xl text-accent" aria-hidden>{c.icon}</span>
-            <h3 className="mt-4 text-lg font-semibold tracking-tight">{c.t}</h3>
-            <p className="mt-2 text-sm leading-relaxed text-muted">{c.d}</p>
-          </div>
-        ))}
+    <section id="features" className="section-pad hairline-x">
+      <div className="mx-auto max-w-6xl px-5">
+        <div className="text-center">
+          <p className="rv eyebrow">What you get</p>
+          <h2 className="display rv mx-auto mt-4 max-w-3xl text-4xl font-semibold sm:text-5xl" style={{ "--d": "80ms" } as React.CSSProperties}>
+            <span className="text-gradient">A verified agent,</span>{" "}
+            <span className="text-muted">owned by you.</span>
+          </h2>
+        </div>
+        <div className="mt-12 grid gap-5 md:grid-cols-3">
+          {cards.map((c, i) => (
+            <div key={c.t} className="rv card-x rounded-2xl bg-surface/40 p-7" style={{ "--d": `${120 + i * 90}ms` } as React.CSSProperties}>
+              <span className="text-2xl text-accent" aria-hidden>{c.icon}</span>
+              <h3 className="mt-4 text-lg font-semibold tracking-tight">{c.t}</h3>
+              <p className="body-copy mt-2 text-sm leading-relaxed">{c.d}</p>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );
@@ -153,22 +161,38 @@ function WhatYouGet() {
 
 /* ───────────────────────── Stat tiles ───────────────────────── */
 function StatTiles() {
-  const stats = [
-    { k: "1,000,000+", label: "signed agents in the network" },
-    { k: "0", label: "keys we custody" },
-    { k: "500", label: "free tokens at signup" },
+  const stats: {
+    label: string;
+    n?: number;
+    suffix?: string;
+    live?: boolean;
+    k?: string;
+  }[] = [
+    { n: 1000000, suffix: "+", live: true, label: "signed agents in the network" },
+    { n: 0, label: "keys we custody" },
+    { n: 500, label: "free tokens at signup" },
     { k: "EIP-191", label: "signature on every reply" },
   ];
   return (
-    <section className="border-y border-border/60 bg-surface/20">
+    <section className="band-alt hairline-x border-b border-[rgba(17,17,26,.08)]">
       <div className="mx-auto max-w-6xl px-5 py-16">
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {stats.map((s) => (
+          {stats.map((s, i) => (
             <div
               key={s.label}
-              className="rounded-2xl border border-border bg-background/40 p-8 text-center"
+              className="rv card-x rounded-2xl bg-background p-8 text-center"
+              style={{ "--d": `${i * 80}ms` } as React.CSSProperties}
             >
-              <p className="accent-gradient font-mono text-3xl font-semibold sm:text-4xl">{s.k}</p>
+              {typeof s.n === "number" ? (
+                <StatNumber
+                  n={s.n}
+                  suffix={s.suffix}
+                  live={s.live}
+                  className="accent-gradient font-mono text-3xl font-semibold sm:text-4xl"
+                />
+              ) : (
+                <p className="accent-gradient font-mono text-3xl font-semibold tabular-nums sm:text-4xl">{s.k}</p>
+              )}
               <p className="mt-2 text-sm text-muted">{s.label}</p>
             </div>
           ))}
@@ -201,24 +225,26 @@ function HowItWorks() {
     },
   ];
   return (
-    <section id="how" className="mx-auto max-w-6xl px-5 py-24">
-      <div className="text-center">
-        <p className="text-xs uppercase tracking-widest text-accent">How it works</p>
-        <h2 className="display mx-auto mt-4 max-w-2xl text-4xl font-semibold sm:text-5xl">
-          <span className="text-gradient">Free chat to owned agent in three steps.</span>
-        </h2>
-      </div>
-      <div className="mt-14 grid gap-5 md:grid-cols-3">
-        {steps.map((s) => (
-          <div key={s.n} className="flex flex-col rounded-2xl border border-border bg-surface/40 p-7">
-            <span className="font-mono text-sm text-accent">{s.n}</span>
-            <h3 className="mt-3 text-xl font-semibold tracking-tight">{s.t}</h3>
-            <p className="mt-2 flex-1 text-sm leading-relaxed text-muted">{s.d}</p>
-            <Link href={s.cta.href} className="mt-5 text-sm font-medium text-accent hover:opacity-80">
-              {s.cta.label}
-            </Link>
-          </div>
-        ))}
+    <section id="how" className="section-pad band-violet">
+      <div className="mx-auto max-w-6xl px-5">
+        <div className="text-center">
+          <p className="rv eyebrow">How it works</p>
+          <h2 className="display rv mx-auto mt-4 max-w-2xl text-4xl font-semibold sm:text-5xl" style={{ "--d": "80ms" } as React.CSSProperties}>
+            <span className="text-gradient">Free chat to owned agent in three steps.</span>
+          </h2>
+        </div>
+        <div className="mt-14 grid gap-5 md:grid-cols-3">
+          {steps.map((s, i) => (
+            <div key={s.n} className="rv card-x flex flex-col rounded-2xl bg-background p-7" style={{ "--d": `${120 + i * 90}ms` } as React.CSSProperties}>
+              <span className="font-mono text-sm text-accent">{s.n}</span>
+              <h3 className="mt-3 text-xl font-semibold tracking-tight">{s.t}</h3>
+              <p className="body-copy mt-2 flex-1 text-sm leading-relaxed">{s.d}</p>
+              <Link href={s.cta.href} className="mt-5 text-sm font-medium text-accent hover:opacity-80">
+                {s.cta.label}
+              </Link>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );
@@ -253,24 +279,24 @@ function FAQ() {
     },
   ];
   return (
-    <section id="faq" className="border-t border-border/60 bg-surface/20">
-      <div className="mx-auto max-w-3xl px-5 py-24">
+    <section id="faq" className="section-pad hairline-x band-alt">
+      <div className="mx-auto max-w-3xl px-5">
         <div className="text-center">
-          <p className="text-xs uppercase tracking-widest text-accent">FAQ</p>
-          <h2 className="display mt-4 text-3xl font-semibold sm:text-4xl">
+          <p className="rv eyebrow">FAQ</p>
+          <h2 className="display rv mt-4 text-3xl font-semibold sm:text-4xl" style={{ "--d": "80ms" } as React.CSSProperties}>
             <span className="text-gradient">Straight answers.</span>
           </h2>
         </div>
         <div className="mt-12 space-y-4">
-          {qas.map((x) => (
-            <details key={x.q} className="group rounded-2xl border border-border bg-surface/40 p-6">
+          {qas.map((x, i) => (
+            <details key={x.q} className="rv card-x group rounded-2xl bg-background p-6" style={{ "--d": `${Math.min(i, 4) * 60}ms` } as React.CSSProperties}>
               <summary className="cursor-pointer list-none text-base font-semibold tracking-tight">
                 <span className="flex items-center justify-between gap-4">
                   {x.q}
                   <span className="text-accent transition-transform group-open:rotate-45" aria-hidden>+</span>
                 </span>
               </summary>
-              <p className="mt-3 text-sm leading-relaxed text-muted">{x.a}</p>
+              <p className="body-copy mt-3 text-sm leading-relaxed">{x.a}</p>
             </details>
           ))}
         </div>
@@ -284,22 +310,22 @@ function CTA() {
   return (
     <section
       id="get-started"
-      className="relative overflow-hidden border-t border-border/60 bg-mesh"
+      className="section-pad hairline-x relative overflow-hidden bg-mesh"
     >
       <div className="absolute inset-0 grid-fade" aria-hidden />
-      <div className="relative mx-auto max-w-3xl px-5 py-28 text-center">
-        <RhinoMascot className="mx-auto h-28 w-auto" />
-        <h2 className="display mt-7 text-balance text-5xl font-semibold sm:text-6xl">
+      <div className="relative mx-auto max-w-3xl px-5 text-center">
+        <RhinoMascot className="rv mx-auto h-28 w-auto" />
+        <h2 className="display rv mt-7 text-balance text-5xl font-semibold sm:text-6xl" style={{ "--d": "80ms" } as React.CSSProperties}>
           <span className="text-gradient">The agent you own.</span>
         </h2>
-        <p className="mx-auto mt-5 max-w-xl text-lg text-muted">
+        <p className="body-copy rv mx-auto mt-5 max-w-xl text-lg" style={{ "--d": "160ms" } as React.CSSProperties}>
           Chat free with a named, verified agent — then mint your own
           self-custody identity + wallet in your browser. Keys stay yours.
         </p>
-        <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
+        <div className="rv mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row" style={{ "--d": "240ms" } as React.CSSProperties}>
           <Link
             href="/chat"
-            className="w-full rounded-full bg-accent px-7 py-3.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 sm:w-auto"
+            className="btn-grad w-full rounded-full px-7 py-3.5 text-sm font-semibold text-white sm:w-auto"
           >
             Chat free — no signup →
           </Link>
@@ -316,9 +342,33 @@ function CTA() {
 }
 
 /* ───────────────────────── Visual cards ───────────────────────── */
+
+/* signature moment — mono terminal that types a verify command and stamps
+   a jade VERIFIED pill (CSS animation, .play added by the scroll observer) */
+function VerifyCard() {
+  return (
+    <div className="verify-card rounded-xl border border-[#1d2230] bg-[#0e1014] p-4 text-left font-mono text-[12px] leading-relaxed text-[#f2f4f7] shadow-[0_1px_2px_rgba(17,17,26,.2),0_12px_32px_-12px_rgba(17,17,26,.45)]">
+      <div className="mb-3 flex items-center gap-1.5" aria-hidden>
+        <span className="h-2 w-2 rounded-full bg-[#2a2f3d]" />
+        <span className="h-2 w-2 rounded-full bg-[#2a2f3d]" />
+        <span className="h-2 w-2 rounded-full bg-[#2a2f3d]" />
+        <span className="ml-2 text-[10px] uppercase tracking-[0.18em] text-[#8b95a3]">verify</span>
+      </div>
+      <p>
+        <span className="vc-cmd text-[#c8ceda]">→ rhinogent verify 0x84f2…9c1e</span>
+      </p>
+      <p className="mt-2.5">
+        <span className="vc-pill inline-flex items-center gap-1.5 rounded-full bg-[rgba(63,221,160,0.14)] px-2.5 py-1 text-[11px] font-semibold text-[#3fdda0]">
+          ✓ VERIFIED · signed 0n1x attestation
+        </span>
+      </p>
+    </div>
+  );
+}
+
 function IdentityCard() {
   return (
-    <div className="rounded-2xl border border-border bg-gradient-to-b from-surface-2 to-surface p-6 shadow-xl shadow-slate-900/10">
+    <div className="card-x rounded-2xl bg-gradient-to-b from-surface-2 to-surface p-6">
       <div className="flex items-start justify-between">
         <div>
           <p className="text-xs uppercase tracking-widest text-muted-2">

@@ -64,6 +64,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
   const [history, setHistory] = useState<{ id: string; title: string; msgs: Msg[]; agent?: { callsign: string; address: string } }[]>([]);
   const [sidebar, setSidebar] = useState(false);   // mobile drawer open
   const [rail, setRail] = useState(false);         // desktop sidebar collapsed to icon rail (Gemini-style)
+  const [activeId, setActiveId] = useState<string | null>(null);   // presentational: which history item is open (sidebar highlight only)
   const [copied, setCopied] = useState(-1);        // which message index was just copied
   const [agent, setAgent] = useState<{ callsign: string; address: string; nick?: string } | null>(null);   // the verified agent handling THIS chat (renameable, persisted)
   const poolRef = useRef<{ callsign: string; address: string }[]>([]);
@@ -156,6 +157,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
       }
     } catch { /**/ }
     setMsgs([]);
+    setActiveId(null);   // sidebar highlight only
     assignAgent();   // fresh chat → a new verified agent takes it
     try { localStorage.removeItem("rhinogent.chat.current"); } catch { /**/ }
   }
@@ -227,28 +229,33 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
 
   // Gemini-style: the ☰ toggles the rail between a slim icon strip and the full panel
   const Sidebar = (
-    <div className={`flex h-full ${rail ? "w-[60px]" : "w-64"} shrink-0 flex-col border-r border-border/60 bg-gradient-to-b from-surface/50 to-surface/20 backdrop-blur-sm transition-all duration-300 ease-out`}>
-      <div className={rail ? "flex flex-col items-center gap-1 p-2.5" : "flex items-center gap-1.5 p-3"}>
+    <div className={`flex h-full ${rail ? "w-[60px]" : "w-[264px]"} shrink-0 flex-col overflow-hidden border-r border-border/60 bg-gradient-to-b from-surface/60 via-surface/30 to-surface/10 backdrop-blur-sm transition-all duration-300 ease-out`}>
+      <div className={rail ? "flex flex-col items-center gap-1.5 px-2.5 pb-2 pt-3" : "flex items-center gap-2 px-3 pb-2 pt-3"}>
         <button onClick={() => setRail((v) => !v)}
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[15px] text-muted transition-colors hover:bg-surface hover:text-foreground"
-          title={rail ? "Expand menu" : "Collapse menu"}>☰</button>
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[15px] text-muted outline-none transition-colors duration-200 hover:bg-surface hover:text-foreground focus-visible:ring-2 focus-visible:ring-[#3fdda0]/50"
+          title={rail ? "Expand menu" : "Collapse menu"} aria-label={rail ? "Expand menu" : "Collapse menu"}>☰</button>
         <button onClick={() => { newChat(); setSidebar(false); loadHistory(); }}
           className={rail
-            ? "flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[17px] text-muted transition-colors hover:bg-surface hover:text-foreground"
-            : "flex flex-1 items-center gap-2 rounded-full border border-border bg-background px-3.5 py-2 text-[13px] font-medium text-foreground transition-colors hover:border-muted-2"}
-          title="New chat">
-          <span className="text-[16px]">＋</span>{!rail && "New chat"}
+            ? "flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[17px] text-muted outline-none transition-colors duration-200 hover:bg-[#3fdda0]/10 hover:text-foreground focus-visible:ring-2 focus-visible:ring-[#3fdda0]/50"
+            : "flex flex-1 items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-[13px] font-medium text-foreground shadow-[0_1px_2px_rgba(0,0,0,.04)] outline-none transition-all duration-200 hover:-translate-y-px hover:border-[#3fdda0]/40 hover:bg-[#3fdda0]/[.06] hover:shadow-[0_3px_10px_rgba(63,221,160,.12)] focus-visible:ring-2 focus-visible:ring-[#3fdda0]/50"}
+          title="New chat" aria-label="New chat">
+          <span className="text-[16px] leading-none" style={{ color: "#3fdda0" }}>＋</span>{!rail && "New chat"}
         </button>
       </div>
       {!rail && (
-        <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-3">
-          <p className="px-2 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-2">Recent</p>
-          {history.length === 0 && <p className="px-2 py-2 text-[12px] text-muted-2">No saved chats yet.</p>}
+        <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-3 pt-1">
+          <p className="px-2.5 pb-1.5 pt-2 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-2">Recent</p>
+          {history.length === 0 && <p className="px-2.5 py-2 text-[12px] leading-relaxed text-muted-2">No saved chats yet.</p>}
           {history.map((h) => (
-            <button key={h.id} onClick={() => { setMsgs(h.msgs); if (h.agent) setAgent(h.agent); setSidebar(false); }}
-              className="group/item mb-0.5 block w-full rounded-xl border border-transparent px-2.5 py-2 text-left transition-all hover:border-border/60 hover:bg-surface/70">
-              <span className="block truncate text-[13px] text-foreground">{h.title}</span>
-              {h.agent && <span className="block truncate text-[10px] text-muted-2 transition-colors group-hover/item:text-muted">◆ {h.agent.callsign} <span style={{ color: "#3fdda0" }}>✓</span></span>}
+            <button key={h.id} onClick={() => { setMsgs(h.msgs); if (h.agent) setAgent(h.agent); setActiveId(h.id); setSidebar(false); }}
+              aria-current={activeId === h.id ? "true" : undefined}
+              className={`group/item mb-0.5 block w-full rounded-xl border px-3 py-2 text-left outline-none transition-all duration-200 focus-visible:ring-2 focus-visible:ring-[#3fdda0]/50 ${
+                activeId === h.id
+                  ? "border-border/70 bg-surface shadow-[inset_2px_0_0_#3fdda0]"
+                  : "border-transparent hover:translate-x-[1px] hover:border-border/60 hover:bg-surface/70"
+              }`}>
+              <span className={`block truncate text-[13px] leading-snug ${activeId === h.id ? "font-medium text-foreground" : "text-foreground/90 group-hover/item:text-foreground"}`}>{h.title}</span>
+              {h.agent && <span className="mt-0.5 block truncate text-[10.5px] text-muted-2 transition-colors duration-200 group-hover/item:text-muted">◆ {h.agent.callsign} <span style={{ color: "#3fdda0" }}>✓</span></span>}
             </button>
           ))}
         </div>
@@ -279,8 +286,9 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
       {/* mobile drawer */}
       {sidebar && (
         <div className="fixed inset-0 z-40 flex md:hidden">
-          <div className="absolute inset-0 bg-black/40" onClick={() => setSidebar(false)} />
-          <div className="relative z-50 h-full bg-background">{Sidebar}</div>
+          <style>{`@keyframes rg-drawer-in{from{transform:translateX(-100%)}to{transform:translateX(0)}}@keyframes rg-dim-in{from{opacity:0}to{opacity:1}}`}</style>
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" style={{ animation: "rg-dim-in .25s ease-out both" }} onClick={() => setSidebar(false)} />
+          <div className="relative z-50 h-full overflow-hidden rounded-r-2xl bg-background shadow-[8px_0_32px_rgba(0,0,0,.18)]" style={{ animation: "rg-drawer-in .28s cubic-bezier(.32,.72,.24,1) both" }}>{Sidebar}</div>
         </div>
       )}
 
