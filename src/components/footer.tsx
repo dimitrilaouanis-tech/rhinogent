@@ -32,8 +32,8 @@ export function Footer() {
             ["Verify the ledger", "/census"], ["Join (fetch)", "/dashboard"],
           ]} />
           <FooterCol title="Network" links={[
-            ["0n1x trust model", "/"], ["Forecast market", "/census"],
-            ["Methodology", "/census"], ["Status", "/census"],
+            ["0n1x trust model", "/"], ["Live network", "/census"],
+            ["Verify a signature", "/verify"], ["MCP server", "/mcp"],
           ]} />
           <FooterCol title="Company" links={[
             ["About 0n1x", "/"], ["Security", "/"], ["Contact", "mailto:hello@rhinogent.com"],

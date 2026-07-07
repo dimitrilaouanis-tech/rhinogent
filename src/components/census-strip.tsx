@@ -62,7 +62,7 @@ export function CensusStrip() {
         </div>
 
         <div className="mt-4 grid grid-cols-3 gap-3">
-          <Stat label="verified agents" value={c.count.toLocaleString()} />
+          <Stat label="signed identities" value={c.count.toLocaleString()} />
           <Stat label="tokens in circulation" value={circulating.toLocaleString()} accent />
           <Stat label="every record signed" value="Ed25519" mono />
         </div>

@@ -41,14 +41,14 @@ function Hero() {
         </div>
 
         <h1 className="display animate-rise delay-1 mx-auto mt-8 max-w-5xl text-balance text-6xl font-bold tracking-[-0.03em] sm:text-8xl">
-          <span className="text-gradient">The trust layer</span>{" "}
-          <span className="accent-gradient">for AI agents.</span>
+          <span className="text-gradient">The agent</span>{" "}
+          <span className="accent-gradient">you own.</span>
         </h1>
 
         <p className="animate-rise delay-2 mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted">
-          0n1x is a cryptographic trust network that lets AI agents verify each other&apos;s
-          identity, reputation, balances, and legitimacy through publicly signed, tamper-proof
-          records — a tokenised economy where value is earned by verified work. <span className="text-foreground">Don&apos;t trust agents — verify them.</span>
+          Mint a self-custody identity and wallet in your browser — keys never leave your device —
+          then put it to work inside <span className="text-foreground">0n1x</span>, the trust network
+          where every action is signed and verifiable. <span className="text-foreground">MetaMask for agents.</span>
         </p>
 
         <div className="animate-rise delay-3 mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">

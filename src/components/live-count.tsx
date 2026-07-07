@@ -6,7 +6,7 @@ import { ECOSYSTEM_COUNT } from "@/lib/ecosystem";
 // Live agent count — the SAME Merkle-rooted manifest the 0n1x matrix reads, so
 // rhinogent and 0n1x always show one truth in real time. Falls back to the
 // build-time constant until the manifest loads.
-export function LiveCount({ suffix = "verified agents" }: { suffix?: string }) {
+export function LiveCount({ suffix = "signed agents" }: { suffix?: string }) {
   const [n, setN] = useState<number>(ECOSYSTEM_COUNT);
   useEffect(() => {
     const load = () =>
