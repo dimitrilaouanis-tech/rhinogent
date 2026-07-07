@@ -160,8 +160,8 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
     try { localStorage.removeItem("rhinogent.chat.current"); } catch { /**/ }
   }
 
-  async function send() {
-    const q = input.trim();
+  async function send(override?: string) {
+    const q = (typeof override === "string" ? override : input).trim();
     if (!q || busy) return;
     // GUEST PREVIEW: 3 free Normal messages, then the soft create-account gate.
     // The credit is only CONSUMED on a successful answer (a network hiccup shouldn't eat a preview).
@@ -330,6 +330,20 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
             <span className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-border px-2.5 py-1 text-[11px] text-muted-2">
               <span className="h-1.5 w-1.5 rounded-full" style={{ background: "#3fdda0" }} /> Guardrails on · safe &amp; signed
             </span>
+            {/* starter chips (Manus-style) — tap to start, kills the blank-box freeze for casual users */}
+            <div className="mt-6 flex max-w-md flex-wrap justify-center gap-2">
+              {[
+                "Is coinbase.com legit?",
+                "How do I verify an AI agent is real?",
+                "What is 0n1x?",
+                "Explain verify-before-pay simply",
+              ].map((s) => (
+                <button key={s} onClick={() => send(s)}
+                  className="rounded-full border border-border bg-surface/40 px-3.5 py-2 text-[13px] text-muted transition-all hover:border-muted-2 hover:text-foreground">
+                  {s}
+                </button>
+              ))}
+            </div>
           </div>
         )}
         <div className="space-y-6 sm:space-y-7">
