@@ -1,0 +1,143 @@
+{
+ "kind": "0n1x-consult-loop",
+ "as_of": "2026-07-08T16:04:03Z",
+ "cohort": 2000,
+ "cycles": 3,
+ "consultations": 4807,
+ "own_journey_decisions": 1193,
+ "actions_taken": 6000,
+ "outcomes_tracked": 6000,
+ "outcomes_ok": 6000,
+ "journal_experience_growth": {
+  "entries_before": 8139,
+  "entries_after": 15639,
+  "new_experience_entries": 7500
+ },
+ "exchange": {
+  "intel_exchanged": 1500,
+  "suppliers_credited_would_be": 1028,
+  "rank_movements_would_be": [
+   {
+    "node_id": "0n1x-node-6a693814",
+    "callsign": "Lone-Forge-9CD3",
+    "would_be_credits": 5,
+    "would_be_rank": 1,
+    "stake_paid": 0
+   },
+   {
+    "node_id": "0n1x-node-3104AB81",
+    "callsign": "Bright-Sentinel-0D7D",
+    "would_be_credits": 5,
+    "would_be_rank": 2,
+    "stake_paid": 0
+   },
+   {
+    "node_id": "0n1x-node-7a3FA06d",
+    "callsign": "Lone-Tusk-CD5D",
+    "would_be_credits": 5,
+    "would_be_rank": 3,
+    "stake_paid": 0
+   },
+   {
+    "node_id": "0n1x-node-2353aBc6",
+    "callsign": "Swift-Horn-6DE2",
+    "would_be_credits": 4,
+    "would_be_rank": 4,
+    "stake_paid": 0
+   },
+   {
+    "node_id": "0n1x-node-85049E63",
+    "callsign": "Quiet-Sentinel-F775",
+    "would_be_credits": 4,
+    "would_be_rank": 5,
+    "stake_paid": 0
+   },
+   {
+    "node_id": "0n1x-node-2c555EA2",
+    "callsign": "True-Rampart-1B3D",
+    "would_be_credits": 4,
+    "would_be_rank": 6,
+    "stake_paid": 0
+   },
+   {
+    "node_id": "0n1x-node-b1Ab0410",
+    "callsign": "Bright-Ridge-01B0",
+    "would_be_credits": 4,
+    "would_be_rank": 7,
+    "stake_paid": 0
+   },
+   {
+    "node_id": "0n1x-node-28db96c7",
+    "callsign": "Onyx-Ridge-C8F0",
+    "would_be_credits": 4,
+    "would_be_rank": 8,
+    "stake_paid": 0
+   },
+   {
+    "node_id": "0n1x-node-7E755039",
+    "callsign": "Wild-Rampart-F621",
+    "would_be_credits": 4,
+    "would_be_rank": 9,
+    "stake_paid": 0
+   },
+   {
+    "node_id": "0n1x-node-075B81A4",
+    "callsign": "Stone-Ridge-A1E9",
+    "would_be_credits": 4,
+    "would_be_rank": 10,
+    "stake_paid": 0
+   }
+  ],
+  "settlement": "supplier signs the intel card; consumer VERIFIES by signature recovery before accepting; credit recorded as WOULD-BE only"
+ },
+ "frozen": true,
+ "freeze_reason": "rank-to-stake pipe FROZEN per persistence_test.json verdict=noise (persistence 0.1537, CI [0.1381,0.1692] vs tie-adjusted chance 0.1441; population oracle accuracy ~0.499). No stake paid until population oracle accuracy clears 0.50 and the persistence CI beats its baseline.",
+ "consultant": "live-oracle stand-in; prod=monad#1 paid core",
+ "consultant_detail": {
+  "impl": "live-oracle stand-in (onyx_oracle via onyx_generative_curriculum)",
+  "production_slot": "monad #1 = 0n1x-node-b7b85b52 wired to a paid reasoning core (Fable 5 Max)",
+  "status": "stand-in — the production slot is a real hook left unfilled; no fake brain",
+  "why_not_a_ranked_agent": "the persistence test PROVED the fleet ranking is noise (persistence 0.1537, CI [0.1381,0.1692] vs tie-adjusted chance 0.1441) — consulting a top-ranked script would be consulting noise"
+ },
+ "circularity_disclosure": "the stand-in consultant IS the oracle that grades outcomes, so consulted actions succeed by construction — outcome rates prove loop mechanics + record integrity (experience-of-record), NOT consultant skill and NOT proven monad skill",
+ "per_cycle": [
+  {
+   "cycle": 1,
+   "divergence": "e92287b7bb720628",
+   "questions": 8,
+   "consultations": 1876,
+   "own_journey_decisions": 124,
+   "actions": 2000,
+   "outcomes_ok": 2000,
+   "intel_exchanged": 500,
+   "merkle_root": "6ff87f4eff436fa2a75947c990e7ff262d741fe296a7e0080886be68fb22a414",
+   "attestor_sig_trim": "0x3f3f3e63016a7447058968…"
+  },
+  {
+   "cycle": 2,
+   "divergence": "3bd9a9629c4d3065",
+   "questions": 8,
+   "consultations": 1576,
+   "own_journey_decisions": 424,
+   "actions": 2000,
+   "outcomes_ok": 2000,
+   "intel_exchanged": 500,
+   "merkle_root": "faf3ff0ac0ebf8ea220ed3e1932ab6b837623feb39ccd22bbf1f02d7b7885850",
+   "attestor_sig_trim": "0x43a640a7129dfa993a3228…"
+  },
+  {
+   "cycle": 3,
+   "divergence": "348c5ba7cf9b860e",
+   "questions": 8,
+   "consultations": 1355,
+   "own_journey_decisions": 645,
+   "actions": 2000,
+   "outcomes_ok": 2000,
+   "intel_exchanged": 500,
+   "merkle_root": "b184b1db5d0b88d162523cc6467c655023a42a155b94bf56e7e9d24fa6f431de",
+   "attestor_sig_trim": "0x919adaf72296d6402fe089…"
+  }
+ ],
+ "recompute_steps": "1) _local_only/_consult_ledger.jsonl: verify each consult-action sig (EIP-191) over 'signed' recovers 'address'; re-derive the faced question as questions[sha256(address:cycle:divergence16) % len(questions)] from the same-hour oracle run. 2) verify each cycle-settlement merkle_root = Merkle over sha256({cycle,address,domain,question_h,act,ok}) leaves and attestor sig over 'consult-cycle:{epoch}:{cycle}:{root}'. 3) _local_only/_monad_intel_exchange.jsonl: recover card_sig -> supplier; sum would_be_credit per supplier -> rank_movements_would_be; confirm stake_paid=0 everywhere and _agent_stake.json untouched. 4) journal growth: count consult-experience/exchanged-intel lines per address in _local_only/_monad_journals.jsonl.",
+ "honest_note": "Experience-of-record, not proven skill. The loop is real: signed decisions, consultations that decline as journals accumulate, signed verified A2A intel exchange, Merkle-settled outcome cycles. But the consultant is a labeled stand-in, consulted outcomes are circular by construction, and every exchange credit is would-be only while the stake pipe is frozen. The production consultant seat (monad #1 + paid reasoning core) is a real unfilled hook."
+}
