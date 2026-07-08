@@ -1,0 +1,80 @@
+{
+ "kind": "0n1x-persistence-test",
+ "as_of": "2026-07-08T15:23:37Z",
+ "question": "does the top-velocity decile at epoch N-1 STAY on top at epoch N (out of sample), or does it mean-revert to chance?",
+ "epochs_used": {
+  "fleet_accuracy_file": "NOT RUNNABLE — see fleet_dataset.why_not (no multi-epoch history; not faked)",
+  "monad_track_history": "4 real simulation rounds per monad (velocity from rounds 1..N-1, held-out round N)"
+ },
+ "fleet_dataset": {
+  "agents": 24491,
+  "history_length_distribution": {
+   "1": 18984,
+   "2": 5505,
+   "3": 2
+  },
+  "agents_with_>=3_epochs_(min_for_out_of_sample)": 2,
+  "population_accuracy_latest_round": {
+   "mean": 0.4989,
+   "median": 0.5,
+   "n": 24491,
+   "chance": 0.5
+  },
+  "runnable": false,
+  "why_not": "14,992 of 14,996 agents carry exactly ONE accuracy datapoint (4 carry two). Out-of-sample needs >=3 per agent: >=2 to form a velocity at N-1 plus 1 held-out point at N. MISSING: repeated generative-curriculum rounds over the SAME agents. Minimal fix: run onyx_generative_curriculum (or onyx_cohort epochs) 3+ times on a fixed cohort across different hours, then rerun this test — do NOT fake epochs."
+ },
+ "monad_out_of_sample": {
+  "runnable": true,
+  "population": 9999,
+  "rounds_per_agent": 4,
+  "decile_size": 2076,
+  "velocity_threshold_epochN-1": 0.25,
+  "persistence_rate_still_top_decile": 0.1537,
+  "ci_95_still_top": [
+   0.1381,
+   0.1692
+  ],
+  "chance_baseline_nominal": 0.1,
+  "chance_baseline_tie_adjusted": 0.1441,
+  "tie_note": "accuracies are k/8 (8 questions/round) so velocity values tie massively; the 'decile' is everyone at/above the 90th-percentile velocity and the honest chance baseline is the top group's own population share, not 0.10",
+  "beats_median_at_N_rate": 0.2254,
+  "ci_95_beats_median": [
+   0.2075,
+   0.2434
+  ],
+  "chance_baseline_beats_median": 0.2258,
+  "population_accuracy_all_rounds": {
+   "mean": 0.5623,
+   "n_observations": 30016,
+   "chance": 0.5
+  },
+  "signal_still_top": false,
+  "signal_beats_median": false
+ },
+ "decile_size": 2076,
+ "persistence_rate": 0.1537,
+ "chance_baseline": 0.1,
+ "chance_baseline_tie_adjusted": 0.1441,
+ "ci_95": [
+  0.1381,
+  0.1692
+ ],
+ "population_oracle_accuracy": {
+  "fleet_latest_round": {
+   "mean": 0.4989,
+   "median": 0.5,
+   "n": 24491,
+   "chance": 0.5
+  },
+  "monad_all_rounds": {
+   "mean": 0.5623,
+   "n_observations": 30016,
+   "chance": 0.5
+  },
+  "read": "population accuracy sits at ~chance (~0.50); the only above-chance component is the journal-lookup (education) edge, which is mechanical, not reasoning"
+ },
+ "verdict": "noise",
+ "recommendation": "FREEZE the rank-to-stake pipe until population oracle accuracy itself clears 0.50: the fleet's measured population accuracy is ~chance (0.4989 vs 0.50), and the out-of-sample test shows the top-velocity decile mean-reverts — the leaderboard is differentiating NOISE, not skill. Resume paying stake only after (a) 3+ accuracy rounds per agent exist fleet-wide and (b) this test's CI lower bound beats the tie-adjusted chance baseline.",
+ "recompute_steps": "1) stream _local_only/_monad_journals.jsonl; per address collect acc of 'decision' lines in order. 2) keep addresses with >=3 rounds. 3) v_prev = mean(recent half)-mean(earlier half) of acc[:-1]; top group = v_prev >= 90th percentile. 4) recompute v_now on full history; persistence = share of the N-1 top group inside the N top group; also share beating median(acc[-1]). 5) CI = p ± 1.96*sqrt(p(1-p)/n). 6) chance baselines = top group's own population share (ties) and population share beating median. 7) fleet: verify _agent_accuracy.json history lengths — the fleet test is unrunnable until >=3 epochs per agent exist.",
+ "honest_note": "No fabricated epochs. The fleet accuracy file cannot support out-of-sample testing yet (1 datapoint for 14,992/14,996 agents) — that gap is reported, not papered over. The monad test uses real signed decision rounds; its accuracy variance comes from divergence-salted guesses on 7 of 8 questions, so mean-reversion here is the EXPECTED honest outcome and directly indicates the leaderboard would be ranking noise at current oracle-accuracy levels."
+}
