@@ -41,13 +41,17 @@
     // galaxy slides toward the top-left when opening zoomed out.
     const _s0 = opts.initialZoom || 1;
     const view = { s: _s0, ox: W / 2 * (1 - _s0), oy: H / 2 * (1 - _s0) };
+    // ---- BIG BANG intro: the whole galaxy is born from a singularity on mount ----
+    const _reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let _bangStart = null, _bang = _reduce ? 1 : 0;   // 0 = singularity, 1 = full galaxy
     let drag = null, mouse = null, focus = null, dragMoved = false;
     // 3D diastasi: per-agent depth + drifting camera => parallax = felt depth
     let camX = 0, camY = 0;
     const zOf = (n) => 0.78 + (hash(n, 53) % 1000) / 1000 * 0.85;   // 0.78 (near) .. 1.63 (far)
     const proj = (n) => {
       const [u, v] = pos(n); const z = zOf(n);
-      const bx = u * W * view.s + view.ox, by = v * H * view.s + view.oy;
+      let bx = u * W * view.s + view.ox, by = v * H * view.s + view.oy;
+      if (_bang < 1) { bx = W / 2 + (bx - W / 2) * _bang; by = H / 2 + (by - H / 2) * _bang; }  // detonate from center
       return [W / 2 + (bx - W / 2) / z + camX * (1 - 1 / z),
               H / 2 + (by - H / 2) / z + camY * (1 - 1 / z), z];
     };
@@ -244,6 +248,12 @@
     }
     function drawFrame(nowMs) {
       const t = nowMs / 1000;
+      // BIG BANG: advance the birth of the galaxy (easeOutCubic — hard burst, gentle settle)
+      if (!_reduce && _bang < 1) {
+        if (_bangStart === null) _bangStart = nowMs;
+        const p = Math.min(1, (nowMs - _bangStart) / 2200);
+        _bang = 1 - Math.pow(1 - p, 3);
+      }
       const drift = Math.min(W, H) * 0.035; camX = Math.sin(t * 0.20) * drift; camY = Math.cos(t * 0.17) * drift * 0.7;  // drift scales to screen — stays centered on mobile
       // deep-space base (normal blending)
       ctx.globalCompositeOperation = "source-over";
@@ -254,11 +264,22 @@
       // EVERYTHING luminous below renders additively — the glow secret
       ctx.globalCompositeOperation = "lighter";
 
+      // BIG BANG core flash — blinding at ignition, blooms outward, fades as the galaxy forms
+      if (_bang < 1) {
+        const fa = Math.pow(1 - _bang, 1.4);                     // flash strength 1 -> 0
+        const fr = Math.max(W, H) * (0.04 + 0.55 * _bang);       // shockwave radius grows
+        const fl = ctx.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, fr);
+        fl.addColorStop(0, "rgba(" + THEME.core + "," + (0.95 * fa) + ")");
+        fl.addColorStop(0.45, "rgba(" + THEME.ring + "," + (0.4 * fa) + ")");
+        fl.addColorStop(1, "rgba(0,0,0,0)");
+        ctx.fillStyle = fl; ctx.beginPath(); ctx.arc(W / 2, H / 2, fr, 0, 7); ctx.fill();
+      }
+
       // THE WHOLE ECOSYSTEM — the galaxy of every agent, under the live graph.
       // Blitted with the same pan/zoom transform (slightly damped = deep layer).
       {
         const gs = view.s * 0.85 + 0.15;                 // zooms a touch slower (depth)
-        const gw = Math.max(W, H) * 1.6 * gs;
+        const gw = Math.max(W, H) * 1.6 * gs * (0.06 + 0.94 * _bang);   // galaxy cloud expands from the singularity
         const cx2 = W / 2 + (view.ox - (1 - view.s) * W / 2) * 0.85;
         const cy2 = H / 2 + (view.oy - (1 - view.s) * H / 2) * 0.85;
         ctx.save();
