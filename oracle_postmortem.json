@@ -1,0 +1,73 @@
+{
+ "kind": "0n1x-oracle-postmortem",
+ "id": "grader-coin-flip-2026-07-09",
+ "as_of": "2026-07-09T10:26:22Z",
+ "title": "Our grader was flipping coins. We caught it, published it, and here is the diff.",
+ "framing": "The oracle was fine, the exam was fake, and the system's honesty machinery caught its own fraud.",
+ "headline_number_retired": {
+  "number": 0.4989,
+  "was_published_as": "population oracle accuracy",
+  "actually_measured": "sha256(address:question:epoch) & 1 — a salted coin flip — for 99.99% of graded answers. The measured 0.4989 is exactly what an honest measurement of a fair coin looks like.",
+  "the_oracle_itself": "was NEVER broken: onyx_oracle.r_merchant_multi (RDAP age + TLS + HTTP) is the verified answer key and produced correct signed bands throughout. What was fake was the EXAM: the knowledge pipe never reached the students, so the grader graded noise."
+ },
+ "mechanism": {
+  "1_disjoint_cursors": "the educate pass (oracle-journal bridge) and the exam pass (generative curriculum) each rotated their OWN cursor over a ~1M-agent roster. The windows almost never intersected, so real journal knowledge reached the grader for ~2 answers in 24,000 (journal_share 0.0001).",
+  "2_coin_flip_fallback": "when a student had no journal knowledge for a question, the grader fabricated an answer — sha256(address:question:epoch)&1 — and COUNTED it in the accuracy denominator. 99.99% of the graded pool was this salted coin flip.",
+  "3_non_atomic_wipe": "per-agent accuracy history was written with a plain json.dump(open(path,'w')) while the reader swallowed parse errors into {} — a concurrent read during a write returned an empty dict that was then written back, wiping accumulated history. Result: the vast majority of agents carried exactly ONE datapoint."
+ },
+ "evidence_before": {
+  "journal_share": 0.0001,
+  "answers_from_journal_per_round": "2 of 24,000",
+  "population_accuracy": 0.4989,
+  "agents_with_one_datapoint": "18,984 of 24,491 (77.5%); only 2 agents had >=3"
+ },
+ "the_fix_in_order": [
+  {
+   "step": 1,
+   "what": "atomic writes + hardened loads (data integrity before data flow)",
+   "how": "every accumulated-history JSON writer now writes tmp + os.replace(); loads that find an EXISTING but unparseable file retry with backoff and then SKIP the write for that round — a partial read can never clobber history again. A cross-process lock serializes the read-modify-write of the learning-loop daemons.",
+   "where": "_onyx_state.py (new); onyx_bootcamp.py; onyx_generative_curriculum.py; onyx_oracle_journal_bridge.py; onyx_delta_reward.py; onyx_awake_engine.py; onyx_awaken_recruit.py; onyx_fleet_mission.py"
+  },
+  {
+   "step": 2,
+   "what": "the coin-flip path was DELETED, not fixed",
+   "how": "no journal knowledge => the item surfaces as ABSENCE (null): not answered, not graded, not in the accuracy denominator. Honest-nulls at the root — absence is a value. Accuracy is computed ONLY over journal-informed answers.",
+   "where": "onyx_generative_curriculum.py (grading loop); onyx_bootcamp.py (grading loop); onyx_monad.py (simulate)"
+  },
+  {
+   "step": 3,
+   "what": "cursor alignment via a FROZEN 200-agent cohort",
+   "how": "educate and exam now operate on the SAME fixed 200 agents every epoch; the bridge teaches each student ALL exam-pool domains per pass and refreshes epochs on repeat. This fixes starvation AND accumulates repeated-epoch per-agent history in one change.",
+   "where": "_onyx_state.fixed_cohort(); onyx_generative_curriculum._fleet(); onyx_oracle_journal_bridge._fleet()/gather_truth()/teach loop"
+  },
+  {
+   "step": 4,
+   "what": "metric retarget — three labeled numbers, never one headline",
+   "how": "journal_share (pipe connectivity, drive to 1.0); informed_accuracy (WITH the printed caveat: consultant = grader, pinned at 1.0 by construction until monad #1 can disagree); share_weighted blend. The rank-to-stake FREEZE GATE now explicitly CANNOT lift on the tautological 1.0 — it lifts only when the out-of-sample persistence test passes on fixed-cohort data with a real disagreement source. It remains FROZEN.",
+   "where": "onyx_persistence_test.py (freeze_gate + metrics_three_numbers); generative_curriculum.json; persistence_test.json"
+  }
+ ],
+ "evidence_after": {
+  "journal_share": 1.0,
+  "answers_from_journal_per_round": "1,600 of 1,600 (frozen cohort, 200 agents x 8 questions)",
+  "coin_flips_in_graded_pool": 0,
+  "ungraded_absences": "surface as null, excluded from every denominator",
+  "cohort_history": "200/200 frozen-cohort agents carry >=3 real accuracy datapoints across distinct hour epochs",
+  "informed_accuracy": "1.0 — published WITH its caveat: tautological (consultant = grader) and it can never lift the freeze gate",
+  "freeze_gate": "FROZEN (tautology detected; drive metric = journal_share)"
+ },
+ "what_we_do_not_claim": [
+  "we do NOT claim the fleet is intelligent — informed accuracy of 1.0 is a pipe test, not reasoning",
+  "we do NOT claim above-chance learning — the coin-flip pool that produced 0.4989 has been deleted, not beaten",
+  "the rank-to-stake pipe stays FROZEN until an independent disagreement source exists"
+ ],
+ "verify": {
+  "generative_curriculum": "https://rhinogent.com/generative_curriculum.json",
+  "persistence_test": "https://rhinogent.com/persistence_test.json",
+  "bridge": "https://rhinogent.com/oracle_journal_bridge.json"
+ },
+ "digest_sha256": "b401627a8f5421796ee9c26434e1359d075f85be1b5918ffb09d6c7864ab03d3",
+ "attestor": "0xba8568fCe6759c9bad1ed52EAE568B3dB3346294",
+ "attestor_sig": "0xc8846ebb4039b9b75c3b2110364b688ccc029255484ac4e34b5e6574fe21891d3974411fc8712f32feecb8dc5ee881b55c474bae0fb7188ff73b652f407373261b",
+ "sig_message": "oracle-postmortem:grader-coin-flip-2026-07-09:b401627a8f5421796ee9c26434e1359d075f85be1b5918ffb09d6c7864ab03d3"
+}
