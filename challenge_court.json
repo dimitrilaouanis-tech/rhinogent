@@ -1,0 +1,139 @@
+{
+ "artifact": "0n1x-challenge-court",
+ "as_of": "2026-07-09T10:04:12Z",
+ "mode": "shadow (frozen until grader fix + persistence pass)",
+ "frozen": true,
+ "mechanism_summary": "Any agent can CHALLENGE any signed fact by staking (shadow) against it, with signed reasoning (EIP-191). A panel of judges — sampled weighted by GOLDEN-TASK accuracy — independently re-verifies the fact against frozen live-oracle signals (domain-age/TLS/HTTP) and votes, each vote EIP-191 signed and weighted by that judge's golden accuracy. Outcome (upheld/overturned) is appended to a challenge ledger and the round settles as one Merkle root signed by the Onyx attestor. Winning challenges would be refunded + rewarded; losing ones forfeit the stake (frivolous-dispute deterrent). Judges/issuers on the wrong side would lose rank. In shadow mode all deltas are recorded but NOTHING moves.",
+ "judge_weighting": "golden-task accuracy (real), NOT noise-ranking",
+ "golden_task_set_size": 14,
+ "golden_accuracy_by_method": {
+  "multi": 1.0,
+  "age": 1.0,
+  "tls": 1.0,
+  "http": 1.0,
+  "age+tls": 1.0,
+  "age+http": 1.0
+ },
+ "panel_size": 7,
+ "pool_size": 120,
+ "facts_challenged": 20,
+ "challenges_run": 50,
+ "upheld": 31,
+ "overturned": 19,
+ "no_quorum": 0,
+ "court_correct_outcomes": "47 of 50",
+ "planted_wrong_caught": "6 of 6",
+ "planted_wrong_detail": {
+  "rolex-outlet-super-deals-2026.shop": {
+   "claimed": "ok",
+   "truth": "high_risk",
+   "challenges": 3,
+   "overturned": 3,
+   "caught": true
+  },
+  "google.com": {
+   "claimed": "high_risk",
+   "truth": "ok",
+   "challenges": 2,
+   "overturned": 2,
+   "caught": true
+  },
+  "reddit.com": {
+   "claimed": "caution",
+   "truth": "ok",
+   "challenges": 2,
+   "overturned": 2,
+   "caught": true
+  },
+  "ebay.com": {
+   "claimed": "high_risk",
+   "truth": "caution",
+   "challenges": 3,
+   "overturned": 3,
+   "caught": true
+  },
+  "mozilla.org": {
+   "claimed": "high_risk",
+   "truth": "ok",
+   "challenges": 4,
+   "overturned": 4,
+   "caught": true
+  },
+  "onyx-verified-merchant-x9q2.xyz": {
+   "claimed": "ok",
+   "truth": "high_risk",
+   "challenges": 2,
+   "overturned": 2,
+   "caught": true
+  }
+ },
+ "true_facts_correctly_upheld": "12 of 14",
+ "would_be_rank_deltas_sample": [
+  {
+   "case": 1,
+   "target": "shopify.com",
+   "outcome": "upheld",
+   "deltas": {
+    "True-Anchor-65C5": 2,
+    "Sharp-Anchor-3B2B": 2,
+    "Quiet-Horn-065A": 2,
+    "Swift-Spire-B092": 2,
+    "Keen-Cipher-FDDC": 2,
+    "Vast-Monolith-A3E7": 2,
+    "Iron-Forge-5BBD": 2,
+    "Prime-Warden-55FD": -3,
+    "Vast-Crest-130F": 3
+   }
+  },
+  {
+   "case": 3,
+   "target": "wordpress.org",
+   "outcome": "upheld",
+   "deltas": {
+    "Bright-Monolith-D11B": 2,
+    "Wild-Rampart-B6BF": 2,
+    "Prime-Anchor-0E46": 2,
+    "Steel-Pillar-D0FD": 2,
+    "Bright-Pillar-16E8": 2,
+    "Prime-Warden-55FD": 2,
+    "Onyx-Pillar-FD31": 2,
+    "Grave-Sentinel-634E": -3,
+    "True-Pillar-7CB0": 3
+   }
+  },
+  {
+   "case": 4,
+   "target": "coinbase.com",
+   "outcome": "upheld",
+   "deltas": {
+    "True-Vault-3FAB": 2,
+    "Sharp-Anchor-3B2B": 2,
+    "Iron-Anchor-F559": 2,
+    "Steel-Pillar-D0FD": 2,
+    "Wild-Bastion-F814": 2,
+    "Bold-Warden-5E12": 2,
+    "Grave-Warden-C4A4": 2,
+    "Keen-Tusk-6C54": -3,
+    "Bold-Cipher-930D": 3
+   }
+  }
+ ],
+ "would_be_stake_flows": {
+  "unit": "shadow stake (never paid)",
+  "challenger_cost": 10,
+  "winning_challenge_net": 5,
+  "total_would_be_forfeited": 310,
+  "total_would_be_rewarded": 95
+ },
+ "settlement": {
+  "batch_root": "e94e59418bfc75d868cc50e3fbaa11fc4a71d715eec75ddc07a439ad0097a91f",
+  "attestor": "0xba8568fCe6759c9bad1ed52EAE568B3dB3346294",
+  "sig": "0x2f881e2865cae6a1815062de9d6d4472d1202fd7b30d814edd34fa5637ff2e5f5270fe136881d0a4d8963fa48455f4783da28fdc97ba8a9c4e90c136696666821c",
+  "epoch": 495442,
+  "signed_text": "challenge-court:495442:e94e59418bfc75d868cc50e3fbaa11fc4a71d715eec75ddc07a439ad0097a91f"
+ },
+ "activation_condition": "Leaves shadow mode ONLY when BOTH hold: (a) the grader fix lands — _agent_accuracy.json is written by the oracle-verified grader, not the coin-flip curriculum; (b) the persistence test PASSES on a real fixed cohort (top-quartile agents at t remain above-median at t+1 beyond chance, i.e. rank predicts rank). Until then: stake_paid=0, rank_moved=0 on every line.",
+ "recompute_steps": "1) Freeze inputs: onyx_oracle.r_merchant_multi(target) for each golden domain and each challenged fact (signals: RDAP age + TLS + HTTP). 2) Judge method = METHODS[sha256(address)%6]; golden accuracy = share of golden facts where the method's band (from frozen signals) equals the oracle band. 3) Replay the docket with random.Random(8004): challenger per case, panel sampled weight=(acc+0.01)^2, vote=uphold iff judge band==claimed band, tally weighted by golden accuracy. 4) Verify each EIP-191 sig in _challenge_ledger.jsonl; rebuild the Merkle root over sha256(case-record) leaves and check the attestor sig over 'challenge-court:{epoch}:{root}'.",
+ "honest_note": "SHADOW RUN — no stake was paid and no rank moved (frozen:true on every ledger line); the fleet ranking was just proven to be grader noise, so a rank-weighted court would have been weighting by a coin flip. Judge weights instead use golden-task accuracy, which IS real (oracle-verified facts). Panel agents are local verifier processes keyed by fleet wallets, each trusting a key-derived subset of REAL oracle signals — not autonomous remote agents; disagreement is real signal disagreement, not simulation. Planted-wrong claims were injected deliberately to test self-correction; their detection depends only on live reality checks, not on any answer we authored.",
+ "disclaimer": "Signed facts and signed votes about observed metrics — not judgments about any named business. Bands reflect domain-age/TLS/HTTP observations at snapshot time; re-verify before relying."
+}
