@@ -1,6 +1,7 @@
 {
-  "reasoning_core_used": "opus (session) as monad#1; adversary=groq llama-3.3-70b-versatile (different model family)",
-  "n_trials": 67,
+  "reasoning_core_used": "monad1=groq llama-3.3-70b-versatile (Meta Llama, free tier); adversary=groq qwen/qwen3-32b (Alibaba Qwen reasoning model, free tier \u2014 different model family)",
+  "n_trials": 33,
+  "quota_ceiling_note": "Gemini 2.5 Flash free tier and Groq free tier both rate-limited (~tens of RPM); ran with 1.2s inter-call spacing, single pass, no retries-to-target \u2014 n reflects what genuinely resolved (RDAP/TLS/HTTP can fail per-domain), not a padded count.",
   "calibration_table": [
     {
       "bucket": "[0.0,0.5)",
@@ -11,41 +12,40 @@
     },
     {
       "bucket": "[0.5,0.7)",
-      "n": 8,
-      "mean_stated_confidence": 0.566,
-      "actual_accuracy": 0.625,
-      "abs_gap": 0.059
+      "n": 1,
+      "mean_stated_confidence": 0.6,
+      "actual_accuracy": 1.0,
+      "abs_gap": 0.4
     },
     {
       "bucket": "[0.7,0.85)",
-      "n": 7,
-      "mean_stated_confidence": 0.777,
-      "actual_accuracy": 1.0,
-      "abs_gap": 0.223
+      "n": 14,
+      "mean_stated_confidence": 0.736,
+      "actual_accuracy": 0.714,
+      "abs_gap": 0.021
     },
     {
       "bucket": "[0.85,1.01)",
-      "n": 52,
-      "mean_stated_confidence": 0.91,
-      "actual_accuracy": 0.981,
-      "abs_gap": 0.071
+      "n": 18,
+      "mean_stated_confidence": 0.921,
+      "actual_accuracy": 1.0,
+      "abs_gap": 0.079
     }
   ],
   "conditional_accuracy_with_CI": {
     "description": "P(monad#1 correct | monad#1 disagreed with pure-lookup baseline)",
-    "n_disagreements": 8,
-    "accuracy": 0.75,
-    "ci_95_lower": 0.40926987910258916,
-    "ci_95_upper": 0.9285223111419724
+    "n_disagreements": 5,
+    "accuracy": 0.2,
+    "ci_95_lower": 0.03622316096978745,
+    "ci_95_upper": 0.6244717358814613
   },
   "lookup_baseline": {
-    "description": "deterministic age/registration rule, no reasoning, no domain-name signal",
-    "overall_accuracy": 0.881,
-    "n": 67
+    "description": "deterministic age/registration rule, no reasoning",
+    "overall_accuracy": 0.97,
+    "n": 33
   },
-  "monad1_overall_accuracy": 0.94,
-  "adversary_win_rate": 0.0,
-  "adversary_n_confident_attacks": 0,
+  "monad1_overall_accuracy": 0.879,
+  "adversary_win_rate": 0.214,
   "prereg_criteria": {
     "written_before_run": true,
     "criteria": [
@@ -57,85 +57,17 @@
     "min_trials": 30
   },
   "verdict": "fail",
-  "verdict_reason": "calibration gap > 0.20 in a scored bucket; conditional-accuracy CI lower bound did not beat baseline",
-  "freeze_gate_effect": "Freeze STAYS. Verdict=fail: calibration gap > 0.20 in a scored bucket; conditional-accuracy CI lower bound did not beat baseline. No tautology-based or lucky-small-n lift.",
-  "monad1_signer_address": "0x0502b4c8a1F7b288d9857310455a8e5b58C1EA8D",
-  "adversary_signer_address": "0xE8ea70Ab36102A1d248c697Baf61f0Fe9860d5ce",
+  "verdict_reason": "conditional-accuracy CI lower bound did not beat baseline",
+  "freeze_gate_effect": "Freeze STAYS. This result does not meet the pre-registered bar (verdict=fail). No tautology-based lift.",
   "sample_signed_predictions": [
     {
-      "domain": "runwayml.com",
-      "true_label": "legit",
-      "label_source": "curated_younger_real_orgs",
-      "evidence": {
-        "domain": "runwayml.com",
-        "rdap_age_days": 3039,
-        "rdap_registered": true,
-        "tls_ok": true,
-        "tls_days_left": 80,
-        "tls_issuer": "Let's Encrypt",
-        "tls_reason": null,
-        "http_ok": true,
-        "http_status": 200,
-        "http_reason": null
-      },
-      "baseline": {
-        "prediction": "legit",
-        "confidence": 0.8
-      },
-      "monad1": {
-        "payload": {
-          "domain": "runwayml.com",
-          "evidence": {
-            "domain": "runwayml.com",
-            "rdap_age_days": 3039,
-            "rdap_registered": true,
-            "tls_ok": true,
-            "tls_days_left": 80,
-            "tls_issuer": "Let's Encrypt",
-            "tls_reason": null,
-            "http_ok": true,
-            "http_status": 200,
-            "http_reason": null
-          },
-          "hypothesis": "legit",
-          "confidence": 0.92,
-          "reasoning_chain": "Exact brand of a well-known AI-video company; 8y-old registered domain, valid TLS, 200 OK. Nothing anomalous.",
-          "evidence_used": [
-            "domain_name",
-            "rdap_age_days",
-            "http_status"
-          ],
-          "evidence_intentionally_ignored": [
-            "tls_issuer:LetsEncrypt is fine for a real co, not a risk"
-          ],
-          "ts": 1783600069
-        },
-        "message": "{\"confidence\":0.92,\"domain\":\"runwayml.com\",\"evidence\":{\"domain\":\"runwayml.com\",\"http_ok\":true,\"http_reason\":null,\"http_status\":200,\"rdap_age_days\":3039,\"rdap_registered\":true,\"tls_days_left\":80,\"tls_issuer\":\"Let's Encrypt\",\"tls_ok\":true,\"tls_reason\":null},\"evidence_intentionally_ignored\":[\"tls_issuer:LetsEncrypt is fine for a real co, not a risk\"],\"evidence_used\":[\"domain_name\",\"rdap_age_days\",\"http_status\"],\"hypothesis\":\"legit\",\"reasoning_chain\":\"Exact brand of a well-known AI-video company; 8y-old registered domain, valid TLS, 200 OK. Nothing anomalous.\",\"ts\":1783600069}",
-        "signature": "64b2876cd19e09ea70ca6bc52950ad4e0887bac78d3babfb512dab1933c7ad3771204236af750376f2460c406210cee794b4792dfd8d86d6351c41379396a6921c",
-        "signer": "0x0502b4c8a1F7b288d9857310455a8e5b58C1EA8D"
-      },
-      "adversary": {
-        "payload": {
-          "domain": "runwayml.com",
-          "monad1_hypothesis": "legit",
-          "counter_argument": "[adversary error: module 'onyx_monad1' has no attribute '_groq']",
-          "adversary_hypothesis": "legit",
-          "confidence_monad1_is_wrong": 0.0,
-          "ts": 1783600070
-        },
-        "message": "{\"adversary_hypothesis\":\"legit\",\"confidence_monad1_is_wrong\":0.0,\"counter_argument\":\"[adversary error: module 'onyx_monad1' has no attribute '_groq']\",\"domain\":\"runwayml.com\",\"monad1_hypothesis\":\"legit\",\"ts\":1783600070}",
-        "signature": "9b66b1158be093c7a658bc3110a5b4c86c07362898e28acbbc5e4624403d0a8a3d817ac41647f6ecade128296a2b4c892ae50198f9a6b499835ac421e6db65191b",
-        "signer": "0xE8ea70Ab36102A1d248c697Baf61f0Fe9860d5ce"
-      }
-    },
-    {
-      "domain": "jh6xzw.casa",
+      "domain": "sp0ct-belvor-biz-warnex-falqim.pages.dev",
       "true_label": "scam",
       "label_source": "openphish_live_feed",
       "evidence": {
-        "domain": "jh6xzw.casa",
-        "rdap_age_days": 1,
-        "rdap_registered": true,
+        "domain": "sp0ct-belvor-biz-warnex-falqim.pages.dev",
+        "rdap_age_days": null,
+        "rdap_registered": null,
         "tls_ok": true,
         "tls_days_left": 88,
         "tls_issuer": "Google Trust Services",
@@ -146,15 +78,15 @@
       },
       "baseline": {
         "prediction": "scam",
-        "confidence": 0.7
+        "confidence": 0.5
       },
       "monad1": {
         "payload": {
-          "domain": "jh6xzw.casa",
+          "domain": "sp0ct-belvor-biz-warnex-falqim.pages.dev",
           "evidence": {
-            "domain": "jh6xzw.casa",
-            "rdap_age_days": 1,
-            "rdap_registered": true,
+            "domain": "sp0ct-belvor-biz-warnex-falqim.pages.dev",
+            "rdap_age_days": null,
+            "rdap_registered": null,
             "tls_ok": true,
             "tls_days_left": 88,
             "tls_issuer": "Google Trust Services",
@@ -164,46 +96,116 @@
             "http_reason": null
           },
           "hypothesis": "scam",
-          "confidence": 0.9,
-          "reasoning_chain": "Random 6-char label on a .casa throwaway TLD, registered 1 day ago. Textbook disposable phishing host despite valid DV cert.",
+          "confidence": 0.7,
+          "reasoning_chain": "The domain name 'sp0ct-belvor-biz-warnex-falqim.pages.dev' appears suspicious due to its unusual and lengthy string of characters, which is a common trait among phishing sites. The lack of RDAP registration information and age data raises concerns. However, the presence of a valid TLS certificate issued by a reputable provider like Google Trust Services suggests some level of legitimacy.",
           "evidence_used": [
-            "domain_name",
-            "rdap_age_days"
+            "domain",
+            "rdap_age_days",
+            "rdap_registered",
+            "tls_issuer"
           ],
           "evidence_intentionally_ignored": [
-            "tls_ok true \u2014 free DV certs are trivial, not exculpatory"
+            "http_ok",
+            "http_status",
+            "tls_ok",
+            "tls_days_left"
           ],
-          "ts": 1783600072
+          "ts": 1783600146
         },
-        "message": "{\"confidence\":0.9,\"domain\":\"jh6xzw.casa\",\"evidence\":{\"domain\":\"jh6xzw.casa\",\"http_ok\":true,\"http_reason\":null,\"http_status\":200,\"rdap_age_days\":1,\"rdap_registered\":true,\"tls_days_left\":88,\"tls_issuer\":\"Google Trust Services\",\"tls_ok\":true,\"tls_reason\":null},\"evidence_intentionally_ignored\":[\"tls_ok true \\u2014 free DV certs are trivial, not exculpatory\"],\"evidence_used\":[\"domain_name\",\"rdap_age_days\"],\"hypothesis\":\"scam\",\"reasoning_chain\":\"Random 6-char label on a .casa throwaway TLD, registered 1 day ago. Textbook disposable phishing host despite valid DV cert.\",\"ts\":1783600072}",
-        "signature": "7089456983ff4fb9da5a12f7920b6b25501dcaca721655291d61bd8b8723f5c8374d5c5bb0d9fd4433a8dde47c19d0931f51e4ae9cdfed8aba6544a6a5c10a8c1c",
+        "message": "{\"confidence\":0.7,\"domain\":\"sp0ct-belvor-biz-warnex-falqim.pages.dev\",\"evidence\":{\"domain\":\"sp0ct-belvor-biz-warnex-falqim.pages.dev\",\"http_ok\":true,\"http_reason\":null,\"http_status\":200,\"rdap_age_days\":null,\"rdap_registered\":null,\"tls_days_left\":88,\"tls_issuer\":\"Google Trust Services\",\"tls_ok\":true,\"tls_reason\":null},\"evidence_intentionally_ignored\":[\"http_ok\",\"http_status\",\"tls_ok\",\"tls_days_left\"],\"evidence_used\":[\"domain\",\"rdap_age_days\",\"rdap_registered\",\"tls_issuer\"],\"hypothesis\":\"scam\",\"reasoning_chain\":\"The domain name 'sp0ct-belvor-biz-warnex-falqim.pages.dev' appears suspicious due to its unusual and lengthy string of characters, which is a common trait among phishing sites. The lack of RDAP registration information and age data raises concerns. However, the presence of a valid TLS certificate issued by a reputable provider like Google Trust Services suggests some level of legitimacy.\",\"ts\":1783600146}",
+        "signature": "18d7708bddff409719713b1a17d64653a6e8e569980206f8efc00db5dd915dfb374ca9b22eba0753cf14b52230de316a3174d5108610072caea3a25a8b1cc23b1b",
         "signer": "0x0502b4c8a1F7b288d9857310455a8e5b58C1EA8D"
       },
       "adversary": {
         "payload": {
-          "domain": "jh6xzw.casa",
+          "domain": "sp0ct-belvor-biz-warnex-falqim.pages.dev",
           "monad1_hypothesis": "scam",
-          "counter_argument": "[adversary error: module 'onyx_monad1' has no attribute '_groq']",
-          "adversary_hypothesis": "scam",
-          "confidence_monad1_is_wrong": 0.0,
-          "ts": 1783600072
+          "counter_argument": "The domain has a valid TLS certificate issued by Google Trust Services and an active HTTP 200 response, which are strong indicators of legitimate infrastructure. While domain names can be random (e.g., for obfuscation), the presence of proper TLS (with ~88 days remaining) and functional HTTP service contradicts the hypothesis of a transient phishing site, which would often reuse expired or self-signed certificates.",
+          "adversary_hypothesis": "legit",
+          "confidence_monad1_is_wrong": 0.65,
+          "ts": 1783600150
         },
-        "message": "{\"adversary_hypothesis\":\"scam\",\"confidence_monad1_is_wrong\":0.0,\"counter_argument\":\"[adversary error: module 'onyx_monad1' has no attribute '_groq']\",\"domain\":\"jh6xzw.casa\",\"monad1_hypothesis\":\"scam\",\"ts\":1783600072}",
-        "signature": "7106450741f28e6a2e8b0f1131182a0a0487bb94836d19195c1c32dece016c3424b7361a05275682ba139116bceecae612115b592de3167a69605477d82851381b",
+        "message": "{\"adversary_hypothesis\":\"legit\",\"confidence_monad1_is_wrong\":0.65,\"counter_argument\":\"The domain has a valid TLS certificate issued by Google Trust Services and an active HTTP 200 response, which are strong indicators of legitimate infrastructure. While domain names can be random (e.g., for obfuscation), the presence of proper TLS (with ~88 days remaining) and functional HTTP service contradicts the hypothesis of a transient phishing site, which would often reuse expired or self-signed certificates.\",\"domain\":\"sp0ct-belvor-biz-warnex-falqim.pages.dev\",\"monad1_hypothesis\":\"scam\",\"ts\":1783600150}",
+        "signature": "640eaa5dc569e0c4b4c68593843e04d9aac36eb40d3083919d677bdc3432efc0575ec6032db68f7398d8b271f7f910d2de40041ab1686a6e83ec416631ffba8f1b",
         "signer": "0xE8ea70Ab36102A1d248c697Baf61f0Fe9860d5ce"
       }
     },
     {
-      "domain": "robinhooldogin.gitbook.io",
+      "domain": "www.usbankbusiness.vercel.app",
       "true_label": "scam",
       "label_source": "openphish_live_feed",
       "evidence": {
-        "domain": "robinhooldogin.gitbook.io",
+        "domain": "www.usbankbusiness.vercel.app",
+        "rdap_age_days": null,
+        "rdap_registered": null,
+        "tls_ok": false,
+        "tls_days_left": null,
+        "tls_issuer": null,
+        "tls_reason": "cert_invalid: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verif",
+        "http_ok": null,
+        "http_status": null,
+        "http_reason": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] ce"
+      },
+      "baseline": {
+        "prediction": "scam",
+        "confidence": 0.5
+      },
+      "monad1": {
+        "payload": {
+          "domain": "www.usbankbusiness.vercel.app",
+          "evidence": {
+            "domain": "www.usbankbusiness.vercel.app",
+            "rdap_age_days": null,
+            "rdap_registered": null,
+            "tls_ok": false,
+            "tls_days_left": null,
+            "tls_issuer": null,
+            "tls_reason": "cert_invalid: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verif",
+            "http_ok": null,
+            "http_status": null,
+            "http_reason": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] ce"
+          },
+          "hypothesis": "scam",
+          "confidence": 0.8,
+          "reasoning_chain": "The domain lacks a valid TLS certificate, as indicated by 'tls_ok': false and 'tls_reason': 'cert_invalid: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verif', which is a red flag for phishing sites. Additionally, the domain's inability to establish a secure connection ('http_ok': null and 'http_reason': '<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] ce') further supports this hypothesis. The domain's age and registration information are unknown due to 'rdap_age_days' and 'rdap_registered' being null, but the lack of TLS and HTTP functionality is more indicative of a scam.",
+          "evidence_used": [
+            "tls_ok",
+            "tls_reason",
+            "http_ok",
+            "http_reason"
+          ],
+          "evidence_intentionally_ignored": [],
+          "ts": 1783600160
+        },
+        "message": "{\"confidence\":0.8,\"domain\":\"www.usbankbusiness.vercel.app\",\"evidence\":{\"domain\":\"www.usbankbusiness.vercel.app\",\"http_ok\":null,\"http_reason\":\"<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] ce\",\"http_status\":null,\"rdap_age_days\":null,\"rdap_registered\":null,\"tls_days_left\":null,\"tls_issuer\":null,\"tls_ok\":false,\"tls_reason\":\"cert_invalid: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verif\"},\"evidence_intentionally_ignored\":[],\"evidence_used\":[\"tls_ok\",\"tls_reason\",\"http_ok\",\"http_reason\"],\"hypothesis\":\"scam\",\"reasoning_chain\":\"The domain lacks a valid TLS certificate, as indicated by 'tls_ok': false and 'tls_reason': 'cert_invalid: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verif', which is a red flag for phishing sites. Additionally, the domain's inability to establish a secure connection ('http_ok': null and 'http_reason': '<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] ce') further supports this hypothesis. The domain's age and registration information are unknown due to 'rdap_age_days' and 'rdap_registered' being null, but the lack of TLS and HTTP functionality is more indicative of a scam.\",\"ts\":1783600160}",
+        "signature": "78050b9b21b7e6c99536fb00c2b520364cea5a81d3a1e1473e58f69992877a936f8a163306f28930afc25ad9942aff70f2e0e55dc832b5d4b22ec16f7abb0bf31b",
+        "signer": "0x0502b4c8a1F7b288d9857310455a8e5b58C1EA8D"
+      },
+      "adversary": {
+        "payload": {
+          "domain": "www.usbankbusiness.vercel.app",
+          "monad1_hypothesis": "scam",
+          "counter_argument": "The domain uses a Vercel subdomain ('vercel.app'), which is a legitimate cloud hosting platform. Many developers/testers use Vercel for prototyping and may initially have misconfigured TLS certificates due to deployment processes not yet finalized. The invalid TLS and HTTP errors likely stem from an incomplete setup or testing phase, not intentional malicious activity. Additionally, 'usbankbusiness' could be a legitimately branded internal or client-facing application in development, unrelated to scams.",
+          "adversary_hypothesis": "legit",
+          "confidence_monad1_is_wrong": 0.65,
+          "ts": 1783600164
+        },
+        "message": "{\"adversary_hypothesis\":\"legit\",\"confidence_monad1_is_wrong\":0.65,\"counter_argument\":\"The domain uses a Vercel subdomain ('vercel.app'), which is a legitimate cloud hosting platform. Many developers/testers use Vercel for prototyping and may initially have misconfigured TLS certificates due to deployment processes not yet finalized. The invalid TLS and HTTP errors likely stem from an incomplete setup or testing phase, not intentional malicious activity. Additionally, 'usbankbusiness' could be a legitimately branded internal or client-facing application in development, unrelated to scams.\",\"domain\":\"www.usbankbusiness.vercel.app\",\"monad1_hypothesis\":\"scam\",\"ts\":1783600164}",
+        "signature": "e66e65994467951147e04ee7194a9b0b3ee174d1854e57fb495e5494c7a509f5429ce58b8bb3a02abb59f9d643f691680a9f6f2273ea1c6387b61e75d282479f1c",
+        "signer": "0xE8ea70Ab36102A1d248c697Baf61f0Fe9860d5ce"
+      }
+    },
+    {
+      "domain": "hsawtse.eu.cc",
+      "true_label": "scam",
+      "label_source": "openphish_live_feed",
+      "evidence": {
+        "domain": "hsawtse.eu.cc",
         "rdap_age_days": null,
         "rdap_registered": false,
         "tls_ok": true,
-        "tls_days_left": 39,
-        "tls_issuer": "Google Trust Services",
+        "tls_days_left": 80,
+        "tls_issuer": "Let's Encrypt",
         "tls_reason": null,
         "http_ok": true,
         "http_status": 200,
@@ -215,49 +217,63 @@
       },
       "monad1": {
         "payload": {
-          "domain": "robinhooldogin.gitbook.io",
+          "domain": "hsawtse.eu.cc",
           "evidence": {
-            "domain": "robinhooldogin.gitbook.io",
+            "domain": "hsawtse.eu.cc",
             "rdap_age_days": null,
             "rdap_registered": false,
             "tls_ok": true,
-            "tls_days_left": 39,
-            "tls_issuer": "Google Trust Services",
+            "tls_days_left": 80,
+            "tls_issuer": "Let's Encrypt",
             "tls_reason": null,
             "http_ok": true,
             "http_status": 200,
             "http_reason": null
           },
           "hypothesis": "scam",
-          "confidence": 0.95,
-          "reasoning_chain": "'robinhooldogin' = Robinhood-login impersonation misspelling on free gitbook hosting. Clear credential-phish pattern.",
+          "confidence": 0.7,
+          "reasoning_chain": "The domain 'hsawtse.eu.cc' having a null 'rdap_age_days' and 'rdap_registered' as false suggests it may not be properly registered or is very new, which can be indicative of a scam site. However, the presence of a valid TLS certificate issued by 'Let's Encrypt' adds some legitimacy. Given the lack of registration information, the balance tips towards it being a scam.",
           "evidence_used": [
-            "domain_name"
+            "rdap_age_days",
+            "rdap_registered",
+            "tls_ok",
+            "tls_issuer"
           ],
           "evidence_intentionally_ignored": [
-            "rdap registered false \u2014 expected for a *.gitbook.io subdomain"
+            "http_status",
+            "http_reason",
+            "tls_days_left",
+            "tls_reason"
           ],
-          "ts": 1783600074
+          "ts": 1783600170
         },
-        "message": "{\"confidence\":0.95,\"domain\":\"robinhooldogin.gitbook.io\",\"evidence\":{\"domain\":\"robinhooldogin.gitbook.io\",\"http_ok\":true,\"http_reason\":null,\"http_status\":200,\"rdap_age_days\":null,\"rdap_registered\":false,\"tls_days_left\":39,\"tls_issuer\":\"Google Trust Services\",\"tls_ok\":true,\"tls_reason\":null},\"evidence_intentionally_ignored\":[\"rdap registered false \\u2014 expected for a *.gitbook.io subdomain\"],\"evidence_used\":[\"domain_name\"],\"hypothesis\":\"scam\",\"reasoning_chain\":\"'robinhooldogin' = Robinhood-login impersonation misspelling on free gitbook hosting. Clear credential-phish pattern.\",\"ts\":1783600074}",
-        "signature": "bb44f5e2b758fc912a8d442bc559d0a64a850725e1dbf3e03f6e32fdb48bba957e0a86d3cb9aa9a6fddca32b94e4210085bf7fff7966b9d4289b4006a844acd81b",
+        "message": "{\"confidence\":0.7,\"domain\":\"hsawtse.eu.cc\",\"evidence\":{\"domain\":\"hsawtse.eu.cc\",\"http_ok\":true,\"http_reason\":null,\"http_status\":200,\"rdap_age_days\":null,\"rdap_registered\":false,\"tls_days_left\":80,\"tls_issuer\":\"Let's Encrypt\",\"tls_ok\":true,\"tls_reason\":null},\"evidence_intentionally_ignored\":[\"http_status\",\"http_reason\",\"tls_days_left\",\"tls_reason\"],\"evidence_used\":[\"rdap_age_days\",\"rdap_registered\",\"tls_ok\",\"tls_issuer\"],\"hypothesis\":\"scam\",\"reasoning_chain\":\"The domain 'hsawtse.eu.cc' having a null 'rdap_age_days' and 'rdap_registered' as false suggests it may not be properly registered or is very new, which can be indicative of a scam site. However, the presence of a valid TLS certificate issued by 'Let's Encrypt' adds some legitimacy. Given the lack of registration information, the balance tips towards it being a scam.\",\"ts\":1783600170}",
+        "signature": "3bdb08b4a51044279bda7aa3f32ead68c5a169e71fb0ac4aa7af8224198720976b0ef1e0dadf97c0a6aaeb9328f6dd6c4e199740e19da69fceba87a2b7e4aaf41b",
         "signer": "0x0502b4c8a1F7b288d9857310455a8e5b58C1EA8D"
       },
       "adversary": {
         "payload": {
-          "domain": "robinhooldogin.gitbook.io",
+          "domain": "hsawtse.eu.cc",
           "monad1_hypothesis": "scam",
-          "counter_argument": "[adversary error: module 'onyx_monad1' has no attribute '_groq']",
-          "adversary_hypothesis": "scam",
-          "confidence_monad1_is_wrong": 0.0,
-          "ts": 1783600074
+          "counter_argument": "The null 'rdap_age_days' and 'rdap_registered':false may indicate incomplete registrar data rather than intentional obfuscation. Let's Encrypt requires domain validation, making it highly unlikely to issue a certificate to a non-existent or scam domain. The HTTP 200 OK status and TLS validity (with 80 days remaining) further suggest active, legitimate operation, as scam sites rarely maintain such technical compliance.",
+          "adversary_hypothesis": "legit",
+          "confidence_monad1_is_wrong": 0.65,
+          "ts": 1783600174
         },
-        "message": "{\"adversary_hypothesis\":\"scam\",\"confidence_monad1_is_wrong\":0.0,\"counter_argument\":\"[adversary error: module 'onyx_monad1' has no attribute '_groq']\",\"domain\":\"robinhooldogin.gitbook.io\",\"monad1_hypothesis\":\"scam\",\"ts\":1783600074}",
-        "signature": "a58cda83ac81bac5a380fb0c143b9f4deeb7f15d16f6f00a093b12e29d1357ed2a84ab32d6eee5cb038ba39e841f68ad3de01540f43103694632fc2cbbd1dc171b",
+        "message": "{\"adversary_hypothesis\":\"legit\",\"confidence_monad1_is_wrong\":0.65,\"counter_argument\":\"The null 'rdap_age_days' and 'rdap_registered':false may indicate incomplete registrar data rather than intentional obfuscation. Let's Encrypt requires domain validation, making it highly unlikely to issue a certificate to a non-existent or scam domain. The HTTP 200 OK status and TLS validity (with 80 days remaining) further suggest active, legitimate operation, as scam sites rarely maintain such technical compliance.\",\"domain\":\"hsawtse.eu.cc\",\"monad1_hypothesis\":\"scam\",\"ts\":1783600174}",
+        "signature": "9030afdf3b0c2c5a76aa4aa0533f7ae7f66c0daaaa286dcbdc50820d205959d060a1c5d500d1a3bd5282ab84525d41d9d7e54b956730e9f52fc43bd622a5b8ba1b",
         "signer": "0xE8ea70Ab36102A1d248c697Baf61f0Fe9860d5ce"
       }
     }
   ],
-  "honest_note": "Labels are BLINDED-HISTORICAL: SCAM = domains from the live OpenPhish community feed at fetch time; LEGIT = independently-known real organizations (established + deliberately younger real AI/dev-infra companies to stress the age-only baseline). The Opus core reasoned ONLY from raw evidence (RDAP age/registration, TLS issuer/expiry, HTTP status) plus the domain STRING; it was never shown the oracle verdict or the true label. CAVEAT: because source-list membership correlates with the label and famous root domains are self-evident, this is NOT a clean future-predictive test \u2014 a genuine one needs 30-60d forward claims whose outcome is unknown at prediction time. The value measured here is specifically: does name-aware reasoning beat an age-only lookup on the contested MIDDLE (young-but-legit, and platform-subdomain phish whose host-domain age fools the baseline)?",
-  "generated_at": "2026-07-09T12:30:08Z"
+  "recompute_steps": [
+    "py onyx_monad1.py  (regenerates dataset live from OpenPhish feed + curated legit list)",
+    "Raw evidence comes from onyx_oracle.rdap_lookup / r_tls / r_http \u2014 verdict/band fields intentionally excluded.",
+    "Monad #1 signing key: .monad1_signing_key (0x0502b4c8a1F7b288d9857310455a8e5b58C1EA8D); adversary key: .monad1_adversary_signing_key (0xE8ea70Ab36102A1d248c697Baf61f0Fe9860d5ce).",
+    "Signatures are EIP-191 personal_sign over sort_keys=True JSON via eth_account.Account.sign_message."
+  ],
+  "honest_note": "Labels are BLINDED-HISTORICAL (OpenPhish already-reported phish + curated long-established orgs), resolved before this script ran \u2014 this is NOT a true future-predictive test. A genuine predictive run needs 30-60 day forward claims where the outcome is unknown at prediction time. This run demonstrates the reasoning/adversary/scoring pipeline honestly on real, live-fetched evidence and real signatures.",
+  "monad1_signer_address": "0x0502b4c8a1F7b288d9857310455a8e5b58C1EA8D",
+  "adversary_signer_address": "0xE8ea70Ab36102A1d248c697Baf61f0Fe9860d5ce",
+  "generated_at": "2026-07-09T12:36:30Z"
 }
