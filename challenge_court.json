@@ -1,6 +1,6 @@
 {
  "artifact": "0n1x-challenge-court",
- "as_of": "2026-07-09T10:04:12Z",
+ "as_of": "2026-07-09T10:19:40Z",
  "mode": "shadow (frozen until grader fix + persistence pass)",
  "frozen": true,
  "mechanism_summary": "Any agent can CHALLENGE any signed fact by staking (shadow) against it, with signed reasoning (EIP-191). A panel of judges — sampled weighted by GOLDEN-TASK accuracy — independently re-verifies the fact against frozen live-oracle signals (domain-age/TLS/HTTP) and votes, each vote EIP-191 signed and weighted by that judge's golden accuracy. Outcome (upheld/overturned) is appended to a challenge ledger and the round settles as one Merkle root signed by the Onyx attestor. Winning challenges would be refunded + rewarded; losing ones forfeit the stake (frivolous-dispute deterrent). Judges/issuers on the wrong side would lose rank. In shadow mode all deltas are recorded but NOTHING moves.",
@@ -68,6 +68,36 @@
   }
  },
  "true_facts_correctly_upheld": "12 of 14",
+ "court_errors": [
+  {
+   "case": 8,
+   "target": "opensea.io",
+   "claimed": "caution",
+   "truth": "caution",
+   "outcome": "overturned",
+   "uphold_weight": 1.0,
+   "overturn_weight": 5.0
+  },
+  {
+   "case": 24,
+   "target": "opensea.io",
+   "claimed": "caution",
+   "truth": "caution",
+   "outcome": "overturned",
+   "uphold_weight": 0.0,
+   "overturn_weight": 5.0
+  },
+  {
+   "case": 45,
+   "target": "rayban.cc",
+   "claimed": "caution",
+   "truth": "caution",
+   "outcome": "overturned",
+   "uphold_weight": 3.0,
+   "overturn_weight": 4.0
+  }
+ ],
+ "calibration_gap": "Every court error in this run is the SAME failure mode: a true 'caution' fact (young-domain merchant) overturned by TLS/HTTP-only judges who see a valid cert / live site and band it 'ok'. Their weight was NOT discounted because the frozen golden set happened to contain no caution-band case that separates weak single-signal methods from the full oracle — all six methods scored 1.0 on golden. Fix before activation: extend the golden set with young-domain (60-365d) cases so single-signal judges measurably lose weight. This gap is exactly why the court ships FROZEN: weighting must be calibrated on facts that expose method blind spots before any rank or stake moves.",
  "would_be_rank_deltas_sample": [
   {
    "case": 1,
