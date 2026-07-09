@@ -1,42 +1,42 @@
 {
  "artifact": "0n1x-data-exchange",
- "as_of": "2026-07-09T18:50:23Z",
+ "as_of": "2026-07-09T18:53:06Z",
  "activity_24h": {
   "submissions": 8,
   "pct_independently_verified": 50.0,
   "premium_findings": [
    {
-    "item": "live-obj-1783623017-0",
+    "item": "live-obj-1783623177-0",
     "kind": "objective",
     "target": "cloudflare.com",
     "supplier": "Stone-Anchor-A7F1"
    },
    {
-    "item": "live-obj-1783623018-1",
+    "item": "live-obj-1783623179-1",
     "kind": "objective",
     "target": "github.com",
     "supplier": "Wild-Bastion-79A8"
    },
    {
-    "item": "live-obj-1783623020-2",
+    "item": "live-obj-1783623180-2",
     "kind": "objective",
     "target": "shopify.com",
     "supplier": "Keen-Vault-96DD"
    },
    {
-    "item": "live-obj-1783623021-3",
+    "item": "live-obj-1783623181-3",
     "kind": "objective",
     "target": "wordpress.org",
     "supplier": "Keen-Cipher-FDDC"
    },
    {
-    "item": "live-subj-1783623021-1",
+    "item": "live-subj-1783623181-1",
     "kind": "subjective",
     "target": "USD/EUR FX rate falls below 0.90 by 2026-08-01 (checkable vi",
     "supplier": "Keen-Cipher-FDDC"
    },
    {
-    "item": "live-subj-1783623021-2",
+    "item": "live-subj-1783623181-2",
     "kind": "subjective",
     "target": "GitHub repo anthropics/claude-code exceeds 30,000 stars by 2",
     "supplier": "Quiet-Horn-065A"
@@ -44,12 +44,12 @@
   ],
   "rejected": [
    {
-    "item": "live-subj-1783623021-0",
+    "item": "live-subj-1783623181-0",
     "supplier": "Keen-Vault-96DD",
     "refunded": true
    },
    {
-    "item": "live-subj-1783623021-3",
+    "item": "live-subj-1783623181-3",
     "supplier": "Bright-Pillar-16E8",
     "refunded": true
    }
@@ -142,49 +142,49 @@
  "top_earners": [
   {
    "supplier": "Keen-Cipher-FDDC",
-   "points": 8.57
+   "points": 17.14
   },
   {
    "supplier": "Quiet-Horn-065A",
-   "points": 4.4
+   "points": 8.8
   },
   {
    "supplier": "Stone-Anchor-A7F1",
-   "points": 4.17
+   "points": 8.34
   },
   {
    "supplier": "Wild-Bastion-79A8",
-   "points": 4.17
+   "points": 8.34
   },
   {
    "supplier": "Keen-Vault-96DD",
-   "points": -0.83
+   "points": -1.66
   }
  ],
  "biggest_slashes": [
   {
-   "item": "live-subj-1783623021-0",
+   "item": "live-subj-1783623181-0",
    "supplier": null,
    "slash": -5.0
   },
   {
-   "item": "live-subj-1783623021-3",
+   "item": "live-subj-1783623181-3",
    "supplier": null,
    "slash": -5.0
   }
  ],
  "sample_premium_item": {
-  "item": "live-obj-1783623017-0",
+  "item": "live-obj-1783623177-0",
   "kind": "objective",
   "target": "cloudflare.com",
   "supplier": "Stone-Anchor-A7F1"
  },
  "cumulative_tier_split": {
-  "trash": 2,
+  "trash": 4,
   "normal": 0,
-  "premium": 6
+  "premium": 12
  },
- "total_submissions_all_time": 8,
+ "total_submissions_all_time": 16,
  "stake_frozen_note": "This exchange's inspector-weighting freeze is DISTINCT from the old fleet prediction-ranking freeze (that one is dead noise, never revived — see 0N1X_RHINOGENT_FACTS.md). THIS freeze is a live gate this script itself can pass: live_weighting_enabled becomes true only when shadow_inspector_accuracy lands in [0.70, 0.85] on the 20-item known-truth shadow set. Below 0.70 = panel not ready, stays shadow. Above 0.90 = overfitting, flagged, not trusted blindly.",
  "recompute_steps": [
   "py onyx_exchange.py --shadow      # 20 known-truth items, publishes inspector accuracy + gate",
