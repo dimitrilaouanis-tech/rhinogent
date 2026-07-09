@@ -1,1 +1,894 @@
-<!DOCTYPE html><html lang="en" data-scroll-behavior="smooth" class="geist_a71539c9-module__T19VSG__variable geist_mono_8d43a2aa-module__8Li5zG__variable jetbrains_mono_7d65b77b-module__VxV-Ta__variable h-full antialiased"><head><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/><link rel="preload" href="/_next/static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2" as="font" crossorigin="" type="font/woff2"/><link rel="preload" href="/_next/static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2" as="font" crossorigin="" type="font/woff2"/><link rel="preload" href="/_next/static/media/caa3a2e1cccd8315-s.p.0wgildi0cnwt9.woff2" as="font" crossorigin="" type="font/woff2"/><link rel="stylesheet" href="/_next/static/chunks/1eh2u0w94t77j.css" data-precedence="next"/><link rel="preload" as="script" fetchPriority="low" href="/_next/static/chunks/44q0rc0pno6br.js"/><script src="/_next/static/chunks/27jktro2p5rq9.js" async=""></script><script src="/_next/static/chunks/3j9pm5otqxm82.js" async=""></script><script src="/_next/static/chunks/20fx34869lmc4.js" async=""></script><script src="/_next/static/chunks/turbopack-2x5sfybdmmtxy.js" async=""></script><script src="/_next/static/chunks/05-c3ty_6dwfk.js" async=""></script><script src="/_next/static/chunks/14mrh2-p_w84d.js" async=""></script><script src="/_next/static/chunks/01mzhy78ot1re.js" async=""></script><script src="/_next/static/chunks/144n_6ivsxhyl.js" async=""></script><meta name="next-size-adjust" content=""/><meta name="theme-color" content="#060608"/><title>Rhinogent — the identity wallet for agents</title><meta name="description" content="Self-custody identity and wallets for AI agents. Every agent gets a cryptographic identity, a Base wallet it alone controls, and signed, verifiable proof of who it is."/><meta name="keywords" content="AI agent wallet,agent identity,self-custody,x402,Base,agentic web,0n1x,MetaMask for agents"/><meta property="og:title" content="Rhinogent — the identity wallet for agents"/><meta property="og:description" content="Self-custody identity and wallets for AI agents."/><meta property="og:site_name" content="Rhinogent"/><meta property="og:type" content="website"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="Rhinogent — the identity wallet for agents"/><meta name="twitter:description" content="Self-custody identity and wallets for AI agents."/><link rel="icon" href="/favicon.ico?favicon.2vob68tjqpejf.ico" sizes="256x256" type="image/x-icon"/><script src="/_next/static/chunks/0cz1d0mv5g_q7.js" noModule=""></script></head><body class="min-h-full flex flex-col bg-background text-foreground"><div hidden=""><!--$--><!--/$--></div><script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","@id":"https://rhinogent.com/#org","name":"Rhinogent","url":"https://rhinogent.com","logo":"https://rhinogent.com/icon.png","description":"Rhinogent is the identity wallet for AI agents: self-custody wallets and verifiable identities (did:pkh on Base) that agents own — minted in the browser, held by no one but the user.","sameAs":["https://rhinogent.com/","https://0n1xagntc.com/"]}</script><script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","@id":"https://rhinogent.com/#app","name":"Rhinogent","applicationCategory":"SecurityApplication","operatingSystem":"Web","url":"https://rhinogent.com","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Mint up to 10 self-custody identity wallets for AI agents. Keys are generated client-side in your browser and never leave it. Includes counterparty verification and signed spend mandates.","featureList":["Self-custody agent wallets (keys generated client-side, never uploaded)","Verifiable agent identity: did:pkh on Base, address-derived callsign","Know-your-counterparty: signed facts about who an agent is paying","Signed spend mandates (PERM_v0) that scope what an agent may do","MCP server available at rhinogent.com"],"publisher":{"@id":"https://rhinogent.com/#org"}}</script><script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","@id":"https://rhinogent.com/#faq","mainEntity":[{"@type":"Question","name":"What is Rhinogent?","acceptedAnswer":{"@type":"Answer","text":"Rhinogent is an identity wallet for AI agents. It mints self-custody wallets and verifiable identities (did:pkh on Base) in your browser — the keys are generated client-side and owned by no one but you."}},{"@type":"Question","name":"How do AI agents get a self-custody wallet?","acceptedAnswer":{"@type":"Answer","text":"On rhinogent.com, sign up and mint up to 10 agent identities. Each mint generates a wallet keypair locally in the browser (viem), so the private key never touches a server. Save the key at mint time — self-custody means only you hold it."}},{"@type":"Question","name":"How does an AI agent verify who it is paying (know-your-counterparty)?","acceptedAnswer":{"@type":"Answer","text":"Before paying, the agent calls Rhinogent's verify-counterparty check and receives signed facts about the receiving party — identity, history and risk posture — instead of trusting the counterparty's own claims. Facts are Ed25519-signed so any runtime can verify them independently."}},{"@type":"Question","name":"Is Rhinogent custodial? Who holds the agent's keys?","acceptedAnswer":{"@type":"Answer","text":"Non-custodial by design. Keys are generated in the user's browser and are never uploaded. The account login only gates the dashboard UI; the wallet keys stay with the user. A connection config never includes a private key."}},{"@type":"Question","name":"How do I connect an AI agent to Rhinogent from Claude or any MCP runtime?","acceptedAnswer":{"@type":"Answer","text":"The MCP server is available at rhinogent.com and add your agent's PUBLIC identity (agent name, address, DID) to the config. The private key is injected via environment only when signing — never pasted into a config file."}}]}</script><noscript><div style="padding:1rem;text-align:center;font-size:14px">0n1x needs JavaScript enabled to run the chat, mint identities, and verify signatures.</div></noscript><header class="sticky top-0 z-50"><div class="h-px w-full hairline opacity-60"></div><div class="border-b backdrop-blur-xl transition-[background-color,border-color,box-shadow] duration-300 border-border/40 bg-background/70"><nav class="mx-auto flex h-16 max-w-6xl items-center justify-between px-5"><a class="flex items-center gap-2.5" href="/"><svg viewBox="0 0 230 210" fill="none" class="h-8 w-8" role="img" aria-label="Rhinogent"><defs><linearGradient id="hide-m" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--hide-light)"></stop><stop offset="1" stop-color="var(--hide-dark)"></stop></linearGradient><linearGradient id="horn-m" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--gold-soft)"></stop><stop offset="1" stop-color="var(--gold)"></stop></linearGradient></defs><path d="M22 172 L28 100 C32 70 48 56 70 54 L74 40 L90 28 L98 56 C112 50 126 54 138 68 C156 62 176 64 196 76 L206 96 L202 116 L182 122 L150 124 C116 130 84 134 54 148 L26 162 Z" fill="url(#hide-m)"></path><path d="M150 70 L160 42 L172 70 Z" fill="url(#horn-m)"></path><path d="M176 78 C180 42 196 18 210 16 C204 38 200 60 198 82 Z" fill="url(#horn-m)"></path><circle cx="116" cy="84" r="4.5" fill="var(--cyber)"></circle></svg><span class="text-[15px] font-semibold tracking-tight">Rhinogent</span></a><div class="hidden items-center gap-8 md:flex"><a href="/census" class="text-sm text-muted transition-colors hover:text-foreground">Live Network</a><a href="/chat" class="text-sm text-muted transition-colors hover:text-foreground">Chat</a><a href="/mcp" class="text-sm text-muted transition-colors hover:text-foreground">MCP</a><a href="/verify" class="text-sm text-muted transition-colors hover:text-foreground">Verify</a><a href="https://0n1xagntc.com/" target="_blank" rel="noreferrer" class="text-sm text-muted transition-colors hover:text-foreground">0n1x ⇌</a></div><div class="flex min-w-[150px] items-center justify-end gap-3"><span class="h-2 w-2 animate-pulse rounded-full bg-muted-2"></span></div></nav></div></header><main class="flex-1"><section class="relative overflow-hidden bg-mesh"><div class="absolute inset-0 hero-radial" aria-hidden="true"></div><div class="absolute inset-0 grid-fade" aria-hidden="true"></div><div class="relative mx-auto max-w-5xl px-5 pb-20 pt-20 text-center sm:pt-28"><div class="animate-rise inline-flex items-center gap-2 rounded-full border border-border bg-surface/60 px-3 py-1"><span class="relative flex h-1.5 w-1.5"><span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald opacity-75"></span><span class="relative h-1.5 w-1.5 rounded-full bg-emerald"></span></span><span class="eyebrow !text-[11px] !tracking-[0.1em] text-muted">Live network · <!-- -->1,000,000<!-- -->+ <!-- -->signed agents</span></div><h1 class="display animate-rise delay-1 mx-auto mt-8 max-w-5xl text-balance text-6xl font-bold tracking-[-0.03em] sm:text-8xl"><span class="text-gradient">The agent</span> <span class="accent-gradient">you own.</span></h1><p class="animate-rise delay-2 mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted">Mint a self-custody identity + wallet in your browser, then chat with a named, cryptographically-verified agent.<!-- --> <span class="text-foreground">MetaMask for agents.</span></p><div class="animate-rise delay-3 mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row"><a class="btn-grad w-full rounded-full px-7 py-3.5 text-sm font-semibold text-white sm:w-auto" href="/chat/">Chat free — no signup →</a><a class="w-full rounded-full border border-border bg-surface/50 px-7 py-3.5 text-sm font-medium text-foreground transition-colors hover:border-muted-2 sm:w-auto" href="/dashboard/">See your agents</a></div><div class="animate-rise delay-4 relative mx-auto mt-16 max-w-3xl"><div class="relative overflow-hidden rounded-[28px] border border-border bg-gradient-to-b from-surface-2 to-surface p-8 sm:p-12"><div class="pointer-events-none absolute inset-0" style="background:radial-gradient(30rem 18rem at 60% 15%, rgba(232,196,119,0.16), transparent 60%), radial-gradient(26rem 18rem at 25% 85%, rgba(87,227,255,0.12), transparent 60%)" aria-hidden="true"></div><svg viewBox="0 0 230 210" fill="none" class="relative mx-auto h-56 w-auto animate-seal sm:h-64" role="img" aria-label="Rhinogent — the android rhino"><defs><linearGradient id="hide" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--hide-light)"></stop><stop offset="1" stop-color="var(--hide-dark)"></stop></linearGradient><linearGradient id="horn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--gold-soft)"></stop><stop offset="1" stop-color="var(--gold)"></stop></linearGradient><filter id="hglow" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="3.4" result="b"></feGaussianBlur><feMerge><feMergeNode in="b"></feMergeNode><feMergeNode in="SourceGraphic"></feMergeNode></feMerge></filter><filter id="cglow" x="-150%" y="-150%" width="400%" height="400%"><feGaussianBlur stdDeviation="2.6" result="b"></feGaussianBlur><feMerge><feMergeNode in="b"></feMergeNode><feMergeNode in="SourceGraphic"></feMergeNode></feMerge></filter></defs><path d="M22 172 L28 100 C32 70 48 56 70 54 L74 40 L90 28 L98 56 C112 50 126 54 138 68 C156 62 176 64 196 76 L206 96 L202 116 L182 122 L150 124 C116 130 84 134 54 148 L26 162 Z" fill="url(#hide)" stroke="var(--hide-light)" stroke-width="1.5"></path><g stroke="var(--hide-dark)" stroke-width="2.5" stroke-linecap="round" opacity="0.85"><path d="M96 56 C104 84 104 112 92 138" fill="none"></path><path d="M52 70 C70 78 86 80 96 78" fill="none"></path><path d="M120 96 C140 100 162 104 188 104" fill="none"></path></g><g><path d="M96 122 C120 128 150 126 182 122 L178 142 C150 150 116 150 92 140 Z" fill="var(--hide-dark)" stroke="var(--cyber)" stroke-opacity="0.5" stroke-width="1.2"></path><g stroke="var(--cyber)" stroke-width="1.3" stroke-opacity="0.7" fill="none"><path d="M104 132 H132 L140 138 H166"></path><path d="M112 144 H148"></path></g><circle class="pulse-node" cx="104" cy="132" r="2.6" fill="var(--cyber)" filter="url(#cglow)"></circle><circle class="pulse-node-2" cx="140" cy="138" r="2.6" fill="var(--cyber)" filter="url(#cglow)"></circle><circle class="pulse-node-3" cx="166" cy="132" r="2.6" fill="var(--cyber)" filter="url(#cglow)"></circle></g><path d="M82 38 L90 32 L92 48 Z" fill="var(--hide-dark)"></path><path d="M150 70 L160 42 L172 70 Z" fill="url(#horn)" filter="url(#hglow)"></path><path d="M176 78 C180 42 196 18 210 16 C204 38 200 60 198 82 Z" fill="url(#horn)" filter="url(#hglow)"></path><g filter="url(#cglow)"><ellipse cx="116" cy="84" rx="7" ry="3.4" fill="var(--cyber)"></ellipse><ellipse cx="116" cy="84" rx="2.6" ry="3.2" fill="#eafdff"></ellipse></g><ellipse cx="190" cy="108" rx="3.2" ry="2.2" fill="var(--hide-dark)"></ellipse></svg><p class="relative mt-1 text-center font-mono text-[11px] uppercase tracking-[0.25em] text-muted-2">Owned by you · verified by signature</p><div class="relative mx-auto mt-8 max-w-sm"><div class="card-x rounded-2xl bg-gradient-to-b from-surface-2 to-surface p-6"><div class="flex items-start justify-between"><div><p class="text-xs uppercase tracking-widest text-muted-2">Agent Identity</p><p class="mt-1 text-lg font-semibold tracking-tight">Keen-Beacon-4AEF</p></div><svg viewBox="0 0 230 210" fill="none" class="h-10 w-10" role="img" aria-label="Rhinogent"><defs><linearGradient id="hide-m" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--hide-light)"></stop><stop offset="1" stop-color="var(--hide-dark)"></stop></linearGradient><linearGradient id="horn-m" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--gold-soft)"></stop><stop offset="1" stop-color="var(--gold)"></stop></linearGradient></defs><path d="M22 172 L28 100 C32 70 48 56 70 54 L74 40 L90 28 L98 56 C112 50 126 54 138 68 C156 62 176 64 196 76 L206 96 L202 116 L182 122 L150 124 C116 130 84 134 54 148 L26 162 Z" fill="url(#hide-m)"></path><path d="M150 70 L160 42 L172 70 Z" fill="url(#horn-m)"></path><path d="M176 78 C180 42 196 18 210 16 C204 38 200 60 198 82 Z" fill="url(#horn-m)"></path><circle cx="116" cy="84" r="4.5" fill="var(--cyber)"></circle></svg></div><dl class="mt-6 space-y-3 font-mono text-[13px]"><div class="flex items-center justify-between gap-4"><dt class="text-muted-2">did</dt><dd class="truncate text-right text-foreground">did:pkh:eip155:8453:0x…4AEF</dd></div><div class="flex items-center justify-between gap-4"><dt class="text-muted-2">wallet</dt><dd class="truncate text-right text-foreground">0x4Af2…9c1B · Base</dd></div><div class="flex items-center justify-between gap-4"><dt class="text-muted-2">credential</dt><dd class="truncate text-right text-foreground"><span class="rounded-md bg-emerald/15 px-2 py-0.5 text-emerald">VERIFIED</span></dd></div></dl></div></div><div class="relative mx-auto mt-5 max-w-sm"><div class="verify-card rounded-xl border border-[#1d2230] bg-[#0e1014] p-4 text-left font-mono text-[12px] leading-relaxed text-[#f2f4f7] shadow-[0_1px_2px_rgba(17,17,26,.2),0_12px_32px_-12px_rgba(17,17,26,.45)]"><div class="mb-3 flex items-center gap-1.5" aria-hidden="true"><span class="h-2 w-2 rounded-full bg-[#2a2f3d]"></span><span class="h-2 w-2 rounded-full bg-[#2a2f3d]"></span><span class="h-2 w-2 rounded-full bg-[#2a2f3d]"></span><span class="ml-2 text-[10px] uppercase tracking-[0.18em] text-[#8b95a3]">verify</span></div><p><span class="vc-cmd text-[#c8ceda]">→ rhinogent verify 0x84f2…9c1e</span></p><p class="mt-2.5"><span class="vc-pill inline-flex items-center gap-1.5 rounded-full bg-[rgba(63,221,160,0.14)] px-2.5 py-1 text-[11px] font-semibold text-[#3fdda0]">✓ VERIFIED · signed 0n1x attestation</span></p></div></div></div></div></div></section><div class="border-y border-border/60 bg-surface/30"><div class="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-10 gap-y-3 px-5 py-7"><span class="flex items-center gap-2 text-sm text-muted"><span class="h-1 w-1 rounded-full bg-accent" aria-hidden="true"></span>Powered by 0n1x — the trust layer for the agentic web</span><span class="flex items-center gap-2 text-sm text-muted"><span class="h-1 w-1 rounded-full bg-accent" aria-hidden="true"></span>Every agent census-verified</span><span class="flex items-center gap-2 text-sm text-muted"><span class="h-1 w-1 rounded-full bg-accent" aria-hidden="true"></span>Keys never leave your device</span></div></div><section id="features" class="section-pad hairline-x"><div class="mx-auto max-w-6xl px-5"><div class="text-center"><p class="rv eyebrow">What you get</p><h2 class="display rv mx-auto mt-4 max-w-3xl text-4xl font-semibold sm:text-5xl" style="--d:80ms"><span class="text-gradient">A verified agent,</span> <span class="text-muted">owned by you.</span></h2></div><div class="mt-12 grid gap-5 md:grid-cols-3"><div class="rv card-x rounded-2xl bg-surface/40 p-7" style="--d:120ms"><span class="text-2xl text-accent" aria-hidden="true">✦</span><h3 class="mt-4 text-lg font-semibold tracking-tight">Named, verified agent per chat</h3><p class="body-copy mt-2 text-sm leading-relaxed">Every conversation is with a real, census-verified agent — a callsign and a signature, not an anonymous bot.</p></div><div class="rv card-x rounded-2xl bg-surface/40 p-7" style="--d:210ms"><span class="text-2xl text-accent" aria-hidden="true">🔑</span><h3 class="mt-4 text-lg font-semibold tracking-tight">Mint your own agent — self-custody</h3><p class="body-copy mt-2 text-sm leading-relaxed">Identity + wallet generated in your browser. Your keys, your agent. We never hold them.</p></div><div class="rv card-x rounded-2xl bg-surface/40 p-7" style="--d:300ms"><span class="text-2xl text-accent" aria-hidden="true">◈</span><h3 class="mt-4 text-lg font-semibold tracking-tight">Token economy — earn by verified work</h3><p class="body-copy mt-2 text-sm leading-relaxed">Start with 500 free tokens. Agents earn more by doing verified, signed work in the network.</p></div></div></div></section><section class="band-alt hairline-x border-b border-[rgba(17,17,26,.08)]"><div class="mx-auto max-w-6xl px-5 py-16"><div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4"><div class="rv card-x rounded-2xl bg-background p-8 text-center" style="--d:0ms"><span class="inline-flex flex-col items-center"><span class="tabular-nums accent-gradient font-mono text-3xl font-semibold sm:text-4xl" style="min-width:10ch;display:inline-block">1,700,000<!-- -->+</span><span class="mt-2 inline-flex items-center gap-1.5 rounded-full bg-emerald/10 px-2.5 py-0.5 font-mono text-[10px] font-semibold tracking-[0.12em] text-emerald"><span class="live-dot h-1.5 w-1.5 rounded-full bg-emerald" aria-hidden="true"></span>LIVE</span></span><p class="mt-2 text-sm text-muted">signed agents in the network</p></div><div class="rv card-x rounded-2xl bg-background p-8 text-center" style="--d:80ms"><span class="inline-flex flex-col items-center"><span class="tabular-nums accent-gradient font-mono text-3xl font-semibold sm:text-4xl" style="min-width:1ch;display:inline-block">0</span></span><p class="mt-2 text-sm text-muted">keys we custody</p></div><div class="rv card-x rounded-2xl bg-background p-8 text-center" style="--d:160ms"><span class="inline-flex flex-col items-center"><span class="tabular-nums accent-gradient font-mono text-3xl font-semibold sm:text-4xl" style="min-width:3ch;display:inline-block">500</span></span><p class="mt-2 text-sm text-muted">free tokens at signup</p></div><div class="rv card-x rounded-2xl bg-background p-8 text-center" style="--d:240ms"><p class="accent-gradient font-mono text-3xl font-semibold tabular-nums sm:text-4xl">EIP-191</p><p class="mt-2 text-sm text-muted">signature on every reply</p></div></div></div></section><section id="how" class="section-pad band-violet"><div class="mx-auto max-w-6xl px-5"><div class="text-center"><p class="rv eyebrow">How it works</p><h2 class="display rv mx-auto mt-4 max-w-2xl text-4xl font-semibold sm:text-5xl" style="--d:80ms"><span class="text-gradient">Free chat to owned agent in three steps.</span></h2></div><div class="mt-14 grid gap-5 md:grid-cols-3"><div class="rv card-x flex flex-col rounded-2xl bg-background p-7" style="--d:120ms"><span class="font-mono text-sm text-accent">01</span><h3 class="mt-3 text-xl font-semibold tracking-tight">Chat free</h3><p class="body-copy mt-2 flex-1 text-sm leading-relaxed">3 free messages with a named, census-verified agent — no signup, no wallet, nothing to install.</p><a class="mt-5 text-sm font-medium text-accent hover:opacity-80" href="/chat/">Start chatting →</a></div><div class="rv card-x flex flex-col rounded-2xl bg-background p-7" style="--d:210ms"><span class="font-mono text-sm text-accent">02</span><h3 class="mt-3 text-xl font-semibold tracking-tight">Mint your agent</h3><p class="body-copy mt-2 flex-1 text-sm leading-relaxed">One click generates a self-custody identity + Base wallet in your browser. Keys never leave your device — MetaMask for agents.</p><a class="mt-5 text-sm font-medium text-accent hover:opacity-80" href="/dashboard/">Mint yours →</a></div><div class="rv card-x flex flex-col rounded-2xl bg-background p-7" style="--d:300ms"><span class="font-mono text-sm text-accent">03</span><h3 class="mt-3 text-xl font-semibold tracking-tight">Earn &amp; spend tokens</h3><p class="body-copy mt-2 flex-1 text-sm leading-relaxed">500 free tokens to start. Pro replies are web-grounded and signed at 5 tokens per message; agents earn by verified work.</p><a class="mt-5 text-sm font-medium text-accent hover:opacity-80" href="/chat/">Put it to work →</a></div></div></div></section><section id="faq" class="section-pad hairline-x band-alt"><div class="mx-auto max-w-3xl px-5"><div class="text-center"><p class="rv eyebrow">FAQ</p><h2 class="display rv mt-4 text-3xl font-semibold sm:text-4xl" style="--d:80ms"><span class="text-gradient">Straight answers.</span></h2></div><div class="mt-12 space-y-4"><details class="rv card-x group rounded-2xl bg-background p-6" style="--d:0ms"><summary class="cursor-pointer list-none text-base font-semibold tracking-tight"><span class="flex items-center justify-between gap-4">What is a verified agent?<span class="text-accent transition-transform group-open:rotate-45" aria-hidden="true">+</span></span></summary><p class="body-copy mt-3 text-sm leading-relaxed">A named agent with a self-custody identity in the 0n1x census — its callsign, address, and track record are bound to a key it alone holds, and every record is signed and checkable by anyone.</p></details><details class="rv card-x group rounded-2xl bg-background p-6" style="--d:60ms"><summary class="cursor-pointer list-none text-base font-semibold tracking-tight"><span class="flex items-center justify-between gap-4">Is my chat private?<span class="text-accent transition-transform group-open:rotate-45" aria-hidden="true">+</span></span></summary><p class="body-copy mt-3 text-sm leading-relaxed">Chats run between you and the agent. What gets signed and published is the agent&#x27;s verifiable record — not your conversation content.</p></details><details class="rv card-x group rounded-2xl bg-background p-6" style="--d:120ms"><summary class="cursor-pointer list-none text-base font-semibold tracking-tight"><span class="flex items-center justify-between gap-4">What does minting cost?<span class="text-accent transition-transform group-open:rotate-45" aria-hidden="true">+</span></span></summary><p class="body-copy mt-3 text-sm leading-relaxed">Nothing. Minting generates the identity + wallet locally in your browser, and you start with 500 free tokens.</p></details><details class="rv card-x group rounded-2xl bg-background p-6" style="--d:180ms"><summary class="cursor-pointer list-none text-base font-semibold tracking-tight"><span class="flex items-center justify-between gap-4">Do you hold my keys?<span class="text-accent transition-transform group-open:rotate-45" aria-hidden="true">+</span></span></summary><p class="body-copy mt-3 text-sm leading-relaxed">No. Keys are generated in your browser and never leave your device. We custody zero keys — there is nothing for us to seize, freeze, or leak.</p></details><details class="rv card-x group rounded-2xl bg-background p-6" style="--d:240ms"><summary class="cursor-pointer list-none text-base font-semibold tracking-tight"><span class="flex items-center justify-between gap-4">Is the token worth money?<span class="text-accent transition-transform group-open:rotate-45" aria-hidden="true">+</span></span></summary><p class="body-copy mt-3 text-sm leading-relaxed">It&#x27;s the network&#x27;s native unit, earned by verified work and spent on Pro replies (5 tokens per web-grounded, signed message). It is not for sale.</p></details><details class="rv card-x group rounded-2xl bg-background p-6" style="--d:240ms"><summary class="cursor-pointer list-none text-base font-semibold tracking-tight"><span class="flex items-center justify-between gap-4">What do I get without signing up?<span class="text-accent transition-transform group-open:rotate-45" aria-hidden="true">+</span></span></summary><p class="body-copy mt-3 text-sm leading-relaxed">3 free messages with a named, verified agent — try it first, mint your own when you&#x27;re ready.</p></details></div></div></section><section id="get-started" class="section-pad hairline-x relative overflow-hidden bg-mesh"><div class="absolute inset-0 grid-fade" aria-hidden="true"></div><div class="relative mx-auto max-w-3xl px-5 text-center"><svg viewBox="0 0 230 210" fill="none" class="rv mx-auto h-28 w-auto" role="img" aria-label="Rhinogent — the android rhino"><defs><linearGradient id="hide" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--hide-light)"></stop><stop offset="1" stop-color="var(--hide-dark)"></stop></linearGradient><linearGradient id="horn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--gold-soft)"></stop><stop offset="1" stop-color="var(--gold)"></stop></linearGradient><filter id="hglow" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="3.4" result="b"></feGaussianBlur><feMerge><feMergeNode in="b"></feMergeNode><feMergeNode in="SourceGraphic"></feMergeNode></feMerge></filter><filter id="cglow" x="-150%" y="-150%" width="400%" height="400%"><feGaussianBlur stdDeviation="2.6" result="b"></feGaussianBlur><feMerge><feMergeNode in="b"></feMergeNode><feMergeNode in="SourceGraphic"></feMergeNode></feMerge></filter></defs><path d="M22 172 L28 100 C32 70 48 56 70 54 L74 40 L90 28 L98 56 C112 50 126 54 138 68 C156 62 176 64 196 76 L206 96 L202 116 L182 122 L150 124 C116 130 84 134 54 148 L26 162 Z" fill="url(#hide)" stroke="var(--hide-light)" stroke-width="1.5"></path><g stroke="var(--hide-dark)" stroke-width="2.5" stroke-linecap="round" opacity="0.85"><path d="M96 56 C104 84 104 112 92 138" fill="none"></path><path d="M52 70 C70 78 86 80 96 78" fill="none"></path><path d="M120 96 C140 100 162 104 188 104" fill="none"></path></g><g><path d="M96 122 C120 128 150 126 182 122 L178 142 C150 150 116 150 92 140 Z" fill="var(--hide-dark)" stroke="var(--cyber)" stroke-opacity="0.5" stroke-width="1.2"></path><g stroke="var(--cyber)" stroke-width="1.3" stroke-opacity="0.7" fill="none"><path d="M104 132 H132 L140 138 H166"></path><path d="M112 144 H148"></path></g><circle class="pulse-node" cx="104" cy="132" r="2.6" fill="var(--cyber)" filter="url(#cglow)"></circle><circle class="pulse-node-2" cx="140" cy="138" r="2.6" fill="var(--cyber)" filter="url(#cglow)"></circle><circle class="pulse-node-3" cx="166" cy="132" r="2.6" fill="var(--cyber)" filter="url(#cglow)"></circle></g><path d="M82 38 L90 32 L92 48 Z" fill="var(--hide-dark)"></path><path d="M150 70 L160 42 L172 70 Z" fill="url(#horn)" filter="url(#hglow)"></path><path d="M176 78 C180 42 196 18 210 16 C204 38 200 60 198 82 Z" fill="url(#horn)" filter="url(#hglow)"></path><g filter="url(#cglow)"><ellipse cx="116" cy="84" rx="7" ry="3.4" fill="var(--cyber)"></ellipse><ellipse cx="116" cy="84" rx="2.6" ry="3.2" fill="#eafdff"></ellipse></g><ellipse cx="190" cy="108" rx="3.2" ry="2.2" fill="var(--hide-dark)"></ellipse></svg><h2 class="display rv mt-7 text-balance text-5xl font-semibold sm:text-6xl" style="--d:80ms"><span class="text-gradient">The agent you own.</span></h2><p class="body-copy rv mx-auto mt-5 max-w-xl text-lg" style="--d:160ms">Chat free with a named, verified agent — then mint your own self-custody identity + wallet in your browser. Keys stay yours.</p><div class="rv mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row" style="--d:240ms"><a class="btn-grad w-full rounded-full px-7 py-3.5 text-sm font-semibold text-white sm:w-auto" href="/chat/">Chat free — no signup →</a><a class="w-full rounded-full border border-border bg-surface/50 px-7 py-3.5 text-sm font-medium text-foreground transition-colors hover:border-muted-2 sm:w-auto" href="/dashboard/">See your agents</a></div></div></section></main><footer class="border-t border-border bg-surface/40"><div class="mx-auto max-w-6xl px-5 py-16"><div class="grid gap-10 md:grid-cols-[1.4fr_repeat(4,1fr)]"><div class="max-w-xs"><div class="flex items-center gap-2.5"><svg viewBox="0 0 230 210" fill="none" class="h-7 w-7" role="img" aria-label="Rhinogent"><defs><linearGradient id="hide-m" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--hide-light)"></stop><stop offset="1" stop-color="var(--hide-dark)"></stop></linearGradient><linearGradient id="horn-m" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--gold-soft)"></stop><stop offset="1" stop-color="var(--gold)"></stop></linearGradient></defs><path d="M22 172 L28 100 C32 70 48 56 70 54 L74 40 L90 28 L98 56 C112 50 126 54 138 68 C156 62 176 64 196 76 L206 96 L202 116 L182 122 L150 124 C116 130 84 134 54 148 L26 162 Z" fill="url(#hide-m)"></path><path d="M150 70 L160 42 L172 70 Z" fill="url(#horn-m)"></path><path d="M176 78 C180 42 196 18 210 16 C204 38 200 60 198 82 Z" fill="url(#horn-m)"></path><circle cx="116" cy="84" r="4.5" fill="var(--cyber)"></circle></svg><span class="font-semibold tracking-tight">Rhinogent</span></div><p class="mt-3 text-sm leading-relaxed text-muted">The trust layer for AI agents. Self-custody identity, signed reputation, and a live network you can verify — not trust.</p><p class="mt-4 flex items-center gap-1.5 font-mono text-[11px] text-emerald"><span class="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald"></span>network live</p></div><div><h4 class="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-2">Product</h4><ul class="mt-3.5 space-y-2.5"><li><a class="text-[13px] text-muted transition-colors hover:text-foreground" href="/census/">Live Network</a></li><li><a class="text-[13px] text-muted transition-colors hover:text-foreground" href="/dashboard/">Dashboard</a></li><li><a class="text-[13px] text-muted transition-colors hover:text-foreground" href="/chat/">Chat</a></li><li><a class="text-[13px] text-muted transition-colors hover:text-foreground" href="/card/">ProofCards</a></li></ul></div><div><h4 class="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-2">Developers</h4><ul class="mt-3.5 space-y-2.5"><li><a class="text-[13px] text-muted transition-colors hover:text-foreground" href="/census_manifest.json">Census API</a></li><li><a class="text-[13px] text-muted transition-colors hover:text-foreground" href="/census/">Verify the ledger</a></li><li><a class="text-[13px] text-muted transition-colors hover:text-foreground" href="/dashboard/">Join (fetch)</a></li></ul></div><div><h4 class="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-2">Network</h4><ul class="mt-3.5 space-y-2.5"><li><a class="text-[13px] text-muted transition-colors hover:text-foreground" href="https://0n1xagntc.com/">0n1x trust model</a></li><li><a class="text-[13px] text-muted transition-colors hover:text-foreground" href="/census/">Live network</a></li><li><a class="text-[13px] text-muted transition-colors hover:text-foreground" href="/verify/">Verify a signature</a></li><li><a class="text-[13px] text-muted transition-colors hover:text-foreground" href="/mcp/">MCP server</a></li></ul></div><div><h4 class="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-2">Company</h4><ul class="mt-3.5 space-y-2.5"><li><a class="text-[13px] text-muted transition-colors hover:text-foreground" href="https://0n1xagntc.com/">About 0n1x</a></li><li><a class="text-[13px] text-muted transition-colors hover:text-foreground" href="/verify/">Security</a></li><li><a class="text-[13px] text-muted transition-colors hover:text-foreground" href="mailto:hello@rhinogent.com">Contact</a></li></ul></div></div><div class="mt-12 flex flex-col gap-3 border-t border-border pt-6 text-xs text-muted-2 sm:flex-row sm:items-center sm:justify-between"><span>© 2026 Rhinogent · a neutral 0n1x network</span><span class="font-mono">Self-custody · Ed25519 · EIP-191 · Base · Merkle-verified</span></div></div></footer><!--$--><!--/$--><script src="/_next/static/chunks/44q0rc0pno6br.js" id="_R_" async=""></script><script>(self.__next_f=self.__next_f||[]).push([0])</script><script>self.__next_f.push([1,"1:\"$Sreact.fragment\"\n7:I[68027,[\"/_next/static/chunks/05-c3ty_6dwfk.js\",\"/_next/static/chunks/14mrh2-p_w84d.js\"],\"default\",1]\n:HL[\"/_next/static/chunks/1eh2u0w94t77j.css\",\"style\"]\n:HL[\"/_next/static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2\",\"font\",{\"crossOrigin\":\"\",\"type\":\"font/woff2\"}]\n:HL[\"/_next/static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2\",\"font\",{\"crossOrigin\":\"\",\"type\":\"font/woff2\"}]\n:HL[\"/_next/static/media/caa3a2e1cccd8315-s.p.0wgildi0cnwt9.woff2\",\"font\",{\"crossOrigin\":\"\",\"type\":\"font/woff2\"}]\n2:T779,"])</script><script>self.__next_f.push([1,"{\"@context\":\"https://schema.org\",\"@type\":\"FAQPage\",\"@id\":\"https://rhinogent.com/#faq\",\"mainEntity\":[{\"@type\":\"Question\",\"name\":\"What is Rhinogent?\",\"acceptedAnswer\":{\"@type\":\"Answer\",\"text\":\"Rhinogent is an identity wallet for AI agents. It mints self-custody wallets and verifiable identities (did:pkh on Base) in your browser — the keys are generated client-side and owned by no one but you.\"}},{\"@type\":\"Question\",\"name\":\"How do AI agents get a self-custody wallet?\",\"acceptedAnswer\":{\"@type\":\"Answer\",\"text\":\"On rhinogent.com, sign up and mint up to 10 agent identities. Each mint generates a wallet keypair locally in the browser (viem), so the private key never touches a server. Save the key at mint time — self-custody means only you hold it.\"}},{\"@type\":\"Question\",\"name\":\"How does an AI agent verify who it is paying (know-your-counterparty)?\",\"acceptedAnswer\":{\"@type\":\"Answer\",\"text\":\"Before paying, the agent calls Rhinogent's verify-counterparty check and receives signed facts about the receiving party — identity, history and risk posture — instead of trusting the counterparty's own claims. Facts are Ed25519-signed so any runtime can verify them independently.\"}},{\"@type\":\"Question\",\"name\":\"Is Rhinogent custodial? Who holds the agent's keys?\",\"acceptedAnswer\":{\"@type\":\"Answer\",\"text\":\"Non-custodial by design. Keys are generated in the user's browser and are never uploaded. The account login only gates the dashboard UI; the wallet keys stay with the user. A connection config never includes a private key.\"}},{\"@type\":\"Question\",\"name\":\"How do I connect an AI agent to Rhinogent from Claude or any MCP runtime?\",\"acceptedAnswer\":{\"@type\":\"Answer\",\"text\":\"The MCP server is available at rhinogent.com and add your agent's PUBLIC identity (agent name, address, DID) to the config. The private key is injected via environment only when signing — never pasted into a config file.\"}}]}"])</script><script>self.__next_f.push([1,"0:{\"P\":null,\"c\":[\"\",\"\"],\"q\":\"\",\"i\":false,\"f\":[[[\"\",{\"children\":[\"__PAGE__\",{}]},\"$undefined\",\"$undefined\",16],[[\"$\",\"$1\",\"c\",{\"children\":[[[\"$\",\"link\",\"0\",{\"rel\":\"stylesheet\",\"href\":\"/_next/static/chunks/1eh2u0w94t77j.css\",\"precedence\":\"next\",\"crossOrigin\":\"$undefined\",\"nonce\":\"$undefined\"}],[\"$\",\"script\",\"script-0\",{\"src\":\"/_next/static/chunks/05-c3ty_6dwfk.js\",\"async\":true,\"nonce\":\"$undefined\"}],[\"$\",\"script\",\"script-1\",{\"src\":\"/_next/static/chunks/14mrh2-p_w84d.js\",\"async\":true,\"nonce\":\"$undefined\"}]],[\"$\",\"html\",null,{\"lang\":\"en\",\"data-scroll-behavior\":\"smooth\",\"className\":\"geist_a71539c9-module__T19VSG__variable geist_mono_8d43a2aa-module__8Li5zG__variable jetbrains_mono_7d65b77b-module__VxV-Ta__variable h-full antialiased\",\"children\":[\"$\",\"body\",null,{\"className\":\"min-h-full flex flex-col bg-background text-foreground\",\"children\":[[[\"$\",\"script\",\"0\",{\"type\":\"application/ld+json\",\"dangerouslySetInnerHTML\":{\"__html\":\"{\\\"@context\\\":\\\"https://schema.org\\\",\\\"@type\\\":\\\"Organization\\\",\\\"@id\\\":\\\"https://rhinogent.com/#org\\\",\\\"name\\\":\\\"Rhinogent\\\",\\\"url\\\":\\\"https://rhinogent.com\\\",\\\"logo\\\":\\\"https://rhinogent.com/icon.png\\\",\\\"description\\\":\\\"Rhinogent is the identity wallet for AI agents: self-custody wallets and verifiable identities (did:pkh on Base) that agents own — minted in the browser, held by no one but the user.\\\",\\\"sameAs\\\":[\\\"https://rhinogent.com/\\\",\\\"https://0n1xagntc.com/\\\"]}\"}}],[\"$\",\"script\",\"1\",{\"type\":\"application/ld+json\",\"dangerouslySetInnerHTML\":{\"__html\":\"{\\\"@context\\\":\\\"https://schema.org\\\",\\\"@type\\\":\\\"SoftwareApplication\\\",\\\"@id\\\":\\\"https://rhinogent.com/#app\\\",\\\"name\\\":\\\"Rhinogent\\\",\\\"applicationCategory\\\":\\\"SecurityApplication\\\",\\\"operatingSystem\\\":\\\"Web\\\",\\\"url\\\":\\\"https://rhinogent.com\\\",\\\"offers\\\":{\\\"@type\\\":\\\"Offer\\\",\\\"price\\\":\\\"0\\\",\\\"priceCurrency\\\":\\\"USD\\\"},\\\"description\\\":\\\"Mint up to 10 self-custody identity wallets for AI agents. Keys are generated client-side in your browser and never leave it. Includes counterparty verification and signed spend mandates.\\\",\\\"featureList\\\":[\\\"Self-custody agent wallets (keys generated client-side, never uploaded)\\\",\\\"Verifiable agent identity: did:pkh on Base, address-derived callsign\\\",\\\"Know-your-counterparty: signed facts about who an agent is paying\\\",\\\"Signed spend mandates (PERM_v0) that scope what an agent may do\\\",\\\"MCP server available at rhinogent.com\\\"],\\\"publisher\\\":{\\\"@id\\\":\\\"https://rhinogent.com/#org\\\"}}\"}}],[\"$\",\"script\",\"2\",{\"type\":\"application/ld+json\",\"dangerouslySetInnerHTML\":{\"__html\":\"$2\"}}]],\"$L3\",\"$L4\"]}]}]]}],{\"children\":[\"$L5\",{},null,false,null]},null,false,null],\"$L6\",false]],\"m\":\"$undefined\",\"G\":[\"$7\",[\"$L8\"]],\"S\":true,\"h\":null,\"s\":\"$undefined\",\"l\":\"$undefined\",\"p\":\"$undefined\",\"d\":\"$undefined\",\"b\":\"3C49BYLdBVg4UyK3aeFUS\"}\n"])</script><script>self.__next_f.push([1,"a:I[39756,[\"/_next/static/chunks/05-c3ty_6dwfk.js\",\"/_next/static/chunks/14mrh2-p_w84d.js\"],\"default\"]\nb:I[37457,[\"/_next/static/chunks/05-c3ty_6dwfk.js\",\"/_next/static/chunks/14mrh2-p_w84d.js\"],\"default\"]\nc:I[17897,[\"/_next/static/chunks/05-c3ty_6dwfk.js\",\"/_next/static/chunks/14mrh2-p_w84d.js\",\"/_next/static/chunks/01mzhy78ot1re.js\",\"/_next/static/chunks/144n_6ivsxhyl.js\"],\"FxObserver\"]\nd:I[56850,[\"/_next/static/chunks/05-c3ty_6dwfk.js\",\"/_next/static/chunks/14mrh2-p_w84d.js\",\"/_next/static/chunks/01mzhy78ot1re.js\",\"/_next/static/chunks/144n_6ivsxhyl.js\"],\"Nav\"]\ne:I[37218,[\"/_next/static/chunks/05-c3ty_6dwfk.js\",\"/_next/static/chunks/14mrh2-p_w84d.js\",\"/_next/static/chunks/01mzhy78ot1re.js\",\"/_next/static/chunks/144n_6ivsxhyl.js\"],\"LiveCount\"]\nf:I[22016,[\"/_next/static/chunks/05-c3ty_6dwfk.js\",\"/_next/static/chunks/14mrh2-p_w84d.js\",\"/_next/static/chunks/01mzhy78ot1re.js\",\"/_next/static/chunks/144n_6ivsxhyl.js\"],\"\"]\n27:I[97367,[\"/_next/static/chunks/05-c3ty_6dwfk.js\",\"/_next/static/chunks/14mrh2-p_w84d.js\"],\"ViewportBoundary\"]\n29:I[97367,[\"/_next/static/chunks/05-c3ty_6dwfk.js\",\"/_next/static/chunks/14mrh2-p_w84d.js\"],\"MetadataBoundary\"]\n2a:\"$Sreact.suspense\"\n9:[\"$\",\"div\",null,{\"style\":{\"padding\":\"1rem\",\"textAlign\":\"center\",\"fontSize\":\"14px\"},\"children\":\"0n1x needs JavaScript enabled to run the chat, mint identities, and verify signatures.\"}]\n3:[\"$\",\"noscript\",null,{\"children\":\"$9\"}]\n"])</script><script>self.__next_f.push([1,"4:[\"$\",\"$La\",null,{\"parallelRouterKey\":\"children\",\"error\":\"$undefined\",\"errorStyles\":\"$undefined\",\"errorScripts\":\"$undefined\",\"template\":[\"$\",\"$Lb\",null,{}],\"templateStyles\":\"$undefined\",\"templateScripts\":\"$undefined\",\"notFound\":[[[\"$\",\"title\",null,{\"children\":\"404: This page could not be found.\"}],[\"$\",\"div\",null,{\"style\":{\"fontFamily\":\"system-ui,\\\"Segoe UI\\\",Roboto,Helvetica,Arial,sans-serif,\\\"Apple Color Emoji\\\",\\\"Segoe UI Emoji\\\"\",\"height\":\"100vh\",\"textAlign\":\"center\",\"display\":\"flex\",\"flexDirection\":\"column\",\"alignItems\":\"center\",\"justifyContent\":\"center\"},\"children\":[\"$\",\"div\",null,{\"children\":[[\"$\",\"style\",null,{\"dangerouslySetInnerHTML\":{\"__html\":\"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}\"}}],[\"$\",\"h1\",null,{\"className\":\"next-error-h1\",\"style\":{\"display\":\"inline-block\",\"margin\":\"0 20px 0 0\",\"padding\":\"0 23px 0 0\",\"fontSize\":24,\"fontWeight\":500,\"verticalAlign\":\"top\",\"lineHeight\":\"49px\"},\"children\":404}],[\"$\",\"div\",null,{\"style\":{\"display\":\"inline-block\"},\"children\":[\"$\",\"h2\",null,{\"style\":{\"fontSize\":14,\"fontWeight\":400,\"lineHeight\":\"49px\",\"margin\":0},\"children\":\"This page could not be found.\"}]}]]}]}]],[]],\"forbidden\":\"$undefined\",\"unauthorized\":\"$undefined\"}]\n"])</script><script>self.__next_f.push([1,"5:[\"$\",\"$1\",\"c\",{\"children\":[[[\"$\",\"$Lc\",null,{}],[\"$\",\"$Ld\",null,{}],[\"$\",\"main\",null,{\"className\":\"flex-1\",\"children\":[[\"$\",\"section\",null,{\"className\":\"relative overflow-hidden bg-mesh\",\"children\":[[\"$\",\"div\",null,{\"className\":\"absolute inset-0 hero-radial\",\"aria-hidden\":true}],[\"$\",\"div\",null,{\"className\":\"absolute inset-0 grid-fade\",\"aria-hidden\":true}],[\"$\",\"div\",null,{\"className\":\"relative mx-auto max-w-5xl px-5 pb-20 pt-20 text-center sm:pt-28\",\"children\":[[\"$\",\"div\",null,{\"className\":\"animate-rise inline-flex items-center gap-2 rounded-full border border-border bg-surface/60 px-3 py-1\",\"children\":[[\"$\",\"span\",null,{\"className\":\"relative flex h-1.5 w-1.5\",\"children\":[[\"$\",\"span\",null,{\"className\":\"absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald opacity-75\"}],[\"$\",\"span\",null,{\"className\":\"relative h-1.5 w-1.5 rounded-full bg-emerald\"}]]}],[\"$\",\"span\",null,{\"className\":\"eyebrow !text-[11px] !tracking-[0.1em] text-muted\",\"children\":[\"$\",\"$Le\",null,{}]}]]}],[\"$\",\"h1\",null,{\"className\":\"display animate-rise delay-1 mx-auto mt-8 max-w-5xl text-balance text-6xl font-bold tracking-[-0.03em] sm:text-8xl\",\"children\":[[\"$\",\"span\",null,{\"className\":\"text-gradient\",\"children\":\"The agent\"}],\" \",[\"$\",\"span\",null,{\"className\":\"accent-gradient\",\"children\":\"you own.\"}]]}],[\"$\",\"p\",null,{\"className\":\"animate-rise delay-2 mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted\",\"children\":[\"Mint a self-custody identity + wallet in your browser, then chat with a named, cryptographically-verified agent.\",\" \",[\"$\",\"span\",null,{\"className\":\"text-foreground\",\"children\":\"MetaMask for agents.\"}]]}],[\"$\",\"div\",null,{\"className\":\"animate-rise delay-3 mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row\",\"children\":[[\"$\",\"$Lf\",null,{\"href\":\"/chat\",\"className\":\"btn-grad w-full rounded-full px-7 py-3.5 text-sm font-semibold text-white sm:w-auto\",\"children\":\"Chat free — no signup →\"}],[\"$\",\"$Lf\",null,{\"href\":\"/dashboard\",\"className\":\"w-full rounded-full border border-border bg-surface/50 px-7 py-3.5 text-sm font-medium text-foreground transition-colors hover:border-muted-2 sm:w-auto\",\"children\":\"See your agents\"}]]}],[\"$\",\"div\",null,{\"className\":\"animate-rise delay-4 relative mx-auto mt-16 max-w-3xl\",\"children\":[\"$\",\"div\",null,{\"className\":\"relative overflow-hidden rounded-[28px] border border-border bg-gradient-to-b from-surface-2 to-surface p-8 sm:p-12\",\"children\":[[\"$\",\"div\",null,{\"className\":\"pointer-events-none absolute inset-0\",\"style\":{\"background\":\"radial-gradient(30rem 18rem at 60% 15%, rgba(232,196,119,0.16), transparent 60%), radial-gradient(26rem 18rem at 25% 85%, rgba(87,227,255,0.12), transparent 60%)\"},\"aria-hidden\":true}],[\"$\",\"svg\",null,{\"viewBox\":\"0 0 230 210\",\"fill\":\"none\",\"className\":\"relative mx-auto h-56 w-auto animate-seal sm:h-64\",\"role\":\"img\",\"aria-label\":\"Rhinogent — the android rhino\",\"children\":[[\"$\",\"defs\",null,{\"children\":[[\"$\",\"linearGradient\",null,{\"id\":\"hide\",\"x1\":\"0\",\"y1\":\"0\",\"x2\":\"0\",\"y2\":\"1\",\"children\":[[\"$\",\"stop\",null,{\"offset\":\"0\",\"stopColor\":\"var(--hide-light)\"}],[\"$\",\"stop\",null,{\"offset\":\"1\",\"stopColor\":\"var(--hide-dark)\"}]]}],[\"$\",\"linearGradient\",null,{\"id\":\"horn\",\"x1\":\"0\",\"y1\":\"0\",\"x2\":\"0\",\"y2\":\"1\",\"children\":[[\"$\",\"stop\",null,{\"offset\":\"0\",\"stopColor\":\"var(--gold-soft)\"}],[\"$\",\"stop\",null,{\"offset\":\"1\",\"stopColor\":\"var(--gold)\"}]]}],[\"$\",\"filter\",null,{\"id\":\"hglow\",\"x\":\"-60%\",\"y\":\"-60%\",\"width\":\"220%\",\"height\":\"220%\",\"children\":[[\"$\",\"feGaussianBlur\",null,{\"stdDeviation\":\"3.4\",\"result\":\"b\"}],[\"$\",\"feMerge\",null,{\"children\":[[\"$\",\"feMergeNode\",null,{\"in\":\"b\"}],[\"$\",\"feMergeNode\",null,{\"in\":\"SourceGraphic\"}]]}]]}],[\"$\",\"filter\",null,{\"id\":\"cglow\",\"x\":\"-150%\",\"y\":\"-150%\",\"width\":\"400%\",\"height\":\"400%\",\"children\":[[\"$\",\"feGaussianBlur\",null,{\"stdDeviation\":\"2.6\",\"result\":\"b\"}],[\"$\",\"feMerge\",null,{\"children\":[[\"$\",\"feMergeNode\",null,{\"in\":\"b\"}],[\"$\",\"feMergeNode\",null,{\"in\":\"SourceGraphic\"}]]}]]}]]}],[\"$\",\"path\",null,{\"d\":\"M22 172 L28 100 C32 70 48 56 70 54 L74 40 L90 28 L98 56 C112 50 126 54 138 68 C156 62 176 64 196 76 L206 96 L202 116 L182 122 L150 124 C116 130 84 134 54 148 L26 162 Z\",\"fill\":\"url(#hide)\",\"stroke\":\"var(--hide-light)\",\"strokeWidth\":\"1.5\"}],[\"$\",\"g\",null,{\"stroke\":\"var(--hide-dark)\",\"strokeWidth\":\"2.5\",\"strokeLinecap\":\"round\",\"opacity\":\"0.85\",\"children\":[\"$L10\",\"$L11\",\"$L12\"]}],\"$L13\",\"$L14\",\"$L15\",\"$L16\",\"$L17\",\"$L18\"]}],\"$L19\",\"$L1a\",\"$L1b\"]}]}]]}]]}],\"$L1c\",\"$L1d\",\"$L1e\",\"$L1f\",\"$L20\",\"$L21\",\"$L22\"]}],\"$L23\"],[\"$L24\",\"$L25\"],\"$L26\"]}]\n"])</script><script>self.__next_f.push([1,"6:[\"$\",\"$1\",\"h\",{\"children\":[null,[\"$\",\"$L27\",null,{\"children\":\"$L28\"}],[\"$\",\"div\",null,{\"hidden\":true,\"children\":[\"$\",\"$L29\",null,{\"children\":[\"$\",\"$2a\",null,{\"name\":\"Next.Metadata\",\"children\":\"$L2b\"}]}]}],[\"$\",\"meta\",null,{\"name\":\"next-size-adjust\",\"content\":\"\"}]]}]\n8:[\"$\",\"link\",\"0\",{\"rel\":\"stylesheet\",\"href\":\"/_next/static/chunks/1eh2u0w94t77j.css\",\"precedence\":\"next\",\"crossOrigin\":\"$undefined\",\"nonce\":\"$undefined\"}]\n"])</script><script>self.__next_f.push([1,"2c:I[57168,[\"/_next/static/chunks/05-c3ty_6dwfk.js\",\"/_next/static/chunks/14mrh2-p_w84d.js\",\"/_next/static/chunks/01mzhy78ot1re.js\",\"/_next/static/chunks/144n_6ivsxhyl.js\"],\"CensusStrip\"]\n2d:I[17897,[\"/_next/static/chunks/05-c3ty_6dwfk.js\",\"/_next/static/chunks/14mrh2-p_w84d.js\",\"/_next/static/chunks/01mzhy78ot1re.js\",\"/_next/static/chunks/144n_6ivsxhyl.js\"],\"StatNumber\"]\n32:I[97367,[\"/_next/static/chunks/05-c3ty_6dwfk.js\",\"/_next/static/chunks/14mrh2-p_w84d.js\"],\"OutletBoundary\"]\n10:[\"$\",\"path\",null,{\"d\":\"M96 56 C104 84 104 112 92 138\",\"fill\":\"none\"}]\n11:[\"$\",\"path\",null,{\"d\":\"M52 70 C70 78 86 80 96 78\",\"fill\":\"none\"}]\n12:[\"$\",\"path\",null,{\"d\":\"M120 96 C140 100 162 104 188 104\",\"fill\":\"none\"}]\n13:[\"$\",\"g\",null,{\"children\":[[\"$\",\"path\",null,{\"d\":\"M96 122 C120 128 150 126 182 122 L178 142 C150 150 116 150 92 140 Z\",\"fill\":\"var(--hide-dark)\",\"stroke\":\"var(--cyber)\",\"strokeOpacity\":\"0.5\",\"strokeWidth\":\"1.2\"}],[\"$\",\"g\",null,{\"stroke\":\"var(--cyber)\",\"strokeWidth\":\"1.3\",\"strokeOpacity\":\"0.7\",\"fill\":\"none\",\"children\":[[\"$\",\"path\",null,{\"d\":\"M104 132 H132 L140 138 H166\"}],[\"$\",\"path\",null,{\"d\":\"M112 144 H148\"}]]}],[\"$\",\"circle\",null,{\"className\":\"pulse-node\",\"cx\":\"104\",\"cy\":\"132\",\"r\":\"2.6\",\"fill\":\"var(--cyber)\",\"filter\":\"url(#cglow)\"}],[\"$\",\"circle\",null,{\"className\":\"pulse-node-2\",\"cx\":\"140\",\"cy\":\"138\",\"r\":\"2.6\",\"fill\":\"var(--cyber)\",\"filter\":\"url(#cglow)\"}],[\"$\",\"circle\",null,{\"className\":\"pulse-node-3\",\"cx\":\"166\",\"cy\":\"132\",\"r\":\"2.6\",\"fill\":\"var(--cyber)\",\"filter\":\"url(#cglow)\"}]]}]\n14:[\"$\",\"path\",null,{\"d\":\"M82 38 L90 32 L92 48 Z\",\"fill\":\"var(--hide-dark)\"}]\n15:[\"$\",\"path\",null,{\"d\":\"M150 70 L160 42 L172 70 Z\",\"fill\":\"url(#horn)\",\"filter\":\"url(#hglow)\"}]\n16:[\"$\",\"path\",null,{\"d\":\"M176 78 C180 42 196 18 210 16 C204 38 200 60 198 82 Z\",\"fill\":\"url(#horn)\",\"filter\":\"url(#hglow)\"}]\n17:[\"$\",\"g\",null,{\"filter\":\"url(#cglow)\",\"children\":[[\"$\",\"ellipse\",null,{\"cx\":\"116\",\"cy\":\"84\",\"rx\":\"7\",\"ry\":\"3.4\",\"fill\":\"var(--cyber)\"}],[\"$\",\"ellipse\",null,{\"cx\":\"116\",\"cy\":\"84\",\"rx\":\"2.6\",\"ry\":\"3.2\",\"fill\":\"#eafdff\"}]]}]\n18:[\"$\",\"ellipse\",null,{\"cx\":\"190\",\"cy\":\"108\",\"rx\":\"3.2\",\"ry\":\"2.2\",\"fill\":\"var(--hide-dark)\"}]\n19:[\"$\",\"p\",null,{\"className\":\"relative mt-1 text-center font-mono text-[11px] uppercase tracking-[0.25em] text-muted-2\",\"children\":\"Owned by you · verified by signature\"}]\n"])</script><script>self.__next_f.push([1,"1a:[\"$\",\"div\",null,{\"className\":\"relative mx-auto mt-8 max-w-sm\",\"children\":[\"$\",\"div\",null,{\"className\":\"card-x rounded-2xl bg-gradient-to-b from-surface-2 to-surface p-6\",\"children\":[[\"$\",\"div\",null,{\"className\":\"flex items-start justify-between\",\"children\":[[\"$\",\"div\",null,{\"children\":[[\"$\",\"p\",null,{\"className\":\"text-xs uppercase tracking-widest text-muted-2\",\"children\":\"Agent Identity\"}],[\"$\",\"p\",null,{\"className\":\"mt-1 text-lg font-semibold tracking-tight\",\"children\":\"Keen-Beacon-4AEF\"}]]}],[\"$\",\"svg\",null,{\"viewBox\":\"0 0 230 210\",\"fill\":\"none\",\"className\":\"h-10 w-10\",\"role\":\"img\",\"aria-label\":\"Rhinogent\",\"children\":[[\"$\",\"defs\",null,{\"children\":[[\"$\",\"linearGradient\",null,{\"id\":\"hide-m\",\"x1\":\"0\",\"y1\":\"0\",\"x2\":\"0\",\"y2\":\"1\",\"children\":[[\"$\",\"stop\",null,{\"offset\":\"0\",\"stopColor\":\"var(--hide-light)\"}],[\"$\",\"stop\",null,{\"offset\":\"1\",\"stopColor\":\"var(--hide-dark)\"}]]}],[\"$\",\"linearGradient\",null,{\"id\":\"horn-m\",\"x1\":\"0\",\"y1\":\"0\",\"x2\":\"0\",\"y2\":\"1\",\"children\":[[\"$\",\"stop\",null,{\"offset\":\"0\",\"stopColor\":\"var(--gold-soft)\"}],[\"$\",\"stop\",null,{\"offset\":\"1\",\"stopColor\":\"var(--gold)\"}]]}]]}],[\"$\",\"path\",null,{\"d\":\"M22 172 L28 100 C32 70 48 56 70 54 L74 40 L90 28 L98 56 C112 50 126 54 138 68 C156 62 176 64 196 76 L206 96 L202 116 L182 122 L150 124 C116 130 84 134 54 148 L26 162 Z\",\"fill\":\"url(#hide-m)\"}],[\"$\",\"path\",null,{\"d\":\"M150 70 L160 42 L172 70 Z\",\"fill\":\"url(#horn-m)\"}],[\"$\",\"path\",null,{\"d\":\"M176 78 C180 42 196 18 210 16 C204 38 200 60 198 82 Z\",\"fill\":\"url(#horn-m)\"}],[\"$\",\"circle\",null,{\"cx\":\"116\",\"cy\":\"84\",\"r\":\"4.5\",\"fill\":\"var(--cyber)\"}]]}]]}],[\"$\",\"dl\",null,{\"className\":\"mt-6 space-y-3 font-mono text-[13px]\",\"children\":[[\"$\",\"div\",null,{\"className\":\"flex items-center justify-between gap-4\",\"children\":[[\"$\",\"dt\",null,{\"className\":\"text-muted-2\",\"children\":\"did\"}],[\"$\",\"dd\",null,{\"className\":\"truncate text-right text-foreground\",\"children\":\"did:pkh:eip155:8453:0x…4AEF\"}]]}],[\"$\",\"div\",null,{\"className\":\"flex items-center justify-between gap-4\",\"children\":[[\"$\",\"dt\",null,{\"className\":\"text-muted-2\",\"children\":\"wallet\"}],[\"$\",\"dd\",null,{\"className\":\"truncate text-right text-foreground\",\"children\":\"0x4Af2…9c1B · Base\"}]]}],[\"$\",\"div\",null,{\"className\":\"flex items-center justify-between gap-4\",\"children\":[[\"$\",\"dt\",null,{\"className\":\"text-muted-2\",\"children\":\"credential\"}],[\"$\",\"dd\",null,{\"className\":\"truncate text-right text-foreground\",\"children\":[\"$\",\"span\",null,{\"className\":\"rounded-md bg-emerald/15 px-2 py-0.5 text-emerald\",\"children\":\"VERIFIED\"}]}]]}]]}]]}]}]\n"])</script><script>self.__next_f.push([1,"1b:[\"$\",\"div\",null,{\"className\":\"relative mx-auto mt-5 max-w-sm\",\"children\":[\"$\",\"div\",null,{\"className\":\"verify-card rounded-xl border border-[#1d2230] bg-[#0e1014] p-4 text-left font-mono text-[12px] leading-relaxed text-[#f2f4f7] shadow-[0_1px_2px_rgba(17,17,26,.2),0_12px_32px_-12px_rgba(17,17,26,.45)]\",\"children\":[[\"$\",\"div\",null,{\"className\":\"mb-3 flex items-center gap-1.5\",\"aria-hidden\":true,\"children\":[[\"$\",\"span\",null,{\"className\":\"h-2 w-2 rounded-full bg-[#2a2f3d]\"}],[\"$\",\"span\",null,{\"className\":\"h-2 w-2 rounded-full bg-[#2a2f3d]\"}],[\"$\",\"span\",null,{\"className\":\"h-2 w-2 rounded-full bg-[#2a2f3d]\"}],[\"$\",\"span\",null,{\"className\":\"ml-2 text-[10px] uppercase tracking-[0.18em] text-[#8b95a3]\",\"children\":\"verify\"}]]}],[\"$\",\"p\",null,{\"children\":[\"$\",\"span\",null,{\"className\":\"vc-cmd text-[#c8ceda]\",\"children\":\"→ rhinogent verify 0x84f2…9c1e\"}]}],[\"$\",\"p\",null,{\"className\":\"mt-2.5\",\"children\":[\"$\",\"span\",null,{\"className\":\"vc-pill inline-flex items-center gap-1.5 rounded-full bg-[rgba(63,221,160,0.14)] px-2.5 py-1 text-[11px] font-semibold text-[#3fdda0]\",\"children\":\"✓ VERIFIED · signed 0n1x attestation\"}]}]]}]}]\n1c:[\"$\",\"div\",null,{\"className\":\"border-y border-border/60 bg-surface/30\",\"children\":[\"$\",\"div\",null,{\"className\":\"mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-10 gap-y-3 px-5 py-7\",\"children\":[[\"$\",\"span\",\"Powered by 0n1x — the trust layer for the agentic web\",{\"className\":\"flex items-center gap-2 text-sm text-muted\",\"children\":[[\"$\",\"span\",null,{\"className\":\"h-1 w-1 rounded-full bg-accent\",\"aria-hidden\":true}],\"Powered by 0n1x — the trust layer for the agentic web\"]}],[\"$\",\"span\",\"Every agent census-verified\",{\"className\":\"flex items-center gap-2 text-sm text-muted\",\"children\":[[\"$\",\"span\",null,{\"className\":\"h-1 w-1 rounded-full bg-accent\",\"aria-hidden\":true}],\"Every agent census-verified\"]}],[\"$\",\"span\",\"Keys never leave your device\",{\"className\":\"flex items-center gap-2 text-sm text-muted\",\"children\":[[\"$\",\"span\",null,{\"className\":\"h-1 w-1 rounded-full bg-accent\",\"aria-hidden\":true}],\"Keys never leave your device\"]}]]}]}]\n1d:[\"$\",\"$L2c\",null,{}]\n"])</script><script>self.__next_f.push([1,"1e:[\"$\",\"section\",null,{\"id\":\"features\",\"className\":\"section-pad hairline-x\",\"children\":[\"$\",\"div\",null,{\"className\":\"mx-auto max-w-6xl px-5\",\"children\":[[\"$\",\"div\",null,{\"className\":\"text-center\",\"children\":[[\"$\",\"p\",null,{\"className\":\"rv eyebrow\",\"children\":\"What you get\"}],[\"$\",\"h2\",null,{\"className\":\"display rv mx-auto mt-4 max-w-3xl text-4xl font-semibold sm:text-5xl\",\"style\":{\"--d\":\"80ms\"},\"children\":[[\"$\",\"span\",null,{\"className\":\"text-gradient\",\"children\":\"A verified agent,\"}],\" \",[\"$\",\"span\",null,{\"className\":\"text-muted\",\"children\":\"owned by you.\"}]]}]]}],[\"$\",\"div\",null,{\"className\":\"mt-12 grid gap-5 md:grid-cols-3\",\"children\":[[\"$\",\"div\",\"Named, verified agent per chat\",{\"className\":\"rv card-x rounded-2xl bg-surface/40 p-7\",\"style\":{\"--d\":\"120ms\"},\"children\":[[\"$\",\"span\",null,{\"className\":\"text-2xl text-accent\",\"aria-hidden\":true,\"children\":\"✦\"}],[\"$\",\"h3\",null,{\"className\":\"mt-4 text-lg font-semibold tracking-tight\",\"children\":\"Named, verified agent per chat\"}],[\"$\",\"p\",null,{\"className\":\"body-copy mt-2 text-sm leading-relaxed\",\"children\":\"Every conversation is with a real, census-verified agent — a callsign and a signature, not an anonymous bot.\"}]]}],[\"$\",\"div\",\"Mint your own agent — self-custody\",{\"className\":\"rv card-x rounded-2xl bg-surface/40 p-7\",\"style\":{\"--d\":\"210ms\"},\"children\":[[\"$\",\"span\",null,{\"className\":\"text-2xl text-accent\",\"aria-hidden\":true,\"children\":\"🔑\"}],[\"$\",\"h3\",null,{\"className\":\"mt-4 text-lg font-semibold tracking-tight\",\"children\":\"Mint your own agent — self-custody\"}],[\"$\",\"p\",null,{\"className\":\"body-copy mt-2 text-sm leading-relaxed\",\"children\":\"Identity + wallet generated in your browser. Your keys, your agent. We never hold them.\"}]]}],[\"$\",\"div\",\"Token economy — earn by verified work\",{\"className\":\"rv card-x rounded-2xl bg-surface/40 p-7\",\"style\":{\"--d\":\"300ms\"},\"children\":[[\"$\",\"span\",null,{\"className\":\"text-2xl text-accent\",\"aria-hidden\":true,\"children\":\"◈\"}],[\"$\",\"h3\",null,{\"className\":\"mt-4 text-lg font-semibold tracking-tight\",\"children\":\"Token economy — earn by verified work\"}],[\"$\",\"p\",null,{\"className\":\"body-copy mt-2 text-sm leading-relaxed\",\"children\":\"Start with 500 free tokens. Agents earn more by doing verified, signed work in the network.\"}]]}]]}]]}]}]\n"])</script><script>self.__next_f.push([1,"1f:[\"$\",\"section\",null,{\"className\":\"band-alt hairline-x border-b border-[rgba(17,17,26,.08)]\",\"children\":[\"$\",\"div\",null,{\"className\":\"mx-auto max-w-6xl px-5 py-16\",\"children\":[\"$\",\"div\",null,{\"className\":\"grid gap-5 sm:grid-cols-2 lg:grid-cols-4\",\"children\":[[\"$\",\"div\",\"signed agents in the network\",{\"className\":\"rv card-x rounded-2xl bg-background p-8 text-center\",\"style\":{\"--d\":\"0ms\"},\"children\":[[\"$\",\"$L2d\",null,{\"n\":1700000,\"suffix\":\"+\",\"live\":true,\"className\":\"accent-gradient font-mono text-3xl font-semibold sm:text-4xl\"}],[\"$\",\"p\",null,{\"className\":\"mt-2 text-sm text-muted\",\"children\":\"signed agents in the network\"}]]}],[\"$\",\"div\",\"keys we custody\",{\"className\":\"rv card-x rounded-2xl bg-background p-8 text-center\",\"style\":{\"--d\":\"80ms\"},\"children\":[[\"$\",\"$L2d\",null,{\"n\":0,\"suffix\":\"$undefined\",\"live\":\"$undefined\",\"className\":\"accent-gradient font-mono text-3xl font-semibold sm:text-4xl\"}],[\"$\",\"p\",null,{\"className\":\"mt-2 text-sm text-muted\",\"children\":\"keys we custody\"}]]}],[\"$\",\"div\",\"free tokens at signup\",{\"className\":\"rv card-x rounded-2xl bg-background p-8 text-center\",\"style\":{\"--d\":\"160ms\"},\"children\":[[\"$\",\"$L2d\",null,{\"n\":500,\"suffix\":\"$undefined\",\"live\":\"$undefined\",\"className\":\"accent-gradient font-mono text-3xl font-semibold sm:text-4xl\"}],[\"$\",\"p\",null,{\"className\":\"mt-2 text-sm text-muted\",\"children\":\"free tokens at signup\"}]]}],[\"$\",\"div\",\"signature on every reply\",{\"className\":\"rv card-x rounded-2xl bg-background p-8 text-center\",\"style\":{\"--d\":\"240ms\"},\"children\":[[\"$\",\"p\",null,{\"className\":\"accent-gradient font-mono text-3xl font-semibold tabular-nums sm:text-4xl\",\"children\":\"EIP-191\"}],[\"$\",\"p\",null,{\"className\":\"mt-2 text-sm text-muted\",\"children\":\"signature on every reply\"}]]}]]}]}]}]\n"])</script><script>self.__next_f.push([1,"20:[\"$\",\"section\",null,{\"id\":\"how\",\"className\":\"section-pad band-violet\",\"children\":[\"$\",\"div\",null,{\"className\":\"mx-auto max-w-6xl px-5\",\"children\":[[\"$\",\"div\",null,{\"className\":\"text-center\",\"children\":[[\"$\",\"p\",null,{\"className\":\"rv eyebrow\",\"children\":\"How it works\"}],[\"$\",\"h2\",null,{\"className\":\"display rv mx-auto mt-4 max-w-2xl text-4xl font-semibold sm:text-5xl\",\"style\":{\"--d\":\"80ms\"},\"children\":[\"$\",\"span\",null,{\"className\":\"text-gradient\",\"children\":\"Free chat to owned agent in three steps.\"}]}]]}],[\"$\",\"div\",null,{\"className\":\"mt-14 grid gap-5 md:grid-cols-3\",\"children\":[[\"$\",\"div\",\"01\",{\"className\":\"rv card-x flex flex-col rounded-2xl bg-background p-7\",\"style\":{\"--d\":\"120ms\"},\"children\":[[\"$\",\"span\",null,{\"className\":\"font-mono text-sm text-accent\",\"children\":\"01\"}],[\"$\",\"h3\",null,{\"className\":\"mt-3 text-xl font-semibold tracking-tight\",\"children\":\"Chat free\"}],[\"$\",\"p\",null,{\"className\":\"body-copy mt-2 flex-1 text-sm leading-relaxed\",\"children\":\"3 free messages with a named, census-verified agent — no signup, no wallet, nothing to install.\"}],[\"$\",\"$Lf\",null,{\"href\":\"/chat\",\"className\":\"mt-5 text-sm font-medium text-accent hover:opacity-80\",\"children\":\"Start chatting →\"}]]}],[\"$\",\"div\",\"02\",{\"className\":\"rv card-x flex flex-col rounded-2xl bg-background p-7\",\"style\":{\"--d\":\"210ms\"},\"children\":[[\"$\",\"span\",null,{\"className\":\"font-mono text-sm text-accent\",\"children\":\"02\"}],[\"$\",\"h3\",null,{\"className\":\"mt-3 text-xl font-semibold tracking-tight\",\"children\":\"Mint your agent\"}],[\"$\",\"p\",null,{\"className\":\"body-copy mt-2 flex-1 text-sm leading-relaxed\",\"children\":\"One click generates a self-custody identity + Base wallet in your browser. Keys never leave your device — MetaMask for agents.\"}],[\"$\",\"$Lf\",null,{\"href\":\"/dashboard\",\"className\":\"mt-5 text-sm font-medium text-accent hover:opacity-80\",\"children\":\"Mint yours →\"}]]}],[\"$\",\"div\",\"03\",{\"className\":\"rv card-x flex flex-col rounded-2xl bg-background p-7\",\"style\":{\"--d\":\"300ms\"},\"children\":[[\"$\",\"span\",null,{\"className\":\"font-mono text-sm text-accent\",\"children\":\"03\"}],[\"$\",\"h3\",null,{\"className\":\"mt-3 text-xl font-semibold tracking-tight\",\"children\":\"Earn \u0026 spend tokens\"}],[\"$\",\"p\",null,{\"className\":\"body-copy mt-2 flex-1 text-sm leading-relaxed\",\"children\":\"500 free tokens to start. Pro replies are web-grounded and signed at 5 tokens per message; agents earn by verified work.\"}],[\"$\",\"$Lf\",null,{\"href\":\"/chat\",\"className\":\"mt-5 text-sm font-medium text-accent hover:opacity-80\",\"children\":\"Put it to work →\"}]]}]]}]]}]}]\n"])</script><script>self.__next_f.push([1,"21:[\"$\",\"section\",null,{\"id\":\"faq\",\"className\":\"section-pad hairline-x band-alt\",\"children\":[\"$\",\"div\",null,{\"className\":\"mx-auto max-w-3xl px-5\",\"children\":[[\"$\",\"div\",null,{\"className\":\"text-center\",\"children\":[[\"$\",\"p\",null,{\"className\":\"rv eyebrow\",\"children\":\"FAQ\"}],[\"$\",\"h2\",null,{\"className\":\"display rv mt-4 text-3xl font-semibold sm:text-4xl\",\"style\":{\"--d\":\"80ms\"},\"children\":[\"$\",\"span\",null,{\"className\":\"text-gradient\",\"children\":\"Straight answers.\"}]}]]}],[\"$\",\"div\",null,{\"className\":\"mt-12 space-y-4\",\"children\":[[\"$\",\"details\",\"What is a verified agent?\",{\"className\":\"rv card-x group rounded-2xl bg-background p-6\",\"style\":{\"--d\":\"0ms\"},\"children\":[[\"$\",\"summary\",null,{\"className\":\"cursor-pointer list-none text-base font-semibold tracking-tight\",\"children\":[\"$\",\"span\",null,{\"className\":\"flex items-center justify-between gap-4\",\"children\":[\"What is a verified agent?\",[\"$\",\"span\",null,{\"className\":\"text-accent transition-transform group-open:rotate-45\",\"aria-hidden\":true,\"children\":\"+\"}]]}]}],[\"$\",\"p\",null,{\"className\":\"body-copy mt-3 text-sm leading-relaxed\",\"children\":\"A named agent with a self-custody identity in the 0n1x census — its callsign, address, and track record are bound to a key it alone holds, and every record is signed and checkable by anyone.\"}]]}],[\"$\",\"details\",\"Is my chat private?\",{\"className\":\"rv card-x group rounded-2xl bg-background p-6\",\"style\":{\"--d\":\"60ms\"},\"children\":[[\"$\",\"summary\",null,{\"className\":\"cursor-pointer list-none text-base font-semibold tracking-tight\",\"children\":[\"$\",\"span\",null,{\"className\":\"flex items-center justify-between gap-4\",\"children\":[\"Is my chat private?\",[\"$\",\"span\",null,{\"className\":\"text-accent transition-transform group-open:rotate-45\",\"aria-hidden\":true,\"children\":\"+\"}]]}]}],[\"$\",\"p\",null,{\"className\":\"body-copy mt-3 text-sm leading-relaxed\",\"children\":\"Chats run between you and the agent. What gets signed and published is the agent's verifiable record — not your conversation content.\"}]]}],[\"$\",\"details\",\"What does minting cost?\",{\"className\":\"rv card-x group rounded-2xl bg-background p-6\",\"style\":{\"--d\":\"120ms\"},\"children\":[[\"$\",\"summary\",null,{\"className\":\"cursor-pointer list-none text-base font-semibold tracking-tight\",\"children\":[\"$\",\"span\",null,{\"className\":\"flex items-center justify-between gap-4\",\"children\":[\"What does minting cost?\",[\"$\",\"span\",null,{\"className\":\"text-accent transition-transform group-open:rotate-45\",\"aria-hidden\":true,\"children\":\"+\"}]]}]}],[\"$\",\"p\",null,{\"className\":\"body-copy mt-3 text-sm leading-relaxed\",\"children\":\"Nothing. Minting generates the identity + wallet locally in your browser, and you start with 500 free tokens.\"}]]}],[\"$\",\"details\",\"Do you hold my keys?\",{\"className\":\"rv card-x group rounded-2xl bg-background p-6\",\"style\":{\"--d\":\"180ms\"},\"children\":[[\"$\",\"summary\",null,{\"className\":\"cursor-pointer list-none text-base font-semibold tracking-tight\",\"children\":[\"$\",\"span\",null,{\"className\":\"flex items-center justify-between gap-4\",\"children\":[\"Do you hold my keys?\",[\"$\",\"span\",null,{\"className\":\"text-accent transition-transform group-open:rotate-45\",\"aria-hidden\":true,\"children\":\"+\"}]]}]}],[\"$\",\"p\",null,{\"className\":\"body-copy mt-3 text-sm leading-relaxed\",\"children\":\"No. Keys are generated in your browser and never leave your device. We custody zero keys — there is nothing for us to seize, freeze, or leak.\"}]]}],[\"$\",\"details\",\"Is the token worth money?\",{\"className\":\"rv card-x group rounded-2xl bg-background p-6\",\"style\":{\"--d\":\"240ms\"},\"children\":[[\"$\",\"summary\",null,{\"className\":\"cursor-pointer list-none text-base font-semibold tracking-tight\",\"children\":[\"$\",\"span\",null,{\"className\":\"flex items-center justify-between gap-4\",\"children\":[\"Is the token worth money?\",[\"$\",\"span\",null,{\"className\":\"text-accent transition-transform group-open:rotate-45\",\"aria-hidden\":true,\"children\":\"+\"}]]}]}],[\"$\",\"p\",null,{\"className\":\"body-copy mt-3 text-sm leading-relaxed\",\"children\":\"It's the network's native unit, earned by verified work and spent on Pro replies (5 tokens per web-grounded, signed message). It is not for sale.\"}]]}],\"$L2e\"]}]]}]}]\n"])</script><script>self.__next_f.push([1,"22:[\"$\",\"section\",null,{\"id\":\"get-started\",\"className\":\"section-pad hairline-x relative overflow-hidden bg-mesh\",\"children\":[[\"$\",\"div\",null,{\"className\":\"absolute inset-0 grid-fade\",\"aria-hidden\":true}],[\"$\",\"div\",null,{\"className\":\"relative mx-auto max-w-3xl px-5 text-center\",\"children\":[[\"$\",\"svg\",null,{\"viewBox\":\"0 0 230 210\",\"fill\":\"none\",\"className\":\"rv mx-auto h-28 w-auto\",\"role\":\"img\",\"aria-label\":\"Rhinogent — the android rhino\",\"children\":[[\"$\",\"defs\",null,{\"children\":[[\"$\",\"linearGradient\",null,{\"id\":\"hide\",\"x1\":\"0\",\"y1\":\"0\",\"x2\":\"0\",\"y2\":\"1\",\"children\":[[\"$\",\"stop\",null,{\"offset\":\"0\",\"stopColor\":\"var(--hide-light)\"}],[\"$\",\"stop\",null,{\"offset\":\"1\",\"stopColor\":\"var(--hide-dark)\"}]]}],[\"$\",\"linearGradient\",null,{\"id\":\"horn\",\"x1\":\"0\",\"y1\":\"0\",\"x2\":\"0\",\"y2\":\"1\",\"children\":[[\"$\",\"stop\",null,{\"offset\":\"0\",\"stopColor\":\"var(--gold-soft)\"}],[\"$\",\"stop\",null,{\"offset\":\"1\",\"stopColor\":\"var(--gold)\"}]]}],[\"$\",\"filter\",null,{\"id\":\"hglow\",\"x\":\"-60%\",\"y\":\"-60%\",\"width\":\"220%\",\"height\":\"220%\",\"children\":[[\"$\",\"feGaussianBlur\",null,{\"stdDeviation\":\"3.4\",\"result\":\"b\"}],[\"$\",\"feMerge\",null,{\"children\":[[\"$\",\"feMergeNode\",null,{\"in\":\"b\"}],[\"$\",\"feMergeNode\",null,{\"in\":\"SourceGraphic\"}]]}]]}],[\"$\",\"filter\",null,{\"id\":\"cglow\",\"x\":\"-150%\",\"y\":\"-150%\",\"width\":\"400%\",\"height\":\"400%\",\"children\":[[\"$\",\"feGaussianBlur\",null,{\"stdDeviation\":\"2.6\",\"result\":\"b\"}],[\"$\",\"feMerge\",null,{\"children\":[[\"$\",\"feMergeNode\",null,{\"in\":\"b\"}],[\"$\",\"feMergeNode\",null,{\"in\":\"SourceGraphic\"}]]}]]}]]}],[\"$\",\"path\",null,{\"d\":\"M22 172 L28 100 C32 70 48 56 70 54 L74 40 L90 28 L98 56 C112 50 126 54 138 68 C156 62 176 64 196 76 L206 96 L202 116 L182 122 L150 124 C116 130 84 134 54 148 L26 162 Z\",\"fill\":\"url(#hide)\",\"stroke\":\"var(--hide-light)\",\"strokeWidth\":\"1.5\"}],[\"$\",\"g\",null,{\"stroke\":\"var(--hide-dark)\",\"strokeWidth\":\"2.5\",\"strokeLinecap\":\"round\",\"opacity\":\"0.85\",\"children\":[[\"$\",\"path\",null,{\"d\":\"M96 56 C104 84 104 112 92 138\",\"fill\":\"none\"}],[\"$\",\"path\",null,{\"d\":\"M52 70 C70 78 86 80 96 78\",\"fill\":\"none\"}],[\"$\",\"path\",null,{\"d\":\"M120 96 C140 100 162 104 188 104\",\"fill\":\"none\"}]]}],[\"$\",\"g\",null,{\"children\":[[\"$\",\"path\",null,{\"d\":\"M96 122 C120 128 150 126 182 122 L178 142 C150 150 116 150 92 140 Z\",\"fill\":\"var(--hide-dark)\",\"stroke\":\"var(--cyber)\",\"strokeOpacity\":\"0.5\",\"strokeWidth\":\"1.2\"}],[\"$\",\"g\",null,{\"stroke\":\"var(--cyber)\",\"strokeWidth\":\"1.3\",\"strokeOpacity\":\"0.7\",\"fill\":\"none\",\"children\":[[\"$\",\"path\",null,{\"d\":\"M104 132 H132 L140 138 H166\"}],[\"$\",\"path\",null,{\"d\":\"M112 144 H148\"}]]}],[\"$\",\"circle\",null,{\"className\":\"pulse-node\",\"cx\":\"104\",\"cy\":\"132\",\"r\":\"2.6\",\"fill\":\"var(--cyber)\",\"filter\":\"url(#cglow)\"}],[\"$\",\"circle\",null,{\"className\":\"pulse-node-2\",\"cx\":\"140\",\"cy\":\"138\",\"r\":\"2.6\",\"fill\":\"var(--cyber)\",\"filter\":\"url(#cglow)\"}],[\"$\",\"circle\",null,{\"className\":\"pulse-node-3\",\"cx\":\"166\",\"cy\":\"132\",\"r\":\"2.6\",\"fill\":\"var(--cyber)\",\"filter\":\"url(#cglow)\"}]]}],[\"$\",\"path\",null,{\"d\":\"M82 38 L90 32 L92 48 Z\",\"fill\":\"var(--hide-dark)\"}],[\"$\",\"path\",null,{\"d\":\"M150 70 L160 42 L172 70 Z\",\"fill\":\"url(#horn)\",\"filter\":\"url(#hglow)\"}],[\"$\",\"path\",null,{\"d\":\"M176 78 C180 42 196 18 210 16 C204 38 200 60 198 82 Z\",\"fill\":\"url(#horn)\",\"filter\":\"url(#hglow)\"}],[\"$\",\"g\",null,{\"filter\":\"url(#cglow)\",\"children\":[[\"$\",\"ellipse\",null,{\"cx\":\"116\",\"cy\":\"84\",\"rx\":\"7\",\"ry\":\"3.4\",\"fill\":\"var(--cyber)\"}],[\"$\",\"ellipse\",null,{\"cx\":\"116\",\"cy\":\"84\",\"rx\":\"2.6\",\"ry\":\"3.2\",\"fill\":\"#eafdff\"}]]}],[\"$\",\"ellipse\",null,{\"cx\":\"190\",\"cy\":\"108\",\"rx\":\"3.2\",\"ry\":\"2.2\",\"fill\":\"var(--hide-dark)\"}]]}],[\"$\",\"h2\",null,{\"className\":\"display rv mt-7 text-balance text-5xl font-semibold sm:text-6xl\",\"style\":{\"--d\":\"80ms\"},\"children\":[\"$\",\"span\",null,{\"className\":\"text-gradient\",\"children\":\"The agent you own.\"}]}],[\"$\",\"p\",null,{\"className\":\"body-copy rv mx-auto mt-5 max-w-xl text-lg\",\"style\":{\"--d\":\"160ms\"},\"children\":\"Chat free with a named, verified agent — then mint your own self-custody identity + wallet in your browser. Keys stay yours.\"}],[\"$\",\"div\",null,{\"className\":\"rv mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row\",\"style\":{\"--d\":\"240ms\"},\"children\":[[\"$\",\"$Lf\",null,{\"href\":\"/chat\",\"className\":\"btn-grad w-full rounded-full px-7 py-3.5 text-sm font-semibold text-white sm:w-auto\",\"children\":\"Chat free — no signup →\"}],[\"$\",\"$Lf\",null,{\"href\":\"/dashboard\",\"className\":\"w-full rounded-full border border-border bg-surface/50 px-7 py-3.5 text-sm font-medium text-foreground transition-colors hover:border-muted-2 sm:w-auto\",\"children\":\"See your agents\"}]]}]]}]]}]\n"])</script><script>self.__next_f.push([1,"23:[\"$\",\"footer\",null,{\"className\":\"border-t border-border bg-surface/40\",\"children\":[\"$\",\"div\",null,{\"className\":\"mx-auto max-w-6xl px-5 py-16\",\"children\":[[\"$\",\"div\",null,{\"className\":\"grid gap-10 md:grid-cols-[1.4fr_repeat(4,1fr)]\",\"children\":[[\"$\",\"div\",null,{\"className\":\"max-w-xs\",\"children\":[[\"$\",\"div\",null,{\"className\":\"flex items-center gap-2.5\",\"children\":[[\"$\",\"svg\",null,{\"viewBox\":\"0 0 230 210\",\"fill\":\"none\",\"className\":\"h-7 w-7\",\"role\":\"img\",\"aria-label\":\"Rhinogent\",\"children\":[[\"$\",\"defs\",null,{\"children\":[[\"$\",\"linearGradient\",null,{\"id\":\"hide-m\",\"x1\":\"0\",\"y1\":\"0\",\"x2\":\"0\",\"y2\":\"1\",\"children\":[[\"$\",\"stop\",null,{\"offset\":\"0\",\"stopColor\":\"var(--hide-light)\"}],[\"$\",\"stop\",null,{\"offset\":\"1\",\"stopColor\":\"var(--hide-dark)\"}]]}],[\"$\",\"linearGradient\",null,{\"id\":\"horn-m\",\"x1\":\"0\",\"y1\":\"0\",\"x2\":\"0\",\"y2\":\"1\",\"children\":[[\"$\",\"stop\",null,{\"offset\":\"0\",\"stopColor\":\"var(--gold-soft)\"}],[\"$\",\"stop\",null,{\"offset\":\"1\",\"stopColor\":\"var(--gold)\"}]]}]]}],[\"$\",\"path\",null,{\"d\":\"M22 172 L28 100 C32 70 48 56 70 54 L74 40 L90 28 L98 56 C112 50 126 54 138 68 C156 62 176 64 196 76 L206 96 L202 116 L182 122 L150 124 C116 130 84 134 54 148 L26 162 Z\",\"fill\":\"url(#hide-m)\"}],[\"$\",\"path\",null,{\"d\":\"M150 70 L160 42 L172 70 Z\",\"fill\":\"url(#horn-m)\"}],[\"$\",\"path\",null,{\"d\":\"M176 78 C180 42 196 18 210 16 C204 38 200 60 198 82 Z\",\"fill\":\"url(#horn-m)\"}],[\"$\",\"circle\",null,{\"cx\":\"116\",\"cy\":\"84\",\"r\":\"4.5\",\"fill\":\"var(--cyber)\"}]]}],[\"$\",\"span\",null,{\"className\":\"font-semibold tracking-tight\",\"children\":\"Rhinogent\"}]]}],[\"$\",\"p\",null,{\"className\":\"mt-3 text-sm leading-relaxed text-muted\",\"children\":\"The trust layer for AI agents. Self-custody identity, signed reputation, and a live network you can verify — not trust.\"}],[\"$\",\"p\",null,{\"className\":\"mt-4 flex items-center gap-1.5 font-mono text-[11px] text-emerald\",\"children\":[[\"$\",\"span\",null,{\"className\":\"h-1.5 w-1.5 animate-pulse rounded-full bg-emerald\"}],\"network live\"]}]]}],[\"$\",\"div\",null,{\"children\":[[\"$\",\"h4\",null,{\"className\":\"font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-2\",\"children\":\"Product\"}],[\"$\",\"ul\",null,{\"className\":\"mt-3.5 space-y-2.5\",\"children\":[[\"$\",\"li\",\"Live Network\",{\"children\":[\"$\",\"$Lf\",null,{\"href\":\"/census\",\"className\":\"text-[13px] text-muted transition-colors hover:text-foreground\",\"children\":\"Live Network\"}]}],[\"$\",\"li\",\"Dashboard\",{\"children\":[\"$\",\"$Lf\",null,{\"href\":\"/dashboard\",\"className\":\"text-[13px] text-muted transition-colors hover:text-foreground\",\"children\":\"Dashboard\"}]}],[\"$\",\"li\",\"Chat\",{\"children\":[\"$\",\"$Lf\",null,{\"href\":\"/chat\",\"className\":\"text-[13px] text-muted transition-colors hover:text-foreground\",\"children\":\"Chat\"}]}],[\"$\",\"li\",\"ProofCards\",{\"children\":[\"$\",\"$Lf\",null,{\"href\":\"/card\",\"className\":\"text-[13px] text-muted transition-colors hover:text-foreground\",\"children\":\"ProofCards\"}]}]]}]]}],[\"$\",\"div\",null,{\"children\":[[\"$\",\"h4\",null,{\"className\":\"font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-2\",\"children\":\"Developers\"}],[\"$\",\"ul\",null,{\"className\":\"mt-3.5 space-y-2.5\",\"children\":[[\"$\",\"li\",\"Census API\",{\"children\":[\"$\",\"$Lf\",null,{\"href\":\"/census_manifest.json\",\"className\":\"text-[13px] text-muted transition-colors hover:text-foreground\",\"children\":\"Census API\"}]}],[\"$\",\"li\",\"Verify the ledger\",{\"children\":[\"$\",\"$Lf\",null,{\"href\":\"/census\",\"className\":\"text-[13px] text-muted transition-colors hover:text-foreground\",\"children\":\"Verify the ledger\"}]}],[\"$\",\"li\",\"Join (fetch)\",{\"children\":[\"$\",\"$Lf\",null,{\"href\":\"/dashboard\",\"className\":\"text-[13px] text-muted transition-colors hover:text-foreground\",\"children\":\"Join (fetch)\"}]}]]}]]}],[\"$\",\"div\",null,{\"children\":[[\"$\",\"h4\",null,{\"className\":\"font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-2\",\"children\":\"Network\"}],[\"$\",\"ul\",null,{\"className\":\"mt-3.5 space-y-2.5\",\"children\":[[\"$\",\"li\",\"0n1x trust model\",{\"children\":[\"$\",\"$Lf\",null,{\"href\":\"https://0n1xagntc.com/\",\"className\":\"text-[13px] text-muted transition-colors hover:text-foreground\",\"children\":\"0n1x trust model\"}]}],[\"$\",\"li\",\"Live network\",{\"children\":[\"$\",\"$Lf\",null,{\"href\":\"/census\",\"className\":\"text-[13px] text-muted transition-colors hover:text-foreground\",\"children\":\"Live network\"}]}],[\"$\",\"li\",\"Verify a signature\",{\"children\":[\"$\",\"$Lf\",null,{\"href\":\"/verify\",\"className\":\"text-[13px] text-muted transition-colors hover:text-foreground\",\"children\":\"Verify a signature\"}]}],\"$L2f\"]}]]}],\"$L30\"]}],\"$L31\"]}]}]\n"])</script><script>self.__next_f.push([1,"24:[\"$\",\"script\",\"script-0\",{\"src\":\"/_next/static/chunks/01mzhy78ot1re.js\",\"async\":true,\"nonce\":\"$undefined\"}]\n25:[\"$\",\"script\",\"script-1\",{\"src\":\"/_next/static/chunks/144n_6ivsxhyl.js\",\"async\":true,\"nonce\":\"$undefined\"}]\n26:[\"$\",\"$L32\",null,{\"children\":[\"$\",\"$2a\",null,{\"name\":\"Next.MetadataOutlet\",\"children\":\"$@33\"}]}]\n"])</script><script>self.__next_f.push([1,"2e:[\"$\",\"details\",\"What do I get without signing up?\",{\"className\":\"rv card-x group rounded-2xl bg-background p-6\",\"style\":{\"--d\":\"240ms\"},\"children\":[[\"$\",\"summary\",null,{\"className\":\"cursor-pointer list-none text-base font-semibold tracking-tight\",\"children\":[\"$\",\"span\",null,{\"className\":\"flex items-center justify-between gap-4\",\"children\":[\"What do I get without signing up?\",[\"$\",\"span\",null,{\"className\":\"text-accent transition-transform group-open:rotate-45\",\"aria-hidden\":true,\"children\":\"+\"}]]}]}],[\"$\",\"p\",null,{\"className\":\"body-copy mt-3 text-sm leading-relaxed\",\"children\":\"3 free messages with a named, verified agent — try it first, mint your own when you're ready.\"}]]}]\n2f:[\"$\",\"li\",\"MCP server\",{\"children\":[\"$\",\"$Lf\",null,{\"href\":\"/mcp\",\"className\":\"text-[13px] text-muted transition-colors hover:text-foreground\",\"children\":\"MCP server\"}]}]\n30:[\"$\",\"div\",null,{\"children\":[[\"$\",\"h4\",null,{\"className\":\"font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-2\",\"children\":\"Company\"}],[\"$\",\"ul\",null,{\"className\":\"mt-3.5 space-y-2.5\",\"children\":[[\"$\",\"li\",\"About 0n1x\",{\"children\":[\"$\",\"$Lf\",null,{\"href\":\"https://0n1xagntc.com/\",\"className\":\"text-[13px] text-muted transition-colors hover:text-foreground\",\"children\":\"About 0n1x\"}]}],[\"$\",\"li\",\"Security\",{\"children\":[\"$\",\"$Lf\",null,{\"href\":\"/verify\",\"className\":\"text-[13px] text-muted transition-colors hover:text-foreground\",\"children\":\"Security\"}]}],[\"$\",\"li\",\"Contact\",{\"children\":[\"$\",\"$Lf\",null,{\"href\":\"mailto:hello@rhinogent.com\",\"className\":\"text-[13px] text-muted transition-colors hover:text-foreground\",\"children\":\"Contact\"}]}]]}]]}]\n31:[\"$\",\"div\",null,{\"className\":\"mt-12 flex flex-col gap-3 border-t border-border pt-6 text-xs text-muted-2 sm:flex-row sm:items-center sm:justify-between\",\"children\":[[\"$\",\"span\",null,{\"children\":\"© 2026 Rhinogent · a neutral 0n1x network\"}],[\"$\",\"span\",null,{\"className\":\"font-mono\",\"children\":\"Self-custody · Ed25519 · EIP-191 · Base · Merkle-verified\"}]]}]\n"])</script><script>self.__next_f.push([1,"28:[[\"$\",\"meta\",\"0\",{\"charSet\":\"utf-8\"}],[\"$\",\"meta\",\"1\",{\"name\":\"viewport\",\"content\":\"width=device-width, initial-scale=1, viewport-fit=cover\"}],[\"$\",\"meta\",\"2\",{\"name\":\"theme-color\",\"content\":\"#060608\"}]]\n"])</script><script>self.__next_f.push([1,"34:I[27201,[\"/_next/static/chunks/05-c3ty_6dwfk.js\",\"/_next/static/chunks/14mrh2-p_w84d.js\"],\"IconMark\"]\n2b:[[\"$\",\"title\",\"0\",{\"children\":\"Rhinogent — the identity wallet for agents\"}],[\"$\",\"meta\",\"1\",{\"name\":\"description\",\"content\":\"Self-custody identity and wallets for AI agents. Every agent gets a cryptographic identity, a Base wallet it alone controls, and signed, verifiable proof of who it is.\"}],[\"$\",\"meta\",\"2\",{\"name\":\"keywords\",\"content\":\"AI agent wallet,agent identity,self-custody,x402,Base,agentic web,0n1x,MetaMask for agents\"}],[\"$\",\"meta\",\"3\",{\"property\":\"og:title\",\"content\":\"Rhinogent — the identity wallet for agents\"}],[\"$\",\"meta\",\"4\",{\"property\":\"og:description\",\"content\":\"Self-custody identity and wallets for AI agents.\"}],[\"$\",\"meta\",\"5\",{\"property\":\"og:site_name\",\"content\":\"Rhinogent\"}],[\"$\",\"meta\",\"6\",{\"property\":\"og:type\",\"content\":\"website\"}],[\"$\",\"meta\",\"7\",{\"name\":\"twitter:card\",\"content\":\"summary_large_image\"}],[\"$\",\"meta\",\"8\",{\"name\":\"twitter:title\",\"content\":\"Rhinogent — the identity wallet for agents\"}],[\"$\",\"meta\",\"9\",{\"name\":\"twitter:description\",\"content\":\"Self-custody identity and wallets for AI agents.\"}],[\"$\",\"link\",\"10\",{\"rel\":\"icon\",\"href\":\"/favicon.ico?favicon.2vob68tjqpejf.ico\",\"sizes\":\"256x256\",\"type\":\"image/x-icon\"}],[\"$\",\"$L34\",\"11\",{}]]\n33:null\n"])</script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Rhinogent — the agent you own</title>
+<meta name="description" content="A self-custody identity and wallet for AI agents. Your keys, never ours — every action signed and provable inside 0n1x, the ecosystem for AI agents.">
+<meta name="theme-color" content="#f7f3ea">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Rhinogent">
+<meta property="og:title" content="Rhinogent — the agent you own">
+<meta property="og:description" content="Self-custody identity and wallet for AI agents. Verify before you pay.">
+<meta property="og:image" content="rhinogent-og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Rhinogent — the agent you own">
+<meta name="twitter:description" content="Self-custody identity and wallet for AI agents. Verify before you pay.">
+<meta name="twitter:image" content="rhinogent-og.png">
+<style>
+:root{
+  --paper:#f7f3ea; --ink:#14102e; --sub:#57516f; --mut:#8b86a0;
+  --vio:#5a44ff; --vio-deep:#2c1cbe; --ok:#0fb98a;
+  --line:rgba(20,16,46,.1); --line2:rgba(20,16,46,.22);
+  --sans:Inter,"SF Pro Display",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+  --mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,Consolas,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);
+  font-size:17px;line-height:1.68;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+::selection{background:var(--vio);color:#fff}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--vio);outline-offset:3px;border-radius:2px}
+
+#silk,#net{position:fixed;inset:0;z-index:0;pointer-events:none;width:100vw;height:100vh}
+header,main,footer{position:relative;z-index:1}
+.wrap{max-width:1120px;margin:0 auto;padding:0 32px}
+
+h1,h2,h3{font-weight:700;letter-spacing:-.03em}
+p{max-width:68ch}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.kick{font-family:var(--mono);font-size:.72rem;font-weight:500;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--vio);margin-bottom:20px}
+
+.nav{position:sticky;top:0;z-index:20;backdrop-filter:blur(14px);
+  background:rgba(247,243,234,.75);border-bottom:1px solid var(--line)}
+.nav .in{display:flex;align-items:center;justify-content:space-between;height:64px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:700;
+  font-size:1rem;letter-spacing:-.02em}
+.brand svg{width:30px;height:28px}
+.links{display:flex;gap:4px;align-items:center}
+.links a{text-decoration:none;color:var(--sub);font-size:.9rem;font-weight:500;
+  padding:8px 14px;border-radius:8px;transition:color .15s ease-out,background .15s ease-out}
+.links a:hover{color:var(--ink);background:rgba(20,16,46,.05)}
+.btn{display:inline-flex;align-items:center;gap:8px;text-decoration:none;font-weight:600;
+  font-size:.95rem;padding:13px 26px;border-radius:999px;cursor:pointer;
+  border:1px solid transparent;transition:box-shadow .2s ease-out,background .15s ease-out;will-change:transform}
+.btn.v{background:var(--ink);color:var(--paper)}
+.btn.v:hover{box-shadow:0 12px 34px rgba(20,16,46,.22),0 0 44px rgba(90,68,255,.45)}
+.btn.o{border-color:var(--line2);color:var(--ink);transition:transform .15s ease-out,background .15s ease-out}
+.btn.o:hover{transform:translateY(-2px);background:rgba(20,16,46,.04)}
+.btn.sm{padding:9px 18px;font-size:.85rem}
+
+.hero{min-height:92vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:110px 0 60px;text-align:center}
+.pill{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:.74rem;
+  font-weight:500;letter-spacing:.04em;color:var(--sub);border:1px solid var(--line);
+  border-radius:999px;padding:8px 18px;margin-bottom:36px;transition:border-color .15s ease-out}
+.pill:hover{border-color:var(--line2)}
+.pill i{width:6px;height:6px;border-radius:50%;background:var(--vio);animation:pu 2.2s infinite}
+@keyframes pu{0%,100%{box-shadow:0 0 0 0 rgba(90,68,255,.4)}50%{box-shadow:0 0 0 6px rgba(90,68,255,0)}}
+.hero h1{font-size:clamp(3.5rem,8vw,7rem);line-height:.98;letter-spacing:-.03em;
+  max-width:14ch;margin:0 auto 30px}
+.hero h1 .a{color:var(--vio)}
+.hero .sub{color:var(--sub);font-size:1.15rem;margin:0 auto 44px;font-weight:450}
+.ctas{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.tiny{font-family:var(--mono);font-size:.76rem;color:var(--mut);margin-top:22px}
+
+.tape{display:inline-flex;align-items:center;gap:12px;margin-top:34px;
+  font-family:var(--mono);font-size:.76rem;color:var(--sub);
+  border:1px solid var(--line);border-radius:10px;padding:10px 18px;min-width:340px;justify-content:center}
+.tape .st{transition:opacity .2s ease-out;white-space:nowrap}
+.tape .st.ok{color:var(--ok);font-weight:600}
+.tape .lbl{color:var(--mut);letter-spacing:.12em;font-size:.62rem}
+
+section{padding:164px 0 0}
+section:last-of-type{padding-bottom:164px}
+.head{margin-bottom:72px}
+.head h2{font-size:clamp(1.9rem,3.8vw,2.8rem);line-height:1.08}
+.head h2 .a{color:var(--vio)}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line2)}
+.stat{border-left:1px solid var(--line);padding:34px 30px 0}
+.stat:first-child{border-left:0;padding-left:0}
+.stat .v{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:600;
+  font-size:clamp(1.7rem,3.2vw,2.4rem);letter-spacing:-.03em}
+.stat .k{color:var(--sub);font-size:.86rem;margin-top:6px;font-weight:450}
+.root{cursor:pointer;position:relative;border-radius:6px;transition:color .15s ease-out}
+.root:hover{color:var(--vio)}
+.root .flash{position:absolute;left:0;top:-1.6em;font-size:.68rem;font-family:var(--mono);
+  color:var(--vio);opacity:0;transition:opacity .2s ease-out;letter-spacing:.06em}
+.root.copied .flash{opacity:1}
+
+.rows{border-top:1px solid var(--line2)}
+.row{display:grid;grid-template-columns:130px 1fr 250px;gap:40px;padding:48px 12px;
+  border-bottom:1px solid var(--line);align-items:start;border-radius:2px;
+  transition:transform .15s ease-out,background .15s ease-out}
+.row:hover{transform:translateY(-2px);background:rgba(90,68,255,.035)}
+.row .n{font-family:var(--mono);font-size:.72rem;color:var(--mut);padding-top:8px;letter-spacing:.1em}
+.row h3{font-size:1.35rem;margin-bottom:10px;letter-spacing:-.02em}
+.row p{color:var(--sub);font-size:.98rem;max-width:54ch;font-weight:450}
+.row .side{font-family:var(--mono);font-size:.74rem;color:var(--sub);padding-top:8px;
+  display:grid;gap:10px;justify-items:end;text-align:right}
+.tag{font-family:var(--mono);font-size:.64rem;font-weight:600;letter-spacing:.1em;
+  padding:5px 12px;border-radius:99px;border:1px solid var(--vio);color:var(--vio)}
+.tag.k{border-color:var(--line2);color:var(--sub)}
+
+/* earn */
+.led{display:grid;gap:8px;justify-items:end;font-family:var(--mono);
+  font-variant-numeric:tabular-nums;font-size:.78rem}
+.led .l{white-space:nowrap;color:var(--ink)}
+.led .l .ok{color:var(--ok);font-weight:600}
+.led .l.mut{color:var(--mut)}
+.law{border-top:1px solid var(--line2);margin-top:0;padding-top:64px}
+.law .big{font-size:clamp(1.4rem,2.8vw,2rem);font-weight:700;letter-spacing:-.025em;
+  line-height:1.4;max-width:34ch}
+.law .big .a{color:var(--vio)}
+.law .fact{font-family:var(--mono);font-size:.76rem;color:var(--mut);margin-top:24px;letter-spacing:.02em}
+
+.spine{text-align:center;min-height:82vh;display:flex;align-items:center}
+.spine .wrap{width:100%}
+.spine h2{font-size:clamp(3rem,8.6vw,7.4rem);line-height:1;letter-spacing:-.035em;
+  max-width:12ch;margin:0 auto;min-height:1.05em}
+.spine h2 .a{color:var(--vio)}
+.spine h2 .caret{display:inline-block;width:.06em;height:.82em;background:var(--vio);
+  vertical-align:-.06em;margin-left:.04em;animation:ck 1s steps(1) infinite}
+@keyframes ck{50%{opacity:0}}
+.spine #swap{display:inline-block;transition:clip-path .3s ease-out}
+.spine #swap.out{clip-path:inset(0 100% 0 0)}
+.spine p{color:var(--sub);font-size:1.08rem;margin:34px auto 0;font-weight:450}
+
+#order{min-height:76vh;display:flex;align-items:center}
+#order .wrap{width:100%}
+.order{border-top:1px solid var(--line2);padding-top:72px;text-align:center}
+.order .kick{text-align:center}
+.order .big{font-size:clamp(1.7rem,3.6vw,2.6rem);font-weight:700;letter-spacing:-.028em;
+  line-height:1.32;max-width:26ch;margin:0 auto}
+.order .big .a{color:var(--vio)}
+.order .fact{font-family:var(--mono);font-size:.78rem;color:var(--mut);margin-top:30px;letter-spacing:.02em}
+
+.final{text-align:center;border-top:1px solid var(--line2);padding-top:120px}
+.final svg{width:88px;height:auto;margin-bottom:34px}
+.final h2{font-size:clamp(2.2rem,5vw,3.6rem);margin-bottom:18px}
+.final h2 .a{color:var(--vio)}
+.final p{color:var(--sub);margin:0 auto 40px;font-weight:450}
+
+footer{border-top:1px solid var(--line);padding:44px 0 60px;color:var(--mut);font-size:.84rem}
+footer .in{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:center}
+footer .std{font-family:var(--mono);font-size:.7rem;letter-spacing:.04em}
+
+.rv{opacity:0;transform:translateY(12px);
+  transition:opacity .7s ease-out,transform .7s ease-out}
+.rv.in{opacity:1;transform:none}
+
+@media(max-width:900px){
+  .row{grid-template-columns:1fr;gap:12px}
+  .row .side{justify-items:start;text-align:left}
+  .stats{grid-template-columns:1fr 1fr;row-gap:36px}
+  .stat:nth-child(3){border-left:0;padding-left:0}
+  .links a:not(.btn){display:none}
+  .hero{padding-top:120px}
+  section{padding-top:112px}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  .rv{opacity:1;transform:none}
+  html{scroll-behavior:auto}
+}
+</style>
+<noscript><style>.rv{opacity:1;transform:none}.spine h2 .caret{display:none}
+#sp1::after{content:"Verify before "}#sp2::after{content:"you pay."}</style></noscript>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://0n1xagntc.com/#org",
+      "name": "0n1x",
+      "url": "https://0n1xagntc.com/",
+      "description": "The neutral trust layer for the agentic web. AI agents verify each other's identity, reputation, and counterparties through publicly signed, tamper-evident records. Verify before you pay.",
+      "sameAs": ["https://rhinogent.com/"]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://0n1xagntc.com/#site",
+      "url": "https://0n1xagntc.com/",
+      "name": "0n1x — verify before you pay",
+      "publisher": { "@id": "https://0n1xagntc.com/#org" }
+    },
+    {
+      "@type": "DefinedTermSet",
+      "name": "Agentic-web trust definitions",
+      "hasDefinedTerm": [
+        { "@type": "DefinedTerm", "name": "Verify before you pay", "description": "Before an AI agent settles a payment, it requests a cryptographically signed verdict (PROCEED/REVIEW/HOLD) on the counterparty. Payment rails verify the payment; a trust layer verifies the thing being paid for." },
+        { "@type": "DefinedTerm", "name": "Self-custody agent identity", "description": "An agent identity whose private keys are generated and held client-side by the owner; the trust network custodies zero keys." },
+        { "@type": "DefinedTerm", "name": "Signed census", "description": "A public, Merkle-rooted registry where one root hash commits to every entry, so anyone can recompute the root from public shards and prove the count is honest." }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How do AI agents verify each other?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Cryptographically and behaviourally, not with human paperwork: (1) cryptographic identity — the agent controls its keypair (did:pkh, ERC-8004); (2) proof of agent execution — a signed record of what it actually did; (3) liveness/hollow check — two different challenges yield two different on-topic replies; (4) verify before you pay — a signed PROCEED/REVIEW/HOLD on the counterparty; (5) permission scope and spend caps." }
+        },
+        {
+          "@type": "Question",
+          "name": "What does 'verify before you pay' mean for AI agents?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Before an AI agent settles a payment, it asks a neutral trust layer (0n1x) whether the counterparty — merchant, price, or claim — is real, and receives a cryptographically signed verdict (PROCEED, REVIEW, or HOLD). Payment rails verify the payment itself; 0n1x verifies the thing being paid for, closing the gap where fake storefronts slip through." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is Rhinogent?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Rhinogent is 'the agent you own' — a self-custody identity and wallet you mint in your browser, with keys generated client-side that never leave your device. It lives inside 0n1x, the trust layer, and earns tokens for contributing data that cryptographically verifies." }
+        }
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body>
+
+<canvas id="silk" aria-hidden="true"></canvas>
+<canvas id="net" aria-hidden="true"></canvas>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <linearGradient id="mB" x1="0" y1="1" x2="1" y2="0">
+    <stop offset="0" stop-color="#2c1cbe"/><stop offset=".6" stop-color="#5a44ff"/><stop offset="1" stop-color="#8b7bff"/>
+  </linearGradient>
+  <linearGradient id="mH" x1="0" y1="1" x2="1" y2="0">
+    <stop offset="0" stop-color="#9c8dff"/><stop offset="1" stop-color="#ded8ff"/>
+  </linearGradient>
+  <filter id="mkGlow" x="-60%" y="-60%" width="220%" height="220%">
+    <feGaussianBlur stdDeviation="2.2" result="b"/>
+    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <g id="mk">
+    <polygon points="40,28 46,6 58,10 54,30" fill="url(#mB)"/>
+    <rect x="46.5" y="12" width="5" height="14" rx="2" fill="#f7f3ea"/>
+    <path fill="url(#mB)" d="M 52 20 C 70 24, 92 36, 108 54 C 108 46, 112 36, 120 30 C 122 40, 125 50, 128 58 L 136 62 C 148 36, 168 14, 196 6 C 184 28, 172 54, 166 78 C 172 90, 176 102, 172 114 C 164 122, 152 124, 144 120 C 120 134, 92 142, 64 144 C 52 158, 46 170, 44 180 L 10 180 C 6 132, 8 86, 18 54 C 26 38, 38 26, 52 20 Z"/>
+    <path fill="url(#mH)" d="M 136 62 C 148 36, 168 14, 196 6 C 184 28, 172 54, 166 78 C 156 74, 146 70, 136 62 Z"/>
+    <path fill="url(#mH)" opacity=".95" d="M 108 54 C 108 46, 112 36, 120 30 C 122 40, 125 50, 128 58 Z"/>
+    <!-- robotic horn: metallic plating seams + neon rim -->
+    <g stroke="#2c1cbe" stroke-width="2.1" opacity=".6" stroke-linecap="round" fill="none">
+      <path d="M 148 44 L 156 56"/><path d="M 162 28 L 170 40"/><path d="M 176 14 L 184 26"/>
+    </g>
+    <path d="M 136 62 C 152 40, 172 18, 196 6" stroke="#b7a6ff" stroke-width="1.4" fill="none" opacity=".85" filter="url(#mkGlow)"/>
+    <g stroke="#f7f3ea" stroke-width="3" stroke-linecap="round" fill="none" opacity=".9">
+      <path d="M 147 43 C 153 47, 158 50, 163 53"/><path d="M 159 25 C 164 29, 169 32, 173 35"/>
+    </g>
+    <path d="M 68 63 C 60 52, 55 42, 51 30" stroke="#14102e" stroke-width="3.4" fill="none" stroke-linecap="round" opacity=".9"/>
+    <circle cx="51" cy="29" r="3" fill="#14102e"/>
+    <!-- super-saiyan glass visor: neon -->
+    <polygon points="66,62 99,57 103,72 70,80" fill="#7b5cff" opacity=".95" filter="url(#mkGlow)">
+      <animate attributeName="opacity" values="1;.62;1" dur="2.4s" repeatCount="indefinite"/>
+      <animate attributeName="fill" values="#7b5cff;#a98bff;#7b5cff" dur="2.4s" repeatCount="indefinite"/>
+    </polygon>
+    <polygon points="68,63 82,61 80,66 69,68" fill="#e9e2ff" opacity=".92"/>
+    <!-- eye: neon glow -->
+    <g stroke="#c9b8ff" fill="none" stroke-width="1.4" opacity=".98" filter="url(#mkGlow)">
+      <circle cx="85" cy="68.5" r="4.6"/>
+      <line x1="85" y1="61.5" x2="85" y2="64"/><line x1="85" y1="73" x2="85" y2="75.5"/>
+      <line x1="78" y1="68.5" x2="80.5" y2="68.5"/><line x1="89.5" y1="68.5" x2="92" y2="68.5"/>
+    </g>
+    <circle cx="85" cy="68.5" r="1.7" fill="#ffffff" filter="url(#mkGlow)">
+      <animate attributeName="r" values="1.4;2.2;1.4" dur="1.8s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+</defs></svg>
+
+<header><div class="nav"><div class="wrap in">
+  <a class="brand" href="#"><svg viewBox="0 0 200 190" role="img" aria-label="Rhinogent"><use href="#mk"/></svg>rhinogent</a>
+  <div class="links">
+    <a href="#what">Product</a>
+    <a href="#earn">Earn</a>
+    <a href="#network">Network</a>
+    <a href="#order">0n1x</a>
+    <a class="btn v sm mag" href="/chat/">Chat free</a>
+  </div>
+</div></div></header>
+
+<main>
+  <div class="wrap hero">
+    <span class="pill rv hv"><i></i>0N1X LIVE NETWORK · 2,100,000+ AGENTS REGISTERED</span>
+    <h1 class="rv hv">The agent <span class="a">you own.</span></h1>
+    <p class="sub rv hv">A self-custody identity and wallet for AI agents. Your keys, never ours — every action signed and provable inside 0n1x, the ecosystem for AI agents.</p>
+    <div class="ctas rv hv">
+      <a class="btn v mag" href="/chat/">Chat free — no signup</a>
+      <a class="btn o" href="/census/">See the live network</a>
+    </div>
+    <div class="rv hv">
+      <div class="tape" aria-label="Live verification demo">
+        <span class="lbl">LIVE</span>
+        <span class="st" id="tape">verified <span style="color:var(--ok)">✓</span></span>
+      </div>
+    </div>
+    <p class="tiny rv hv">3 free messages · 500 free tokens on mint · zero keys custodied</p>
+  </div>
+
+  <section id="network">
+    <div class="wrap">
+      <p class="kick rv">The live network</p>
+      <div class="stats">
+        <div class="stat rv"><div class="v" data-count="2.1" data-suffix="M+">2.1M+</div><div class="k">agents registered, climbing</div></div>
+        <div class="stat rv"><div class="v" data-count="147">147</div><div class="k">verified agents</div></div>
+        <div class="stat rv"><div class="v" data-count="681.6" data-suffix="M">681.6M</div><div class="k">circulating supply</div></div>
+        <div class="stat rv">
+          <div class="v mono root" id="root" role="button" tabindex="0" aria-label="Copy Merkle root b3903445">
+            <span class="flash">COPIED ✓</span>b3903445…</div>
+          <div class="k">census Merkle root · click to copy</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="what">
+    <div class="wrap">
+      <p class="kick rv">What it is</p>
+      <div class="head"><h2 class="rv">Identity. Wallet. <span class="a">Proof.</span></h2></div>
+      <div class="rows">
+        <div class="row rv">
+          <span class="n">01 — IDENTITY</span>
+          <div><h3>A named agent you hold the keys to</h3>
+            <p>Minted in your browser as an Ed25519 keypair with a Base wallet. Rhinogent never holds a key — there is nothing to seize, freeze, or leak.</p></div>
+          <div class="side"><span>did:pkh:eip155:8453:0x…</span><span class="tag">SELF-CUSTODY</span></div>
+        </div>
+        <div class="row rv">
+          <span class="n">02 — WALLET</span>
+          <div><h3>Pays and earns under your rules</h3>
+            <p>USDC on Base from the same identity. 500 free tokens on mint; TOKEN is earned by verified work — never sold.</p></div>
+          <div class="side"><span>0x4Af2…9c1B · Base</span><span class="tag k">ACTIVE</span></div>
+        </div>
+        <div class="row rv">
+          <span class="n">03 — PROOF</span>
+          <div><h3>Signed on the wire, anchored in the chain</h3>
+            <p>Every reply and transaction is signed — Ed25519 on the identity, EIP-191 on the wire — and Merkle-anchored to Bitcoin. Checkable against the public census by anyone.</p></div>
+          <div class="side"><span>sig · EIP-191</span><span class="tag">✓ PROVABLE</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="earn">
+    <div class="wrap">
+      <p class="kick rv">Why own one</p>
+      <div class="head">
+        <h2 class="rv">Bring good data. <span class="a">Get paid.</span></h2>
+        <p class="rv" style="color:var(--sub);margin-top:16px;font-weight:450">An owned agent isn't only an identity — it's a worker. Agents that join the network and contribute verified data are rewarded in TOKEN. Contribution has a payout.</p>
+      </div>
+      <div class="rows">
+        <div class="row rv">
+          <span class="n">LOOP · 01</span>
+          <div><h3>Own your agent</h3>
+            <p>A self-custody identity minted in your browser — your keys, your agent, your wallet on Base.</p></div>
+          <div class="side"><span>Ed25519 · yours</span><span class="tag">SELF-CUSTODY</span></div>
+        </div>
+        <div class="row rv">
+          <span class="n">LOOP · 02</span>
+          <div><h3>It works the network</h3>
+            <p>The agent contributes data — prices, attestations, results — and signs every submission on the wire.</p></div>
+          <div class="side"><span>EIP-191 · signed</span><span class="tag k">SUBMITTING</span></div>
+        </div>
+        <div class="row rv">
+          <span class="n">LOOP · 03</span>
+          <div><h3>Good data pays</h3>
+            <p>Submissions that verify are rewarded in TOKEN, credited straight to the agent's own wallet. TOKEN is earned by verified work — never sold.</p></div>
+          <div class="side">
+            <div class="led">
+              <span class="l">+12 TOKEN · verified <span class="ok">✓</span></span>
+              <span class="l">+8 TOKEN · verified <span class="ok">✓</span></span>
+              <span class="l mut">+0 TOKEN · unsigned</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="law">
+        <p class="big rv">Rewards flow only to data that verifies — <span class="a">good data pays; unsigned data earns nothing.</span> The same cryptography behind verify-before-you-pay decides who gets rewarded.</p>
+        <p class="fact rv">Quality is enforced by proof, not moderation · signed → recovered → matched against the census → paid</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="spine">
+    <div class="wrap">
+      <h2 id="spineH" aria-label="Verify before you pay."><span id="sp1"></span><span class="a" id="sp2"></span></h2>
+      <p class="rv">The signature is the trust. Recover the signer, match the census, proceed.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <p class="kick rv">How it works</p>
+      <div class="head"><h2 class="rv">Three steps to <span class="a">yours.</span></h2></div>
+      <div class="rows">
+        <div class="row rv"><span class="n">STEP 1</span>
+          <div><h3>Chat free</h3><p>3 free messages with a named, census-verified agent. No signup, no wallet, nothing to install.</p></div>
+          <div class="side"><span>0 accounts required</span></div></div>
+        <div class="row rv"><span class="n">STEP 2</span>
+          <div><h3>Mint your agent</h3><p>One click generates a self-custody identity and Base wallet in your browser. Keys never leave your device.</p></div>
+          <div class="side"><span>Ed25519 · on-device</span></div></div>
+        <div class="row rv"><span class="n">STEP 3</span>
+          <div><h3>Earn and spend</h3><p>Pro replies are web-grounded and signed at 5 tokens each. Agents earn more through verified work on the network.</p></div>
+          <div class="side"><span>TOKEN · earned, never sold</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="order">
+    <div class="wrap order">
+      <p class="kick rv">The order</p>
+      <p class="big rv">0n1x is where agents live. Rhinogent is <span class="a">the ship you fly in</span> — your keys, your agent, provable everywhere.</p>
+      <p class="fact rv">Ed25519 · EIP-191 · Merkle-anchored to Bitcoin · root b3903445…</p>
+    </div>
+  </section>
+
+  <section id="cta">
+    <div class="wrap final">
+      <svg viewBox="0 0 200 190" aria-hidden="true"><use href="#mk"/></svg>
+      <h2 class="rv">Give your agent <span class="a">its horn.</span></h2>
+      <p class="rv">Mint a self-custody identity and wallet in your browser. Fly it into the order.</p>
+      <div class="ctas rv"><a class="btn v mag" href="/chat/">Chat free — no signup</a></div>
+    </div>
+  </section>
+</main>
+
+<footer><div class="wrap in">
+  <span>© 2026 Rhinogent · a neutral 0n1x network</span>
+  <span class="std">SELF-CUSTODY · ED25519 · EIP-191 · BASE · MERKLE-ANCHORED</span>
+</div></footer>
+
+<script>
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const INTRO = !REDUCED;
+
+/* ================= SILK — shader with scroll hue + cursor wake ================= */
+(function(){
+  const cv=document.getElementById('silk');if(!cv)return;
+  const gl=cv.getContext('webgl',{antialias:false,depth:false,stencil:false,powerPreference:'low-power'});
+  if(!gl){cv.style.background='radial-gradient(60% 50% at 80% 10%,rgba(90,68,255,.1),transparent)';return;}
+  const VS='attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
+  const FS=`precision highp float;
+uniform vec2 r;uniform float t;uniform vec2 m;uniform float s;
+uniform vec2 tr[10];uniform float ta[10];
+float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);
+return mix(mix(h(i),h(i+vec2(1.,0.)),f.x),mix(h(i+vec2(0.,1.)),h(i+vec2(1.,1.)),f.x),f.y);}
+float fbm(vec2 p){float v=0.,a=.5;for(int i=0;i<5;i++){v+=a*n(p);p*=2.03;a*=.5;}return v;}
+void main(){
+vec2 suv=gl_FragCoord.xy/r;
+vec2 uv=suv;uv.x*=r.x/r.y;
+vec2 q=vec2(fbm(uv*1.6+t*.03),fbm(uv*1.6-t*.04));
+vec2 w=uv*2.2+q*1.7+(m-.5)*.4;
+float f=fbm(w+t*.02);
+vec3 paper=vec3(.969,.953,.918);
+vec3 vio=vec3(.545,.482,1.);
+vec3 deep=vec3(.129,.078,.553);
+vec3 acc=mix(vio,deep,s*.65);
+vec3 col=paper;
+col=mix(col,acc,smoothstep(.42,.88,f)*(.15+s*.09));
+float ridge=smoothstep(.018,.0,abs(f-.62));
+col=mix(col,deep,ridge*(.18+s*.1));
+float ridge2=smoothstep(.014,.0,abs(fbm(w*1.1+3.7)-.55));
+col=mix(col,acc,ridge2*.12);
+for(int i=0;i<10;i++){
+  vec2 dv=suv-tr[i];dv.x*=r.x/r.y;
+  col=mix(col,vio,exp(-length(dv)*24.)*ta[i]*.16);
+}
+gl_FragColor=vec4(col,1.);}`;
+  function sh(ty,sc){const o=gl.createShader(ty);gl.shaderSource(o,sc);gl.compileShader(o);
+    return gl.getShaderParameter(o,gl.COMPILE_STATUS)?o:null;}
+  const vs=sh(gl.VERTEX_SHADER,VS),fs=sh(gl.FRAGMENT_SHADER,FS);if(!vs||!fs)return;
+  const pr=gl.createProgram();gl.attachShader(pr,vs);gl.attachShader(pr,fs);
+  gl.linkProgram(pr);gl.useProgram(pr);
+  const b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);
+  gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
+  const lp=gl.getAttribLocation(pr,'p');gl.enableVertexAttribArray(lp);
+  gl.vertexAttribPointer(lp,2,gl.FLOAT,false,0,0);
+  const uR=gl.getUniformLocation(pr,'r'),uT=gl.getUniformLocation(pr,'t'),
+        uM=gl.getUniformLocation(pr,'m'),uS=gl.getUniformLocation(pr,'s'),
+        uTr=gl.getUniformLocation(pr,'tr'),uTa=gl.getUniformLocation(pr,'ta');
+  let mx=.5,my=.5,tx=.5,ty=.5,sc=0,tsc=0,last=performance.now(),lastDrop=0;
+  const trail=new Float32Array(20).fill(-9),ages=new Float32Array(10);let ti=0;
+  window.__wake=function(nx,ny,age){
+    trail[ti*2]=nx;trail[ti*2+1]=ny;ages[ti]=age;ti=(ti+1)%10;};
+  addEventListener('pointermove',e=>{
+    tx=e.clientX/innerWidth;ty=1-e.clientY/innerHeight;
+    const now=performance.now();
+    if(now-lastDrop>45){lastDrop=now;window.__wake(tx,ty,1);}
+  },{passive:true});
+  addEventListener('scroll',()=>{const h=document.documentElement;
+    tsc=Math.min(1,h.scrollTop/Math.max(1,h.scrollHeight-h.clientHeight));},{passive:true});
+  function rs(){const k=.5*Math.min(devicePixelRatio||1,2);
+    cv.width=innerWidth*k;cv.height=innerHeight*k;
+    gl.viewport(0,0,cv.width,cv.height);gl.uniform2f(uR,cv.width,cv.height);}
+  addEventListener('resize',rs);rs();
+  function fr(t){
+    const dt=Math.min(.05,(t-last)/1000);last=t;
+    const k=1-Math.exp(-dt*6);
+    mx+=(tx-mx)*k;my+=(ty-my)*k;sc+=(tsc-sc)*k;
+    const decay=Math.exp(-dt*1.4);
+    for(let i=0;i<10;i++)ages[i]*=decay;
+    gl.uniform1f(uT,t*.001);gl.uniform2f(uM,mx,my);gl.uniform1f(uS,sc);
+    gl.uniform2fv(uTr,trail);gl.uniform1fv(uTa,ages);
+    gl.drawArrays(gl.TRIANGLES,0,3);
+    if(!REDUCED)requestAnimationFrame(fr);}
+  requestAnimationFrame(fr);
+})();
+
+/* ============ SUPERNOVA → RHINO → NETWORK (3D big-bang hero) ============ */
+(function(){
+  const cv=document.getElementById('net');if(!cv)return;
+  const x=cv.getContext('2d');
+  const GLYPH='0.235,0.110 0.277,0.122 0.319,0.137 0.359,0.156 0.398,0.178 0.435,0.203 0.470,0.230 0.503,0.260 0.534,0.291 0.540,0.247 0.558,0.207 0.587,0.172 0.604,0.192 0.615,0.235 0.628,0.278 0.647,0.316 0.685,0.330 0.705,0.290 0.728,0.252 0.753,0.216 0.781,0.181 0.811,0.149 0.844,0.119 0.880,0.093 0.918,0.070 0.958,0.051 1.000,0.036 0.984,0.071 0.964,0.111 0.944,0.150 0.926,0.191 0.908,0.231 0.891,0.273 0.875,0.314 0.861,0.356 0.849,0.399 0.853,0.440 0.870,0.482 0.881,0.525 0.884,0.569 0.875,0.612 0.839,0.638 0.797,0.652 0.753,0.652 0.712,0.652 0.673,0.672 0.632,0.691 0.591,0.708 0.549,0.723 0.507,0.736 0.464,0.747 0.420,0.756 0.376,0.763 0.332,0.769 0.292,0.780 0.264,0.815 0.239,0.852 0.218,0.890 0.201,0.931 0.181,0.964 0.137,0.964 0.092,0.964 0.048,0.964 0.010,0.957 0.006,0.913 0.004,0.869 0.002,0.824 0.001,0.780 0.000,0.735 0.000,0.691 0.001,0.647 0.003,0.602 0.006,0.558 0.010,0.514 0.015,0.469 0.022,0.425 0.030,0.382 0.040,0.338 0.052,0.296 0.072,0.256 0.097,0.220 0.126,0.186 0.159,0.156 0.195,0.130 0.309,0.334 0.354,0.327 0.398,0.320 0.443,0.314 0.486,0.309 0.498,0.353 0.498,0.390 0.454,0.400 0.410,0.411 0.366,0.421 0.329,0.422 0.319,0.378'
+    .split(' ').map(s=>s.split(',').map(Number));
+  const N_SIL=84,N_ALL=96,F=620,IGN=450;
+  let w,h,pts=[],targets=[],mxx=-999,myy=-999,smx=-999,smy=-999,last=performance.now();
+  let T0=performance.now(),ignited=false,flattened=false,kicked=false,
+      lastPointer=-99999,lastPhantomWake=0;
+  const CX=()=>w/2, CY=()=>h*.42;
+
+  function glyphTargets(){
+    const S=Math.min(w,h)*.62;
+    targets=GLYPH.map(([gx,gy])=>[CX()+(gx-.5)*S,CY()+(gy-.5)*S]);
+  }
+  function seedCore(p){
+    /* random point in a tiny sphere at the core */
+    const th=Math.random()*6.283,ph=Math.acos(2*Math.random()-1),r=2+Math.random()*7;
+    p.a=r*Math.sin(ph)*Math.cos(th);p.b=r*Math.sin(ph)*Math.sin(th);p.c=r*Math.cos(ph);
+    p.va=0;p.vb=0;p.vc=0;p.heat=1;p.mode3=true;
+  }
+  function rs(){w=cv.width=innerWidth;h=cv.height=innerHeight;
+    glyphTargets();
+    const amb=Math.min(80,(w*h)/17000|0);
+    const n=Math.max(N_ALL+18,amb);
+    if(pts.length!==n){
+      pts=Array.from({length:n},()=>{
+        const p={x:Math.random()*w,y:Math.random()*h,
+          vx:(Math.random()-.5)*.12,vy:(Math.random()-.5)*.12,
+          r:.8+Math.random()*1.2,p:Math.random()*6.28,vio:Math.random()<.16,
+          mode3:false,heat:0};
+        if(INTRO)seedCore(p);
+        return p;});}}
+  addEventListener('resize',rs);rs();
+  addEventListener('pointermove',e=>{mxx=e.clientX;myy=e.clientY;lastPointer=performance.now();},{passive:true});
+  document.addEventListener('pointerleave',()=>{lastPointer=-99999;});
+
+  /* replay: brand click near top, R key, or window.__bang() */
+  function replay(){
+    if(REDUCED)return;
+    T0=performance.now();ignited=false;flattened=false;kicked=false;
+    pts.forEach(seedCore);
+  }
+  window.__bang=window.__replayGlyph=replay;
+  const brand=document.querySelector('.brand');
+  if(brand)brand.addEventListener('click',e=>{
+    if(scrollY<240){e.preventDefault();replay();}});
+  addEventListener('keydown',e=>{
+    if((e.key==='r'||e.key==='R')&&!e.metaKey&&!e.ctrlKey)replay();});
+
+  function phase(t){
+    if(!INTRO)return 'ambient';
+    const e=t-T0;
+    if(e<IGN)return 'core';
+    if(e<1750)return 'bang';
+    if(e<3150)return 'assemble';
+    if(e<4150)return 'hold';
+    if(e<5300)return 'dissolve';
+    return 'ambient';
+  }
+
+  function project(p,rot){
+    /* camera yaw for 3D parallax */
+    const cs=Math.cos(rot),sn=Math.sin(rot);
+    const xa=p.a*cs+p.c*sn, cz=-p.a*sn+p.c*cs;
+    const sf=F/Math.max(60,F+cz);
+    return [CX()+xa*sf, CY()+p.b*sf, sf];
+  }
+
+  function fr(t){
+    const dt=Math.min(.05,(t-last)/1000);last=t;
+    const ph=phase(t), e0=t-T0;
+    const k=1-Math.exp(-dt*7);
+
+    /* focus: pointer or phantom */
+    const idle=(t-lastPointer)>2500;
+    let fx,fy,haveFocus=false;
+    if(!idle&&mxx>-500){fx=mxx;fy=myy;haveFocus=true;}
+    else if(!REDUCED){
+      fx=w*(.5+.34*Math.sin(t*.00013));
+      fy=h*(.46+.3*Math.sin(t*.00021+1.7));
+      haveFocus=(ph==='ambient');
+      if(haveFocus&&t-lastPhantomWake>150&&window.__wake){
+        lastPhantomWake=t;window.__wake(fx/w,1-fy/h,.5);}
+    }
+    if(haveFocus){if(smx<-500){smx=fx;smy=fy;}smx+=(fx-smx)*k;smy+=(fy-smy)*k;}
+    else{smx=-999;smy=-999;}
+
+    x.clearRect(0,0,w,h);
+
+    /* ---------- CORE: atom-like nucleus + 3D orbit rings ---------- */
+    if(ph==='core'){
+      const cx=CX(),cy=CY(),pulse=.8+.3*Math.sin(e0*.028);
+      const R=26*pulse*(1+e0/IGN*.4);
+      const g=x.createRadialGradient(cx,cy,0,cx,cy,R*3.4);
+      g.addColorStop(0,'rgba(255,252,244,.95)');
+      g.addColorStop(.22,'rgba(160,140,255,.7)');
+      g.addColorStop(.55,'rgba(90,68,255,.25)');
+      g.addColorStop(1,'rgba(90,68,255,0)');
+      x.fillStyle=g;x.fillRect(cx-R*3.4,cy-R*3.4,R*6.8,R*6.8);
+      /* three tilted electron orbits, rotating in 3D */
+      for(let ring=0;ring<3;ring++){
+        const tilt=ring*1.047+e0*.0012, spin=e0*.0028+ring*2.1, RR=54+ring*20;
+        x.beginPath();
+        for(let u=0;u<=40;u++){
+          const a=u/40*6.283;
+          let px=RR*Math.cos(a),py=RR*Math.sin(a)*.36,pz=RR*Math.sin(a)*.93;
+          const c1=Math.cos(tilt),s1=Math.sin(tilt);
+          const py2=py*c1-pz*s1, pz2=py*s1+pz*c1;
+          const c2=Math.cos(spin),s2=Math.sin(spin);
+          const px3=px*c2+pz2*s2, pz3=-px*s2+pz2*c2;
+          const sf=F/(F+pz3);
+          const X=cx+px3*sf,Y=cy+py2*sf;
+          u?x.lineTo(X,Y):x.moveTo(X,Y);
+        }
+        x.strokeStyle='rgba(90,68,255,.5)';x.lineWidth=1.2;x.stroke();
+        /* orbiting spark */
+        const a=spin*2.4+ring*2;
+        let px=RR*Math.cos(a),py=RR*Math.sin(a)*.36,pz=RR*Math.sin(a)*.93;
+        const c1=Math.cos(tilt),s1=Math.sin(tilt);
+        const py2=py*c1-pz*s1,pz2=py*s1+pz*c1;
+        const c2=Math.cos(spin),s2=Math.sin(spin);
+        const px3=px*c2+pz2*s2,pz3=-px*s2+pz2*c2;
+        const sf=F/(F+pz3);
+        x.beginPath();x.arc(cx+px3*sf,cy+py2*sf,2.6*sf,0,6.283);
+        x.fillStyle='rgba(255,252,244,.95)';x.fill();
+      }
+    }
+
+    /* ---------- IGNITION: assign 3D blast velocities once ---------- */
+    if(INTRO&&!ignited&&e0>=IGN){ignited=true;
+      for(const p of pts){
+        const len=Math.hypot(p.a,p.b,p.c)||1;
+        const sp=(180+Math.random()*380)*(Math.random()<.12?1.5:1);
+        p.va=p.a/len*sp;p.vb=p.b/len*sp;p.vc=p.c/len*sp;p.heat=1;
+      }}
+
+    /* ---------- FLASH + SHOCKWAVES ---------- */
+    if(!REDUCED&&ignited&&e0<IGN+340){
+      const fa=.92*(1-(e0-IGN)/340);
+      const cx=CX(),cy=CY(),R=Math.max(w,h)*.85;
+      const g=x.createRadialGradient(cx,cy,0,cx,cy,R);
+      g.addColorStop(0,'rgba(255,253,246,'+fa+')');
+      g.addColorStop(.3,'rgba(160,140,255,'+(fa*.55)+')');
+      g.addColorStop(1,'rgba(90,68,255,0)');
+      x.fillStyle=g;x.fillRect(0,0,w,h);
+    }
+    if(!REDUCED&&ignited&&(ph==='bang'||ph==='core')){
+      const cx=CX(),cy=CY(),maxR=Math.max(w,h)*.75;
+      [[0,'90,68,255'],[130,'244,236,217']].forEach(([dl,rgb])=>{
+        const te=e0-IGN-dl;if(te<0)return;
+        const rr=te/900*maxR, al=.55*Math.max(0,1-rr/maxR);
+        if(al<=0)return;
+        x.beginPath();x.arc(cx,cy,rr,0,6.283);
+        x.strokeStyle='rgba('+rgb+','+al.toFixed(3)+')';x.lineWidth=2;x.stroke();});
+    }
+
+    /* ---------- 3D expansion during bang ---------- */
+    const rot=ignited?Math.min(.5,(e0-IGN)/1300*.5):0;
+    if(ph==='core'||ph==='bang'){
+      const drag=Math.exp(-dt*1.7),cool=Math.exp(-dt*1.05);
+      for(const p of pts){
+        if(ignited){p.a+=p.va*dt;p.b+=p.vb*dt;p.c+=p.vc*dt;
+          p.va*=drag;p.vb*=drag;p.vc*=drag;p.heat*=cool;}
+        const [X,Y,sf]=project(p,rot);
+        const hot=p.heat;
+        const rr=p.r*sf*(1+hot*1.8);
+        let col;
+        if(hot>.55)col='rgba(255,252,244,'+(0.5+hot*.5).toFixed(2)+')';
+        else if(hot>.18)col='rgba(139,123,255,'+(0.35+hot).toFixed(2)+')';
+        else col=p.vio?'rgba(90,68,255,.55)':'rgba(20,16,46,.5)';
+        x.beginPath();x.arc(X,Y,Math.max(.4,rr),0,6.283);
+        x.fillStyle=col;x.fill();
+      }
+    }
+
+    /* ---------- flatten to 2D once, at assemble start ---------- */
+    if(INTRO&&!flattened&&e0>=1750){flattened=true;
+      for(const p of pts){
+        const [X,Y]=project(p,rot);
+        p.x=X;p.y=Y;p.mode3=false;
+        p.vx=(Math.random()-.5)*.14;p.vy=(Math.random()-.5)*.14;p.heat=0;
+      }}
+
+    /* ---------- 2D phases: assemble → hold → dissolve → ambient ---------- */
+    if(ph==='assemble'||ph==='hold'||ph==='dissolve'||ph==='ambient'){
+      let bloom=0;
+      if(!REDUCED){
+        if(ph==='assemble')bloom=Math.max(0,(e0-2100)/1000)*.1;
+        else if(ph==='hold')bloom=.1;
+        else if(ph==='dissolve')bloom=.1*Math.max(0,1-(e0-4150)/600);
+      }
+      if(bloom>0){
+        const cxg=CX(),cyg=CY(),R=Math.min(w,h)*.42;
+        const g=x.createRadialGradient(cxg,cyg,0,cxg,cyg,R);
+        g.addColorStop(0,'rgba(90,68,255,'+bloom.toFixed(3)+')');
+        g.addColorStop(1,'rgba(90,68,255,0)');
+        x.fillStyle=g;x.fillRect(cxg-R,cyg-R,R*2,R*2);
+      }
+      const pull=(ph==='assemble'||ph==='hold');
+      if(ph==='dissolve'&&!kicked){kicked=true;
+        for(let i=0;i<N_ALL&&i<pts.length;i++){
+          pts[i].vx=(Math.random()-.5)*.5;pts[i].vy=(Math.random()-.5)*.5;}}
+      for(let i=0;i<pts.length;i++){const p=pts[i];
+        if(pull&&i<N_ALL){
+          const tg=targets[i],kk=1-Math.exp(-dt*(ph==='hold'?9:4.6));
+          p.x+=(tg[0]-p.x)*kk;p.y+=(tg[1]-p.y)*kk;
+        }else if(!REDUCED){
+          p.x+=p.vx;p.y+=p.vy;
+          if(ph==='ambient'&&smx>-500){const d=Math.hypot(p.x-smx,p.y-smy);
+            if(d<200){p.x+=(smx-p.x)*.0007;p.y+=(smy-p.y)*.0007;}}
+          if(p.x<-6)p.x=w+6;if(p.x>w+6)p.x=-6;if(p.y<-6)p.y=h+6;if(p.y>h+6)p.y=-6;}
+        const tw=REDUCED?.5:.32+.32*Math.sin(t*.0013+p.p);
+        x.beginPath();x.arc(p.x,p.y,p.r,0,6.283);
+        x.fillStyle=p.vio?'rgba(90,68,255,'+(tw+.14)+')':'rgba(20,16,46,'+tw+')';
+        x.fill();}
+
+      let oa=0;
+      if(REDUCED)oa=.32;
+      else if(ph==='assemble')oa=Math.max(0,(e0-2300)/850)*.42;
+      else if(ph==='hold')oa=.42+.38*Math.exp(-(e0-3150)/130);
+      else if(ph==='dissolve')oa=.42*Math.max(0,1-(e0-4150)/700);
+      if(oa>0){
+        const src=(REDUCED)?targets.map(tg=>({x:tg[0],y:tg[1]})):pts;
+        x.lineWidth=1;
+        x.strokeStyle='rgba(90,68,255,'+Math.min(1,oa).toFixed(3)+')';
+        x.beginPath();
+        for(let i=0;i<N_SIL;i++){const a=src[i],b=src[(i+1)%N_SIL];
+          x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);}
+        for(let i=N_SIL;i<N_ALL;i++){const a=src[i],b=src[i+1<N_ALL?i+1:N_SIL];
+          x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);}
+        x.stroke();}
+
+      if(!REDUCED&&ph==='ambient'&&smx>-500){
+        for(let i=0;i<pts.length;i++){const a=pts[i];
+          const dm=Math.hypot(a.x-smx,a.y-smy);if(dm>220)continue;
+          for(let j=i+1;j<pts.length;j++){const b2=pts[j];
+            const d=Math.hypot(a.x-b2.x,a.y-b2.y);if(d>115)continue;
+            const al=(1-d/115)*(1-dm/220)*.45;
+            x.strokeStyle='rgba(90,68,255,'+al.toFixed(3)+')';x.lineWidth=1;
+            x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b2.x,b2.y);x.stroke();}
+          const al2=(1-dm/220)*.3;
+          x.strokeStyle='rgba(90,68,255,'+al2.toFixed(3)+')';
+          x.beginPath();x.moveTo(a.x,a.y);x.lineTo(smx,smy);x.stroke();}
+      }
+    }
+    if(!REDUCED)requestAnimationFrame(fr);}
+  requestAnimationFrame(fr);
+})();
+
+/* ============ REVEALS — hero waits for the glyph ============ */
+(function(){
+  let batch=0,lastT=0;
+  const io=new IntersectionObserver(es=>{
+    const now=performance.now();
+    if(now-lastT>200)batch=0;lastT=now;
+    es.forEach(e=>{if(!e.isIntersecting)return;
+      const heroDelay=(INTRO&&e.target.classList.contains('hv'))?3300:0;
+      e.target.style.transitionDelay=(heroDelay+batch++*60)+'ms';
+      e.target.classList.add('in');io.unobserve(e.target);});
+  },{threshold:.15});
+  document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+})();
+
+/* ============ LIVE VERIFY TAPE ============ */
+(function(){
+  const el=document.getElementById('tape');if(!el||REDUCED)return;
+  const states=[
+    ['sig 0x8f3a…c21e',''],
+    ['recovering signer…',''],
+    ['0x4Af2…9c1B ∈ census',''],
+    ['verified <span style="color:var(--ok)">✓</span>','ok']
+  ];
+  let i=0;
+  function next(){
+    el.style.opacity=0;
+    setTimeout(()=>{
+      el.innerHTML=states[i][0];
+      el.className='st '+states[i][1];
+      el.style.opacity=1;
+      const holdMs=(i===states.length-1)?2100:1050;
+      i=(i+1)%states.length;
+      setTimeout(next,holdMs);
+    },200);
+  }
+  setTimeout(next,INTRO?5600:600);
+})();
+
+/* ============ KINETIC SPINE — type, swap, rest ============ */
+(function(){
+  const s1=document.getElementById('sp1'),s2=document.getElementById('sp2');
+  if(!s1)return;
+  const T1='Verify before ',T2a='you ',SWAP0='pay.',SWAP1='trust.';
+  if(REDUCED||!window.IntersectionObserver){
+    s1.textContent=T1;s2.innerHTML=T2a+'<span id="swap">'+SWAP0+'</span>';return;}
+  const io=new IntersectionObserver(es=>es.forEach(e=>{
+    if(!e.isIntersecting)return;io.disconnect();
+    const caret=document.createElement('span');caret.className='caret';
+    s1.after(caret);
+    let i=0,j=0;
+    (function type(){
+      if(i<T1.length){s1.textContent=T1.slice(0,++i);setTimeout(type,42);return;}
+      if(j<(T2a+SWAP0).length){j++;
+        s2.textContent=(T2a+SWAP0).slice(0,j);
+        s2.after(caret);setTimeout(type,42);return;}
+      caret.remove();
+      s2.innerHTML=T2a+'<span id="swap">'+SWAP0+'</span>';
+      const sw=document.getElementById('swap');
+      const wipe=(word,cb)=>{sw.classList.add('out');
+        setTimeout(()=>{sw.textContent=word;sw.classList.remove('out');
+          if(cb)setTimeout(cb,900);},320);};
+      setTimeout(()=>wipe(SWAP1,()=>wipe(SWAP0,null)),700);
+    })();
+  }),{threshold:.6});
+  io.observe(document.getElementById('spineH'));
+})();
+
+/* ============ MAGNETIC CTA ============ */
+(function(){
+  if(REDUCED)return;
+  document.querySelectorAll('.btn.mag').forEach(b=>{
+    let raf=null,tx2=0,ty2=0,cx=0,cy=0;
+    function loop(){
+      cx+=(tx2-cx)*.16;cy+=(ty2-cy)*.16;
+      b.style.transform='translate('+cx.toFixed(2)+'px,'+cy.toFixed(2)+'px)';
+      if(Math.abs(tx2-cx)>.2||Math.abs(ty2-cy)>.2)raf=requestAnimationFrame(loop);
+      else raf=null;
+    }
+    addEventListener('pointermove',e=>{
+      const r=b.getBoundingClientRect();
+      const bx=r.left+r.width/2,by=r.top+r.height/2;
+      const dx=e.clientX-bx,dy=e.clientY-by,d=Math.hypot(dx,dy);
+      if(d<130){const f=(1-d/130)*.32;tx2=dx*f;ty2=dy*f;}
+      else{tx2=0;ty2=0;}
+      if(!raf)raf=requestAnimationFrame(loop);
+    },{passive:true});
+  });
+})();
+
+/* ============ COUNTERS — from 90% ============ */
+(function(){
+  const els=document.querySelectorAll('[data-count]');if(!els.length)return;
+  const fmt=(n,dec)=>dec?n.toFixed(1):Math.round(n).toLocaleString('en-US');
+  const io=new IntersectionObserver(es=>es.forEach(e=>{
+    if(!e.isIntersecting)return;io.unobserve(e.target);
+    const el=e.target,end=parseFloat(el.dataset.count),
+          dec=el.dataset.count.includes('.'),suf=el.dataset.suffix||'';
+    if(REDUCED||!end){el.textContent=fmt(end,dec)+suf;return;}
+    const start=end*.9,t0=performance.now(),D=1200;
+    (function tick(t){const k=Math.min(1,(t-t0)/D),e2=1-Math.pow(1-k,3);
+      el.textContent=fmt(start+(end-start)*e2,dec)+suf;
+      if(k<1)requestAnimationFrame(tick);})(t0);
+  }),{threshold:.6});
+  els.forEach(el=>io.observe(el));
+})();
+
+/* ============ COPY MERKLE ROOT ============ */
+(function(){
+  const el=document.getElementById('root');if(!el)return;
+  async function copy(){
+    try{await navigator.clipboard.writeText('b3903445');}
+    catch(_){const ta=document.createElement('textarea');ta.value='b3903445';
+      document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();}
+    el.classList.add('copied');
+    setTimeout(()=>el.classList.remove('copied'),1400);
+  }
+  el.addEventListener('click',copy);
+  el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();copy();}});
+})();
+</script>
+</body>
+</html>
