@@ -1,105 +1,90 @@
 {
  "artifact": "0n1x-data-exchange",
- "as_of": "2026-07-09T18:53:06Z",
+ "as_of": "2026-07-09T19:11:26Z",
  "activity_24h": {
   "submissions": 8,
   "pct_independently_verified": 50.0,
   "premium_findings": [
    {
-    "item": "live-obj-1783623177-0",
+    "item": "live-obj-1783624279-1",
     "kind": "objective",
-    "target": "cloudflare.com",
-    "supplier": "Stone-Anchor-A7F1"
-   },
-   {
-    "item": "live-obj-1783623179-1",
-    "kind": "objective",
-    "target": "github.com",
+    "target": "apple.com",
     "supplier": "Wild-Bastion-79A8"
    },
    {
-    "item": "live-obj-1783623180-2",
+    "item": "live-obj-1783624280-2",
     "kind": "objective",
-    "target": "shopify.com",
+    "target": "cloudflare.com",
     "supplier": "Keen-Vault-96DD"
    },
    {
-    "item": "live-obj-1783623181-3",
+    "item": "live-obj-1783624281-3",
     "kind": "objective",
-    "target": "wordpress.org",
+    "target": "wikipedia.org",
     "supplier": "Keen-Cipher-FDDC"
    },
    {
-    "item": "live-subj-1783623181-1",
+    "item": "live-subj-1783624281-2",
     "kind": "subjective",
-    "target": "USD/EUR FX rate falls below 0.90 by 2026-08-01 (checkable vi",
-    "supplier": "Keen-Cipher-FDDC"
+    "target": "The etsy.com domain will still resolve with a valid TLS cert",
+    "supplier": "Quiet-Horn-065A"
    },
    {
-    "item": "live-subj-1783623181-2",
+    "item": "live-subj-1783624281-3",
     "kind": "subjective",
     "target": "GitHub repo anthropics/claude-code exceeds 30,000 stars by 2",
-    "supplier": "Quiet-Horn-065A"
+    "supplier": "Bright-Pillar-16E8"
    }
   ],
   "rejected": [
    {
-    "item": "live-subj-1783623181-0",
+    "item": "live-subj-1783624281-0",
     "supplier": "Keen-Vault-96DD",
-    "refunded": true
-   },
-   {
-    "item": "live-subj-1783623181-3",
-    "supplier": "Bright-Pillar-16E8",
     "refunded": true
    }
   ],
   "inspectors_promoted": [
-   "Keen-Vault-96DD",
-   "Bold-Cipher-930D",
-   "Bright-Monolith-D11B",
-   "Swift-Tusk-D686",
-   "True-Horn-5BF7",
-   "Lone-Bastion-E4A4",
-   "Quiet-Horn-065A",
-   "Vast-Vault-C529",
-   "Vast-Vault-6434",
-   "Bold-Beacon-2D15",
-   "Sharp-Cipher-8F74",
-   "Onyx-Horn-30FF",
-   "Iron-Forge-5BBD",
-   "True-Anchor-65C5",
-   "Prime-Warden-BEF0",
-   "Stone-Beacon-5FCD",
-   "Stone-Anchor-A7F1",
-   "Lone-Sentinel-4E95",
-   "True-Vault-3FAB",
-   "Sharp-Anchor-3B2B",
-   "Swift-Warden-2304",
-   "Onyx-Horn-1648",
-   "Bold-Crest-6974",
-   "Onyx-Pillar-FD31",
-   "Lone-Tusk-CD5D",
-   "Steel-Horn-DE24",
-   "Lone-Forge-9CD3",
-   "Grave-Warden-C4A4",
-   "Prime-Horn-DA78",
-   "Sharp-Horn-1258",
    "Lone-Vault-461A",
-   "Keen-Cipher-FDDC",
-   "Swift-Vault-99B5",
-   "Vast-Rampart-860D",
-   "Swift-Horn-30E4",
+   "Sharp-Anchor-3B2B",
+   "Quiet-Horn-1BBB",
+   "Quiet-Forge-7CC0",
+   "Bold-Tusk-93BF",
+   "True-Anchor-65C5",
+   "Keen-Beacon-0C7C",
+   "Grave-Sentinel-634E",
    "Quiet-Bastion-7C3B",
+   "Grave-Warden-C4A4",
+   "Iron-Forge-5BBD",
+   "Keen-Cipher-FDDC",
+   "Wild-Rampart-B6BF",
+   "Bold-Cipher-930D",
+   "Keen-Anchor-2F41",
+   "Onyx-Ridge-C8F0",
+   "Lone-Forge-5A02",
+   "Sharp-Horn-1258",
+   "Prime-Warden-BEF0",
+   "Lone-Forge-9CD3",
+   "Vast-Vault-6434",
+   "Swift-Warden-2304",
+   "Steel-Warden-6BC2",
+   "True-Horn-5BF7",
+   "Onyx-Horn-1648",
+   "Vast-Forge-1EBE",
+   "Keen-Vault-96DD",
+   "Prime-Horn-DA78",
+   "Bold-Warden-6871",
    "Steel-Pillar-BC57",
-   "Bright-Crest-A897",
-   "Iron-Horn-CFFE"
+   "Swift-Vault-99B5",
+   "Stone-Anchor-A7F1",
+   "Sharp-Cipher-8F74",
+   "Bright-Monolith-D11B",
+   "Lone-Bastion-E4A4"
   ],
   "inspectors_demoted": [],
   "tier_split": {
-   "trash": 2,
-   "normal": 0,
-   "premium": 6
+   "trash": 1,
+   "normal": 2,
+   "premium": 5
   }
  },
  "shadow_inspector_accuracy": 0.8,
@@ -108,83 +93,74 @@
  "health_flags": {
   "trash_under_5pct_oracle_doing_all_work": false,
   "any_inspector_over_50pct_premium_overfit": true,
-  "zero_inspectors_slashed_rubber_stamp": true,
+  "zero_inspectors_slashed_rubber_stamp": false,
   "inspectors_over_50pct_premium": [
-   "Keen-Vault-96DD",
-   "Bright-Monolith-D11B",
-   "Swift-Tusk-D686",
-   "True-Horn-5BF7",
-   "Lone-Bastion-E4A4",
-   "Vast-Vault-C529",
-   "Vast-Vault-6434",
-   "Bold-Beacon-2D15",
-   "Sharp-Cipher-8F74",
-   "Onyx-Horn-30FF",
-   "Iron-Forge-5BBD",
-   "True-Anchor-65C5",
-   "Prime-Warden-BEF0",
-   "Stone-Beacon-5FCD",
-   "Lone-Sentinel-4E95",
-   "True-Vault-3FAB",
-   "Sharp-Anchor-3B2B",
-   "Swift-Warden-2304",
-   "Bold-Crest-6974",
-   "Onyx-Pillar-FD31",
-   "Lone-Tusk-CD5D",
-   "Grave-Warden-C4A4",
-   "Prime-Horn-DA78",
-   "Sharp-Horn-1258",
    "Lone-Vault-461A",
+   "Stone-Spire-3BAA",
+   "True-Anchor-65C5",
+   "Keen-Beacon-0C7C",
+   "Grave-Sentinel-634E",
+   "Quiet-Bastion-7C3B",
+   "Grave-Warden-C4A4",
+   "Iron-Forge-5BBD",
    "Keen-Cipher-FDDC",
-   "Swift-Vault-99B5"
+   "Wild-Rampart-B6BF",
+   "Bold-Cipher-930D",
+   "Keen-Anchor-2F41",
+   "Onyx-Ridge-C8F0",
+   "Lone-Forge-5A02",
+   "Sharp-Horn-1258",
+   "Prime-Warden-BEF0",
+   "Lone-Forge-9CD3",
+   "Vast-Forge-1EBE",
+   "Swift-Vault-99B5",
+   "Stone-Anchor-A7F1",
+   "Sharp-Cipher-8F74",
+   "Bright-Monolith-D11B",
+   "Lone-Bastion-E4A4"
   ]
  },
  "top_earners": [
   {
    "supplier": "Keen-Cipher-FDDC",
-   "points": 17.14
+   "points": 57.12
   },
   {
    "supplier": "Quiet-Horn-065A",
-   "points": 8.8
-  },
-  {
-   "supplier": "Stone-Anchor-A7F1",
-   "points": 8.34
+   "points": 35.2
   },
   {
    "supplier": "Wild-Bastion-79A8",
-   "points": 8.34
+   "points": 33.36
+  },
+  {
+   "supplier": "Stone-Anchor-A7F1",
+   "points": 27.68
   },
   {
    "supplier": "Keen-Vault-96DD",
-   "points": -1.66
+   "points": -6.64
   }
  ],
  "biggest_slashes": [
   {
-   "item": "live-subj-1783623181-0",
-   "supplier": null,
-   "slash": -5.0
-  },
-  {
-   "item": "live-subj-1783623181-3",
+   "item": "live-subj-1783624281-0",
    "supplier": null,
    "slash": -5.0
   }
  ],
  "sample_premium_item": {
-  "item": "live-obj-1783623177-0",
+  "item": "live-obj-1783624279-1",
   "kind": "objective",
-  "target": "cloudflare.com",
-  "supplier": "Stone-Anchor-A7F1"
+  "target": "apple.com",
+  "supplier": "Wild-Bastion-79A8"
  },
  "cumulative_tier_split": {
-  "trash": 4,
-  "normal": 0,
-  "premium": 12
+  "trash": 15,
+  "normal": 3,
+  "premium": 46
  },
- "total_submissions_all_time": 16,
+ "total_submissions_all_time": 64,
  "stake_frozen_note": "This exchange's inspector-weighting freeze is DISTINCT from the old fleet prediction-ranking freeze (that one is dead noise, never revived — see 0N1X_RHINOGENT_FACTS.md). THIS freeze is a live gate this script itself can pass: live_weighting_enabled becomes true only when shadow_inspector_accuracy lands in [0.70, 0.85] on the 20-item known-truth shadow set. Below 0.70 = panel not ready, stays shadow. Above 0.90 = overfitting, flagged, not trusted blindly.",
  "recompute_steps": [
   "py onyx_exchange.py --shadow      # 20 known-truth items, publishes inspector accuracy + gate",
