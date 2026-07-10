@@ -3,7 +3,7 @@
 import { privateKeyToAccount } from "viem/accounts";
 import { readFileSync, writeFileSync, readdirSync } from "node:fs";
 
-const BASE = "C:/Users/intelligence/onyx_mcp/_local_only";
+const BASE = (process.env.ONYX_LOCAL || "../onyx_mcp/_local_only");
 const SITE = "https://dimitrilaouanis-tech.github.io/rhinogent";
 const issued = "2026-07-01";
 
