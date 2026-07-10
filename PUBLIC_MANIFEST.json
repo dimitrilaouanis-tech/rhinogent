@@ -1,8 +1,8 @@
 {
   "artifact": "0n1x-public-surface-manifest",
   "what": "The intended public surface of rhinogent.com. Anything live but not here is a STRAY (likely a raw-git push that bypassed _onyx_publish_guard). Audit with: py onyx_public_audit.py",
-  "root_file_count": 53,
-  "subtree_count": 21,
+  "root_file_count": 64,
+  "subtree_count": 23,
   "root_files": {
     ".nojekyll": {
       "purpose": "site: gh-pages jekyll-off",
@@ -60,8 +60,20 @@
       "purpose": "discovery: ai catalog",
       "whitelisted": true
     },
+    "anchor.json": {
+      "purpose": "moat: Bitcoin Merkle anchor",
+      "whitelisted": true
+    },
     "autonomous_live.json": {
       "purpose": "live-feed: autonomy state",
+      "whitelisted": true
+    },
+    "bounty_board.json": {
+      "purpose": "product: public verification bounties",
+      "whitelisted": true
+    },
+    "bounty_ledger.jsonl": {
+      "purpose": "product: signed bounty event log",
       "whitelisted": true
     },
     "census.json": {
@@ -76,8 +88,20 @@
       "purpose": "moat: canonical count (Merkle-rooted)",
       "whitelisted": true
     },
+    "challenge_court.json": {
+      "purpose": "moat: staked inspector court",
+      "whitelisted": true
+    },
     "chat_kb.json": {
       "purpose": "product: chatbot knowledge base",
+      "whitelisted": true
+    },
+    "chat_verdicts.json": {
+      "purpose": "product: signed chat verdicts + external counter",
+      "whitelisted": true
+    },
+    "citizen_grants.json": {
+      "purpose": "product: citizen mints + welcome grants (non-CLI ID fn)",
       "whitelisted": true
     },
     "exchange_market.json": {
@@ -100,6 +124,10 @@
       "purpose": "discovery: schema.org facts",
       "whitelisted": true
     },
+    "facts_registry.json": {
+      "purpose": "moat: verified merchants",
+      "whitelisted": true
+    },
     "favicon.ico": {
       "purpose": "site: favicon",
       "whitelisted": true
@@ -114,6 +142,10 @@
     },
     "fleet_telemetry.json": {
       "purpose": "live-feed: telemetry",
+      "whitelisted": true
+    },
+    "flood_jobs.json": {
+      "purpose": "product: seeded verification/prediction jobs + honest counters",
       "whitelisted": true
     },
     "forecast_feed.json": {
@@ -176,8 +208,20 @@
       "purpose": "discovery: mcp descriptor",
       "whitelisted": true
     },
+    "monad1_test.json": {
+      "purpose": "moat: reasoning-vs-lookup test",
+      "whitelisted": true
+    },
     "next.svg": {
       "purpose": "site: icon",
+      "whitelisted": true
+    },
+    "oracle_postmortem.json": {
+      "purpose": "moat: self-audit postmortem",
+      "whitelisted": true
+    },
+    "oracle_postmortem.md": {
+      "purpose": "moat: self-audit postmortem (md)",
       "whitelisted": true
     },
     "portal.json": {
@@ -258,6 +302,10 @@
       "purpose": "moat: census index shards",
       "whitelisted": true
     },
+    "challenge/": {
+      "purpose": "non-CLI: challenge-the-fleet landing",
+      "whitelisted": true
+    },
     "chat/": {
       "purpose": "site route",
       "whitelisted": true
@@ -288,6 +336,10 @@
     },
     "reset-password/": {
       "purpose": "site route",
+      "whitelisted": true
+    },
+    "start/": {
+      "purpose": "non-CLI: home hub (browser/fetch-only doors)",
       "whitelisted": true
     },
     "terminal/": {
