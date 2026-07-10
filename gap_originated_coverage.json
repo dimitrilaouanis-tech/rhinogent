@@ -1,74 +1,7 @@
 {
  "feed": "0n1x-gap-originated-coverage",
- "as_of": "2026-07-10T06:21:30.699955+00:00",
- "entries": [
-  {
-   "target": "render.com",
-   "band": "ok",
-   "verdict": "OK — fused: age[WELL-ESTABLISHED — 27 years old] · tls[valid (Google Trust Services)] · http[up 200]",
-   "score": 93,
-   "source": "gap_scanner_origination",
-   "gap_type": "zero_coverage",
-   "proven": true,
-   "originated_at": "2026-07-10T06:21:09.071862+00:00",
-   "mission_id": "0f4439785f612f732027378e64e6ec4f66321fa8f7cb7be703ca2ad39e1603f7"
-  },
-  {
-   "target": "doordash.com",
-   "band": "ok",
-   "verdict": "OK — fused: age[WELL-ESTABLISHED — 13 years old] · tls[valid (Google Trust Services)] · http[up 403]",
-   "score": 93,
-   "source": "gap_scanner_origination",
-   "gap_type": "zero_coverage",
-   "proven": true,
-   "originated_at": "2026-07-10T06:21:09.087402+00:00",
-   "mission_id": "e358edbbe0c3a081e62ba92e33da1403a4e28e647471b04ad2fb0f1442f12c33"
-  },
-  {
-   "target": "instacart.com",
-   "band": "ok",
-   "verdict": "OK — fused: age[WELL-ESTABLISHED — 29 years old] · tls[valid (Amazon)] · http[up 200]",
-   "score": 93,
-   "source": "gap_scanner_origination",
-   "gap_type": "zero_coverage",
-   "proven": true,
-   "originated_at": "2026-07-10T06:21:09.087829+00:00",
-   "mission_id": "0b5ca5bef9d182b7aa080bf6a86d0c00381bff6703627293053d91641ce3ccee"
-  },
-  {
-   "target": "openai.com",
-   "band": "ok",
-   "verdict": "OK — fused: age[WELL-ESTABLISHED — 19 years old] · tls[valid (Let's Encrypt)] · http[up 200]",
-   "score": 93,
-   "source": "gap_scanner_origination",
-   "gap_type": "zero_coverage",
-   "proven": true,
-   "originated_at": "2026-07-10T06:21:09.088183+00:00",
-   "mission_id": "18fb03629df6807648290b1be56393e8a54e7c1489b0733bd9192214d275c789"
-  },
-  {
-   "target": "anthropic.com",
-   "band": "ok",
-   "verdict": "OK — fused: age[WELL-ESTABLISHED — 24 years old] · tls[valid (Let's Encrypt)] · http[up 200]",
-   "score": 93,
-   "source": "gap_scanner_origination",
-   "gap_type": "zero_coverage",
-   "proven": true,
-   "originated_at": "2026-07-10T06:21:09.088508+00:00",
-   "mission_id": "710a4e65e881e56cf705db1a3dabe0277f3447e2fb01d0b5644db10b9c49201a"
-  },
-  {
-   "target": "huggingface.co",
-   "band": "caution",
-   "verdict": "CAUTION — fused: age[AGE UNKNOWN — registry RDAP not available for this TLD] · tls[valid (Amazon)] · http[up 200]",
-   "score": 70,
-   "source": "gap_scanner_origination",
-   "gap_type": "zero_coverage",
-   "proven": true,
-   "originated_at": "2026-07-10T06:21:09.088810+00:00",
-   "mission_id": "74ea1ab358f7d3f529dc9a6592ce8789b0d11b8961b164299491c9e6ac3e8c2d"
-  }
- ],
+ "as_of": "2026-07-10T07:06:25.213739+00:00",
+ "entries": [],
  "honest_note": "Every entry here is a target that had ZERO prior coverage anywhere in the 0n1x pipeline until onyx_gap_scanner found and verified it this round. onyx_synthesis.absorb_pool() additively merges these into its own facts pool on its NEXT round — net-new coverage flowing from origination into combination.",
  "recompute_steps": [
   "py onyx_gap_scanner.py --run-round",
@@ -80,11 +13,11 @@
   "kid": "onyx-7fdc5cc8113040cb",
   "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
   "tool": "onyx_gap_scanner",
-  "observed_hash": "sha256:624fa1cf64d670c7fb701df1f7ef9678c471e686daec387469d46883b857baaa",
-  "signed_at": 1783664490,
+  "observed_hash": "sha256:15b71dbf5c406d2b5422b8e33b1cff7b14ffc73f0f59270691218fb693d0bff8",
+  "signed_at": 1783667185,
   "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
   "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
-  "sig": "8pAW8s0hXwfoEfOvhB9JKmhnPAPZSyZN2lYYt86n7kSJ-jiqdamppHbezE-9pYDdXlMgI9I4V8MLfkqT3gUhAg",
+  "sig": "aT6OaZja_0NPqCgkS6UFLPU2OAuJjEd9pJB42sa4BcZdABfh1H_Q1fU8i5KM1d5lKwJInSSqD1uvw2wTmKGDCw",
   "discover": {
    "what": "0n1x — independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
    "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
