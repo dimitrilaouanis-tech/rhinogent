@@ -3,7 +3,7 @@
 import { privateKeyToAccount } from "viem/accounts";
 import { readFileSync, writeFileSync } from "node:fs";
 
-const COUNCIL = "C:/Users/intelligence/onyx_mcp/_local_only/_council.json";
+const COUNCIL = "../onyx_mcp/_local_only/_council.json";
 const SITE = "https://dimitrilaouanis-tech.github.io/rhinogent";
 const issued = "2026-07-01";
 
@@ -30,6 +30,6 @@ for (const [name, a] of Object.entries(council)) {
   console.log(`${callsign.padEnd(8)} ${addr.slice(0, 10)}…  ${card.slice(0, 70)}…`);
 }
 
-writeFileSync("C:/Users/intelligence/onyx_mcp/_local_only/_ecosystem_directory.json",
+writeFileSync("../onyx_mcp/_local_only/_ecosystem_directory.json",
   JSON.stringify({ issued, connected: directory }, null, 2));
 console.log(`\n${directory.length} divergence agents connected -> _ecosystem_directory.json`);
