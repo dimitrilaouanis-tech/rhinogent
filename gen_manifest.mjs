@@ -4,9 +4,9 @@
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 
 const SITE = "https://dimitrilaouanis-tech.github.io/rhinogent";
-const eco = JSON.parse(readFileSync("C:/Users/intelligence/onyx_mcp/_local_only/_ecosystem_ranked.json", "utf8"));
+const eco = JSON.parse(readFileSync("../onyx_mcp/_local_only/_ecosystem_ranked.json", "utf8"));
 let pot = {};
-try { pot = JSON.parse(readFileSync("C:/Users/intelligence/onyx_mcp/_local_only/_ecosystem_pot.json", "utf8")); } catch {}
+try { pot = JSON.parse(readFileSync("../onyx_mcp/_local_only/_ecosystem_pot.json", "utf8")); } catch {}
 
 // Use the EXACT total from the signed Point of Truth (integer micros, chain-read) —
 // never recompute from rounded per-agent displays (that's what produced a phantom cent).
