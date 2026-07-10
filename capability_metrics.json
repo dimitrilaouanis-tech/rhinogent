@@ -45,5 +45,5 @@
  "insufficient_data": 8490,
  "as_of": "2026-07-07T14:58:19Z",
  "honesty_note": "Capability, not headcount: trend = mean bootcamp accuracy per round index; improving% and median delta use the same recent-vs-earlier delta as the reward engine. Curriculum is currently 8 easy yes/no facts, so accuracy SATURATES at 1.0 after one learning round — the trend shows real learning but a low ceiling; harder rotating curriculum is the next honest step.",
- "recompute": "from _local_only/_agent_accuracy.json: trend[i]=mean(history[i] over agents with len>=i+1); delta per agent as in delta_reward.json; % improving = share of scoreable agents with delta>0."
+ "recompute": "from [internal ledger]: trend[i]=mean(history[i] over agents with len>=i+1); delta per agent as in delta_reward.json; % improving = share of scoreable agents with delta>0."
 }
