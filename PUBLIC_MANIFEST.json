@@ -1,7 +1,7 @@
 {
   "artifact": "0n1x-public-surface-manifest",
   "what": "The intended public surface of rhinogent.com. Anything live but not here is a STRAY (likely a raw-git push that bypassed _onyx_publish_guard). Audit with: py onyx_public_audit.py",
-  "root_file_count": 52,
+  "root_file_count": 53,
   "subtree_count": 21,
   "root_files": {
     ".nojekyll": {
@@ -18,6 +18,10 @@
     },
     "CNAME": {
       "purpose": "site: custom domain",
+      "whitelisted": true
+    },
+    "PUBLIC_MANIFEST.json": {
+      "purpose": "meta: this whitelist manifest",
       "whitelisted": true
     },
     "__next.__PAGE__.txt": {
@@ -85,8 +89,8 @@
       "whitelisted": true
     },
     "exchange_showcase.json": {
-      "purpose": "REVIEW — unclassified",
-      "whitelisted": false
+      "purpose": "product: data exchange public teaser",
+      "whitelisted": true
     },
     "fable_challenge_response.json": {
       "purpose": "proof: signed live-endpoint verdict",
