@@ -190,9 +190,9 @@
  },
  "stake_frozen_note": "This exchange's inspector-weighting freeze is DISTINCT from the old fleet prediction-ranking freeze (that one is dead noise, never revived — see 0N1X_RHINOGENT_FACTS.md). THIS freeze is a live gate this script itself can pass: live_weighting_enabled becomes true only when shadow_inspector_accuracy lands in [0.70, 0.85] on the 20-item known-truth shadow set. Below 0.70 = panel not ready, stays shadow. Above 0.90 = overfitting, flagged, not trusted blindly.",
  "recompute_steps": [
-  "py onyx_exchange.py --shadow      # 20 known-truth items, publishes inspector accuracy + gate",
-  "py onyx_exchange.py --run-round    # one bounded live cycle: submit -> oracle -> panel -> pay -> ledger",
-  "Verify: replay method_band()/inspector_vote() over _exchange_ledger.jsonl records; each vote sig is EIP-191 over {item, judge, tier, stake, epoch}; recompute majority tier by golden-accuracy-weighted vote and compare to the published tier_split."
+  "[internal tool] --shadow      # 20 known-truth items, publishes inspector accuracy + gate",
+  "[internal tool] --run-round    # one bounded live cycle: submit -> oracle -> panel -> pay -> ledger",
+  "Verify: replay method_band()/inspector_vote() over the internal exchange ledger's records; each vote sig is EIP-191 over {item, judge, tier, stake, epoch}; recompute majority tier by golden-accuracy-weighted vote and compare to the published tier_split."
  ],
  "mechanism_summary": "Supplier submits signed intel -> oracle classifies OBJECTIVE (graded now against live signals) vs SUBJECTIVE (resolution_date stapled, resolves later) -> a panel of inspectors (weighted ONLY by golden-task accuracy, never the dead noise-ranking) STAKES points on a TRASH/NORMAL/PREMIUM tier call, each vote EIP-191 signed -> supplier paid/slashed by majority tier, confidence-weighted by difficulty/novelty/verification-confidence/inspector-agreement -> inspectors who misgraded lose stake proportional to the miss size; correct calls earn a fee.",
  "disclaimer": "Signed intel about observed technical/market signals — not judgments about any named business. Verify before relying."
