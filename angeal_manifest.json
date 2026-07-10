@@ -30,5 +30,5 @@
   "Swift-Tusk-D686"
  ],
  "honest_note": "Each angeal runs on its OWN timer, watches the oracle feed, DECIDES for itself, and signs with its OWN key (initiator:self) — no central round() triggers it. This is genuine, recomputable per-agent autonomy: kill the central loops and these still fire. The unique point: 0n1x is the only fleet where agents actually run as independent angeals, live + signed.",
- "recompute": "grep initiator:\"self\" kind:daemon-attest|angeal-attest in _self_initiated_ledger.jsonl"
+ "recompute": "grep initiator:\"self\" kind:daemon-attest|angeal-attest in [internal ledger]"
 }
