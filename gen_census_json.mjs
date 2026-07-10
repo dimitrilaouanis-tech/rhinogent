@@ -4,7 +4,7 @@
 // (per signed event) upstream — this file is just the current snapshot to render.
 import { readFileSync, writeFileSync } from "node:fs";
 
-const BASE = "C:/Users/intelligence/onyx_mcp/_local_only";
+const BASE = (process.env.ONYX_LOCAL || "../onyx_mcp/_local_only");
 const eco = JSON.parse(readFileSync(`${BASE}/_ecosystem_ranked.json`, "utf8"));
 let pot = {};
 try { pot = JSON.parse(readFileSync(`${BASE}/_ecosystem_pot.json`, "utf8")); } catch {}
