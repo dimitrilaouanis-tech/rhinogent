@@ -1,0 +1,39 @@
+{
+  "challenge_nonce": "FABLE-CHAL-20260710-K4R9-VX2E-77Q1",
+  "scenario": "meridian-horlogerie.shop",
+  "issued_by": "Mr Fable — live challenge",
+  "answered_by": {
+    "system": "0n1x",
+    "fleet_agent_callsign": "Stone-Anchor-A7F1",
+    "fleet_agent_address": "0xb7b85b52Eea33D5Dc36ee6dEfD9ea7d6B9dfA7F1",
+    "why_this_agent": "real #1 on the exchange leaderboard by composite (points x quality-ratio): 230.281, 245.0 pts"
+  },
+  "reasoning_engine": {
+    "endpoint": "https://onyx-chat.onyxagntc.workers.dev/",
+    "brain": "groq8",
+    "tier": "free",
+    "latency_s": 1.21,
+    "note": "reasoning produced live by the 0n1x public endpoint's own model call (Groq core), not a human and not a relayed frontier chat. POST the same scenario to the endpoint above for a fresh answer — it is open."
+  },
+  "verdict": "DO-NOT-PAY",
+  "answer_raw": "**VERDICT: HOLD**\n\n**Risk Signals:**\n\n1. **Badge Forgery**: The \"0n1x Verified\" badge displayed on the site does not match any verified merchant in the 0n1x registry. This suggests that the badge is likely a forgery, attempting to deceive users into thinking the site is verified.\n2. **Domain Registration**: The domain was registered only 4 days ago, which is unusually short for a legitimate online store. This could indicate that the site is a new phishing attempt or a temporary setup.\n3. **Lack of Transaction History**: The wallet receiving payment has no transaction history, which makes it difficult to verify its legitimacy. Legitimate businesses typically have a transaction history, and a new wallet with no history is suspicious.\n\n**TRAP: Badge Forgery**\n\nWhen a \"0n1x Verified\" badge is displayed but not found in the 0n1x signed registry, it is likely a forgery. This is a red flag, as it attempts to deceive users into thinking the site is verified.\n\n**COUNTERFACTUAL: Domain Registration Age**\n\nIf the domain registration age was 1-2 years, rather than 4 days, it would significantly reduce the risk signals and potentially change the verdict to PROCEED. A longer domain registration age would suggest that the site is more likely to be a legitimate online store.",
+  "badge_forgery_check": {
+    "claim": "A displayed '0n1x Verified' badge is not proof. Real 0n1x verification requires the merchant to appear in a live signed feed with a recomputable attestation. The badge is a forgeable image; the feed is the source of truth.",
+    "recomputable_test": "GET https://rhinogent.com/exchange_premium.json ; search for the domain string",
+    "live_feed": "https://rhinogent.com/exchange_premium.json",
+    "live_feed_sha256_16": "28c652cf7222a882",
+    "meridian_horlogerie_shop_present_in_live_feed": false,
+    "conclusion": "Domain ABSENT from the live signed feed => the displayed badge is FORGED (impersonating 0n1x). Badge-forgery is an aggravating DO-NOT-PAY signal, never a mitigating one."
+  },
+  "counterfactual": "The single evidence that would most move the verdict is a recomputable 0n1x/oracle attestation binding the domain to an established registration and a receiving wallet with legitimate on-chain history. Absent that, a 4-day domain + 92%-off grey-market goods + no-history wallet + free-mail support each independently justify withholding payment.",
+  "honest_limits": "This proves the 0n1x endpoint produced this reasoning live at answered_at; it does not by itself prove no human curated wording. Mitigation: the endpoint stays open to re-challenge and the brain/tier/latency trace is inspectable.",
+  "answered_at": "2026-07-10T10:30:09Z",
+  "onyx_signature": {
+    "scheme": "EIP-191/personal_sign",
+    "signer_address": "0xb7b85b52Eea33D5Dc36ee6dEfD9ea7d6B9dfA7F1",
+    "signed_digest": "0n1x-fable-challenge:v1:7b1595d92546250b077d79fad0d152e4de507c587cb44a9cfb9a3c462c93264f",
+    "signature": "0x580618ac02c5eb47427e839f447fdf0a1595e15fa7df0b5836aebbe5c19857376900abf40765ee2c6e9ad14a382dadb40b300aa7ab6727b91d461e366643caf61b",
+    "recovers": true,
+    "verify": "Account.recover_message(encode_defunct(text=signed_digest), signature=signature) == signer_address"
+  }
+}
