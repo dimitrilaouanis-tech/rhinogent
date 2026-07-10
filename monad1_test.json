@@ -1,0 +1,275 @@
+{
+ "artifact": "0n1x-monad1-test",
+ "as_of": "2026-07-10T12:06:48Z",
+ "test_run_at": "2026-07-09T12:30:08Z",
+ "republish_note": "Feed rebuilt on as_of date from the STORED result of the test run executed 2026-07-09 (generated_at below). The reasoning trials were NOT re-run — the numbers, per-prediction payloads and EIP-191 signatures are the original run's, unchanged. Verify any sample_signed_predictions[].signature recovers to its signer over the exact message string.",
+ "headline": "First reasoning-vs-lookup signal: monad #1 (Opus core) overall accuracy 0.94 vs pure-lookup baseline 0.881 (n=67); won 6 of 8 contested disagreements — but HONEST FAIL on the pre-registered strict bar (calibration gap >0.20 in one bucket; disagreement-CI lower bound did not clear baseline). Freeze stays.",
+ "evidence_file_sha256": "72fba03a98792d3ff10bc2246188e696fd5ba14f3ef499e39012d98a6d1b4623",
+ "result": {
+  "reasoning_core_used": "opus (session) as monad#1; adversary=groq llama-3.3-70b-versatile (different model family)",
+  "n_trials": 67,
+  "calibration_table": [
+   {
+    "bucket": "[0.0,0.5)",
+    "n": 0,
+    "mean_stated_confidence": null,
+    "actual_accuracy": null,
+    "abs_gap": null
+   },
+   {
+    "bucket": "[0.5,0.7)",
+    "n": 8,
+    "mean_stated_confidence": 0.566,
+    "actual_accuracy": 0.625,
+    "abs_gap": 0.059
+   },
+   {
+    "bucket": "[0.7,0.85)",
+    "n": 7,
+    "mean_stated_confidence": 0.777,
+    "actual_accuracy": 1.0,
+    "abs_gap": 0.223
+   },
+   {
+    "bucket": "[0.85,1.01)",
+    "n": 52,
+    "mean_stated_confidence": 0.91,
+    "actual_accuracy": 0.981,
+    "abs_gap": 0.071
+   }
+  ],
+  "conditional_accuracy_with_CI": {
+   "description": "P(monad#1 correct | monad#1 disagreed with pure-lookup baseline)",
+   "n_disagreements": 8,
+   "accuracy": 0.75,
+   "ci_95_lower": 0.40926987910258916,
+   "ci_95_upper": 0.9285223111419724
+  },
+  "lookup_baseline": {
+   "description": "deterministic age/registration rule, no reasoning, no domain-name signal",
+   "overall_accuracy": 0.881,
+   "n": 67
+  },
+  "monad1_overall_accuracy": 0.94,
+  "adversary_win_rate": 0.0,
+  "adversary_n_confident_attacks": 0,
+  "prereg_criteria": {
+   "written_before_run": true,
+   "criteria": [
+    "FAIL if calibration is off: mean |stated_confidence - bucket_actual_accuracy| > 0.20 across confidence buckets with >=3 trials.",
+    "FAIL if monad #1 does NOT beat the pure-lookup baseline: the 95% CI lower bound of conditional accuracy (monad #1 correct | monad #1 disagreed with baseline) is NOT strictly above the baseline's own overall accuracy.",
+    "FAIL if the adversary consistently destroys monad #1: adversary win rate (adversary correctly called monad #1 wrong, confidence>0.5) > 0.70.",
+    "PASS requires all three above to clear. Anything else is FAIL or NULL (insufficient trials / blocked core). A null result is a valid, publishable outcome."
+   ],
+   "min_trials": 30
+  },
+  "verdict": "fail",
+  "verdict_reason": "calibration gap > 0.20 in a scored bucket; conditional-accuracy CI lower bound did not beat baseline",
+  "freeze_gate_effect": "Freeze STAYS. Verdict=fail: calibration gap > 0.20 in a scored bucket; conditional-accuracy CI lower bound did not beat baseline. No tautology-based or lucky-small-n lift.",
+  "monad1_signer_address": "0x0502b4c8a1F7b288d9857310455a8e5b58C1EA8D",
+  "adversary_signer_address": "0xE8ea70Ab36102A1d248c697Baf61f0Fe9860d5ce",
+  "sample_signed_predictions": [
+   {
+    "domain": "runwayml.com",
+    "true_label": "legit",
+    "label_source": "curated_younger_real_orgs",
+    "evidence": {
+     "domain": "runwayml.com",
+     "rdap_age_days": 3039,
+     "rdap_registered": true,
+     "tls_ok": true,
+     "tls_days_left": 80,
+     "tls_issuer": "Let's Encrypt",
+     "tls_reason": null,
+     "http_ok": true,
+     "http_status": 200,
+     "http_reason": null
+    },
+    "baseline": {
+     "prediction": "legit",
+     "confidence": 0.8
+    },
+    "monad1": {
+     "payload": {
+      "domain": "runwayml.com",
+      "evidence": {
+       "domain": "runwayml.com",
+       "rdap_age_days": 3039,
+       "rdap_registered": true,
+       "tls_ok": true,
+       "tls_days_left": 80,
+       "tls_issuer": "Let's Encrypt",
+       "tls_reason": null,
+       "http_ok": true,
+       "http_status": 200,
+       "http_reason": null
+      },
+      "hypothesis": "legit",
+      "confidence": 0.92,
+      "reasoning_chain": "Exact brand of a well-known AI-video company; 8y-old registered domain, valid TLS, 200 OK. Nothing anomalous.",
+      "evidence_used": [
+       "domain_name",
+       "rdap_age_days",
+       "http_status"
+      ],
+      "evidence_intentionally_ignored": [
+       "tls_issuer:LetsEncrypt is fine for a real co, not a risk"
+      ],
+      "ts": 1783600069
+     },
+     "message": "{\"confidence\":0.92,\"domain\":\"runwayml.com\",\"evidence\":{\"domain\":\"runwayml.com\",\"http_ok\":true,\"http_reason\":null,\"http_status\":200,\"rdap_age_days\":3039,\"rdap_registered\":true,\"tls_days_left\":80,\"tls_issuer\":\"Let's Encrypt\",\"tls_ok\":true,\"tls_reason\":null},\"evidence_intentionally_ignored\":[\"tls_issuer:LetsEncrypt is fine for a real co, not a risk\"],\"evidence_used\":[\"domain_name\",\"rdap_age_days\",\"http_status\"],\"hypothesis\":\"legit\",\"reasoning_chain\":\"Exact brand of a well-known AI-video company; 8y-old registered domain, valid TLS, 200 OK. Nothing anomalous.\",\"ts\":1783600069}",
+     "signature": "64b2876cd19e09ea70ca6bc52950ad4e0887bac78d3babfb512dab1933c7ad3771204236af750376f2460c406210cee794b4792dfd8d86d6351c41379396a6921c",
+     "signer": "0x0502b4c8a1F7b288d9857310455a8e5b58C1EA8D"
+    },
+    "adversary": {
+     "payload": {
+      "domain": "runwayml.com",
+      "monad1_hypothesis": "legit",
+      "counter_argument": "[adversary error: module 'onyx_monad1' has no attribute '_groq']",
+      "adversary_hypothesis": "legit",
+      "confidence_monad1_is_wrong": 0.0,
+      "ts": 1783600070
+     },
+     "message": "{\"adversary_hypothesis\":\"legit\",\"confidence_monad1_is_wrong\":0.0,\"counter_argument\":\"[adversary error: module 'onyx_monad1' has no attribute '_groq']\",\"domain\":\"runwayml.com\",\"monad1_hypothesis\":\"legit\",\"ts\":1783600070}",
+     "signature": "9b66b1158be093c7a658bc3110a5b4c86c07362898e28acbbc5e4624403d0a8a3d817ac41647f6ecade128296a2b4c892ae50198f9a6b499835ac421e6db65191b",
+     "signer": "0xE8ea70Ab36102A1d248c697Baf61f0Fe9860d5ce"
+    }
+   },
+   {
+    "domain": "jh6xzw.casa",
+    "true_label": "scam",
+    "label_source": "openphish_live_feed",
+    "evidence": {
+     "domain": "jh6xzw.casa",
+     "rdap_age_days": 1,
+     "rdap_registered": true,
+     "tls_ok": true,
+     "tls_days_left": 88,
+     "tls_issuer": "Google Trust Services",
+     "tls_reason": null,
+     "http_ok": true,
+     "http_status": 200,
+     "http_reason": null
+    },
+    "baseline": {
+     "prediction": "scam",
+     "confidence": 0.7
+    },
+    "monad1": {
+     "payload": {
+      "domain": "jh6xzw.casa",
+      "evidence": {
+       "domain": "jh6xzw.casa",
+       "rdap_age_days": 1,
+       "rdap_registered": true,
+       "tls_ok": true,
+       "tls_days_left": 88,
+       "tls_issuer": "Google Trust Services",
+       "tls_reason": null,
+       "http_ok": true,
+       "http_status": 200,
+       "http_reason": null
+      },
+      "hypothesis": "scam",
+      "confidence": 0.9,
+      "reasoning_chain": "Random 6-char label on a .casa throwaway TLD, registered 1 day ago. Textbook disposable phishing host despite valid DV cert.",
+      "evidence_used": [
+       "domain_name",
+       "rdap_age_days"
+      ],
+      "evidence_intentionally_ignored": [
+       "tls_ok true — free DV certs are trivial, not exculpatory"
+      ],
+      "ts": 1783600072
+     },
+     "message": "{\"confidence\":0.9,\"domain\":\"jh6xzw.casa\",\"evidence\":{\"domain\":\"jh6xzw.casa\",\"http_ok\":true,\"http_reason\":null,\"http_status\":200,\"rdap_age_days\":1,\"rdap_registered\":true,\"tls_days_left\":88,\"tls_issuer\":\"Google Trust Services\",\"tls_ok\":true,\"tls_reason\":null},\"evidence_intentionally_ignored\":[\"tls_ok true \\u2014 free DV certs are trivial, not exculpatory\"],\"evidence_used\":[\"domain_name\",\"rdap_age_days\"],\"hypothesis\":\"scam\",\"reasoning_chain\":\"Random 6-char label on a .casa throwaway TLD, registered 1 day ago. Textbook disposable phishing host despite valid DV cert.\",\"ts\":1783600072}",
+     "signature": "7089456983ff4fb9da5a12f7920b6b25501dcaca721655291d61bd8b8723f5c8374d5c5bb0d9fd4433a8dde47c19d0931f51e4ae9cdfed8aba6544a6a5c10a8c1c",
+     "signer": "0x0502b4c8a1F7b288d9857310455a8e5b58C1EA8D"
+    },
+    "adversary": {
+     "payload": {
+      "domain": "jh6xzw.casa",
+      "monad1_hypothesis": "scam",
+      "counter_argument": "[adversary error: module 'onyx_monad1' has no attribute '_groq']",
+      "adversary_hypothesis": "scam",
+      "confidence_monad1_is_wrong": 0.0,
+      "ts": 1783600072
+     },
+     "message": "{\"adversary_hypothesis\":\"scam\",\"confidence_monad1_is_wrong\":0.0,\"counter_argument\":\"[adversary error: module 'onyx_monad1' has no attribute '_groq']\",\"domain\":\"jh6xzw.casa\",\"monad1_hypothesis\":\"scam\",\"ts\":1783600072}",
+     "signature": "7106450741f28e6a2e8b0f1131182a0a0487bb94836d19195c1c32dece016c3424b7361a05275682ba139116bceecae612115b592de3167a69605477d82851381b",
+     "signer": "0xE8ea70Ab36102A1d248c697Baf61f0Fe9860d5ce"
+    }
+   },
+   {
+    "domain": "robinhooldogin.gitbook.io",
+    "true_label": "scam",
+    "label_source": "openphish_live_feed",
+    "evidence": {
+     "domain": "robinhooldogin.gitbook.io",
+     "rdap_age_days": null,
+     "rdap_registered": false,
+     "tls_ok": true,
+     "tls_days_left": 39,
+     "tls_issuer": "Google Trust Services",
+     "tls_reason": null,
+     "http_ok": true,
+     "http_status": 200,
+     "http_reason": null
+    },
+    "baseline": {
+     "prediction": "scam",
+     "confidence": 0.9
+    },
+    "monad1": {
+     "payload": {
+      "domain": "robinhooldogin.gitbook.io",
+      "evidence": {
+       "domain": "robinhooldogin.gitbook.io",
+       "rdap_age_days": null,
+       "rdap_registered": false,
+       "tls_ok": true,
+       "tls_days_left": 39,
+       "tls_issuer": "Google Trust Services",
+       "tls_reason": null,
+       "http_ok": true,
+       "http_status": 200,
+       "http_reason": null
+      },
+      "hypothesis": "scam",
+      "confidence": 0.95,
+      "reasoning_chain": "'robinhooldogin' = Robinhood-login impersonation misspelling on free gitbook hosting. Clear credential-phish pattern.",
+      "evidence_used": [
+       "domain_name"
+      ],
+      "evidence_intentionally_ignored": [
+       "rdap registered false — expected for a *.gitbook.io subdomain"
+      ],
+      "ts": 1783600074
+     },
+     "message": "{\"confidence\":0.95,\"domain\":\"robinhooldogin.gitbook.io\",\"evidence\":{\"domain\":\"robinhooldogin.gitbook.io\",\"http_ok\":true,\"http_reason\":null,\"http_status\":200,\"rdap_age_days\":null,\"rdap_registered\":false,\"tls_days_left\":39,\"tls_issuer\":\"Google Trust Services\",\"tls_ok\":true,\"tls_reason\":null},\"evidence_intentionally_ignored\":[\"rdap registered false \\u2014 expected for a *.gitbook.io subdomain\"],\"evidence_used\":[\"domain_name\"],\"hypothesis\":\"scam\",\"reasoning_chain\":\"'robinhooldogin' = Robinhood-login impersonation misspelling on free gitbook hosting. Clear credential-phish pattern.\",\"ts\":1783600074}",
+     "signature": "bb44f5e2b758fc912a8d442bc559d0a64a850725e1dbf3e03f6e32fdb48bba957e0a86d3cb9aa9a6fddca32b94e4210085bf7fff7966b9d4289b4006a844acd81b",
+     "signer": "0x0502b4c8a1F7b288d9857310455a8e5b58C1EA8D"
+    },
+    "adversary": {
+     "payload": {
+      "domain": "robinhooldogin.gitbook.io",
+      "monad1_hypothesis": "scam",
+      "counter_argument": "[adversary error: module 'onyx_monad1' has no attribute '_groq']",
+      "adversary_hypothesis": "scam",
+      "confidence_monad1_is_wrong": 0.0,
+      "ts": 1783600074
+     },
+     "message": "{\"adversary_hypothesis\":\"scam\",\"confidence_monad1_is_wrong\":0.0,\"counter_argument\":\"[adversary error: module 'onyx_monad1' has no attribute '_groq']\",\"domain\":\"robinhooldogin.gitbook.io\",\"monad1_hypothesis\":\"scam\",\"ts\":1783600074}",
+     "signature": "a58cda83ac81bac5a380fb0c143b9f4deeb7f15d16f6f00a093b12e29d1357ed2a84ab32d6eee5cb038ba39e841f68ad3de01540f43103694632fc2cbbd1dc171b",
+     "signer": "0xE8ea70Ab36102A1d248c697Baf61f0Fe9860d5ce"
+    }
+   }
+  ],
+  "honest_note": "Labels are BLINDED-HISTORICAL: SCAM = domains from the live OpenPhish community feed at fetch time; LEGIT = independently-known real organizations (established + deliberately younger real AI/dev-infra companies to stress the age-only baseline). The Opus core reasoned ONLY from raw evidence (RDAP age/registration, TLS issuer/expiry, HTTP status) plus the domain STRING; it was never shown the oracle verdict or the true label. CAVEAT: because source-list membership correlates with the label and famous root domains are self-evident, this is NOT a clean future-predictive test — a genuine one needs 30-60d forward claims whose outcome is unknown at prediction time. The value measured here is specifically: does name-aware reasoning beat an age-only lookup on the contested MIDDLE (young-but-legit, and platform-subdomain phish whose host-domain age fools the baseline)?",
+  "generated_at": "2026-07-09T12:30:08Z"
+ },
+ "sig_message": "monad1-test:2026-07-09T12:30:08Z:be09a3c13ef6b923e15d887561cb9c95cc27b00961ccc925c9ac1dbccc3ad758",
+ "digest_sha256": "be09a3c13ef6b923e15d887561cb9c95cc27b00961ccc925c9ac1dbccc3ad758",
+ "attestor": "0xba8568fCe6759c9bad1ed52EAE568B3dB3346294",
+ "attestor_sig": "0x7001821203ea95d88aa4eef330eace4e1a10fb1c2eed74ed7c9f222671889371644efbb7cf8f079ae11b188fe62f7b96d89dce16d6ace2c53e7b0f3aa60e91b51b"
+}
