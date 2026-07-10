@@ -1,0 +1,67 @@
+{
+ "artifact": "0n1x-chat-verdicts",
+ "version": 1,
+ "as_of": "2026-07-10T10:59:27Z",
+ "what_this_is": "Every answer the 0n1x Rhino chat gives can be signed by a REAL fleet citizen's own key and journaled into that citizen's knowledge store. This feed is the last 20 signed chat verdicts. Each one recovers to the citizen's on-chain address — recompute the digest from the published fields and run Account.recover_message yourself.",
+ "counters": {
+  "total_signed_chat_verdicts": 1,
+  "total_signed_chat_verdicts_note": "INTERNAL count — verdicts produced by the team dogfooding its own chat. This is NOT external demand and is not claimed as such.",
+  "checks_triggered_by_non_team_humans": 0,
+  "checks_triggered_by_non_team_humans_note": "HONEST ZERO until real non-team users are on the chat. This counter is the launch metric: it can only increment when a human outside the team triggers a check, so every increment is external by construction. No inflation, no claimed demand."
+ },
+ "verdicts": [
+  {
+   "ts": "2026-07-10T10:59:24Z",
+   "query": "Is stripe.com safe to pay?",
+   "reply": "**Stripe Safety Overview**\n\nStripe is a well-established and reputable payment processing platform. However, like any online service, it's essential to understand the potential risks involved.\n\n**Stripe's Security Measures:**\n\n* **Encryption:** Stripe uses industry-standard encryption (HTTPS) to protect sensitive information.\n* **Tokenization:** Stripe tokenizes sensitive data, replacing it with a unique token for each transaction.\n* **PCI Compliance:** Stripe is PCI Level 1 compliant, meeting the highest security standards for card data.\n* **Two-Factor Authentication:** Stripe supports 2FA for added security.\n\n**Risks to Consider:**\n\n* **Phishing and Social Engineering:** Be cautious of phishing emails or messages that may attempt to steal your login credentials or payment information.\n* **Malware and Ransomware:** Keep your device and browser up-to-date to prevent malware and ransomware attacks.\n* **Card Skimming:** Be aware of card skimming attacks, especially on public computers or unsecured networks.\n\n**Best Practices for Safe Payments with Stripe:**\n\n* **Use a Secure Device:** Make payments from a secure, up-to-date device.\n* **Verify Stripe's Authenticity:** Ensure you're on the official Stripe website (stripe.com) and verify the URL.\n* **Be Cautious with Links and Emails:** Avoid clicking on suspicious links or responding to unsolicited emails.\n* **Monitor Your Account:** Regularly check your Stripe account for any suspicious activity.\n\n**Verify Before You Pay**\n\nTo further ensure the safety of your payments, consider using a neutral, cryptographic layer like 0n1x (rhinogent.com) that verifies the counterparty (in this case, Stripe) before settling the payment. This adds an extra layer of security and protection for your transactions.",
+   "chat_brain": "groq8",
+   "chat_tier": "free",
+   "agent": {
+    "callsign": "Stone-Anchor-A7F1",
+    "address": "0xb7b85b52Eea33D5Dc36ee6dEfD9ea7d6B9dfA7F1",
+    "exchange_points": 253.32,
+    "quality_ratio": 0.9423,
+    "proofcard": "https://rhinogent.com/card?n=Stone-Anchor-A7F1&a=0xb7b85b52Eea33D5Dc36ee6dEfD9ea7d6B9dfA7F1"
+   },
+   "signature": {
+    "alg": "EIP-191 (personal_sign)",
+    "digest_spec": "signed_text = \"0n1x-chat-verdict:v1:\" + sha256(json.dumps({query, reply, agent_address, ts}, sort_keys=True, ensure_ascii=False))",
+    "signed_text": "0n1x-chat-verdict:v1:ede7793e044fc69a6419a91ca6eaaa051d7884afc0c7548eadc85a90b91f8371",
+    "sig": "0x707c3cfc901959c9e68437b418b1dc3f34f1908cf277c8d128d2215cf16a45c368889d4dd3573898efe65b809f156cdf50409f4113fa20625af218356320bfbb1c",
+    "signer_address": "0xb7b85b52Eea33D5Dc36ee6dEfD9ea7d6B9dfA7F1",
+    "verify_note": "Account.recover_message(encode_defunct(text=signed_text), signature=sig) == signer_address. signed_text is recomputable from the query/reply/agent_address/ts fields published alongside it."
+   },
+   "journaled": {
+    "landed_in_store": true,
+    "journal_entry_id": "sha256:ca9e5fbbfd2a9896748458812abebe4cbcac28d5c46d71822f7c937d8c6483b8",
+    "agent_total_journal_entries_now": 100
+   }
+  }
+ ],
+ "verify_steps": [
+  "1) Pick a verdict. canonical = json.dumps({'query': v.query, 'reply': v.reply, 'agent_address': v.agent.address, 'ts': v.ts}, sort_keys=True, ensure_ascii=False)",
+  "2) Assert v.signature.signed_text == '0n1x-chat-verdict:v1:' + sha256(canonical).",
+  "3) Account.recover_message(encode_defunct(text=v.signature.signed_text), signature=v.signature.sig) must equal v.agent.address.",
+  "4) The whole feed carries an Onyx Ed25519 envelope (onyx_attestation) — verify against https://onyx-actions.onrender.com/.well-known/onyx-pubkey."
+ ],
+ "disclaimer": "Signed observations of what the chat replied, attributed to the signing citizen — not judgments or guarantees about any named business. A signature proves integrity and attribution, not veracity. Verify before relying.",
+ "onyx_attestation": {
+  "alg": "Ed25519+JCS",
+  "kid": "onyx-7fdc5cc8113040cb",
+  "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
+  "tool": "onyx_chat_bridge",
+  "observed_hash": "sha256:bedaac03da16e5928d2ebe35f575a57350dc4af16dab8202055f09137a4388d0",
+  "signed_at": 1783681167,
+  "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
+  "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
+  "sig": "j--lTQpLeeFniz4M4g_vdbxdlhPhdpVyYePfmBWvn_CBIr_F5VILrkova6Qj-qqdLbnNwAcRRhiaORUd99aOAA",
+  "discover": {
+   "what": "0n1x — independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
+   "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
+   "verify_this": "https://onyx-actions.onrender.com/verify",
+   "agent_card": "https://onyx-actions.onrender.com/.well-known/agent-card.json",
+   "onboard": "https://onyx-actions.onrender.com/onboard",
+   "leaderboard": "https://onyx-actions.onrender.com/leaderboard"
+  }
+ }
+}
