@@ -25,31 +25,32 @@
       "dimitrilaouanis-tech (public repo handle)"
     ]
   },
-  "text_files_scanned": 1190,
+  "text_files_scanned": 1191,
   "binary_files_skipped": 31,
   "per_repo": {
     "dimitrilaouanis-tech/rhinogent@gh-pages": {
-      "text_files": 817,
+      "text_files": 818,
       "leak_files": 1
     },
     "dimitrilaouanis-tech/rhinogent@main": {
       "text_files": 336,
-      "leak_files": 5
+      "leak_files": 4
     },
     "dimitrilaouanis-tech/0n1x@main": {
       "text_files": 37,
       "leak_files": 0
     }
   },
-  "leak_files_found": 6,
+  "leak_files_found": 5,
   "findings": [
     {
       "repo": "dimitrilaouanis-tech/rhinogent",
       "branch": "gh-pages",
-      "path": "_next/static/chunks/1x9sgcq6q80xf.js",
+      "path": "leak_sweep_proof.json",
       "hits": {
-        "dot_onyx_file": [
-          ".onyx_"
+        "win_userpath": [
+          "c:/users",
+          "/users/intelligence"
         ]
       }
     },
@@ -64,9 +65,6 @@
         ],
         "internal_dir": [
           "[scrubbed]"
-        ],
-        "dot_onyx_file": [
-          ".onyx_"
         ]
       }
     },
@@ -109,19 +107,6 @@
         ],
         "internal_dir": [
           "[scrubbed]"
-        ],
-        "dot_onyx_file": [
-          ".onyx_"
-        ]
-      }
-    },
-    {
-      "repo": "dimitrilaouanis-tech/rhinogent",
-      "branch": "main",
-      "path": "src/app/terminal/terminal.tsx",
-      "hits": {
-        "dot_onyx_file": [
-          ".onyx_"
         ]
       }
     }
