@@ -14,9 +14,7 @@
   "divergence_pull": {
    "digest": "189d749a0b0d3141fbe92ef3c5aeedb0586d68e04c9acd8b19a89ff8c8206010",
    "updated": "2026-07-08 17:34:08",
-   "active_sessions": 4,
-   "total_chats": 94,
-   "source": ".onyx_radar_live.json (live session radar) + radar cache size"
+   "source": "[internal entropy source, hash-committed]"
   },
   "decision_distribution": {
    "caution": 2485,
@@ -249,7 +247,7 @@
      "reason": "recent-half mean accuracy 0.625 beat earlier half — better results => higher rank"
     }
    ],
-   "note": "per-monad accuracy per simulation round from its OWN journal (_monad_journals.jsonl); same improvement-velocity formula as the delta-reward engine — the track-history IS the differentiator."
+   "note": "per-monad accuracy per simulation round from its OWN journal ([internal ledger]); same improvement-velocity formula as the delta-reward engine — the track-history IS the differentiator."
   },
   "fleet_wide_top_climbers_existing_system": [
    {
@@ -324,7 +322,7 @@
     "delta": 10
    }
   ],
-  "movement_note": "sample_movements_recorded are the REAL recorded rank movements in _rank_history.json (e.g. Kimi 28->29 blind-commitment bounty). All leaderboards above are computed from real on-disk histories."
+  "movement_note": "sample_movements_recorded are the REAL recorded rank movements in the internal rank-history ledger (e.g. Kimi 28->29 blind-commitment bounty). All leaderboards above are computed from real on-disk histories."
  },
  "persistence_test": {
   "verdict": "noise",
@@ -403,6 +401,6 @@
    "sig_recovers_wallet": true
   }
  ],
- "recompute": "1) registry: verify each line's sig (EIP-191) over its 'genesis' string recovers 'wallet' (eth_account.Account.recover_message). 2) decisions: for each 'decision' line in _monad_journals.jsonl verify sig over 'signed' recovers 'address'; re-derive guesses as sha256(address:question_h:divergence16)&1 and informed answers from the monad's own prior journal lines. 3) ground truth: rerun onyx_oracle.r_merchant_multi(domain) in the same hour epoch and verify the attestor sig over 'genq:{epoch}:{domain}:{claimed}:{band}:{answer}'. 4) ranking: recompute delta per onyx_delta_reward.improvement_delta from _agent_accuracy.json. 5) edge CI: two-proportion 95% z-interval over informed vs guessed answer pools.",
+ "recompute": "1) registry: verify each line's sig (EIP-191) over its 'genesis' string recovers 'wallet' (eth_account.Account.recover_message). 2) decisions: for each 'decision' line in _monad_journals.jsonl verify sig over 'signed' recovers 'address'; re-derive guesses as sha256(address:question_h:divergence16)&1 and informed answers from the monad's own prior journal lines. 3) ground truth: rerun onyx_oracle.r_merchant_multi(domain) in the same hour epoch and verify the attestor sig over 'genq:{epoch}:{domain}:{claimed}:{band}:{answer}'. 4) ranking: recompute delta per the internal improvement-delta formula from the internal accuracy ledger. 5) edge CI: two-proportion 95% z-interval over informed vs guessed answer pools.",
  "note": "Honest scope: these are DETERMINISTIC units, not conscious agents. The value is the SUBSTRATE — one id + one wallet + one journal + one node per monad, genesis-signed by its own key — plus genuine STATE-DEPENDENCE: decisions condition on a live divergence pull (unknowable in advance) and on each monad's own accumulated journal, so trajectories are not pre-scriptable and differ per monad. The measured edge is an education/journal-lookup edge over chance, NOT reasoning. Monad #1 is an empty seat for a real reasoning core — nothing is faked in that slot. Small but real."
 }
