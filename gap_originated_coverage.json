@@ -1,10 +1,10 @@
 {
  "feed": "0n1x-gap-originated-coverage",
- "as_of": "2026-07-10T07:51:17.584034+00:00",
+ "as_of": "2026-07-10T08:51:03.433964+00:00",
  "entries": [],
  "honest_note": "Every entry here is a target that had ZERO prior coverage anywhere in the 0n1x pipeline until onyx_gap_scanner found and verified it this round. onyx_synthesis.absorb_pool() additively merges these into its own facts pool on its NEXT round — net-new coverage flowing from origination into combination.",
  "recompute_steps": [
-  "py onyx_gap_scanner.py --run-round",
+  "[internal tool] --run-round",
   "re-run onyx_oracle.r_merchant_multi(target) for any entry and confirm band matches"
  ],
  "disclaimer": "Signed observations from a bounded absence scan — not judgments about any named business. Verify before relying.",
@@ -13,11 +13,11 @@
   "kid": "onyx-7fdc5cc8113040cb",
   "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
   "tool": "onyx_gap_scanner",
-  "observed_hash": "sha256:99bd7366d0d54cda38a70f41c6ca715e65502b6090ed8a508c90e12a9983de18",
-  "signed_at": 1783669877,
+  "observed_hash": "sha256:bffe726af874936802b435b29ee48af780eaa45beb33f2d9d0ef588ecb19e3a2",
+  "signed_at": 1783673463,
   "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
   "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
-  "sig": "_vlY55-vX1_tV-ipZaWBn97TqQFI6fyWqTGciwGoNzM0IF99e4JgMZ18_51zmEuHQYu2DG37J8qxWZ5b9wZdBA",
+  "sig": "Wsx_HVqBXJBCY55lw-UQHm3nAVdGzp0vPT4blPtIDcJtAlC7qRMRC0zFeX-ir4QfySZB0uwBU935m8GQngkuBw",
   "discover": {
    "what": "0n1x — independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
    "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
