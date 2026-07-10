@@ -12,25 +12,32 @@
       "appdata",
       "internal_dir",
       "dot_onyx_file",
-      "radar_session"
+      "radar_session",
+      "chat_session_class"
     ],
     "regex": [
       "openai_key",
       "groq_key",
       "bearer",
       "pem_privkey",
-      "priv_field"
+      "priv_field",
+      "session_uuid"
     ],
     "explicitly_allowed": [
       "dimitrilaouanis-tech (public repo handle)"
-    ]
+    ],
+    "self_excluded": [
+      "leak_sweep_proof.json",
+      "(the proof lists marker vocabulary; scanning it would self-flag)"
+    ],
+    "review_note": "session_uuid hits are reported with context for human review — agent DIDs are eip155 addresses, so bare UUIDs are suspicious but may be legit unrelated identifiers"
   },
-  "text_files_scanned": 1191,
-  "binary_files_skipped": 31,
+  "text_files_scanned": 1199,
+  "binary_files_skipped": 32,
   "per_repo": {
     "dimitrilaouanis-tech/rhinogent@gh-pages": {
-      "text_files": 818,
-      "leak_files": 1
+      "text_files": 826,
+      "leak_files": 0
     },
     "dimitrilaouanis-tech/rhinogent@main": {
       "text_files": 336,
@@ -41,30 +48,18 @@
       "leak_files": 0
     }
   },
-  "leak_files_found": 5,
+  "leak_files_found": 4,
   "findings": [
-    {
-      "repo": "dimitrilaouanis-tech/rhinogent",
-      "branch": "gh-pages",
-      "path": "leak_sweep_proof.json",
-      "hits": {
-        "win_userpath": [
-          "c:/users",
-          "/users/intelligence"
-        ]
-      }
-    },
     {
       "repo": "dimitrilaouanis-tech/rhinogent",
       "branch": "main",
       "path": "gen_census_json.mjs",
       "hits": {
-        "win_userpath": [
-          "c:/users",
-          "/users/intelligence"
-        ],
         "internal_dir": [
-          "[scrubbed]"
+          {
+            "marker": "[scrubbed]",
+            "context": "from \"node:fs\"; const BASE = (process.env.ONYX_LOCAL || \"../onyx_mcp/[scrubbed]"); const eco = JSON.parse(readFileSync(`${BASE}/_ecosystem_ranked.jso"
+          }
         ]
       }
     },
@@ -73,12 +68,11 @@
       "branch": "main",
       "path": "gen_divergence_cards.mjs",
       "hits": {
-        "win_userpath": [
-          "c:/users",
-          "/users/intelligence"
-        ],
         "internal_dir": [
-          "[scrubbed]"
+          {
+            "marker": "[scrubbed]",
+            "context": "leSync, writeFileSync } from \"node:fs\"; const COUNCIL = \"../onyx_mcp/[scrubbed]\"; const SITE = \"https://dimitrilaouanis-tech.github.io/"
+          }
         ]
       }
     },
@@ -87,12 +81,11 @@
       "branch": "main",
       "path": "gen_ecosystem_cards.mjs",
       "hits": {
-        "win_userpath": [
-          "c:/users",
-          "/users/intelligence"
-        ],
         "internal_dir": [
-          "[scrubbed]"
+          {
+            "marker": "[scrubbed]",
+            "context": "from \"node:fs\"; const BASE = (process.env.ONYX_LOCAL || \"../onyx_mcp/[scrubbed]"); const SITE = \"https://dimitrilaouanis-tech.github.io/rhinogent\"; c"
+          }
         ]
       }
     },
@@ -101,12 +94,11 @@
       "branch": "main",
       "path": "gen_manifest.mjs",
       "hits": {
-        "win_userpath": [
-          "c:/users",
-          "/users/intelligence"
-        ],
         "internal_dir": [
-          "[scrubbed]"
+          {
+            "marker": "[scrubbed]",
+            "context": "ithub.io/rhinogent\"; const eco = JSON.parse(readFileSync(\"../onyx_mcp/[scrubbed]\", \"utf8\")); let pot = {}; try { pot = JSON.par"
+          }
         ]
       }
     }
