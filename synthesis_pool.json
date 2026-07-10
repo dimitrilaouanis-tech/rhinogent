@@ -1,0 +1,79 @@
+{
+ "round_as_of": "2026-07-10T01:59:18.364604+00:00",
+ "cohort": [
+  "Keen-Cipher-FDDC",
+  "Wild-Bastion-79A8"
+ ],
+ "topics_shared": [
+  {
+   "kind": "cross_pipeline_merchant_consensus",
+   "target": "shopify.com",
+   "angle_count": 2
+  },
+  {
+   "kind": "cross_pipeline_merchant_consensus",
+   "target": "stripe.com",
+   "angle_count": 2
+  },
+  {
+   "kind": "agent_composite_trust",
+   "target": "Keen-Cipher-FDDC",
+   "angle_count": 3
+  },
+  {
+   "kind": "agent_composite_trust",
+   "target": "Wild-Bastion-79A8",
+   "angle_count": 3
+  },
+  {
+   "kind": "agent_composite_trust",
+   "target": "Stone-Anchor-A7F1",
+   "angle_count": 3
+  },
+  {
+   "kind": "agent_composite_trust",
+   "target": "Keen-Vault-96DD",
+   "angle_count": 3
+  },
+  {
+   "kind": "shared_infra_hypothesis",
+   "target": "cloudflare.com,google.com,mozilla.org,shopify.com",
+   "angle_count": 4
+  },
+  {
+   "kind": "shared_infra_hypothesis",
+   "target": "duckduckgo.com,stripe.com",
+   "angle_count": 2
+  },
+  {
+   "kind": "shared_infra_hypothesis",
+   "target": "ebay.com,github.com",
+   "angle_count": 2
+  },
+  {
+   "kind": "shared_infra_hypothesis",
+   "target": "wikipedia.org,wordpress.org",
+   "angle_count": 2
+  }
+ ],
+ "note": "Distribution = each cohort agent receives the topic's input_items as reasoning context via onyx_brain.reason(), which journals the call to that agent's own _brain_journals.json — the agent HOLDS what it was given, not just a pointer.",
+ "onyx_attestation": {
+  "alg": "Ed25519+JCS",
+  "kid": "onyx-7fdc5cc8113040cb",
+  "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
+  "tool": "onyx_synthesis_share",
+  "observed_hash": "sha256:d36e55eefe89e8e43d04f6efc5f1556028fe7d0d1022a5a12b8300b5ef35b185",
+  "signed_at": 1783648758,
+  "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
+  "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
+  "sig": "lsb-iID2Fpu1eV1PF4jF4VCN_KfxOcihjqFVJ25rdxEXiIFr20TU-0yvRuuYxpirMkWHUcPpjypT4zpSEoMQCQ",
+  "discover": {
+   "what": "0n1x — independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
+   "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
+   "verify_this": "https://onyx-actions.onrender.com/verify",
+   "agent_card": "https://onyx-actions.onrender.com/.well-known/agent-card.json",
+   "onboard": "https://onyx-actions.onrender.com/onboard",
+   "leaderboard": "https://onyx-actions.onrender.com/leaderboard"
+  }
+ }
+}
