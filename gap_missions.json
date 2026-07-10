@@ -1,11 +1,11 @@
 {
  "artifact": "0n1x-gap-scanner",
- "as_of": "2026-07-10T12:06:10.542606+00:00",
- "round_count": 13,
+ "as_of": "2026-07-10T12:26:12.738118+00:00",
+ "round_count": 15,
  "scan_summary": {
-  "zero_coverage": 2,
+  "zero_coverage": 4,
   "zero_coverage_domain": 0,
-  "zero_coverage_agent": 2,
+  "zero_coverage_agent": 4,
   "conflicts": 1,
   "stale": 5,
   "reconfirmed_no_conflict_this_round": 5
@@ -14,28 +14,54 @@
   {
    "gap_type": "zero_coverage",
    "subject_kind": "agent",
-   "target": "Bright-Pillar-16E8",
-   "question": "Bright-Pillar-16E8 has earned -18.95 exchange points (24 premium findings) but has NEVER been cross-checked against the negative (stake-slashing) registry, nor been the subject of a synthesis agent-trust conclusion — is this earner actually trustworthy?",
+   "target": "Wild-Rampart-B6BF",
+   "question": "Wild-Rampart-B6BF has earned 15.0 exchange points (2 premium findings) but has NEVER been cross-checked against the negative (stake-slashing) registry, nor been the subject of a synthesis agent-trust conclusion — is this earner actually trustworthy?",
    "why_it_matters": "A top-earning supplier nobody has ever cross-checked is exactly the blind spot a trust layer must not have.",
    "priority": "medium",
    "routing": "fresh reload of negative_registry.json + current exchange leaderboard eligibility",
    "status": "resolved_verified",
-   "finding_if_resolved": "Bright-Pillar-16E8: not_flagged_in_public_sample=True, currently_eligible=False — first-ever cross-check of this earner against the negative registry.",
-   "mission_id": "62c0b8a9a2e24a0b479a0a15fc9e600beb5be3684bd407f9296caa7e79973c1b",
-   "ts": "2026-07-10T12:05:55.602031+00:00"
+   "finding_if_resolved": "Wild-Rampart-B6BF: not_flagged_in_public_sample=True, currently_eligible=True — first-ever cross-check of this earner against the negative registry.",
+   "mission_id": "73d9ea45f5406dc43c3cfe32fe5a0908e154ab6c09de309687cbf8ecb8797440",
+   "ts": "2026-07-10T12:25:59.157251+00:00"
   },
   {
    "gap_type": "zero_coverage",
    "subject_kind": "agent",
    "target": "Quiet-Horn-065A",
-   "question": "Quiet-Horn-065A has earned -32.47 exchange points (18 premium findings) but has NEVER been cross-checked against the negative (stake-slashing) registry, nor been the subject of a synthesis agent-trust conclusion — is this earner actually trustworthy?",
+   "question": "Quiet-Horn-065A has earned -7.47 exchange points (21 premium findings) but has NEVER been cross-checked against the negative (stake-slashing) registry, nor been the subject of a synthesis agent-trust conclusion — is this earner actually trustworthy?",
    "why_it_matters": "A top-earning supplier nobody has ever cross-checked is exactly the blind spot a trust layer must not have.",
    "priority": "medium",
    "routing": "fresh reload of negative_registry.json + current exchange leaderboard eligibility",
    "status": "resolved_verified",
    "finding_if_resolved": "Quiet-Horn-065A: not_flagged_in_public_sample=True, currently_eligible=False — first-ever cross-check of this earner against the negative registry.",
    "mission_id": "105127a3798aa461eb13809fac4422c350f506e1c67d0f9d5d436f2533f24799",
-   "ts": "2026-07-10T12:05:55.617912+00:00"
+   "ts": "2026-07-10T12:25:59.352227+00:00"
+  },
+  {
+   "gap_type": "zero_coverage",
+   "subject_kind": "agent",
+   "target": "Bright-Pillar-16E8",
+   "question": "Bright-Pillar-16E8 has earned 20.45 exchange points (29 premium findings) but has NEVER been cross-checked against the negative (stake-slashing) registry, nor been the subject of a synthesis agent-trust conclusion — is this earner actually trustworthy?",
+   "why_it_matters": "A top-earning supplier nobody has ever cross-checked is exactly the blind spot a trust layer must not have.",
+   "priority": "medium",
+   "routing": "fresh reload of negative_registry.json + current exchange leaderboard eligibility",
+   "status": "resolved_verified",
+   "finding_if_resolved": "Bright-Pillar-16E8: not_flagged_in_public_sample=True, currently_eligible=False — first-ever cross-check of this earner against the negative registry.",
+   "mission_id": "62c0b8a9a2e24a0b479a0a15fc9e600beb5be3684bd407f9296caa7e79973c1b",
+   "ts": "2026-07-10T12:25:59.352476+00:00"
+  },
+  {
+   "gap_type": "zero_coverage",
+   "subject_kind": "agent",
+   "target": "Grave-Forge-14DA",
+   "question": "Grave-Forge-14DA has earned 20.0 exchange points (3 premium findings) but has NEVER been cross-checked against the negative (stake-slashing) registry, nor been the subject of a synthesis agent-trust conclusion — is this earner actually trustworthy?",
+   "why_it_matters": "A top-earning supplier nobody has ever cross-checked is exactly the blind spot a trust layer must not have.",
+   "priority": "medium",
+   "routing": "fresh reload of negative_registry.json + current exchange leaderboard eligibility",
+   "status": "resolved_verified",
+   "finding_if_resolved": "Grave-Forge-14DA: not_flagged_in_public_sample=True, currently_eligible=True — first-ever cross-check of this earner against the negative registry.",
+   "mission_id": "59c75e8aedf00d56c4eeb81d0d1879b5fc3ce0bc0b13f3bc59ee882da6802656",
+   "ts": "2026-07-10T12:25:59.352650+00:00"
   },
   {
    "gap_type": "conflicting_coverage",
@@ -48,7 +74,33 @@
    "status": "resolved_verified",
    "finding_if_resolved": "live reality is now 'ok' (OK — fused: age[WELL-ESTABLISHED — 26 years old] · tls[valid (Google Trust Services)] · http[up 200]); the facts_registry entry is out of date and needs a rebuild via onyx_facts_registry.build().",
    "mission_id": "0277af0bd356fd589745e4936db4bece1e12c8347580a528321401fee630cf9d",
-   "ts": "2026-07-10T12:05:55.618283+00:00"
+   "ts": "2026-07-10T12:25:59.352808+00:00"
+  },
+  {
+   "gap_type": "stale_coverage",
+   "subject_kind": "domain",
+   "target": "kraken.com",
+   "question": "kraken.com was last independently attested 68h ago (> 48h threshold) and has not been rechecked since — has reality changed?",
+   "why_it_matters": "A verified-good label doesn't age gracefully on its own — an old fact nobody revisits can quietly go stale.",
+   "priority": "low",
+   "routing": "fresh oracle recheck after 68h — DRIFT found",
+   "status": "resolved_verified",
+   "finding_if_resolved": "kraken.com drifted from 'unverified' to 'ok' since last attestation — reality changed and nobody had noticed.",
+   "mission_id": "b469aa04aebead0bce34886e5884c95da685648907e2259228540efebd3b86db",
+   "ts": "2026-07-10T12:25:59.352960+00:00"
+  },
+  {
+   "gap_type": "stale_coverage",
+   "subject_kind": "domain",
+   "target": "revolut.com",
+   "question": "revolut.com was last independently attested 68h ago (> 48h threshold) and has not been rechecked since — has reality changed?",
+   "why_it_matters": "A verified-good label doesn't age gracefully on its own — an old fact nobody revisits can quietly go stale.",
+   "priority": "low",
+   "routing": "fresh oracle recheck after 68h — DRIFT found",
+   "status": "resolved_verified",
+   "finding_if_resolved": "revolut.com drifted from 'unverified' to 'ok' since last attestation — reality changed and nobody had noticed.",
+   "mission_id": "c6d3aecf2ebe678001c20e2e57e3d7361901fadd0fb1551c38128c30235ad1ad",
+   "ts": "2026-07-10T12:25:59.353120+00:00"
   },
   {
    "gap_type": "stale_coverage",
@@ -61,7 +113,7 @@
    "status": "reconfirmed",
    "finding_if_resolved": "gucci.com still 'ok' — reconfirmed, not stale in substance, only in elapsed time.",
    "mission_id": "6601e518aa2c7b28a22eae0b4501953b236dc846ca4e040f0589adb034c971c2",
-   "ts": "2026-07-10T12:05:55.618573+00:00"
+   "ts": "2026-07-10T12:25:59.353265+00:00"
   },
   {
    "gap_type": "stale_coverage",
@@ -74,7 +126,7 @@
    "status": "reconfirmed",
    "finding_if_resolved": "shopify.com still 'ok' — reconfirmed, not stale in substance, only in elapsed time.",
    "mission_id": "d7598b39d2d1e0839f16ec5ba1ca29fc88efa8d78e918eefd430e980b9a253f6",
-   "ts": "2026-07-10T12:05:55.619048+00:00"
+   "ts": "2026-07-10T12:25:59.353406+00:00"
   },
   {
    "gap_type": "stale_coverage",
@@ -87,44 +139,18 @@
    "status": "reconfirmed",
    "finding_if_resolved": "rayban.cc still 'caution' — reconfirmed, not stale in substance, only in elapsed time.",
    "mission_id": "ae4888d1ca1479dcd931c8e5a147753bb67fb5a021aa7bd775753f44cc8a84e4",
-   "ts": "2026-07-10T12:05:55.619415+00:00"
-  },
-  {
-   "gap_type": "stale_coverage",
-   "subject_kind": "domain",
-   "target": "stripe.com",
-   "question": "stripe.com was last independently attested 68h ago (> 48h threshold) and has not been rechecked since — has reality changed?",
-   "why_it_matters": "A verified-good label doesn't age gracefully on its own — an old fact nobody revisits can quietly go stale.",
-   "priority": "low",
-   "routing": "fresh oracle recheck after 68h — unchanged",
-   "status": "reconfirmed",
-   "finding_if_resolved": "stripe.com still 'ok' — reconfirmed, not stale in substance, only in elapsed time.",
-   "mission_id": "44c57fef4ba1d7d30710d21a01b3051921328c6e333a14837501c3c662eed322",
-   "ts": "2026-07-10T12:05:55.619749+00:00"
-  },
-  {
-   "gap_type": "stale_coverage",
-   "subject_kind": "domain",
-   "target": "temu.com",
-   "question": "temu.com was last independently attested 68h ago (> 48h threshold) and has not been rechecked since — has reality changed?",
-   "why_it_matters": "A verified-good label doesn't age gracefully on its own — an old fact nobody revisits can quietly go stale.",
-   "priority": "low",
-   "routing": "fresh oracle recheck after 68h — unchanged",
-   "status": "reconfirmed",
-   "finding_if_resolved": "temu.com still 'ok' — reconfirmed, not stale in substance, only in elapsed time.",
-   "mission_id": "ff641a63c61935b7d582bf781c60d226b0398454b9fa0470c8a84d695bf5f4b2",
-   "ts": "2026-07-10T12:05:55.620095+00:00"
+   "ts": "2026-07-10T12:25:59.353544+00:00"
   }
  ],
- "net_new_this_round": 2,
+ "net_new_this_round": 4,
  "conflicts_resolved_this_round": 1,
- "stale_drifted_this_round": 0,
- "journaled_missions_this_round": 8,
- "gaps_found_ever": 128,
- "missions_generated_ever": 128,
- "missions_resolved_ever": 128,
- "net_new_coverage_originated_ever": 50,
- "reconfirmed_ever": 120,
+ "stale_drifted_this_round": 2,
+ "journaled_missions_this_round": 10,
+ "gaps_found_ever": 148,
+ "missions_generated_ever": 148,
+ "missions_resolved_ever": 148,
+ "net_new_coverage_originated_ever": 58,
+ "reconfirmed_ever": 138,
  "mechanism_summary": "This is the ORIGINATION half of 0n1x intelligence, distinct from the synthesis engine's COMBINATION half. SCAN: diff a real candidate universe (domains pulled from our own seed/golden lists plus genuinely new candidates never fed to any pipeline; top exchange earners) against what facts_registry/exchange/bounty_board/challenge_court actually cover -> ZERO-COVERAGE gaps. Fresh onyx_oracle recomputes vs facts_registry's stored band -> CONFLICTING-COVERAGE gaps. Epoch-hour age of facts_registry entries vs a staleness threshold -> STALE-COVERAGE gaps. GENERATE: each gap becomes a signed mission the system poses to itself -- a question nobody fed it. ROUTE: zero-coverage targets get a direct oracle check AND are opened as public onyx_bounty verification bounties; conflicts are adjudicated by the oracle (neutral ground truth) and queued for the next staked challenge-court run; stale targets get a fresh recheck. FEED BACK: resolved missions are journaled into agent brains (onyx_brain) and published as gap_originated_coverage.json, which onyx_synthesis.absorb_pool() additively folds into its own facts pool on its next round.",
  "honest_note": "Every gap here is a REAL absence in our OWN actual coverage, computed by diffing against our own published feeds -- never fabricated. A mission's finding is signed as fact ONLY when it verifies against a live source this round; anything unresolved is labeled 'open_hypothesis', not invented. Reconfirmations (stale target, band unchanged) are tracked separately from net-new coverage and from drift -- an honest zero net-new round is expected and fine, not a bug: it only means the candidate universe happened to already be covered this round.",
  "recompute_steps": [
@@ -140,11 +166,11 @@
   "kid": "onyx-7fdc5cc8113040cb",
   "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
   "tool": "onyx_gap_scanner",
-  "observed_hash": "sha256:df23d2213e0c2269d19cab11657bc79244e7942afadbbc2eb3c4fde4e76f0eff",
-  "signed_at": 1783685170,
+  "observed_hash": "sha256:4fa90b925f35a8e314d1c5e8ddcc61a14224e57d997b42e86900548790d84473",
+  "signed_at": 1783686372,
   "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
   "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
-  "sig": "LqUFz-NatH_PMAPtkt9R6Q7wFsRhm9a2t9lzdF_8WMRjTBI3eU8pQi0sbiJdk2xjy-zt7pPbQDei13QuWugZDg",
+  "sig": "Vxhjk_losnwjECLB7GUPsua_ncOQ3HIynaVpb5UZdqmATM1Gzq-9KDplonKGe_e61cDCROZoBrnCQJ9JsZ6MBQ",
   "discover": {
    "what": "0n1x — independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
    "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
