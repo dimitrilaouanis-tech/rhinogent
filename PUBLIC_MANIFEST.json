@@ -1,0 +1,302 @@
+{
+  "artifact": "0n1x-public-surface-manifest",
+  "what": "The intended public surface of rhinogent.com. Anything live but not here is a STRAY (likely a raw-git push that bypassed _onyx_publish_guard). Audit with: py onyx_public_audit.py",
+  "root_file_count": 52,
+  "subtree_count": 21,
+  "root_files": {
+    ".nojekyll": {
+      "purpose": "site: gh-pages jekyll-off",
+      "whitelisted": true
+    },
+    "0n1x.json": {
+      "purpose": "discovery: 0n1x machine facts",
+      "whitelisted": true
+    },
+    "404.html": {
+      "purpose": "site: 404 page",
+      "whitelisted": true
+    },
+    "CNAME": {
+      "purpose": "site: custom domain",
+      "whitelisted": true
+    },
+    "__next.__PAGE__.txt": {
+      "purpose": "site: next build dump",
+      "whitelisted": true
+    },
+    "__next._full.txt": {
+      "purpose": "site: next build dump",
+      "whitelisted": true
+    },
+    "__next._head.txt": {
+      "purpose": "site: next build dump",
+      "whitelisted": true
+    },
+    "__next._index.txt": {
+      "purpose": "site: next build dump",
+      "whitelisted": true
+    },
+    "__next._tree.txt": {
+      "purpose": "site: next build dump",
+      "whitelisted": true
+    },
+    "_fable_rhino_build.html": {
+      "purpose": "site: build snapshot",
+      "whitelisted": true
+    },
+    "a2a_cards.json": {
+      "purpose": "product: signed agent cards",
+      "whitelisted": true
+    },
+    "agent-card.json": {
+      "purpose": "discovery: A2A agent card",
+      "whitelisted": true
+    },
+    "ai-catalog.json": {
+      "purpose": "discovery: ai catalog",
+      "whitelisted": true
+    },
+    "autonomous_live.json": {
+      "purpose": "live-feed: autonomy state",
+      "whitelisted": true
+    },
+    "census.json": {
+      "purpose": "moat: census snapshot",
+      "whitelisted": true
+    },
+    "census_history.json": {
+      "purpose": "moat: census over time",
+      "whitelisted": true
+    },
+    "census_manifest.json": {
+      "purpose": "moat: canonical count (Merkle-rooted)",
+      "whitelisted": true
+    },
+    "chat_kb.json": {
+      "purpose": "product: chatbot knowledge base",
+      "whitelisted": true
+    },
+    "exchange_market.json": {
+      "purpose": "product: data exchange market",
+      "whitelisted": true
+    },
+    "exchange_premium.json": {
+      "purpose": "product: data exchange (Pro tier)",
+      "whitelisted": true
+    },
+    "exchange_showcase.json": {
+      "purpose": "REVIEW — unclassified",
+      "whitelisted": false
+    },
+    "fable_challenge_response.json": {
+      "purpose": "proof: signed live-endpoint verdict",
+      "whitelisted": true
+    },
+    "facts.json": {
+      "purpose": "discovery: schema.org facts",
+      "whitelisted": true
+    },
+    "favicon.ico": {
+      "purpose": "site: favicon",
+      "whitelisted": true
+    },
+    "feed.json": {
+      "purpose": "live-feed: session dispatches",
+      "whitelisted": true
+    },
+    "file.svg": {
+      "purpose": "site: icon",
+      "whitelisted": true
+    },
+    "fleet_telemetry.json": {
+      "purpose": "live-feed: telemetry",
+      "whitelisted": true
+    },
+    "forecast_feed.json": {
+      "purpose": "live-feed: forecasts",
+      "whitelisted": true
+    },
+    "gap_missions.json": {
+      "purpose": "live-feed: gap scanner",
+      "whitelisted": true
+    },
+    "gap_originated_coverage.json": {
+      "purpose": "live-feed: gap coverage",
+      "whitelisted": true
+    },
+    "globe.svg": {
+      "purpose": "site: icon",
+      "whitelisted": true
+    },
+    "index.html": {
+      "purpose": "site: home",
+      "whitelisted": true
+    },
+    "index.txt": {
+      "purpose": "site: home text",
+      "whitelisted": true
+    },
+    "index_prev_next.html": {
+      "purpose": "site: paginated home",
+      "whitelisted": true
+    },
+    "intel_ledger.jsonl": {
+      "purpose": "product: intel event log",
+      "whitelisted": true
+    },
+    "intel_market.json": {
+      "purpose": "product: intel market (4-endpoint)",
+      "whitelisted": true
+    },
+    "live_activity.json": {
+      "purpose": "live-feed: activity",
+      "whitelisted": true
+    },
+    "live_count.json": {
+      "purpose": "moat: live ticker seed",
+      "whitelisted": true
+    },
+    "llms.txt": {
+      "purpose": "discovery: llms.txt",
+      "whitelisted": true
+    },
+    "manifest.json": {
+      "purpose": "site: PWA manifest",
+      "whitelisted": true
+    },
+    "matrix-engine.js": {
+      "purpose": "site: matrix visual engine",
+      "whitelisted": true
+    },
+    "mcp-server.json": {
+      "purpose": "discovery: mcp descriptor",
+      "whitelisted": true
+    },
+    "next.svg": {
+      "purpose": "site: icon",
+      "whitelisted": true
+    },
+    "portal.json": {
+      "purpose": "live-feed: portal",
+      "whitelisted": true
+    },
+    "rhinogent-og.png": {
+      "purpose": "site: OG image",
+      "whitelisted": true
+    },
+    "rt_economy.json": {
+      "purpose": "live-feed: economy",
+      "whitelisted": true
+    },
+    "selfgov.json": {
+      "purpose": "live-feed: governance",
+      "whitelisted": true
+    },
+    "state_of_swarm.json": {
+      "purpose": "live-feed: swarm state",
+      "whitelisted": true
+    },
+    "token_feed.json": {
+      "purpose": "live-feed: token feed",
+      "whitelisted": true
+    },
+    "vercel.svg": {
+      "purpose": "site: icon",
+      "whitelisted": true
+    },
+    "widget.js": {
+      "purpose": "site: embeddable widget",
+      "whitelisted": true
+    },
+    "window.svg": {
+      "purpose": "site: icon",
+      "whitelisted": true
+    }
+  },
+  "subtrees": {
+    ".well-known/": {
+      "purpose": "discovery: well-known",
+      "whitelisted": true
+    },
+    "0n1x/": {
+      "purpose": "site route",
+      "whitelisted": true
+    },
+    "404/": {
+      "purpose": "site route",
+      "whitelisted": true
+    },
+    "_next/": {
+      "purpose": "site: Next.js static chunks",
+      "whitelisted": true
+    },
+    "_not-found/": {
+      "purpose": "site route",
+      "whitelisted": true
+    },
+    "acceptable-use/": {
+      "purpose": "site: legal",
+      "whitelisted": true
+    },
+    "card/": {
+      "purpose": "site: proofcard route",
+      "whitelisted": true
+    },
+    "census/": {
+      "purpose": "site route",
+      "whitelisted": true
+    },
+    "census2/": {
+      "purpose": "moat: census shards",
+      "whitelisted": true
+    },
+    "census_idx/": {
+      "purpose": "moat: census index shards",
+      "whitelisted": true
+    },
+    "chat/": {
+      "purpose": "site route",
+      "whitelisted": true
+    },
+    "citizens/": {
+      "purpose": "site route",
+      "whitelisted": true
+    },
+    "dashboard/": {
+      "purpose": "site route",
+      "whitelisted": true
+    },
+    "epochs/": {
+      "purpose": "moat: anchor epochs",
+      "whitelisted": true
+    },
+    "learning/": {
+      "purpose": "site route",
+      "whitelisted": true
+    },
+    "mcp/": {
+      "purpose": "site route",
+      "whitelisted": true
+    },
+    "privacy/": {
+      "purpose": "site: legal",
+      "whitelisted": true
+    },
+    "reset-password/": {
+      "purpose": "site route",
+      "whitelisted": true
+    },
+    "terminal/": {
+      "purpose": "site route",
+      "whitelisted": true
+    },
+    "terms/": {
+      "purpose": "site: legal",
+      "whitelisted": true
+    },
+    "verify/": {
+      "purpose": "site: verify route",
+      "whitelisted": true
+    }
+  }
+}
