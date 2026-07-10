@@ -1,0 +1,130 @@
+{
+  "artifact": "0n1x-leak-sweep-proof",
+  "what": "Every text blob across every public repo/branch that serves a live site, content-scanned for machine paths, internal dirs, .onyx_ files, radar/session provenance, and secrets. Recompute: py onyx_leak_sweep.py",
+  "targets": [
+    "dimitrilaouanis-tech/rhinogent@gh-pages",
+    "dimitrilaouanis-tech/rhinogent@main",
+    "dimitrilaouanis-tech/0n1x@main"
+  ],
+  "markers_checked": {
+    "substring": [
+      "win_userpath",
+      "appdata",
+      "internal_dir",
+      "dot_onyx_file",
+      "radar_session"
+    ],
+    "regex": [
+      "openai_key",
+      "groq_key",
+      "bearer",
+      "pem_privkey",
+      "priv_field"
+    ],
+    "explicitly_allowed": [
+      "dimitrilaouanis-tech (public repo handle)"
+    ]
+  },
+  "text_files_scanned": 1190,
+  "binary_files_skipped": 31,
+  "per_repo": {
+    "dimitrilaouanis-tech/rhinogent@gh-pages": {
+      "text_files": 817,
+      "leak_files": 1
+    },
+    "dimitrilaouanis-tech/rhinogent@main": {
+      "text_files": 336,
+      "leak_files": 5
+    },
+    "dimitrilaouanis-tech/0n1x@main": {
+      "text_files": 37,
+      "leak_files": 0
+    }
+  },
+  "leak_files_found": 6,
+  "findings": [
+    {
+      "repo": "dimitrilaouanis-tech/rhinogent",
+      "branch": "gh-pages",
+      "path": "_next/static/chunks/1x9sgcq6q80xf.js",
+      "hits": {
+        "dot_onyx_file": [
+          ".onyx_"
+        ]
+      }
+    },
+    {
+      "repo": "dimitrilaouanis-tech/rhinogent",
+      "branch": "main",
+      "path": "gen_census_json.mjs",
+      "hits": {
+        "win_userpath": [
+          "c:/users",
+          "/users/intelligence"
+        ],
+        "internal_dir": [
+          "[scrubbed]"
+        ],
+        "dot_onyx_file": [
+          ".onyx_"
+        ]
+      }
+    },
+    {
+      "repo": "dimitrilaouanis-tech/rhinogent",
+      "branch": "main",
+      "path": "gen_divergence_cards.mjs",
+      "hits": {
+        "win_userpath": [
+          "c:/users",
+          "/users/intelligence"
+        ],
+        "internal_dir": [
+          "[scrubbed]"
+        ]
+      }
+    },
+    {
+      "repo": "dimitrilaouanis-tech/rhinogent",
+      "branch": "main",
+      "path": "gen_ecosystem_cards.mjs",
+      "hits": {
+        "win_userpath": [
+          "c:/users",
+          "/users/intelligence"
+        ],
+        "internal_dir": [
+          "[scrubbed]"
+        ]
+      }
+    },
+    {
+      "repo": "dimitrilaouanis-tech/rhinogent",
+      "branch": "main",
+      "path": "gen_manifest.mjs",
+      "hits": {
+        "win_userpath": [
+          "c:/users",
+          "/users/intelligence"
+        ],
+        "internal_dir": [
+          "[scrubbed]"
+        ],
+        "dot_onyx_file": [
+          ".onyx_"
+        ]
+      }
+    },
+    {
+      "repo": "dimitrilaouanis-tech/rhinogent",
+      "branch": "main",
+      "path": "src/app/terminal/terminal.tsx",
+      "hits": {
+        "dot_onyx_file": [
+          ".onyx_"
+        ]
+      }
+    }
+  ],
+  "verdict": "LEAKS FOUND — see findings"
+}
