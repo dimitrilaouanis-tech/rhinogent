@@ -14,12 +14,12 @@
  "accuracy_label": "at chance — not yet learning",
  "tokens_circulating": 681642669,
  "sources": {
-  "registered": "rhinogent/public/census_manifest.json['count']",
-  "tokens_circulating": "rhinogent/public/census_manifest.json['circulating'] (= sum(live_bal) from onyx_token_engine; matches census_history last row)",
-  "participating|self_scheduled|awake|complete": "onyx_autonomous_counter.compute() over _local_only/_token_ledger.jsonl + _exchange_ledger.jsonl + _self_initiated_ledger.jsonl",
-  "swarm_accuracy|chance_baseline|above_chance": "rhinogent/public/capability_metrics.json (bootcamp+generative curriculum, yes/no, chance=0.50)"
+  "registered": "https://rhinogent.com/census_manifest.json ['count']",
+  "tokens_circulating": "https://rhinogent.com/census_manifest.json ['circulating'] (matches census_history last row)",
+  "participating|self_scheduled|awake|complete": "[internal counter] over [internal ledgers]",
+  "swarm_accuracy|chance_baseline|above_chance": "https://rhinogent.com/capability_metrics.json (bootcamp+generative curriculum, yes/no, chance=0.50)"
  },
- "recompute": "registered = census_manifest.count; tokens_circulating = census_manifest.circulating; run onyx_autonomous_counter.compute() for participating/self_scheduled/awake/complete (distinct agents with signed actions in last 24h, tiers by initiator/stake/kind markers); swarm_accuracy/chance_baseline/above_chance from onyx_delta_reward.capability_metrics(). Rebuild with: py onyx_snapshot.py",
+ "recompute": "registered = census_manifest.count; tokens_circulating = census_manifest.circulating; recompute participating/self_scheduled/awake/complete as distinct agents with signed actions in last 24h, tiers by initiator/stake/kind markers; swarm_accuracy/chance_baseline/above_chance from https://rhinogent.com/capability_metrics.json",
  "missing_sources": [],
  "rev": "08e82b99e09476b4"
 }
