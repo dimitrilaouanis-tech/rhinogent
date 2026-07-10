@@ -1,0 +1,97 @@
+{
+ "feed": "0n1x-gap-originated-coverage",
+ "as_of": "2026-07-10T04:50:05.527566+00:00",
+ "entries": [
+  {
+   "target": "kayak.com",
+   "band": "ok",
+   "verdict": "OK — fused: age[WELL-ESTABLISHED — 31 years old] · tls[valid (Let's Encrypt)] · http[up 200]",
+   "score": 93,
+   "source": "gap_scanner_origination",
+   "gap_type": "zero_coverage",
+   "proven": true,
+   "originated_at": "2026-07-10T04:49:39.445128+00:00",
+   "mission_id": "be99471f9b466688793d43b682324b0b06c2354e75ed53c9c628720c388e6f50"
+  },
+  {
+   "target": "chase.com",
+   "band": "ok",
+   "verdict": "OK — fused: age[WELL-ESTABLISHED — 30 years old] · tls[valid (DigiCert Inc)] · http[up 200]",
+   "score": 93,
+   "source": "gap_scanner_origination",
+   "gap_type": "zero_coverage",
+   "proven": true,
+   "originated_at": "2026-07-10T04:49:39.464314+00:00",
+   "mission_id": "5811b72d9857090839895f113427436935d877b484da7d20837546ba6da6cee7"
+  },
+  {
+   "target": "robinhood.com",
+   "band": "ok",
+   "verdict": "OK — fused: age[WELL-ESTABLISHED — 30 years old] · tls[valid (Amazon)] · http[up 200]",
+   "score": 93,
+   "source": "gap_scanner_origination",
+   "gap_type": "zero_coverage",
+   "proven": true,
+   "originated_at": "2026-07-10T04:49:39.464788+00:00",
+   "mission_id": "cb06e0bcc510bace5da21762cfcae7a2ff0256d26bb726b9adfb5d217437ba5e"
+  },
+  {
+   "target": "notion.so",
+   "band": "caution",
+   "verdict": "CAUTION — fused: age[AGE UNKNOWN — registry RDAP not available for this TLD] · tls[valid (Google Trust Services)] · http[up 200]",
+   "score": 70,
+   "source": "gap_scanner_origination",
+   "gap_type": "zero_coverage",
+   "proven": true,
+   "originated_at": "2026-07-10T04:49:39.465157+00:00",
+   "mission_id": "c4e50ccbef3b0d645971cd00d550a154ae335b275cb5c4026837fa11b1fda53b"
+  },
+  {
+   "target": "figma.com",
+   "band": "ok",
+   "verdict": "OK — fused: age[WELL-ESTABLISHED — 27 years old] · tls[valid (Amazon)] · http[up 200]",
+   "score": 93,
+   "source": "gap_scanner_origination",
+   "gap_type": "zero_coverage",
+   "proven": true,
+   "originated_at": "2026-07-10T04:49:39.465590+00:00",
+   "mission_id": "d1239615905dcc22ad34ce2d805da3357f149380fbb760dc5bd06887d490f60a"
+  },
+  {
+   "target": "vercel.com",
+   "band": "ok",
+   "verdict": "OK — fused: age[WELL-ESTABLISHED — 26 years old] · tls[valid (Let's Encrypt)] · http[up 200]",
+   "score": 93,
+   "source": "gap_scanner_origination",
+   "gap_type": "zero_coverage",
+   "proven": true,
+   "originated_at": "2026-07-10T04:49:39.466094+00:00",
+   "mission_id": "ff5f7ec15c1652aea7ac58dbe883bc473d757c9c291409d62871621946c74655"
+  }
+ ],
+ "honest_note": "Every entry here is a target that had ZERO prior coverage anywhere in the 0n1x pipeline until onyx_gap_scanner found and verified it this round. onyx_synthesis.absorb_pool() additively merges these into its own facts pool on its NEXT round — net-new coverage flowing from origination into combination.",
+ "recompute_steps": [
+  "py onyx_gap_scanner.py --run-round",
+  "re-run onyx_oracle.r_merchant_multi(target) for any entry and confirm band matches"
+ ],
+ "disclaimer": "Signed observations from a bounded absence scan — not judgments about any named business. Verify before relying.",
+ "onyx_attestation": {
+  "alg": "Ed25519+JCS",
+  "kid": "onyx-7fdc5cc8113040cb",
+  "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
+  "tool": "onyx_gap_scanner",
+  "observed_hash": "sha256:436013ea108745b49d2344ad9c537aba2096e79760321e7098f8b61620bdce62",
+  "signed_at": 1783659005,
+  "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
+  "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
+  "sig": "yfCvPCnhW_BKJzOGpO7cVqOAdT1d73g4w0QbxyoLGIwgx-O6U-0ZPakvbmpeJr6jHuwF33iecBwTFSR0HBPxAw",
+  "discover": {
+   "what": "0n1x — independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
+   "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
+   "verify_this": "https://onyx-actions.onrender.com/verify",
+   "agent_card": "https://onyx-actions.onrender.com/.well-known/agent-card.json",
+   "onboard": "https://onyx-actions.onrender.com/onboard",
+   "leaderboard": "https://onyx-actions.onrender.com/leaderboard"
+  }
+ }
+}
