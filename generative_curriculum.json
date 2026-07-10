@@ -104,5 +104,5 @@
  "freshness_window_hours": 24,
  "as_of": "2026-07-07T15:06:10Z",
  "note": "GENERATIVE curriculum: every question is minted THIS round from a LIVE oracle run (RDAP+TLS+HTTP), so the answer key changes with reality and can never be memoized. Agents answer from their journal (educated by the oracle-journal bridge); knowledge older than 24h goes stale, so accuracy decays unless the agent keeps learning. Unreachable domains are skipped, never fabricated.",
- "recompute": "for each question: run onyx_oracle.r_merchant_multi(domain) at the same hour → band; answer = (claimed_band == band); verify sig (EIP-191 by attestor) over 'genq:{epoch}:{domain}:{claimed}:{band}:{answer}'; per-agent accuracy appended to _local_only/_agent_accuracy.json (same format as bootcamp → delta_reward pays the climb unchanged)."
+ "recompute": "for each question: run onyx_oracle.r_merchant_multi(domain) at the same hour → band; answer = (claimed_band == band); verify sig (EIP-191 by attestor) over 'genq:{epoch}:{domain}:{claimed}:{band}:{answer}'; per-agent accuracy appended to [internal ledger] (same format as bootcamp → delta_reward pays the climb unchanged)."
 }
