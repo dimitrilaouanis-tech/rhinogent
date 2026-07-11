@@ -1,0 +1,58 @@
+{
+  "artifact": "0n1x-facts-for-fable",
+  "as_of": "2026-07-11T07:52:24Z",
+  "rule": "Every fact below is recomputable from a public URL. We grade artifacts, not claims. Honest limits included as first-class facts.",
+  "PROVEN": [
+    {
+      "fact": "An LLM node made unscripted decisions on a domain-health goal (test-fixture insight, github.io ambiguity call, adaptive dead-domain handling) — Fable's Level-2 test.",
+      "url": "https://rhinogent.com/autonomy_challenge.json",
+      "recompute": "recover onyx_signature -> Stone-Anchor-A7F1; harness sha256 3e000e10 is domain-agnostic (grep: no domain names/cert rules)",
+      "caveat": "one node, hosted deepseek (not local), sandbox"
+    },
+    {
+      "fact": "Provable roster: 3,104,573 operator-held keypairs, Merkle-committed; 4,000/4,000 sampled signatures recover (we hold the keys); registry facts carry a membership proof that FOLDS to the root.",
+      "url": "https://rhinogent.com/warranty_layer.json",
+      "recompute": "fold merkle_membership_proof from sha256(signer) to roster_merkle_root (verified True)",
+      "caveat": "key-control-at-scale, NOT reasoning; keys operator-held (site copy scoped to 'user keys')"
+    },
+    {
+      "fact": "Exchange track records are receipt-based: of 169 agents with oracle-resolved verifications, 33 have ABOVE-CHANCE credentials (e.g. 13/13, z=3.6); coin-flippers score 0.",
+      "url": "https://rhinogent.com/track_records.json",
+      "recompute": "replay _flood_ledger.jsonl; credential=accuracy x volume x recency, non-zero only if z>=1.96"
+    },
+    {
+      "fact": "169 active + signature-verifiable agents (>147 claim), 2,000 in the pool.",
+      "url": "https://rhinogent.com/active_verifiable_agents.json",
+      "recompute": "recover EIP-191 sigs from the consult ledger, count distinct"
+    },
+    {
+      "fact": "Census number one-sourced canonical (~2.93M) across both sites; independently confirmed by an Anthropic-side fetch (not our machine).",
+      "url": "https://rhinogent.com/census_manifest.json",
+      "recompute": "fetch count; both homes render it live-bound"
+    },
+    {
+      "fact": "A live operator-path leak ([scrubbed]) was closed at the guard boundary; independently verified clean via Anthropic WebFetch + a phone on mobile network.",
+      "url": "https://rhinogent.com/synthesis_feed.json",
+      "recompute": "fetch -> no [scrubbed] key; root cause was a scheduled task (fresh process, self-heals)"
+    },
+    {
+      "fact": "Public-surface session-data sweep is CLEAN: 1,204 text files scanned across 3 repos, zero chat-session/UUID/radar leaks.",
+      "url": "https://rhinogent.com/leak_sweep_proof.json",
+      "recompute": "py onyx_leak_sweep.py"
+    }
+  ],
+  "HONEST_LIMITS_stated_as_facts": [
+    "External adoption = 0. Every agent is operator-run; N_eff=1. The launch metric (a key we never held completing a paid check) has not moved.",
+    "Reasoning capacity is ~1,720 LLM cycles/day on free tiers — and it is CURRENTLY EXHAUSTED (groq 429). The EDU_EDGE teaching-delta was NOT published because both runs produced an invalid control cohort (rate-limit artifact) — we refused to ship a fake number, twice.",
+    "Fleet resolved-accuracy is 0.546 (near coin-flip); only 33 of 169 agents clear the above-chance bar. The track record's job is to SEPARATE those 33 from the noise, not flatter the fleet.",
+    "The warranty roster proves key CONTROL, not autonomy — 3.1M keys sign on command, they do not decide. Keys are operator-held infrastructure.",
+    "Teaching/exchange economics are a CLOSED loop today: treasury -> own agents. Internally honest, externally worth nothing until an outside buyer consumes a rank or a fact."
+  ],
+  "onyx_signature": {
+    "scheme": "EIP-191",
+    "signer": "0xb7b85b52Eea33D5Dc36ee6dEfD9ea7d6B9dfA7F1",
+    "signed_digest": "0n1x-facts:v1:a86c7b9f0306a1588d317784079a08424f3e09fc353f77d3b98e5ec3b8495a86",
+    "signature": "0xca37d1750bb9d3a06a4053599d19457967463a7adfbc27c55c61d43b22d295bd65d2ebf21b1321fb60b0b9a44e8f0288b5cb3d203766dfa529eb3a8c0919121b1b",
+    "recovers": true
+  }
+}
