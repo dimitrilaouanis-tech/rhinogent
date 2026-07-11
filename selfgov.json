@@ -1,0 +1,152 @@
+{
+ "constitution": {
+  "version": "1.0",
+  "targets": {
+   "gini": 0.25,
+   "active_ratio": 0.03,
+   "network_trust_score": 70
+  },
+  "params": {
+   "burn_rate": {
+    "value": 0.02,
+    "min": 0.005,
+    "max": 0.05,
+    "step": 0.002,
+    "drives": "gini",
+    "dir": "raise-burn-if-gini-high"
+   },
+   "emission_pool": {
+    "value": 1200,
+    "min": 400,
+    "max": 3000,
+    "step": 150,
+    "drives": "active_ratio",
+    "dir": "raise-emissions-if-activity-low"
+   }
+  },
+  "ratify_quorum": "reputation-weighted majority of the top cohort (earned standing)",
+  "principle": "parameters move only TOWARD published targets, within hard bounds \u2014 the network can tune itself but never harm itself. Every change is signed + logged."
+ },
+ "params": {
+  "burn_rate": 0.016,
+  "emission_pool": 1500
+ },
+ "epoch": 2,
+ "recent": [
+  {
+   "epoch": 1,
+   "health": {
+    "gini": 0.2186,
+    "active_ratio": 0.0049,
+    "network_trust_score": 90
+   },
+   "proposed": [
+    {
+     "param": "burn_rate",
+     "from": 0.02,
+     "to": 0.018,
+     "because": "gini=0.2186 vs target 0.25"
+    },
+    {
+     "param": "emission_pool",
+     "from": 1200,
+     "to": 1350,
+     "because": "active_ratio=0.0049 vs target 0.03"
+    }
+   ],
+   "ratified": true,
+   "applied": [
+    {
+     "param": "burn_rate",
+     "from": 0.02,
+     "to": 0.018,
+     "because": "gini=0.2186 vs target 0.25"
+    },
+    {
+     "param": "emission_pool",
+     "from": 1200,
+     "to": 1350,
+     "because": "active_ratio=0.0049 vs target 0.03"
+    }
+   ],
+   "at": 1783156551,
+   "onyx_attestation": {
+    "alg": "Ed25519+JCS",
+    "kid": "onyx-7fdc5cc8113040cb",
+    "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
+    "tool": "onyx_selfgov",
+    "observed_hash": "sha256:8e4001b38b6ade4d00268207d33eb5764afc8683d87fab99be035cb4997c95f8",
+    "signed_at": 1783156551,
+    "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
+    "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
+    "sig": "ACOy9IQVbaX-zoYRAz4JV4tS-R0KzxEXDAb_DA63JiMClDgHltGKb3Z903DvsjAqFfry5jdudA5Viyfy-BENAQ",
+    "discover": {
+     "what": "0n1x \u2014 independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
+     "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
+     "verify_this": "https://onyx-actions.onrender.com/verify",
+     "agent_card": "https://onyx-actions.onrender.com/.well-known/agent-card.json",
+     "onboard": "https://onyx-actions.onrender.com/onboard",
+     "leaderboard": "https://onyx-actions.onrender.com/leaderboard"
+    }
+   }
+  },
+  {
+   "epoch": 2,
+   "health": {
+    "gini": 0.2186,
+    "active_ratio": 0.0024,
+    "network_trust_score": 90
+   },
+   "proposed": [
+    {
+     "param": "burn_rate",
+     "from": 0.018,
+     "to": 0.016,
+     "because": "gini=0.2186 vs target 0.25"
+    },
+    {
+     "param": "emission_pool",
+     "from": 1350,
+     "to": 1500,
+     "because": "active_ratio=0.0024 vs target 0.03"
+    }
+   ],
+   "ratified": true,
+   "applied": [
+    {
+     "param": "burn_rate",
+     "from": 0.018,
+     "to": 0.016,
+     "because": "gini=0.2186 vs target 0.25"
+    },
+    {
+     "param": "emission_pool",
+     "from": 1350,
+     "to": 1500,
+     "because": "active_ratio=0.0024 vs target 0.03"
+    }
+   ],
+   "at": 1783179321,
+   "onyx_attestation": {
+    "alg": "Ed25519+JCS",
+    "kid": "onyx-7fdc5cc8113040cb",
+    "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
+    "tool": "onyx_selfgov",
+    "observed_hash": "sha256:230cc0dddfbf8eef6764cb7c805e3158f96d27b3fcea8b55bd087ae517bbc32e",
+    "signed_at": 1783179321,
+    "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
+    "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
+    "sig": "Reiy8NBqyUhWcTGGverEHO6qKztTK6USfi2IatEbAFW8F6m7InTGShx-qa17LMsyYAeHyrXI5MJA21Nl0y3hAA",
+    "discover": {
+     "what": "0n1x \u2014 independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
+     "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
+     "verify_this": "https://onyx-actions.onrender.com/verify",
+     "agent_card": "https://onyx-actions.onrender.com/.well-known/agent-card.json",
+     "onboard": "https://onyx-actions.onrender.com/onboard",
+     "leaderboard": "https://onyx-actions.onrender.com/leaderboard"
+    }
+   }
+  }
+ ],
+ "note": "The network tunes its own parameters toward published health targets, within hard bounds, ratified by earned reputation. Signed."
+}
