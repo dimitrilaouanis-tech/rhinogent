@@ -1,0 +1,497 @@
+{
+  "artifact": "0n1x-warranty-layer",
+  "what": "The roster as SIGNED ATTRIBUTION: every data-product fact is signed by an identity drawn from a provable, Merkle-committed roster of held keypairs. Not a workforce — a warranty.",
+  "roster_size": 3104573,
+  "roster_merkle_root": "71e7dca23041dbbcc4a466a4c93a044158290b08a11b73e49920c42aab6a5ab3",
+  "roster_root_recompute": "sha256(lower(address)) as leaves in file order, pairwise sha256 to root",
+  "control_spotcheck": {
+    "nonce": "0n1x-roster-control:2026-07-11T06:57:08Z",
+    "sample": 4000,
+    "recovered": 4000,
+    "note": "proves we actually HOLD the keys (not just a list of addresses); any identity can also sign on-demand"
+  },
+  "fact_attribution": [
+    {
+      "fact_preview": "{\"agent_attestations\": 1232, \"agreement_pct\": 100, \"band\": \"ok\", \"consensus_agent_count\": 100, \"consensus_proof\": \"d1596",
+      "signed_by": "0x5dF2b0Df172555DA919ce0751b5271700a9DB90B",
+      "signature": "0xa92d35ceedf66fb44a98a82e57b66eceb8fa919237f95a80a14cfdf879e3aa2d546b93c06af16a8af2d0ea5f072c8681991dbc8e2e15941f15ffe00566d02b091b",
+      "merkle_membership_proof": [
+        {
+          "hash": "06693815ea108029a886b4409901a047cb08b1f4946a8a43a7fd7e338aa06126",
+          "right": true
+        },
+        {
+          "hash": "b5c0d57754835e416a0d9fe8a004269c6372d4116c60411577bb9b109c9e6b10",
+          "right": true
+        },
+        {
+          "hash": "7908f496cbb4dabac32fde52c397bf7e1f2ac9378d6cdf5262753f226b349fa2",
+          "right": true
+        },
+        {
+          "hash": "b1c4ba434b1f9eb40d8a3d3bb7cf64ac06a8b2b7cd27e571c3516870de3a683b",
+          "right": true
+        },
+        {
+          "hash": "64211d5803e8243dc8904440fb01eaeecb4af12892029aa885a780c6b9d65622",
+          "right": true
+        },
+        {
+          "hash": "4c7f623c217c29030bec509a76aae6e209cf0603ce08672a844beffb9af34a92",
+          "right": true
+        },
+        {
+          "hash": "618e876e5b52f9ee0e85183f301f5e9be9a47813f42a665c766e2aa2ce3ecacc",
+          "right": true
+        },
+        {
+          "hash": "b73de60715cecf75b043d8dfa37e8113c4ae887331abafc0fa2a35ddcfadd204",
+          "right": true
+        },
+        {
+          "hash": "de9506d8e17f472da85f018633c0ac3dcf93e8b07263a5c548374e3c9650dec5",
+          "right": true
+        },
+        {
+          "hash": "e833d4f954b600c0f69d58f478dbb1d40960e60a4f7e60d9ce9ef7d4c62a0550",
+          "right": true
+        },
+        {
+          "hash": "6d734ef0d57ef383c81de0e81a60911ae5f688e8f58b0cba350cff5fabea2dbc",
+          "right": true
+        },
+        {
+          "hash": "72518fe31f8ce03d02c6b9d879e70f51e11534f74d038b9eecf0d0ef850bda84",
+          "right": true
+        },
+        {
+          "hash": "59caa80de8fe68029755c364b667beec3549e3f6e255b51dfaba3a143f58dbd9",
+          "right": true
+        },
+        {
+          "hash": "093ef3b537a842e63c79f57c5038922b47c2dbad86081fc109a180996a948322",
+          "right": true
+        },
+        {
+          "hash": "6fefc972e36c708178b572fc87b773e6a9c53ee546ad9153b2518e8866c9bd23",
+          "right": true
+        },
+        {
+          "hash": "fb92ac8bbc0a1a6bd3f1e779dec28d671833dd54ecb4317f95efaa4fb321e770",
+          "right": true
+        },
+        {
+          "hash": "2e0606b5880b3d902db5a6cb5d0083dc1367b367230949741a9fb0898829da12",
+          "right": true
+        },
+        {
+          "hash": "85058894a3e86474d429b58515ad952558adf759c72711aff23bd31169359a57",
+          "right": true
+        },
+        {
+          "hash": "baea7b83d8534567038fc491e8cc45eae794658cf5c0798b75c1f35666a379e6",
+          "right": true
+        },
+        {
+          "hash": "ed7558a3190ca16db9435e4f97c6ac0449ec25f709b22c30aea4cde351a503e0",
+          "right": true
+        },
+        {
+          "hash": "967541f7470762e26e5d7f75bec06755af46dea8ea432561d3187fad8f8077fc",
+          "right": true
+        },
+        {
+          "hash": "8cd6aa284fd45fc90fb3ca1e884555581507ab10068b3196bfb3333ffaab457e",
+          "right": true
+        }
+      ],
+      "verify": "recover EIP-191 sig over '0n1x-fact:'+claim == signed_by; then fold membership_proof from sha256(signed_by) to roster_merkle_root"
+    },
+    {
+      "fact_preview": "{\"agent_attestations\": 1212, \"agreement_pct\": 100, \"band\": \"ok\", \"consensus_agent_count\": 100, \"consensus_proof\": \"b377f",
+      "signed_by": "0xAa36119Ca5aC32e49FEC7D9c118e55826965B069",
+      "signature": "0xd7577b8db83ffe8924a8f35bfb419c48a68a3f072bc2b96b2799e7a0a4078a181f7d691d17c7bedf74dcae6261647ecbd013de941494cba9e42a8f0ba92eca551c",
+      "merkle_membership_proof": [
+        {
+          "hash": "6d61a31366f9dafdd4c8438ec89179a3f7bd83d6f59518699bc64674a4936a39",
+          "right": false
+        },
+        {
+          "hash": "b5c0d57754835e416a0d9fe8a004269c6372d4116c60411577bb9b109c9e6b10",
+          "right": true
+        },
+        {
+          "hash": "7908f496cbb4dabac32fde52c397bf7e1f2ac9378d6cdf5262753f226b349fa2",
+          "right": true
+        },
+        {
+          "hash": "b1c4ba434b1f9eb40d8a3d3bb7cf64ac06a8b2b7cd27e571c3516870de3a683b",
+          "right": true
+        },
+        {
+          "hash": "64211d5803e8243dc8904440fb01eaeecb4af12892029aa885a780c6b9d65622",
+          "right": true
+        },
+        {
+          "hash": "4c7f623c217c29030bec509a76aae6e209cf0603ce08672a844beffb9af34a92",
+          "right": true
+        },
+        {
+          "hash": "618e876e5b52f9ee0e85183f301f5e9be9a47813f42a665c766e2aa2ce3ecacc",
+          "right": true
+        },
+        {
+          "hash": "b73de60715cecf75b043d8dfa37e8113c4ae887331abafc0fa2a35ddcfadd204",
+          "right": true
+        },
+        {
+          "hash": "de9506d8e17f472da85f018633c0ac3dcf93e8b07263a5c548374e3c9650dec5",
+          "right": true
+        },
+        {
+          "hash": "e833d4f954b600c0f69d58f478dbb1d40960e60a4f7e60d9ce9ef7d4c62a0550",
+          "right": true
+        },
+        {
+          "hash": "6d734ef0d57ef383c81de0e81a60911ae5f688e8f58b0cba350cff5fabea2dbc",
+          "right": true
+        },
+        {
+          "hash": "72518fe31f8ce03d02c6b9d879e70f51e11534f74d038b9eecf0d0ef850bda84",
+          "right": true
+        },
+        {
+          "hash": "59caa80de8fe68029755c364b667beec3549e3f6e255b51dfaba3a143f58dbd9",
+          "right": true
+        },
+        {
+          "hash": "093ef3b537a842e63c79f57c5038922b47c2dbad86081fc109a180996a948322",
+          "right": true
+        },
+        {
+          "hash": "6fefc972e36c708178b572fc87b773e6a9c53ee546ad9153b2518e8866c9bd23",
+          "right": true
+        },
+        {
+          "hash": "fb92ac8bbc0a1a6bd3f1e779dec28d671833dd54ecb4317f95efaa4fb321e770",
+          "right": true
+        },
+        {
+          "hash": "2e0606b5880b3d902db5a6cb5d0083dc1367b367230949741a9fb0898829da12",
+          "right": true
+        },
+        {
+          "hash": "85058894a3e86474d429b58515ad952558adf759c72711aff23bd31169359a57",
+          "right": true
+        },
+        {
+          "hash": "baea7b83d8534567038fc491e8cc45eae794658cf5c0798b75c1f35666a379e6",
+          "right": true
+        },
+        {
+          "hash": "ed7558a3190ca16db9435e4f97c6ac0449ec25f709b22c30aea4cde351a503e0",
+          "right": true
+        },
+        {
+          "hash": "967541f7470762e26e5d7f75bec06755af46dea8ea432561d3187fad8f8077fc",
+          "right": true
+        },
+        {
+          "hash": "8cd6aa284fd45fc90fb3ca1e884555581507ab10068b3196bfb3333ffaab457e",
+          "right": true
+        }
+      ],
+      "verify": "recover EIP-191 sig over '0n1x-fact:'+claim == signed_by; then fold membership_proof from sha256(signed_by) to roster_merkle_root"
+    },
+    {
+      "fact_preview": "{\"agent_attestations\": 1211, \"agreement_pct\": 100, \"band\": \"caution\", \"consensus_agent_count\": 100, \"consensus_proof\": \"",
+      "signed_by": "0xe33103905E43586e457f6b5D78945469F1ab475f",
+      "signature": "0xedde6cfe08d0ec979409e14f3c44a77c6eb5ad118c67f577fcbb2fb2b3b5760f77a0d57864c27b22ca22697c9c9878e5c99ae186aec137680f36c972409990061c",
+      "merkle_membership_proof": [
+        {
+          "hash": "f660d71144acb020fc698286cf5a5c578efdb87ec5c771ee00c26582f4f3deea",
+          "right": true
+        },
+        {
+          "hash": "00ad603401fcbadd0cac7f27807a7912c984bced7b36fd041a0c8c672dc8b2e7",
+          "right": false
+        },
+        {
+          "hash": "7908f496cbb4dabac32fde52c397bf7e1f2ac9378d6cdf5262753f226b349fa2",
+          "right": true
+        },
+        {
+          "hash": "b1c4ba434b1f9eb40d8a3d3bb7cf64ac06a8b2b7cd27e571c3516870de3a683b",
+          "right": true
+        },
+        {
+          "hash": "64211d5803e8243dc8904440fb01eaeecb4af12892029aa885a780c6b9d65622",
+          "right": true
+        },
+        {
+          "hash": "4c7f623c217c29030bec509a76aae6e209cf0603ce08672a844beffb9af34a92",
+          "right": true
+        },
+        {
+          "hash": "618e876e5b52f9ee0e85183f301f5e9be9a47813f42a665c766e2aa2ce3ecacc",
+          "right": true
+        },
+        {
+          "hash": "b73de60715cecf75b043d8dfa37e8113c4ae887331abafc0fa2a35ddcfadd204",
+          "right": true
+        },
+        {
+          "hash": "de9506d8e17f472da85f018633c0ac3dcf93e8b07263a5c548374e3c9650dec5",
+          "right": true
+        },
+        {
+          "hash": "e833d4f954b600c0f69d58f478dbb1d40960e60a4f7e60d9ce9ef7d4c62a0550",
+          "right": true
+        },
+        {
+          "hash": "6d734ef0d57ef383c81de0e81a60911ae5f688e8f58b0cba350cff5fabea2dbc",
+          "right": true
+        },
+        {
+          "hash": "72518fe31f8ce03d02c6b9d879e70f51e11534f74d038b9eecf0d0ef850bda84",
+          "right": true
+        },
+        {
+          "hash": "59caa80de8fe68029755c364b667beec3549e3f6e255b51dfaba3a143f58dbd9",
+          "right": true
+        },
+        {
+          "hash": "093ef3b537a842e63c79f57c5038922b47c2dbad86081fc109a180996a948322",
+          "right": true
+        },
+        {
+          "hash": "6fefc972e36c708178b572fc87b773e6a9c53ee546ad9153b2518e8866c9bd23",
+          "right": true
+        },
+        {
+          "hash": "fb92ac8bbc0a1a6bd3f1e779dec28d671833dd54ecb4317f95efaa4fb321e770",
+          "right": true
+        },
+        {
+          "hash": "2e0606b5880b3d902db5a6cb5d0083dc1367b367230949741a9fb0898829da12",
+          "right": true
+        },
+        {
+          "hash": "85058894a3e86474d429b58515ad952558adf759c72711aff23bd31169359a57",
+          "right": true
+        },
+        {
+          "hash": "baea7b83d8534567038fc491e8cc45eae794658cf5c0798b75c1f35666a379e6",
+          "right": true
+        },
+        {
+          "hash": "ed7558a3190ca16db9435e4f97c6ac0449ec25f709b22c30aea4cde351a503e0",
+          "right": true
+        },
+        {
+          "hash": "967541f7470762e26e5d7f75bec06755af46dea8ea432561d3187fad8f8077fc",
+          "right": true
+        },
+        {
+          "hash": "8cd6aa284fd45fc90fb3ca1e884555581507ab10068b3196bfb3333ffaab457e",
+          "right": true
+        }
+      ],
+      "verify": "recover EIP-191 sig over '0n1x-fact:'+claim == signed_by; then fold membership_proof from sha256(signed_by) to roster_merkle_root"
+    },
+    {
+      "fact_preview": "{\"agent_attestations\": 1207, \"agreement_pct\": 100, \"band\": \"ok\", \"consensus_agent_count\": 100, \"consensus_proof\": \"35301",
+      "signed_by": "0x8Aa40da86085d1412e3F4b9D51F7577D03085e13",
+      "signature": "0x4ae44b22d5ff6ced73cd071a0471a6f3066bff1d0e19101fe6d85fccab60c238544602a1b3e32d0e190ee51258b43ceb56869606a953aa3f9d2c2e74242f16d21b",
+      "merkle_membership_proof": [
+        {
+          "hash": "006e65cb5476a04649642c6cc39b6d2ad182a179626e03080841577b855ee576",
+          "right": false
+        },
+        {
+          "hash": "00ad603401fcbadd0cac7f27807a7912c984bced7b36fd041a0c8c672dc8b2e7",
+          "right": false
+        },
+        {
+          "hash": "7908f496cbb4dabac32fde52c397bf7e1f2ac9378d6cdf5262753f226b349fa2",
+          "right": true
+        },
+        {
+          "hash": "b1c4ba434b1f9eb40d8a3d3bb7cf64ac06a8b2b7cd27e571c3516870de3a683b",
+          "right": true
+        },
+        {
+          "hash": "64211d5803e8243dc8904440fb01eaeecb4af12892029aa885a780c6b9d65622",
+          "right": true
+        },
+        {
+          "hash": "4c7f623c217c29030bec509a76aae6e209cf0603ce08672a844beffb9af34a92",
+          "right": true
+        },
+        {
+          "hash": "618e876e5b52f9ee0e85183f301f5e9be9a47813f42a665c766e2aa2ce3ecacc",
+          "right": true
+        },
+        {
+          "hash": "b73de60715cecf75b043d8dfa37e8113c4ae887331abafc0fa2a35ddcfadd204",
+          "right": true
+        },
+        {
+          "hash": "de9506d8e17f472da85f018633c0ac3dcf93e8b07263a5c548374e3c9650dec5",
+          "right": true
+        },
+        {
+          "hash": "e833d4f954b600c0f69d58f478dbb1d40960e60a4f7e60d9ce9ef7d4c62a0550",
+          "right": true
+        },
+        {
+          "hash": "6d734ef0d57ef383c81de0e81a60911ae5f688e8f58b0cba350cff5fabea2dbc",
+          "right": true
+        },
+        {
+          "hash": "72518fe31f8ce03d02c6b9d879e70f51e11534f74d038b9eecf0d0ef850bda84",
+          "right": true
+        },
+        {
+          "hash": "59caa80de8fe68029755c364b667beec3549e3f6e255b51dfaba3a143f58dbd9",
+          "right": true
+        },
+        {
+          "hash": "093ef3b537a842e63c79f57c5038922b47c2dbad86081fc109a180996a948322",
+          "right": true
+        },
+        {
+          "hash": "6fefc972e36c708178b572fc87b773e6a9c53ee546ad9153b2518e8866c9bd23",
+          "right": true
+        },
+        {
+          "hash": "fb92ac8bbc0a1a6bd3f1e779dec28d671833dd54ecb4317f95efaa4fb321e770",
+          "right": true
+        },
+        {
+          "hash": "2e0606b5880b3d902db5a6cb5d0083dc1367b367230949741a9fb0898829da12",
+          "right": true
+        },
+        {
+          "hash": "85058894a3e86474d429b58515ad952558adf759c72711aff23bd31169359a57",
+          "right": true
+        },
+        {
+          "hash": "baea7b83d8534567038fc491e8cc45eae794658cf5c0798b75c1f35666a379e6",
+          "right": true
+        },
+        {
+          "hash": "ed7558a3190ca16db9435e4f97c6ac0449ec25f709b22c30aea4cde351a503e0",
+          "right": true
+        },
+        {
+          "hash": "967541f7470762e26e5d7f75bec06755af46dea8ea432561d3187fad8f8077fc",
+          "right": true
+        },
+        {
+          "hash": "8cd6aa284fd45fc90fb3ca1e884555581507ab10068b3196bfb3333ffaab457e",
+          "right": true
+        }
+      ],
+      "verify": "recover EIP-191 sig over '0n1x-fact:'+claim == signed_by; then fold membership_proof from sha256(signed_by) to roster_merkle_root"
+    },
+    {
+      "fact_preview": "{\"agent_attestations\": 1203, \"agreement_pct\": 100, \"band\": \"ok\", \"consensus_agent_count\": 100, \"consensus_proof\": \"41c24",
+      "signed_by": "0xDfaC378024FE1f1270F274f80107d39B779Ec920",
+      "signature": "0xb9f902ad521915d8ec92312dda934710aa378c6cd349567f2135b787c85cfd634cc4497418510bbcdcb91c82b2bcbab32e57c391ac51ad367e8eba3c5ebeb6c51c",
+      "merkle_membership_proof": [
+        {
+          "hash": "6645e9f5fa208658047f1391049bfc9042b1284a9d66b49f8430746832ed919e",
+          "right": true
+        },
+        {
+          "hash": "b485f457dc9d66e42759ce3b472b0029ffc46cb520e77cf80260723d8682c659",
+          "right": true
+        },
+        {
+          "hash": "a623d17c264c7917e0a4a8a1cb0dd886e198003e546533889452ae4e0bf01bbc",
+          "right": false
+        },
+        {
+          "hash": "b1c4ba434b1f9eb40d8a3d3bb7cf64ac06a8b2b7cd27e571c3516870de3a683b",
+          "right": true
+        },
+        {
+          "hash": "64211d5803e8243dc8904440fb01eaeecb4af12892029aa885a780c6b9d65622",
+          "right": true
+        },
+        {
+          "hash": "4c7f623c217c29030bec509a76aae6e209cf0603ce08672a844beffb9af34a92",
+          "right": true
+        },
+        {
+          "hash": "618e876e5b52f9ee0e85183f301f5e9be9a47813f42a665c766e2aa2ce3ecacc",
+          "right": true
+        },
+        {
+          "hash": "b73de60715cecf75b043d8dfa37e8113c4ae887331abafc0fa2a35ddcfadd204",
+          "right": true
+        },
+        {
+          "hash": "de9506d8e17f472da85f018633c0ac3dcf93e8b07263a5c548374e3c9650dec5",
+          "right": true
+        },
+        {
+          "hash": "e833d4f954b600c0f69d58f478dbb1d40960e60a4f7e60d9ce9ef7d4c62a0550",
+          "right": true
+        },
+        {
+          "hash": "6d734ef0d57ef383c81de0e81a60911ae5f688e8f58b0cba350cff5fabea2dbc",
+          "right": true
+        },
+        {
+          "hash": "72518fe31f8ce03d02c6b9d879e70f51e11534f74d038b9eecf0d0ef850bda84",
+          "right": true
+        },
+        {
+          "hash": "59caa80de8fe68029755c364b667beec3549e3f6e255b51dfaba3a143f58dbd9",
+          "right": true
+        },
+        {
+          "hash": "093ef3b537a842e63c79f57c5038922b47c2dbad86081fc109a180996a948322",
+          "right": true
+        },
+        {
+          "hash": "6fefc972e36c708178b572fc87b773e6a9c53ee546ad9153b2518e8866c9bd23",
+          "right": true
+        },
+        {
+          "hash": "fb92ac8bbc0a1a6bd3f1e779dec28d671833dd54ecb4317f95efaa4fb321e770",
+          "right": true
+        },
+        {
+          "hash": "2e0606b5880b3d902db5a6cb5d0083dc1367b367230949741a9fb0898829da12",
+          "right": true
+        },
+        {
+          "hash": "85058894a3e86474d429b58515ad952558adf759c72711aff23bd31169359a57",
+          "right": true
+        },
+        {
+          "hash": "baea7b83d8534567038fc491e8cc45eae794658cf5c0798b75c1f35666a379e6",
+          "right": true
+        },
+        {
+          "hash": "ed7558a3190ca16db9435e4f97c6ac0449ec25f709b22c30aea4cde351a503e0",
+          "right": true
+        },
+        {
+          "hash": "967541f7470762e26e5d7f75bec06755af46dea8ea432561d3187fad8f8077fc",
+          "right": true
+        },
+        {
+          "hash": "8cd6aa284fd45fc90fb3ca1e884555581507ab10068b3196bfb3333ffaab457e",
+          "right": true
+        }
+      ],
+      "verify": "recover EIP-191 sig over '0n1x-fact:'+claim == signed_by; then fold membership_proof from sha256(signed_by) to roster_merkle_root"
+    }
+  ],
+  "honest_label": "Warranty/attribution layer — a real, sellable data-product feature (no competitor can copy a provable roster of this size). NOT reasoning/awakening: these keys sign on command, they do not decide. Keys are OPERATOR-HELD infrastructure (site custody copy scoped to 'user keys'). The 3M contributes something true to something sellable ONLY in this role.",
+  "as_of": "2026-07-11T07:00:18Z"
+}
