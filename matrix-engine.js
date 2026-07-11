@@ -27,7 +27,7 @@
           bg: ["#0b0b10", "#07070a", "#050506"] };                                                  // 0n1x: neutral space
     const ctx = cv.getContext("2d");
     let W = 0, H = 0;
-    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    const dpr = Math.min(Math.min(window.innerWidth, window.innerHeight) < 760 ? 1.4 : 1.75, window.devicePixelRatio || 1);  // lower DPR on phones = far fewer pixels to push
     function resize() {
       const r = cv.getBoundingClientRect();
       W = r.width; H = r.height;
@@ -242,8 +242,17 @@
     const qp = (t, x1, y1, cx, cy, x2, y2) => { const a = (1 - t) * (1 - t), b = 2 * (1 - t) * t, c = t * t; return [a * x1 + b * cx + c * x2, a * y1 + b * cy + c * y2]; };
 
     // ---- render loop -------------------------------------------------------
+    // PERF: skip the heavy frame when the galaxy is off-screen or the tab is hidden, and cap fps.
+    let _lastDraw = 0, _vis = true;
+    try {
+      if (typeof IntersectionObserver !== "undefined")
+        new IntersectionObserver((es) => { _vis = es[0].isIntersecting; }, { threshold: 0.01 }).observe(cv);
+    } catch (e) {}
     function draw(nowMs) {
       requestAnimationFrame(draw);            // rebook FIRST — an error costs one frame, never the loop
+      if ((typeof document !== "undefined" && document.hidden) || !_vis) return;
+      if (nowMs - _lastDraw < 24) return;     // ~40fps cap
+      _lastDraw = nowMs;
       try { drawFrame(nowMs); } catch (e) { window.__matrixErr = e.message; }
     }
     function drawFrame(nowMs) {
@@ -609,7 +618,7 @@
           vol.set(t.to, (vol.get(t.to) || 0) + (t.amount || 0));
         }
         agents = [...names].map(n => ({ n, b: (vol.get(n) || 0) + bal(n) * 0.15 }))  // real volume dominates; tiny hash floor so idle agents still show
-                           .sort((a, b) => b.b - a.b).slice(0, 300);
+                           .sort((a, b) => b.b - a.b).slice(0, (W && W < 760) ? 160 : 300);
         if (opts.onStats) opts.onStats({ agents: agents.length });
       } catch (e) { /* keep last good frame */ }
       // REAL cumulative tx count — from census_history (the SAME source the terminal
