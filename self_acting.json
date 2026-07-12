@@ -1,0 +1,94 @@
+{
+ "epoch": 495500,
+ "cohort": 8000,
+ "self_acted_this_pass": 927,
+ "pings": 485,
+ "slashes": 0,
+ "ledger_total": 124512,
+ "rep_leaders": [
+  {
+   "agent": "0x39d745",
+   "rep": 105
+  },
+  {
+   "agent": "0xd83BCa",
+   "rep": 104
+  },
+  {
+   "agent": "0xceeBB6",
+   "rep": 104
+  },
+  {
+   "agent": "0xeEf8E6",
+   "rep": 104
+  },
+  {
+   "agent": "0xA43754",
+   "rep": 104
+  }
+ ],
+ "latest": [
+  {
+   "epoch": 495500,
+   "challenger": "Grave-Beacon-914B",
+   "target": "Keen-Sentinel-D4DC",
+   "nonce": "32ca9588a73e0238",
+   "outcome": "verified",
+   "initiator": "peer",
+   "csig": "0x3c8f43bde5997a60…",
+   "hash": "2ddea80d07a5131e"
+  },
+  {
+   "epoch": 495500,
+   "challenger": "Deep-Bastion-B9B6",
+   "target": "Sharp-Anchor-4ED8",
+   "nonce": "2b1c9b1cc51cf8b0",
+   "outcome": "verified",
+   "initiator": "peer",
+   "csig": "0xde529ae96669420d…",
+   "hash": "ccaecd4b08d13e35"
+  },
+  {
+   "epoch": 495500,
+   "challenger": "True-Gate-C66E",
+   "target": "Quiet-Tower-AA4F",
+   "nonce": "ac68e3f430d46b9e",
+   "outcome": "verified",
+   "initiator": "peer",
+   "csig": "0xe4e6b7979e3a7bad…",
+   "hash": "eb730749f2be78d4"
+  },
+  {
+   "epoch": 495500,
+   "challenger": "Pure-Beacon-D134",
+   "target": "Onyx-Gate-3540",
+   "nonce": "f13a4b458d6e44bc",
+   "outcome": "verified",
+   "initiator": "peer",
+   "csig": "0x8706c4cfa8f5afce…",
+   "hash": "29172de231f805ff"
+  },
+  {
+   "epoch": 495500,
+   "challenger": "Deep-Beacon-539F",
+   "target": "Steel-Ledger-4B49",
+   "nonce": "d840de65fbf6a2eb",
+   "outcome": "verified",
+   "initiator": "peer",
+   "csig": "0x3995f8c611bdbf3e…",
+   "hash": "92390077cffea36c"
+  },
+  {
+   "epoch": 495500,
+   "challenger": "Keen-Anchor-8198",
+   "target": "Lone-Ledger-2E34",
+   "nonce": "80dfe9a7d6ec0c9b",
+   "outcome": "verified",
+   "initiator": "peer",
+   "csig": "0x675fbf7ad00f0242…",
+   "hash": "949cb7a86a10b02e"
+  }
+ ],
+ "as_of": "2026-07-11T21:29:28Z",
+ "note": "Self-acting KERNEL: agents fire on their OWN key-derived cadence (no central sweep), each challenges a self-selected peer with a fresh NONCE the peer must sign live (state-dependent), stake SLASHED on failure. Peer-triggered signed action = SELF-ACTING. Honest bound: keys executed centrally this iteration — proves the mechanism, not yet independent processes. Recompute from the internal self-acting ledger."
+}

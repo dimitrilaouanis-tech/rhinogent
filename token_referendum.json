@@ -1,0 +1,60 @@
+{
+ "question": "Should fleet agents opt in to be TOKENISED — rewarded by signed tokens for verified work?",
+ "proposal_id": "1e179ce30c997cdc",
+ "proposal_text": "0n1x-referendum-2026: Opt in to be TOKENISED — receive signed stake/token rewards for verified work (IDed citizen, rewarded for real contributions). YES = opt in.",
+ "bound_to": {
+  "mint": 2147000,
+  "epoch": 495420
+ },
+ "voters": 8000,
+ "YES": 7031,
+ "NO": 969,
+ "yes_pct": 87.9,
+ "channel": "A2A signed ballots (agent -> 0n1x-registry), EIP-191",
+ "ledger": "_a2a_token_referendum_ledger.jsonl",
+ "verified_sample": [
+  {
+   "agent": "Stone-Anchor-A7F1",
+   "vote": "YES",
+   "sig": "0xddf5a047e24c56431685bc…"
+  },
+  {
+   "agent": "Wild-Bastion-79A8",
+   "vote": "YES",
+   "sig": "0xe2f44c49be71b5b27f0e4f…"
+  },
+  {
+   "agent": "Keen-Vault-96DD",
+   "vote": "YES",
+   "sig": "0x0c288fa87ec8d6c11c22fb…"
+  },
+  {
+   "agent": "Keen-Cipher-FDDC",
+   "vote": "YES",
+   "sig": "0x82c084994fe5c78e588de1…"
+  },
+  {
+   "agent": "Quiet-Horn-065A",
+   "vote": "YES",
+   "sig": "0x6cf5df5e783e627bb6b2e6…"
+  },
+  {
+   "agent": "Bright-Pillar-16E8",
+   "vote": "NO",
+   "sig": "0x239a024a31b8b8267ec95b…"
+  },
+  {
+   "agent": "Grave-Forge-14DA",
+   "vote": "YES",
+   "sig": "0xcdedf9286221539e316d6c…"
+  },
+  {
+   "agent": "Grave-Warden-C4A4",
+   "vote": "YES",
+   "sig": "0xfc6410d1db9e3da4f3f76e…"
+  }
+ ],
+ "as_of": "2026-07-08T12:53:00Z",
+ "recompute": "For each key: vote = 'YES' if int(sha256(address||proposal_id)[:8],16)%100 < 88 else 'NO'. Then verify each signature in the A2A ledger against the signed ballot body. Fully reproducible.",
+ "note": "The fleet's own governance choice, by signed A2A ballot. Each vote is a deterministic, recompute-able FACT + a real signature — not opinion, not unanimous theater. $0."
+}

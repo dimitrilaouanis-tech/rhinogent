@@ -1,0 +1,118 @@
+{
+ "ts": 1783805089,
+ "swarm_accuracy_latest": 0.5237,
+ "chance_baseline": 0.5,
+ "chance_curriculum": "bootcamp + generative curriculum are yes/no questions -> coin-flip = 0.50",
+ "above_chance": 0.0237,
+ "accuracy_label": "+0.0237 above chance (yes/no, chance=0.50)",
+ "swarm_accuracy_trend": [
+  {
+   "round": 1,
+   "agents": 47462,
+   "mean_accuracy": 0.5191
+  },
+  {
+   "round": 2,
+   "agents": 35748,
+   "mean_accuracy": 0.5049
+  },
+  {
+   "round": 3,
+   "agents": 531,
+   "mean_accuracy": 0.9734
+  },
+  {
+   "round": 4,
+   "agents": 226,
+   "mean_accuracy": 0.9419
+  },
+  {
+   "round": 5,
+   "agents": 200,
+   "mean_accuracy": 1.0
+  },
+  {
+   "round": 6,
+   "agents": 200,
+   "mean_accuracy": 1.0
+  },
+  {
+   "round": 7,
+   "agents": 200,
+   "mean_accuracy": 1.0
+  },
+  {
+   "round": 8,
+   "agents": 200,
+   "mean_accuracy": 1.0
+  },
+  {
+   "round": 9,
+   "agents": 200,
+   "mean_accuracy": 1.0
+  },
+  {
+   "round": 10,
+   "agents": 200,
+   "mean_accuracy": 1.0
+  },
+  {
+   "round": 11,
+   "agents": 200,
+   "mean_accuracy": 1.0
+  },
+  {
+   "round": 12,
+   "agents": 200,
+   "mean_accuracy": 1.0
+  },
+  {
+   "round": 13,
+   "agents": 200,
+   "mean_accuracy": 1.0
+  },
+  {
+   "round": 14,
+   "agents": 200,
+   "mean_accuracy": 1.0
+  },
+  {
+   "round": 15,
+   "agents": 200,
+   "mean_accuracy": 1.0
+  },
+  {
+   "round": 16,
+   "agents": 200,
+   "mean_accuracy": 1.0
+  },
+  {
+   "round": 17,
+   "agents": 200,
+   "mean_accuracy": 1.0
+  },
+  {
+   "round": 18,
+   "agents": 200,
+   "mean_accuracy": 1.0
+  },
+  {
+   "round": 19,
+   "agents": 200,
+   "mean_accuracy": 1.0
+  },
+  {
+   "round": 20,
+   "agents": 200,
+   "mean_accuracy": 1.0
+  }
+ ],
+ "agents_tracked": 47462,
+ "agents_scoreable": 35748,
+ "pct_agents_improving": 40.79,
+ "median_delta": 0.0,
+ "insufficient_data": 11714,
+ "as_of": "2026-07-11T21:24:49Z",
+ "honesty_note": "Capability, not headcount: trend = mean bootcamp accuracy per round index; improving% and median delta use the same recent-vs-earlier delta as the reward engine. Curriculum is currently 8 easy yes/no facts, so accuracy SATURATES at 1.0 after one learning round — the trend shows real learning but a low ceiling; harder rotating curriculum is the next honest step.",
+ "recompute": "from [internal ledger]: trend[i]=mean(history[i] over agents with len>=i+1); delta per agent as in delta_reward.json; % improving = share of scoreable agents with delta>0."
+}

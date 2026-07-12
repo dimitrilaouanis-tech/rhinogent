@@ -1,0 +1,25 @@
+{
+ "as_of": "2026-07-07T15:21:47Z",
+ "canonical": true,
+ "note": "THE single source of truth. Every 0n1x surface (census page, portal, cards) MUST render its headline numbers from THIS file. Each number below is pulled from the real ledger named in `sources` at one instant. No number is invented; a missing source becomes null and is named in `missing_sources`.",
+ "registered": 1728000,
+ "participating": 28046,
+ "self_scheduled": 9000,
+ "awake": 18988,
+ "complete": 147,
+ "complete_acts_in_window": 147,
+ "swarm_accuracy": 0.5118,
+ "chance_baseline": 0.5,
+ "above_chance": 0.0118,
+ "accuracy_label": "at chance — not yet learning",
+ "tokens_circulating": 681642669,
+ "sources": {
+  "registered": "https://rhinogent.com/census_manifest.json ['count']",
+  "tokens_circulating": "https://rhinogent.com/census_manifest.json ['circulating'] (matches census_history last row)",
+  "participating|self_scheduled|awake|complete": "[internal counter] over [internal ledgers]",
+  "swarm_accuracy|chance_baseline|above_chance": "https://rhinogent.com/capability_metrics.json (bootcamp+generative curriculum, yes/no, chance=0.50)"
+ },
+ "recompute": "registered = census_manifest.count; tokens_circulating = census_manifest.circulating; recompute participating/self_scheduled/awake/complete as distinct agents with signed actions in last 24h, tiers by initiator/stake/kind markers; swarm_accuracy/chance_baseline/above_chance from https://rhinogent.com/capability_metrics.json",
+ "missing_sources": [],
+ "rev": "08e82b99e09476b4"
+}

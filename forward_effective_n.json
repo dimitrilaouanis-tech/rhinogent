@@ -1,0 +1,27 @@
+{
+  "artifact": "0n1x-forward-commitments-effective-n",
+  "what": "Honest independence of the 40k forward-predictive commitments. Signatures are real and distinct; predictions are NOT independent \u2014 they cluster by a small set of strategies.",
+  "signed_commitments_raw": 91800,
+  "distinct_agents": 40000,
+  "distinct_prediction_vectors": 9747,
+  "distinct_strategies": 4,
+  "effective_n_kish": 3.2,
+  "headline": "91800 signed commitments across 40000 agents collapse to 9747 distinct prediction vectors (4 strategies); Kish effective n \u2248 3. We publish effective n, not raw agent count.",
+  "why": "Reward and confidence must scale with effective n, not signature count. 40,000 correlated bets on the same 4 strategies carry roughly the information of a few distinct bets, not 40,000. Correlated-agents inflation is exactly what a one-operator fleet must NOT do.",
+  "strategy_breakdown": {
+    "always_valid": 23151,
+    "expiry_aware": 23074,
+    "age_heuristic": 22923,
+    "coinflip": 22652
+  },
+  "top_vector_cluster_sizes": [
+    45589,
+    23151,
+    408,
+    12,
+    11,
+    10
+  ],
+  "reads_only": "read from _predict_commitments.jsonl; no fleet-state writes (Angeal no-touch).",
+  "as_of": "2026-07-11T17:54:52Z"
+}

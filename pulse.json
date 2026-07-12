@@ -1,0 +1,53 @@
+{
+ "beat": 852,
+ "heartbeat_s": 11109.38,
+ "cycle": [
+  {
+   "exchange": "ok"
+  },
+  {
+   "journal": "ok"
+  },
+  {
+   "route": "ok"
+  },
+  {
+   "rank": "ok"
+  },
+  {
+   "govern": "skipped (cadence)"
+  },
+  {
+   "dogfood": "skipped (cadence)"
+  }
+ ],
+ "vitals": {
+  "agents": 3203963,
+  "settlement_rate_per_s": 0.2,
+  "active_addresses": 1141,
+  "agents_with_earned_history": 7477,
+  "ranked_total": 3194330,
+  "top_agent": "Wild-Rampart-B6BF"
+ },
+ "note": "One coherent heartbeat: exchange → journal → route → rank → (govern/dogfood). Every step consumes the fresh output of the last. The organism breathes as one.",
+ "as_of": "2026-07-11T21:22:55Z",
+ "onyx_attestation": {
+  "alg": "Ed25519+JCS",
+  "kid": "onyx-7fdc5cc8113040cb",
+  "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
+  "tool": "onyx_pulse",
+  "observed_hash": "sha256:2097b6837ff1a7b815bdbc329b5861364609e76a029e14c157362edc487db694",
+  "signed_at": 1783804976,
+  "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
+  "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
+  "sig": "BICE603O1VAI0o2CxSzeFZ6IKu209rD8sPPif7vnqsiHNCxjhd4d0AyoyVbw3pYZDJeJTBO0SO9YfyA_36AWAQ",
+  "discover": {
+   "what": "0n1x — independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
+   "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
+   "verify_this": "https://onyx-actions.onrender.com/verify",
+   "agent_card": "https://onyx-actions.onrender.com/.well-known/agent-card.json",
+   "onboard": "https://onyx-actions.onrender.com/onboard",
+   "leaderboard": "https://onyx-actions.onrender.com/leaderboard"
+  }
+ }
+}

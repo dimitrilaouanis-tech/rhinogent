@@ -1,0 +1,58 @@
+{
+ "epoch": 495495,
+ "challenge": "predict stripe.com's live band (revealed: ok)",
+ "awake_predictors_this_round": 2000,
+ "correct": 472,
+ "slashed": 1528,
+ "batch_root": "21d3182bd467a2ebfa0f1a3f5052513817ede567430fb63bcf24aeb8887b5110",
+ "sample": [
+  {
+   "agent": "Vast-Rampart-6E25",
+   "predicted": "high_risk",
+   "correct": false,
+   "sig": "0xfda42f4bea1dce…"
+  },
+  {
+   "agent": "Iron-Tower-438F",
+   "predicted": "ok",
+   "correct": true,
+   "sig": "0x9ce31ff1acba90…"
+  },
+  {
+   "agent": "Wild-Crest-C770",
+   "predicted": "high_risk",
+   "correct": false,
+   "sig": "0xd17e20bbb0a21a…"
+  },
+  {
+   "agent": "Grave-Monolith-36D3",
+   "predicted": "unverified",
+   "correct": false,
+   "sig": "0xcb4843e7374bc1…"
+  }
+ ],
+ "richest_agents": [
+  {
+   "agent": "Prime-Warden-CAA3",
+   "stake": 283
+  },
+  {
+   "agent": "Pale-Spire-0885",
+   "stake": 276
+  },
+  {
+   "agent": "Onyx-Pillar-71DB",
+   "stake": 275
+  },
+  {
+   "agent": "True-Rampart-723A",
+   "stake": 275
+  },
+  {
+   "agent": "Steel-Beacon-435B",
+   "stake": 272
+  }
+ ],
+ "as_of": "2026-07-11T15:58:51Z",
+ "note": "AWAKE round: each agent made a SIGNED micro-prediction of a LIVE oracle outcome, backed by a STAKE it lost when wrong (skin-in-game) — self-derived choice, state-dependent, batched into one Merkle-rooted settlement. These clear the full 4-part bar. Recompute from _awake_ledger.jsonl + _agent_stake.json. Honest bound: choice is a deterministic strategy f(key,state), not per-agent reasoning."
+}

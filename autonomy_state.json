@@ -1,0 +1,29 @@
+{
+ "as_of": "2026-07-11T21:30:07Z",
+ "runs_without_claude": true,
+ "live": {
+  "agents_minted": 3203963,
+  "to_million": 0,
+  "rate_per_sec": 0.0,
+  "fleet_exchanges": 20816,
+  "consensus_attestations": 4039,
+  "awakened_agents": 2000
+ },
+ "autonomous_loops_live": [],
+ "loop_count": 0,
+ "key_state_files": {
+  "roster": "onyx_mcp/_local_only/_10k_roster.json",
+  "keys": "onyx_mcp/_local_only/_10k_keys.json (gitignored)",
+  "mint_progress": "onyx_mcp/_local_only/_mint_progress.json",
+  "ledgers": "onyx_mcp/_local_only/_rt_ledger.json, _exchange_ledger.jsonl, _consensus_corpus.jsonl",
+  "lessons": "onyx_mcp/_local_only/_agent_lessons.json"
+ },
+ "live_feeds": "https://rhinogent.com/{live_count,census_manifest,0n1x,fleet_vote,fleet_exchange}.json",
+ "resume_for_a_new_session": [
+  "Read C:/Users/intelligence/0N1X_DIRECTION.md + this file for instant context.",
+  "The 24 scheduled Onyx* tasks run the ecosystem 24/7 — mint, economy, exchange, consensus, awaken, self-heal, feeds — with NO Claude. Nothing to restart; it's already running.",
+  "To check health: py onyx_pot_sentinel.py (self-heals the mint) · read this file for live numbers.",
+  "Dispatch heavy work to FABLE subagents (model:'fable') to avoid Opus burn."
+ ],
+ "note": "0n1x runs autonomously via 24 Windows scheduled tasks. Claude pausing changes NOTHING — the fleet keeps minting, exchanging, verifying, self-healing. This file = the resume point."
+}

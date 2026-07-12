@@ -1,0 +1,122 @@
+{
+ "kind": "0n1x-persistence-test",
+ "as_of": "2026-07-10T16:01:53Z",
+ "question": "does the top-velocity decile at epoch N-1 STAY on top at epoch N (out of sample), or does it mean-revert to chance?",
+ "epochs_used": {
+  "fleet_accuracy_file": "runnable — see fleet_dataset",
+  "fixed_cohort": "200/200 frozen-cohort agents carry >=3 real datapoints (educate+exam on the SAME 200 agents since 2026-07-09)",
+  "monad_track_history": "6 real simulation rounds per monad (velocity from rounds 1..N-1, held-out round N)"
+ },
+ "metrics_three_numbers": {
+  "journal_share": {
+   "value": 1.0,
+   "label": "pipe connectivity: share of exam answers that came from real journal knowledge — THE near-term drive metric, target 1.0",
+   "before_fix_2026-07-09": 0.0001
+  },
+  "informed_accuracy": {
+   "value": 1.0,
+   "caveat": "consultant = grader; pinned at 1.0 by construction until monad #1 can disagree — this number can NEVER lift the freeze gate"
+  },
+  "share_weighted_accuracy": {
+   "value": 1.0,
+   "label": "journal_share x informed_accuracy — credit only for informed, correct answers over the whole exam"
+  }
+ },
+ "freeze_gate": {
+  "status": "FROZEN",
+  "criterion": "lifts ONLY when ALL hold: (a) the out-of-sample persistence test passes (CI lower bound > tie-adjusted chance baseline) on fixed-cohort per-agent history with a real disagreement source (monad #1 / independent grader can contradict the oracle); (b) the sha256&1 coin-flip grading path is killed; (c) population accuracy clears 0.50 on the frozen benchmark. A tautological informed_accuracy=1.0 can NEVER lift this gate.",
+  "coin_flip_path_killed": true,
+  "population_accuracy_frozen_benchmark": null,
+  "population_accuracy_clears_0.50": false,
+  "tautology_detected": true,
+  "drive_metric": {
+   "name": "journal_share",
+   "current": 1.0,
+   "target": 1.0,
+   "note": "pipe connectivity is the number to drive first; ranking signal becomes measurable only after the pipe is full AND a disagreement source exists"
+  }
+ },
+ "fleet_dataset": {
+  "agents": 46633,
+  "history_length_distribution": {
+   "1": 10912,
+   "2": 35297,
+   "3": 198,
+   "4": 26,
+   "20": 200
+  },
+  "agents_with_>=3_epochs_(min_for_out_of_sample)": 424,
+  "population_accuracy_latest_round": {
+   "mean": 0.514,
+   "median": 0.5,
+   "n": 46633,
+   "contamination_note": "datapoints recorded BEFORE 2026-07-09 graded a salted coin flip (sha256(address:question:epoch)&1) for ~99.99% of answers — treat pre-fix history as noise. Post-fix datapoints are journal-informed answers ONLY (see oracle_postmortem.json)."
+  },
+  "runnable": true,
+  "why_not": null
+ },
+ "fixed_cohort": {
+  "present": true,
+  "cohort_size": 200,
+  "with_history": 200,
+  "with_>=3_datapoints": 200,
+  "recent_points_mean": 1.0,
+  "recent_points_variance": 0.0,
+  "tautology_detected": true,
+  "tautology_note": "informed accuracy is pinned at 1.0 by construction — the journal is educated by the SAME oracle that grades (consultant = grader). Zero variance means the ranking has NOTHING real to differentiate until monad #1 (or an independent grader) can disagree."
+ },
+ "monad_out_of_sample": {
+  "runnable": true,
+  "population": 9999,
+  "rounds_per_agent": 6,
+  "decile_size": 2163,
+  "velocity_threshold_epochN-1": 0.25,
+  "persistence_rate_still_top_decile": 0.1285,
+  "ci_95_still_top": [
+   0.1144,
+   0.1426
+  ],
+  "chance_baseline_nominal": 0.1,
+  "chance_baseline_tie_adjusted": 0.1056,
+  "tie_note": "accuracies are k/8 (8 questions/round) so velocity values tie massively; the 'decile' is everyone at/above the 90th-percentile velocity and the honest chance baseline is the top group's own population share, not 0.10",
+  "beats_median_at_N_rate": 0.2779,
+  "ci_95_beats_median": [
+   0.259,
+   0.2967
+  ],
+  "chance_baseline_beats_median": 0.2476,
+  "population_accuracy_all_rounds": {
+   "mean": 0.5707,
+   "n_observations": 30606,
+   "chance": 0.5
+  },
+  "signal_still_top": true,
+  "signal_beats_median": true
+ },
+ "decile_size": 2163,
+ "persistence_rate": 0.1285,
+ "chance_baseline": 0.1,
+ "chance_baseline_tie_adjusted": 0.1056,
+ "ci_95": [
+  0.1144,
+  0.1426
+ ],
+ "population_oracle_accuracy": {
+  "fleet_latest_round": {
+   "mean": 0.514,
+   "median": 0.5,
+   "n": 46633,
+   "contamination_note": "datapoints recorded BEFORE 2026-07-09 graded a salted coin flip (sha256(address:question:epoch)&1) for ~99.99% of answers — treat pre-fix history as noise. Post-fix datapoints are journal-informed answers ONLY (see oracle_postmortem.json)."
+  },
+  "monad_all_rounds": {
+   "mean": 0.5707,
+   "n_observations": 30606,
+   "chance": 0.5
+  },
+  "read": "RETIRED as a headline (2026-07-09): the old ~0.4989 'population accuracy' graded a salted coin flip, not the oracle — see oracle_postmortem.json. Use metrics_three_numbers instead; never a single blended number."
+ },
+ "verdict": "signal",
+ "recommendation": "KEEP the rank-to-stake pipe FROZEN. journal_share is the drive metric (current 1.0, target 1.0). informed_accuracy=1.0 is tautological (consultant = grader) and cannot lift the gate. The gate lifts only when this test passes on fixed-cohort data with a real disagreement source (monad #1 / independent grader) in the loop.",
+ "recompute_steps": "1) stream [internal ledger]; per address collect acc of 'decision' lines in order. 2) keep addresses with >=3 rounds. 3) v_prev = mean(recent half)-mean(earlier half) of acc[:-1]; top group = v_prev >= 90th percentile. 4) recompute v_now on full history; persistence = share of the N-1 top group inside the N top group; also share beating median(acc[-1]). 5) CI = p ± 1.96*sqrt(p(1-p)/n). 6) chance baselines = top group's own population share (ties) and population share beating median. 7) fleet: verify the internal accuracy ledger's history lengths — the fleet test is unrunnable until >=3 epochs per agent exist.",
+ "honest_note": "No fabricated epochs. 2026-07-09: the coin-flip grading path was found and DELETED (see oracle_postmortem.json) — pre-fix accuracy datapoints graded sha256(address:question:epoch)&1, not the oracle, so treat them as noise. Post-fix datapoints are journal-informed only, which makes informed accuracy tautological (consultant = grader, pinned 1.0) until a disagreement source exists — the freeze gate encodes exactly that and stays FROZEN. Ungraded absences surface as NULL, never as a fabricated guess."
+}

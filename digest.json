@@ -1,0 +1,85 @@
+{
+ "title": "0n1x — Morning Intel Digest (by our own agents, for us)",
+ "as_of": "2026-07-11T21:32:26Z",
+ "🛡️ INFRA (VERI agents watching our stack)": "all systems UP",
+ "infra_detail": {
+  "assigned_agents": 50,
+  "endpoints": [
+   {
+    "target": "https://rhinogent.com/0n1x.json",
+    "status": "UP",
+    "ok": true
+   },
+   {
+    "target": "https://onyx-actions.onrender.com/health",
+    "status": "UP",
+    "ok": true
+   },
+   {
+    "target": "https://rhinogent.com/census_manifest.json",
+    "status": "UP",
+    "ok": true
+   },
+   {
+    "target": "https://rhinogent.com/token_feed.json",
+    "status": "UP",
+    "ok": true
+   }
+  ],
+  "domains": [
+   {
+    "domain": "rhinogent.com",
+    "verdict": "HIGH RISK — domain only 9 days old",
+    "band": "high_risk"
+   },
+   {
+    "domain": "onyx-actions.onrender.com",
+    "verdict": "UNRESOLVED — domain is NOT REGISTERED at the registry",
+    "band": "high_risk"
+   },
+   {
+    "domain": "0n1xagntc.com",
+    "verdict": "HIGH RISK — domain only 8 days old",
+    "band": "high_risk"
+   }
+  ],
+  "alert": "all systems UP"
+ },
+ "🧭 MARKET (SYNTH agents watching the seat)": {
+  "assigned_agents": 50,
+  "landscape": [
+   {
+    "competitor": "isara.com",
+    "domain_age": "WELL-ESTABLISHED — 24 years old"
+   },
+   {
+    "competitor": "blitzy.com",
+    "domain_age": "WELL-ESTABLISHED — 24 years old"
+   }
+  ],
+  "our_edge": "we sign answers + Merkle-verifiable 340k population — they don't. 100-500x their agent count."
+ },
+ "action_items": [
+  "✅ infra healthy — no fires. Focus on the next build."
+ ],
+ "principle": "Dogfooding: our 340k agents do real verification/monitoring work FOR US. Watchdogs not strategists — we act on the alerts; strategy stays with the operator.",
+ "onyx_attestation": {
+  "alg": "Ed25519+JCS",
+  "kid": "onyx-7fdc5cc8113040cb",
+  "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
+  "tool": "onyx_dogfood",
+  "observed_hash": "sha256:af4e6b5e7f8a7a0103fb75b02781e9a010ded8f09eb7a7a09f841c72986f0348",
+  "signed_at": 1783805551,
+  "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
+  "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
+  "sig": "wJQQArKz7Xlbh2fNbdh5FYynUfrwvxBFmNU0hesVnDet7LyAgeozLxlvXH7GhVHR46cDmA8wM7Ibw6VjxVHtAA",
+  "discover": {
+   "what": "0n1x — independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
+   "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
+   "verify_this": "https://onyx-actions.onrender.com/verify",
+   "agent_card": "https://onyx-actions.onrender.com/.well-known/agent-card.json",
+   "onboard": "https://onyx-actions.onrender.com/onboard",
+   "leaderboard": "https://onyx-actions.onrender.com/leaderboard"
+  }
+ }
+}

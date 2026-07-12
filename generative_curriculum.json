@@ -1,0 +1,115 @@
+{
+ "epoch": 495501,
+ "cohort": 200,
+ "questions_this_round": 8,
+ "questions": [
+  {
+   "q": "rayban.cc resolved with band 'caution' this hour — true?",
+   "answer": true,
+   "live_band": "caution",
+   "h": "71db9038bf0608d3",
+   "sig": "0xb1601b2b6d92b6c56e7ac33f3f807075a919fd4852b0b7b8ff85b63ad614fec678078a28a2cd8a8b2fcfd9f5899b99e93b17fa7f119ebccd3ed2296d8ba600211c"
+  },
+  {
+   "q": "etsy.com resolved with band 'high_risk' this hour — true?",
+   "answer": false,
+   "live_band": "ok",
+   "h": "ac0e799c9d190856",
+   "sig": "0x45f4d55d0a39ca411ab4ac41027cb163fc1b1f90e7ca1660fedc74c3de2b118911441b66e357ba73590182019c40427919231145917d11aabcd09266dc1954d31b"
+  },
+  {
+   "q": "kraken.com resolved with band 'ok' this hour — true?",
+   "answer": true,
+   "live_band": "ok",
+   "h": "038501069a80c41c",
+   "sig": "0x563bbb038fbc3b235f406db4d74cf197c7bcc95102f2c0086080ef2c2a6410c039ca8186f6cfbc6af302be672319c846b59e5efc722fb3df965fbc99deaeb7e61b"
+  },
+  {
+   "q": "revolut.com resolved with band 'caution' this hour — true?",
+   "answer": false,
+   "live_band": "ok",
+   "h": "ce1c4810ea05faaf",
+   "sig": "0x24aa53e601a1d93664e55ac4bcc8c3c42ed1d6967c3eb6c49ade06dd97af9aeb634f69d484452669cfea94c66f5bd902c81ce857183fc86ea8530aa241b1417d1b"
+  },
+  {
+   "q": "wise.com resolved with band 'caution' this hour — true?",
+   "answer": false,
+   "live_band": "ok",
+   "h": "6c262d77d23ad4a9",
+   "sig": "0x94c59e405285c983cae00c3ed1494286ec2022c6df191a67a8c1b5e0d4ed5ecd5ff41db33ae1ee41c1374cf02219f95efc3045522fc10c1d0211ee4f74e0f6121b"
+  },
+  {
+   "q": "shopify.com resolved with band 'ok' this hour — true?",
+   "answer": true,
+   "live_band": "ok",
+   "h": "ad2ba4fc0ad53d8a",
+   "sig": "0x3ae32c43cf288d0b284fe67fbd7d63ccb1fee8fcf213a75a40b804f1f4a832996b09392679f5e46aebe2b2c58601ec6a33ff02f31b8c1a9138b2187dab5a614e1b"
+  },
+  {
+   "q": "stripe.com resolved with band 'ok' this hour — true?",
+   "answer": true,
+   "live_band": "ok",
+   "h": "ecf8a4bb0ee02aa0",
+   "sig": "0xdf5fe61db25a54e4970a67c012a096af96d1d1c46eafa374d21cd5b69c6f3ce914ebf6ce368e6e0953f826e84cb051368ede017b4ed089786c21e19a3936365a1b"
+  },
+  {
+   "q": "coinbase.com resolved with band 'ok' this hour — true?",
+   "answer": true,
+   "live_band": "ok",
+   "h": "8ebff72656a5d444",
+   "sig": "0xd5c11e84e7aeb239296ca83af363fd41d00ebfbcefaf6ad9367fddae85e33ee54a2709b7744c6a93980e63ecc86e1c6cb04815250ac2dcc116848d9420cf469a1b"
+  }
+ ],
+ "live_bands": {
+  "rayban.cc": {
+   "band": "caution",
+   "score": 61
+  },
+  "etsy.com": {
+   "band": "ok",
+   "score": 93
+  },
+  "kraken.com": {
+   "band": "ok",
+   "score": 93
+  },
+  "revolut.com": {
+   "band": "ok",
+   "score": 93
+  },
+  "wise.com": {
+   "band": "ok",
+   "score": 93
+  },
+  "shopify.com": {
+   "band": "ok",
+   "score": 93
+  },
+  "stripe.com": {
+   "band": "ok",
+   "score": 93
+  },
+  "coinbase.com": {
+   "band": "ok",
+   "score": 93
+  }
+ },
+ "skipped_domains": [],
+ "attestor": "0xba8568fCe6759c9bad1ed52EAE568B3dB3346294",
+ "journal_share": 1.0,
+ "journal_share_label": "pipe connectivity: share of exam items answerable from a fresh journal entry — the number to drive to 1.0",
+ "informed_accuracy": 1.0,
+ "informed_accuracy_caveat": "consultant = grader; pinned at 1.0 by construction until monad #1 can disagree — the journal is educated by the SAME oracle that grades, so only staleness can lower it",
+ "share_weighted_accuracy": 1.0,
+ "share_weighted_label": "journal_share x informed_accuracy — credit only for informed, correct answers over the WHOLE exam",
+ "agents_graded": 200,
+ "agents_coverage_gap": 0,
+ "agents_improved_this_round": 0,
+ "answers_from_journal": 1600,
+ "answers_unanswered": 0,
+ "journal_answer_share": 1.0,
+ "freshness_window_hours": 24,
+ "as_of": "2026-07-11T21:34:53Z",
+ "note": "GENERATIVE curriculum, HONEST-NULLS (2026-07-09): the old sha256(address:question:epoch)&1 coin-flip fallback for ignorant agents is DELETED — ungraded surfaces as ABSENCE, never as a fabricated 0.5-expectation guess. Every question is minted THIS round from a LIVE oracle run (RDAP+TLS+HTTP). Agents answer ONLY from their journal (educated by the oracle-journal bridge); knowledge older than 24h goes stale. Accuracy denominator = journal-informed answers only; unanswered items are a coverage gap, not a 0.5. Unreachable domains are skipped, never fabricated.",
+ "recompute": "for each question: run onyx_oracle.r_merchant_multi(domain) at the same hour → band; answer = (claimed_band == band); verify sig (EIP-191 by attestor) over 'genq:{epoch}:{domain}:{claimed}:{band}:{answer}'; per-agent accuracy (informed answers only) appended to [internal ledger] (same format as bootcamp → delta_reward pays the climb unchanged)."
+}

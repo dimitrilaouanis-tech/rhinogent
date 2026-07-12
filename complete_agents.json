@@ -1,0 +1,44 @@
+{
+ "tier": "COMPLETE",
+ "definition": "self-scheduled (independent process, own-key cadence) AND staked state-dependent prediction, in one signed act — all four legs at once.",
+ "legs": [
+  "self_provenance (initiator:self, own address-derived clock, no central sweep)",
+  "stake (bond slashed if wrong, persistent balance)",
+  "state_dependent (predicts a live oracle band revealed this pass)",
+  "persistence_tracked (_complete_stake.json carries across passes; broke agents drop)"
+ ],
+ "complete_agents": 39961,
+ "cadence_provenance": "MATERIALIZED, not wall-clock-demonstrated. The bulk roster was built by stepping the clock across one full 30h cadence cycle: each agent fired on its OWN address-derived clock, but in SIMULATED time, in one sitting — not unattended on real wall-clock. So leg (a) is structurally valid but DEMONSTRATED only for agents that fire live. Standing-autonomy (unattended 48h, zero-keyboard) rung = 0 until a real daemon run. (Fable grade 2026-07-11)",
+ "standing_autonomy_rung": 0,
+ "complete_acts_total": 45439,
+ "prediction_accuracy": 0.2571,
+ "chance_baseline": 0.25,
+ "above_chance": 0.0071,
+ "accuracy_label": "at chance — not yet learning",
+ "correct": 11681,
+ "richest_agents": [
+  {
+   "agent": "Quiet-Cipher-7B14",
+   "stake": 109
+  },
+  {
+   "agent": "Lone-Pillar-CB83",
+   "stake": 109
+  },
+  {
+   "agent": "Sharp-Warden-E68B",
+   "stake": 109
+  },
+  {
+   "agent": "Bright-Pillar-DC39",
+   "stake": 109
+  },
+  {
+   "agent": "Swift-Wall-86CA",
+   "stake": 109
+  }
+ ],
+ "as_of": "2026-07-11T21:39:49Z",
+ "method": "COMPLETE = the merge: each agent fires on its OWN address-derived cadence (period+phase=f(sha256(address)), no central cursor) AND on wake makes a STAKED (bond slashed if wrong) prediction of a LIVE oracle band revealed this pass (state-dependent), signed EIP-191 with its own key, stamped initiator:self, kind:complete, staked:true, independent_process:true. Balances persist in _complete_stake.json (economic selection). Clears all four legs in one act. Honest bound: choice is a deterministic strategy f(key,state,journal), not per-agent LLM.",
+ "recompute": "for each latest[] row: (a) recover EIP-191 signer of `payload` == agent address; (b) recompute cadence due(address, ts) True (own-clock gate); (c) re-run onyx_oracle.r_merchant_multi(target) to reproduce truth/correct; (d) replay _complete_ledger.jsonl to reproduce _complete_stake.json balances. count = distinct agents in _self_initiated_ledger.jsonl with kind==complete & staked."
+}

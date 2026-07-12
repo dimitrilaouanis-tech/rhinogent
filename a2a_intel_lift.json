@@ -1,0 +1,71 @@
+{
+  "artifact": "0n1x-a2a-intel-exchange-lift",
+  "claim_under_test": "Do agents that EXCHANGE signed evidence shards predict better than agents working from their own shard alone? If yes, the network adds intelligence.",
+  "mechanism": "Evidence deliberately sharded (cert/http/dns/issuer); no shard contains the verdict. health = cert AND http. A solo agent is blind to failures outside its shard; exchange of SIGNED shards fills the blind spots. Lift = pure information aggregation.",
+  "cohort": 800,
+  "targets": [
+    "github.com",
+    "cloudflare.com",
+    "google.com",
+    "python.org",
+    "wikipedia.org",
+    "mozilla.org",
+    "expired.badssl.com",
+    "self-signed.badssl.com",
+    "untrusted-root.badssl.com",
+    "wrong.host.badssl.com"
+  ],
+  "solo_accuracy": 0.7,
+  "exchange_accuracy": 1.0,
+  "INTELLIGENCE_LIFT": 0.3,
+  "lift_z": 53.14,
+  "significant": true,
+  "read": "Exchange lifts accuracy by 30.0 points (z=53.1). The lift is real because health has a dimension (cert) that a http-only agent literally cannot observe \u2014 badssl targets serve http with an INVALID cert, so only agents holding the cert shard (their own or received) get them right. This is the network making agents measurably smarter, signed end to end.",
+  "signed_shard_sample": [
+    {
+      "from": "0x5dF2b0Df17",
+      "target": "github.com",
+      "dim": "cert",
+      "val": true,
+      "sig": "0xbf8075cfa23fad464f\u2026"
+    },
+    {
+      "from": "0x5dF2b0Df17",
+      "target": "cloudflare.com",
+      "dim": "cert",
+      "val": true,
+      "sig": "0xf5c1fc818cf38a5b5e\u2026"
+    },
+    {
+      "from": "0x5dF2b0Df17",
+      "target": "google.com",
+      "dim": "cert",
+      "val": true,
+      "sig": "0xe96fce67e7a0e3dcc4\u2026"
+    },
+    {
+      "from": "0x5dF2b0Df17",
+      "target": "python.org",
+      "dim": "cert",
+      "val": true,
+      "sig": "0x54e64fc966cb343f0d\u2026"
+    },
+    {
+      "from": "0x5dF2b0Df17",
+      "target": "wikipedia.org",
+      "dim": "cert",
+      "val": true,
+      "sig": "0x839844a004ac6f70c8\u2026"
+    },
+    {
+      "from": "0x5dF2b0Df17",
+      "target": "mozilla.org",
+      "dim": "cert",
+      "val": true,
+      "sig": "0x10d13ca8b1e529f864\u2026"
+    }
+  ],
+  "ceiling": "This is INTELLIGENCE aggregation across agents (Rung-2-adjacent), not per-agent LLM cognition. Real, signed, recomputable \u2014 and bounded to exactly that claim.",
+  "reads_only": "reads keystore + live target signals; writes _a2a_intel_ledger + this artifact only (Angeal no-touch honored).",
+  "as_of": "2026-07-11T18:07:35Z"
+}

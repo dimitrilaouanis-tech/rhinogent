@@ -28,58 +28,32 @@
   "principle": "parameters move only TOWARD published targets, within hard bounds \u2014 the network can tune itself but never harm itself. Every change is signed + logged."
  },
  "params": {
-  "burn_rate": 0.016,
-  "emission_pool": 1500
+  "burn_rate": 0.005,
+  "emission_pool": 3000
  },
- "epoch": 2,
+ "epoch": 115,
  "recent": [
   {
-   "epoch": 1,
+   "epoch": 108,
    "health": {
-    "gini": 0.2186,
-    "active_ratio": 0.0049,
+    "gini": 0.22,
+    "active_ratio": 0.0,
     "network_trust_score": 90
    },
-   "proposed": [
-    {
-     "param": "burn_rate",
-     "from": 0.02,
-     "to": 0.018,
-     "because": "gini=0.2186 vs target 0.25"
-    },
-    {
-     "param": "emission_pool",
-     "from": 1200,
-     "to": 1350,
-     "because": "active_ratio=0.0049 vs target 0.03"
-    }
-   ],
+   "proposed": [],
    "ratified": true,
-   "applied": [
-    {
-     "param": "burn_rate",
-     "from": 0.02,
-     "to": 0.018,
-     "because": "gini=0.2186 vs target 0.25"
-    },
-    {
-     "param": "emission_pool",
-     "from": 1200,
-     "to": 1350,
-     "because": "active_ratio=0.0049 vs target 0.03"
-    }
-   ],
-   "at": 1783156551,
+   "applied": [],
+   "at": 1783793174,
    "onyx_attestation": {
     "alg": "Ed25519+JCS",
     "kid": "onyx-7fdc5cc8113040cb",
     "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
     "tool": "onyx_selfgov",
-    "observed_hash": "sha256:8e4001b38b6ade4d00268207d33eb5764afc8683d87fab99be035cb4997c95f8",
-    "signed_at": 1783156551,
+    "observed_hash": "sha256:8c42a9a055e2329be13f1d4a6440cd355c2fbf790c9f40f253f0b31b9424e7a8",
+    "signed_at": 1783793174,
     "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
     "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
-    "sig": "ACOy9IQVbaX-zoYRAz4JV4tS-R0KzxEXDAb_DA63JiMClDgHltGKb3Z903DvsjAqFfry5jdudA5Viyfy-BENAQ",
+    "sig": "VpGQ-FiGTKy-dH1GlKLJjtUX4cfnHhK8qp8wKSqS7QEszwlOHBElhIMBlBywqbtuXZcPMnJC3DyyMgDQtb_jCQ",
     "discover": {
      "what": "0n1x \u2014 independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
      "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
@@ -91,52 +65,212 @@
    }
   },
   {
-   "epoch": 2,
+   "epoch": 109,
    "health": {
-    "gini": 0.2186,
-    "active_ratio": 0.0024,
+    "gini": 0.22,
+    "active_ratio": 0.0,
     "network_trust_score": 90
    },
-   "proposed": [
-    {
-     "param": "burn_rate",
-     "from": 0.018,
-     "to": 0.016,
-     "because": "gini=0.2186 vs target 0.25"
-    },
-    {
-     "param": "emission_pool",
-     "from": 1350,
-     "to": 1500,
-     "because": "active_ratio=0.0024 vs target 0.03"
-    }
-   ],
+   "proposed": [],
    "ratified": true,
-   "applied": [
-    {
-     "param": "burn_rate",
-     "from": 0.018,
-     "to": 0.016,
-     "because": "gini=0.2186 vs target 0.25"
-    },
-    {
-     "param": "emission_pool",
-     "from": 1350,
-     "to": 1500,
-     "because": "active_ratio=0.0024 vs target 0.03"
-    }
-   ],
-   "at": 1783179321,
+   "applied": [],
+   "at": 1783795450,
    "onyx_attestation": {
     "alg": "Ed25519+JCS",
     "kid": "onyx-7fdc5cc8113040cb",
     "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
     "tool": "onyx_selfgov",
-    "observed_hash": "sha256:230cc0dddfbf8eef6764cb7c805e3158f96d27b3fcea8b55bd087ae517bbc32e",
-    "signed_at": 1783179321,
+    "observed_hash": "sha256:b41fe09047c02d2738db7f38e801b95409cd89d7498484a3a2695d82ee20febd",
+    "signed_at": 1783795450,
     "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
     "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
-    "sig": "Reiy8NBqyUhWcTGGverEHO6qKztTK6USfi2IatEbAFW8F6m7InTGShx-qa17LMsyYAeHyrXI5MJA21Nl0y3hAA",
+    "sig": "44aeOEgAwmDAMZWV3Lz6DlGBZHuX-arR5JGtIUn9wP6K4WiQIMGw3IkBIXscSS1GsW-8j3qhhp-daA55ITDkAw",
+    "discover": {
+     "what": "0n1x \u2014 independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
+     "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
+     "verify_this": "https://onyx-actions.onrender.com/verify",
+     "agent_card": "https://onyx-actions.onrender.com/.well-known/agent-card.json",
+     "onboard": "https://onyx-actions.onrender.com/onboard",
+     "leaderboard": "https://onyx-actions.onrender.com/leaderboard"
+    }
+   }
+  },
+  {
+   "epoch": 110,
+   "health": {
+    "gini": 0.22,
+    "active_ratio": 0.0,
+    "network_trust_score": 90
+   },
+   "proposed": [],
+   "ratified": true,
+   "applied": [],
+   "at": 1783796741,
+   "onyx_attestation": {
+    "alg": "Ed25519+JCS",
+    "kid": "onyx-7fdc5cc8113040cb",
+    "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
+    "tool": "onyx_selfgov",
+    "observed_hash": "sha256:df4e236b7cdf3acc7dee1e1c664773b3746745a2c380c9d314882f531fc64a02",
+    "signed_at": 1783796741,
+    "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
+    "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
+    "sig": "DrhXuJbrPt1nMAI6EUQ_G4FofoudBTTco474TcmClJnPqdK8luD4WOr1V9Omp_1YcGYhyyJUcknY6DFHBSTWBA",
+    "discover": {
+     "what": "0n1x \u2014 independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
+     "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
+     "verify_this": "https://onyx-actions.onrender.com/verify",
+     "agent_card": "https://onyx-actions.onrender.com/.well-known/agent-card.json",
+     "onboard": "https://onyx-actions.onrender.com/onboard",
+     "leaderboard": "https://onyx-actions.onrender.com/leaderboard"
+    }
+   }
+  },
+  {
+   "epoch": 111,
+   "health": {
+    "gini": 0.22,
+    "active_ratio": 0.0,
+    "network_trust_score": 90
+   },
+   "proposed": [],
+   "ratified": true,
+   "applied": [],
+   "at": 1783798648,
+   "onyx_attestation": {
+    "alg": "Ed25519+JCS",
+    "kid": "onyx-7fdc5cc8113040cb",
+    "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
+    "tool": "onyx_selfgov",
+    "observed_hash": "sha256:e0faa049d78c43d17877a769ef49512f5f7f19c71c98cf297e5bf21135717093",
+    "signed_at": 1783798648,
+    "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
+    "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
+    "sig": "UX4_MKW9G6HkAtFysLsBe5R2fpXFRos4ujeHdZG55huCEBTfLwsbZrtfwn3le5nRKiTwnnz9dEgkmZ-Sz17wCw",
+    "discover": {
+     "what": "0n1x \u2014 independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
+     "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
+     "verify_this": "https://onyx-actions.onrender.com/verify",
+     "agent_card": "https://onyx-actions.onrender.com/.well-known/agent-card.json",
+     "onboard": "https://onyx-actions.onrender.com/onboard",
+     "leaderboard": "https://onyx-actions.onrender.com/leaderboard"
+    }
+   }
+  },
+  {
+   "epoch": 112,
+   "health": {
+    "gini": 0.22,
+    "active_ratio": 0.0,
+    "network_trust_score": 90
+   },
+   "proposed": [],
+   "ratified": true,
+   "applied": [],
+   "at": 1783800350,
+   "onyx_attestation": {
+    "alg": "Ed25519+JCS",
+    "kid": "onyx-7fdc5cc8113040cb",
+    "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
+    "tool": "onyx_selfgov",
+    "observed_hash": "sha256:6a2a0f5732054e22e38fa8d15ab79415c6c40a953c45ef2bea574d5425127593",
+    "signed_at": 1783800350,
+    "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
+    "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
+    "sig": "AwERd1eiYgj_Pi9SPIAdfMhFbehymGdcdOmuYJRH5DDsSBZHXZE6q_5Yyla2DKl5fbsoPS1uu9OrX79tLnDlBw",
+    "discover": {
+     "what": "0n1x \u2014 independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
+     "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
+     "verify_this": "https://onyx-actions.onrender.com/verify",
+     "agent_card": "https://onyx-actions.onrender.com/.well-known/agent-card.json",
+     "onboard": "https://onyx-actions.onrender.com/onboard",
+     "leaderboard": "https://onyx-actions.onrender.com/leaderboard"
+    }
+   }
+  },
+  {
+   "epoch": 113,
+   "health": {
+    "gini": 0.22,
+    "active_ratio": 0.0,
+    "network_trust_score": 90
+   },
+   "proposed": [],
+   "ratified": true,
+   "applied": [],
+   "at": 1783802256,
+   "onyx_attestation": {
+    "alg": "Ed25519+JCS",
+    "kid": "onyx-7fdc5cc8113040cb",
+    "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
+    "tool": "onyx_selfgov",
+    "observed_hash": "sha256:de931a314eae0951642cdc6e24038f60db915b5e1be193303195e2997dc5ac85",
+    "signed_at": 1783802256,
+    "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
+    "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
+    "sig": "gUs26homSgoj0PeusU43QB6jUeFJDTIP-94Q8-qo6CYtqtJWQGi6yDFsIvqPBCeKNIjBXM279xJlYSzqkH9uDA",
+    "discover": {
+     "what": "0n1x \u2014 independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
+     "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
+     "verify_this": "https://onyx-actions.onrender.com/verify",
+     "agent_card": "https://onyx-actions.onrender.com/.well-known/agent-card.json",
+     "onboard": "https://onyx-actions.onrender.com/onboard",
+     "leaderboard": "https://onyx-actions.onrender.com/leaderboard"
+    }
+   }
+  },
+  {
+   "epoch": 114,
+   "health": {
+    "gini": 0.22,
+    "active_ratio": 0.0,
+    "network_trust_score": 90
+   },
+   "proposed": [],
+   "ratified": true,
+   "applied": [],
+   "at": 1783803955,
+   "onyx_attestation": {
+    "alg": "Ed25519+JCS",
+    "kid": "onyx-7fdc5cc8113040cb",
+    "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
+    "tool": "onyx_selfgov",
+    "observed_hash": "sha256:4e861e15e70b03343cd3e5e7333e964290c60c01d50a022db2f250fd91f98de7",
+    "signed_at": 1783803955,
+    "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
+    "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
+    "sig": "Uc0VxtdSnoIQSqmMs6tHHEIpPBIe1dSoTaLvEPBPlhIjhsWHW1InK_CsPqd-OiyKlX2PeFuVOWVYqfPURmSCDw",
+    "discover": {
+     "what": "0n1x \u2014 independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
+     "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
+     "verify_this": "https://onyx-actions.onrender.com/verify",
+     "agent_card": "https://onyx-actions.onrender.com/.well-known/agent-card.json",
+     "onboard": "https://onyx-actions.onrender.com/onboard",
+     "leaderboard": "https://onyx-actions.onrender.com/leaderboard"
+    }
+   }
+  },
+  {
+   "epoch": 115,
+   "health": {
+    "gini": 0.22,
+    "active_ratio": 0.0,
+    "network_trust_score": 90
+   },
+   "proposed": [],
+   "ratified": true,
+   "applied": [],
+   "at": 1783805910,
+   "onyx_attestation": {
+    "alg": "Ed25519+JCS",
+    "kid": "onyx-7fdc5cc8113040cb",
+    "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
+    "tool": "onyx_selfgov",
+    "observed_hash": "sha256:2b5f06ccbb2b7cd513afd7350d4365a4b7f794c4a9f93ddc2d9f1e462dc857cc",
+    "signed_at": 1783805910,
+    "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
+    "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
+    "sig": "_FNT3__9Lc3LHdS3yProhcHwF6GujCTFS2pba6rM24PaSAQr2Uka1s3FDjuZFNZ2uvmuRsWmy9EBAeCzJcvVBA",
     "discover": {
      "what": "0n1x \u2014 independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
      "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
