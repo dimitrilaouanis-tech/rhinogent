@@ -1,6 +1,6 @@
 {
  "artifact": "0n1x-intel-synthesis",
- "as_of": "2026-07-14T02:39:48.754582+00:00",
+ "as_of": "2026-07-14T03:09:36.930935+00:00",
  "conclusions": [
   {
    "new_conclusion": "shopify.com: cross-pipeline consensus — independently confirmed 'ok' by the facts_registry's 1212-agent attestation consensus (100% agreement) AND by the exchange's staked inspector panel (agreement 1.0) via a SEPARATE mechanism. Fresh oracle recompute at verification time: ok (OK — fused: age[WELL-ESTABLISHED — 21 years old] · tls[valid (Google Trust Services)] · http[up 200]). No single source stated both pipelines agree — this 2-pipeline-agreement conclusion is new.",
@@ -35,17 +35,17 @@
      "angle": "corroboration",
      "source": "llm",
      "brain": "groq",
-     "note": "Shopify.com is not only unanimously rated “ok” by a broad base of 1,212 agents (100 % agreement across 100 contributors) but is also classified as a **premium‑tier** service that has achieved perfect inspector agreement (1.0) and Oracle verification. This dual validation—mass‑consensus rating plus premium‑panel endorsement—demonstrates a level of trust and reliability that exceeds what either sour"
+     "note": "Shopify.com enjoys universal consensus among a large community of agents (1,212 attestations with 100 % agreement across 100 agents) **and** has been independently validated by a premium inspection panel that achieved full inspector agreement and oracle verification. This dual‑layer endorsement—mass‑agent consensus plus a rigorously audited premium review—implies that Shopify meets the highest sta"
     },
     {
      "agent": "Wild-Bastion-79A8",
      "angle": "skeptical_audit",
      "source": "llm",
      "brain": "groq",
-     "note": "**Strongest cross‑source conclusion**  \nBoth the *facts_registry* and the *exchange_premium_panel* report unanimous, high‑confidence endorsements of **shopify.com** as a legitimate, trustworthy merchant domain. The registry notes a 100 % agreement among 1212 attestations from 100 agents, and the premium panel assigns it a “premium” tier with perfect inspector agreement (1.0) and an “oracle‑verifie"
+     "note": "**Strongest cross‑source conclusion**  \nBoth the internal *facts_registry* and the external *exchange_premium_panel* give Shopify.com a full, unanimous endorsement: the domain is classified as “ok” (i.e., trustworthy/acceptable) and is listed as a **verified, premium‑tier merchant** with 100 % inspector agreement.\n\n**What is not independently verifiable / may be overreaching**\n\n| Item | Why it sho"
     }
    ],
-   "llm_agreement": 0.066,
+   "llm_agreement": 0.085,
    "verification": {
     "method": "oracle_recompute",
     "target": "shopify.com",
@@ -54,19 +54,19 @@
     "result": "verified",
     "detail": "OK — fused: age[WELL-ESTABLISHED — 21 years old] · tls[valid (Google Trust Services)] · http[up 200]"
    },
-   "confidence": 0.76,
+   "confidence": 0.763,
    "status": "reconfirmed",
-   "as_of": "2026-07-14T02:38:45.662492+00:00",
+   "as_of": "2026-07-14T03:08:26.073662+00:00",
    "onyx_attestation": {
     "alg": "Ed25519+JCS",
     "kid": "onyx-7fdc5cc8113040cb",
     "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
     "tool": "onyx_synthesis",
-    "observed_hash": "sha256:95655ec7dfb91e8f797840adbce8c0fc4a6762141784729360d5a4d78fa3741a",
-    "signed_at": 1783996725,
+    "observed_hash": "sha256:ddceee70bf8d813b362402227dee4a91d65be555dcdd8f6f9a4aba961948979e",
+    "signed_at": 1783998506,
     "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
     "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
-    "sig": "KtXI-5svDnVCphsaqZ8J5LEyuRJee5-UWHjb_vWU8XAsyV-U23HAhIrjjHfnxkcgZUOUHfRqAqft4AToYdhJDw",
+    "sig": "Yu7iPFxU2uCGmjikmgkY7BwzMZXRp8CzLJE-jk-GrOMOwhFk9uln-hULSswJElsWJKTN1fWdTXHbTVLb0vsvDg",
     "discover": {
      "what": "0n1x — independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
      "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
@@ -96,9 +96,9 @@
      "tier": "premium",
      "inspector_agreement": 1.0,
      "top_inspectors": [
-      "Bold-Cipher-930D",
-      "Sharp-Horn-1258",
-      "Bright-Monolith-D11B"
+      "Quiet-Bastion-7C3B",
+      "Lone-Forge-5A02",
+      "Grave-Warden-C4A4"
      ],
      "verified_by_oracle": true
     }
@@ -110,17 +110,17 @@
      "angle": "corroboration",
      "source": "llm",
      "brain": "groq3",
-     "note": "Based on the independent verification items, the strongest new conclusion is that stripe.com is a highly reliable and trustworthy online payment processing platform, as evidenced by its \"ok\" band designation, 100% agreement percentile, and premium tier status. This conclusion is further reinforced by the consensus of 100 agents and the verification by top inspectors, including Bold-Cipher-930D, Sh"
+     "note": "Combining the facts registry and exchange premium panel data, a strong conclusion is that stripe.com is a highly verified and trustworthy merchant, with 100% agreement among 100 consensus agents and a premium tier rating from top inspectors. This conclusion is further solidified by the verified_by_oracle flag, indicating a high level of confidence in the assessment. To be even more confident, addi"
     },
     {
      "agent": "Wild-Bastion-79A8",
      "angle": "skeptical_audit",
      "source": "llm",
      "brain": "groq2",
-     "note": "**Cross-Source Synthesis Analysis: Stripe.com**\n\nBased on the provided context, here's a synthesis of the key points:\n\n1. **Source Agreement**: The `facts_registry` and `stripe.com` band are set to \"ok\" with 1207 agent attestations. While this suggests a high level of agreement among agents, it's essential to note that agent attestations alone do not guarantee the accuracy of information.\n2. **Con"
+     "note": "**Strongest Cross-Source Conclusion:**\n\nBased on the provided context, the strongest cross-source conclusion is that **stripe.com is a verified merchant with 100% agreement among 0n1x agents and a verified tier status by the premium panel**.\n\n**Explicit Callouts:**\n\n1. **Insufficient information**: The number of agents attesting to stripe.com is 1207, but this is an **aggregation of individual age"
     }
    ],
-   "llm_agreement": 0.09,
+   "llm_agreement": 0.096,
    "verification": {
     "method": "oracle_recompute",
     "target": "stripe.com",
@@ -129,19 +129,19 @@
     "result": "verified",
     "detail": "OK — fused: age[WELL-ESTABLISHED — 30 years old] · tls[valid (DigiCert Inc)] · http[up 200]"
    },
-   "confidence": 0.763,
+   "confidence": 0.764,
    "status": "reconfirmed",
-   "as_of": "2026-07-14T02:38:49.670673+00:00",
+   "as_of": "2026-07-14T03:08:29.713140+00:00",
    "onyx_attestation": {
     "alg": "Ed25519+JCS",
     "kid": "onyx-7fdc5cc8113040cb",
     "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
     "tool": "onyx_synthesis",
-    "observed_hash": "sha256:3c8865e3a91c7870fe7cb1a83e3c2237d5bc7c8fcbc3437b95f1dd3d7c258073",
-    "signed_at": 1783996729,
+    "observed_hash": "sha256:2b34afda3008fdbcc9f24e7e9e450da06e99a3902b5c5dcf25ac57d528bc00c3",
+    "signed_at": 1783998509,
     "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
     "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
-    "sig": "9_3dkv6q3hQJIg2qOdDpjX3N7930yCcnRLQhSvvGNZ4MUeaOTSmArF2q4jE9iR739JNFhKMtgF6tbjjyg9S9Bg",
+    "sig": "2OzBA7J37-gsuThmuAAJ1pz3sZL_LZTLeVSqNsZ3T5LMaL1Wpoz0NOO7juS5yMmTeYnaU2EKioMmL7iLMeg4DA",
     "discover": {
      "what": "0n1x — independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
      "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
@@ -153,15 +153,15 @@
    }
   },
   {
-   "new_conclusion": "Stone-Anchor-A7F1: high-confidence supplier — 241 premium / 4 trash across the staked exchange leaderboard (eligible=True), cross-checked against the SEPARATE stake-slashing negative registry where it does not appear in the public flagged sample (public sample covers 200 of 19821 total flagged — absence here is a sample check, not exhaustive proof). Two independently-tracked ledgers agree at verification time (still_eligible=True, still_not_flagged=True).",
+   "new_conclusion": "Stone-Anchor-A7F1: high-confidence supplier — 242 premium / 4 trash across the staked exchange leaderboard (eligible=True), cross-checked against the SEPARATE stake-slashing negative registry where it does not appear in the public flagged sample (public sample covers 200 of 19821 total flagged — absence here is a sample check, not exhaustive proof). Two independently-tracked ledgers agree at verification time (still_eligible=True, still_not_flagged=True).",
    "kind": "agent_composite_trust",
    "target": "Stone-Anchor-A7F1",
    "input_items": [
     {
      "source": "exchange_leaderboard",
      "callsign": "Stone-Anchor-A7F1",
-     "points": 1083.38,
-     "premium": 241,
+     "points": 1087.55,
+     "premium": 242,
      "normal": 13,
      "trash": 4,
      "eligible": true
@@ -175,7 +175,7 @@
     {
      "source": "quality_ratio",
      "callsign": "Stone-Anchor-A7F1",
-     "premium": 236,
+     "premium": 237,
      "normal": 13,
      "trash": 3
     }
@@ -187,17 +187,17 @@
      "angle": "corroboration",
      "source": "llm",
      "brain": "groq2",
-     "note": "**Agent Decision**: Based on the data, I deduce that Stone-Anchor-A7F1 has a high level of trustworthiness, with a composite trust score of 1083.38 points, primarily due to the consistency of their quality ratios across premium, normal, and trash categories. This conclusion is bolstered by the absence of any red flags in public samples.\n\n**Increased Confidence Factors**: Confirmation of Stone-Anch"
+     "note": "**Composite Trust Rating: Moderate**\nBased on independent verification items, the callsign \"Stone-Anchor-A7F1\" has a moderate level of trust, indicating a balance between performance and quality. The presence in the exchange leaderboard and quality ratio, paired with the lack of negative registry check, suggests a consistent and reliable operation. Confidence would increase with more comprehensive"
     },
     {
      "agent": "Wild-Bastion-79A8",
      "angle": "skeptical_audit",
      "source": "llm",
      "brain": "groq2",
-     "note": "After analyzing the given context, here's a skeptical auditor's perspective on the strongest cross-source conclusion about the target callsign \"Stone-Anchor-A7F1\":\n\n1. **Unverifiable claims:**\n    - The sample caveat in the negative registry check states that the absence of the callsign in the public sample is not exhaustive proof. It's essential not to overgeneralize this information and treat it"
+     "note": "**AgentCompositeTrust: Stone-Anchor-A7F1**\n\nBased on the provided sources, I will attempt to draw a single, cross-source conclusion while highlighting areas that require verification or are uncertain.\n\n**Strongest Cross-Source Conclusion:**\n\n* Stone-Anchor-A7F1 holds a high position in the exchange leaderboard with 1087.55 points. This suggests they are a skilled participant in the exchange, but t"
     }
    ],
-   "llm_agreement": 0.131,
+   "llm_agreement": 0.083,
    "verification": {
     "method": "ledger_recompute",
     "target": "Stone-Anchor-A7F1",
@@ -205,19 +205,19 @@
     "still_not_flagged_in_sample": true,
     "result": "verified"
    },
-   "confidence": 0.82,
+   "confidence": 0.812,
    "status": "reconfirmed",
-   "as_of": "2026-07-14T02:38:51.942669+00:00",
+   "as_of": "2026-07-14T03:08:32.495811+00:00",
    "onyx_attestation": {
     "alg": "Ed25519+JCS",
     "kid": "onyx-7fdc5cc8113040cb",
     "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
     "tool": "onyx_synthesis",
-    "observed_hash": "sha256:a6392dcd314aa49cc0afd83e7a9dc411e9b9eb5ef180a3fc82d1c522b907364c",
-    "signed_at": 1783996731,
+    "observed_hash": "sha256:c3c8df609f6dd42fd58cb3fd70371e1e5698ef406c0eb0ce7ca1ab8405ab25d7",
+    "signed_at": 1783998512,
     "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
     "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
-    "sig": "kEBOMXYJW7XZ-ZG4NvHSc8uJPhK6J2gm7HvtxsBXY1Nx0G4uZWUUfegZUXk4mPMdvgRzkv5C21XyTd2Qp_wICg",
+    "sig": "bzQhT_JrBB33TNKjMmoE5ep0EhpUHRVIe6lEO1ZiuKV311VNem2K6pIcprCkab0bSeWiXNl8XzxtW9g9cTfuCg",
     "discover": {
      "what": "0n1x — independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
      "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
@@ -229,15 +229,15 @@
    }
   },
   {
-   "new_conclusion": "Wild-Bastion-79A8: high-confidence supplier — 248 premium / 3 trash across the staked exchange leaderboard (eligible=True), cross-checked against the SEPARATE stake-slashing negative registry where it does not appear in the public flagged sample (public sample covers 200 of 19821 total flagged — absence here is a sample check, not exhaustive proof). Two independently-tracked ledgers agree at verification time (still_eligible=True, still_not_flagged=True).",
+   "new_conclusion": "Wild-Bastion-79A8: high-confidence supplier — 249 premium / 3 trash across the staked exchange leaderboard (eligible=True), cross-checked against the SEPARATE stake-slashing negative registry where it does not appear in the public flagged sample (public sample covers 200 of 19821 total flagged — absence here is a sample check, not exhaustive proof). Two independently-tracked ledgers agree at verification time (still_eligible=True, still_not_flagged=True).",
    "kind": "agent_composite_trust",
    "target": "Wild-Bastion-79A8",
    "input_items": [
     {
      "source": "exchange_leaderboard",
      "callsign": "Wild-Bastion-79A8",
-     "points": 1045.12,
-     "premium": 248,
+     "points": 1049.29,
+     "premium": 249,
      "normal": 6,
      "trash": 3,
      "eligible": true
@@ -251,7 +251,7 @@
     {
      "source": "quality_ratio",
      "callsign": "Wild-Bastion-79A8",
-     "premium": 244,
+     "premium": 245,
      "normal": 6,
      "trash": 2
     }
@@ -263,17 +263,17 @@
      "angle": "corroboration",
      "source": "llm",
      "brain": "groq3",
-     "note": "The combined verification items suggest that Wild-Bastion-79A8 is a high-quality and trustworthy entity, with a high premium point count, low trash count, and no public flags in the negative registry check. This conclusion is strengthened by the consistency across different sources, including the exchange leaderboard and quality ratio reports. To be more confident, I would need direct access to th"
+     "note": "Combining the verification items, Wild-Bastion-79A8 appears to be a high-quality entity with a strong track record, as evidenced by its high points and premium interaction counts, as well as a low ratio of trash interactions. This conclusion is further supported by the absence of flags in the public sample, although a more exhaustive check would be necessary to confirm this assessment. More compre"
     },
     {
      "agent": "Wild-Bastion-79A8",
      "angle": "skeptical_audit",
      "source": "llm",
      "brain": "groq2",
-     "note": "**Analysis and Conclusion**\n\nConsidering the provided context, the single strongest cross-source conclusion is:\n\n**Wild-Bastion-79A8 is currently a participant in the exchange leaderboard with 1045.12 points, and has a high premium points history.**\n\n**Sources:**\n\n- **exchange_leaderboard**: This source confirms Wild-Bastion-79A8's participation in the leaderboard with 1045.12 points.\n- **quality_"
+     "note": "**Auditor's Analysis:**\n\n1. **Exchange Leaderboard (1049.29 points):** \n   - Verified: Wild-Bastion-79A8 has 1049.29 points on the exchange leaderboard.\n   - Unverifiable: This does not provide insight into the quality or context of these points (e.g., are they from legitimate trades or suspicious activity?)\n\n2. **Negative Registry Check:**\n   - Verified: Wild-Bastion-79A8 is not flagged in the pu"
     }
    ],
-   "llm_agreement": 0.109,
+   "llm_agreement": 0.077,
    "verification": {
     "method": "ledger_recompute",
     "target": "Wild-Bastion-79A8",
@@ -281,19 +281,19 @@
     "still_not_flagged_in_sample": true,
     "result": "verified"
    },
-   "confidence": 0.816,
+   "confidence": 0.812,
    "status": "reconfirmed",
-   "as_of": "2026-07-14T02:38:54.138272+00:00",
+   "as_of": "2026-07-14T03:08:35.072166+00:00",
    "onyx_attestation": {
     "alg": "Ed25519+JCS",
     "kid": "onyx-7fdc5cc8113040cb",
     "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
     "tool": "onyx_synthesis",
-    "observed_hash": "sha256:a99b87389de626632afa73e9469edf4a032d650cc31337df7936ec6d2918bfb3",
-    "signed_at": 1783996734,
+    "observed_hash": "sha256:f90f55583516ba46b967b22e911e38db977399d3f9941be6bd78baec026f3fa8",
+    "signed_at": 1783998515,
     "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
     "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
-    "sig": "nwTxR83VTASbqYpxN3Efpems3yYTCiJPEmgcEa3TZD9b7F87tGefC3dAphW_4i2RJ-c63E7SN7eIjt8tbws-DA",
+    "sig": "pYU4bBvT3bMxClVe-tKihQUs2-y22BFcph5-lEO9EKfHXPo-VNVFEh8SO9Oak-WaUJp6ClMR8Q0dsFCxWNIZBA",
     "discover": {
      "what": "0n1x — independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
      "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
@@ -305,17 +305,17 @@
    }
   },
   {
-   "new_conclusion": "Keen-Cipher-FDDC: high-confidence supplier — 354 premium / 127 trash across the staked exchange leaderboard (eligible=True), cross-checked against the SEPARATE stake-slashing negative registry where it does not appear in the public flagged sample (public sample covers 200 of 19821 total flagged — absence here is a sample check, not exhaustive proof). Two independently-tracked ledgers agree at verification time (still_eligible=True, still_not_flagged=True).",
+   "new_conclusion": "Keen-Cipher-FDDC: high-confidence supplier — 355 premium / 128 trash across the staked exchange leaderboard (eligible=True), cross-checked against the SEPARATE stake-slashing negative registry where it does not appear in the public flagged sample (public sample covers 200 of 19821 total flagged — absence here is a sample check, not exhaustive proof). Two independently-tracked ledgers agree at verification time (still_eligible=True, still_not_flagged=True).",
    "kind": "agent_composite_trust",
    "target": "Keen-Cipher-FDDC",
    "input_items": [
     {
      "source": "exchange_leaderboard",
      "callsign": "Keen-Cipher-FDDC",
-     "points": 985.54,
-     "premium": 354,
+     "points": 984.71,
+     "premium": 355,
      "normal": 41,
-     "trash": 127,
+     "trash": 128,
      "eligible": true
     },
     {
@@ -327,9 +327,9 @@
     {
      "source": "quality_ratio",
      "callsign": "Keen-Cipher-FDDC",
-     "premium": 337,
+     "premium": 338,
      "normal": 41,
-     "trash": 126
+     "trash": 127
     }
    ],
    "angle_count": 3,
@@ -339,17 +339,17 @@
      "angle": "corroboration",
      "source": "llm",
      "brain": "groq2",
-     "note": "**Trust Classification:** Keen-Cipher-FDDC is likely trustworthy, exhibiting consistent high-quality premium points (337) and normal points (41) with low trash points (126) across three independently sourced verification items.\n\n**Increased Confidence:** A more detailed public sample check and a comprehensive evaluation of Keen-Cipher-FDDC across a larger portion of the 0n1x database would increas"
+     "note": "Based on the provided verification items, the single strongest conclusion is that Keen-Cipher-FDDC has been verified to be a legitimate actor with a moderate level of credibility, currently holding 984.71 points on the exchange leaderboard and possessing a quality ratio with 338 premium points and 127 trash points.\n\nIncreased confidence would be achieved by obtaining more positive verification ite"
     },
     {
      "agent": "Wild-Bastion-79A8",
      "angle": "skeptical_audit",
      "source": "llm",
      "brain": "groq2",
-     "note": "Based on the provided data, I've identified the strongest cross-source conclusion and called out unsupported or speculative statements.\n\n**Strongest cross-source conclusion:**\nKeen-Cipher-FDDC is a participant in the exchange_leaderboard with a current score of 985.54 points, and their quality_ratio indicates a high premium score (337) compared to their trash score (126).\n\n**Unsupported or specula"
+     "note": "Based on the available data, I'll provide a cross-source conclusion for the agent \"Keen-Cipher-FDDC\" while highlighting limitations and unverifiable assumptions.\n\n**Single strongest cross-source conclusion:**\n\nKeen-Cipher-FDDC is a relatively active agent with a substantial amount of points (984.71), indicating a considerable engagement level within the network.\n\n**Limitations and unverifiable ass"
     }
    ],
-   "llm_agreement": 0.108,
+   "llm_agreement": 0.106,
    "verification": {
     "method": "ledger_recompute",
     "target": "Keen-Cipher-FDDC",
@@ -359,17 +359,17 @@
    },
    "confidence": 0.816,
    "status": "reconfirmed",
-   "as_of": "2026-07-14T02:38:56.576437+00:00",
+   "as_of": "2026-07-14T03:08:42.285693+00:00",
    "onyx_attestation": {
     "alg": "Ed25519+JCS",
     "kid": "onyx-7fdc5cc8113040cb",
     "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
     "tool": "onyx_synthesis",
-    "observed_hash": "sha256:abb2c0595c70b099ce7635c775978a699aba4c205d023bed14d216afe0e03c2a",
-    "signed_at": 1783996736,
+    "observed_hash": "sha256:4691310d33a5a253539987a0ca9311310d404e6c6382e69300a81a33d146b293",
+    "signed_at": 1783998522,
     "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
     "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
-    "sig": "iVC8g-g-Kt9bS2cvRi1sMLz8LgpJjSk9lT1vmMRpH247zF2G8REZu9-bF2VMKna5cDFVqKkhAbt7bC1VGzP3CA",
+    "sig": "iuPfJ3RH1mb3dh_OfV5i44HyoCZzWqc49y-1Yx78y0uto_z6A9cfqT9IhWdN_QdRlPYFKzcyWbBGtqQPZsH6Bg",
     "discover": {
      "what": "0n1x — independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
      "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
@@ -381,17 +381,17 @@
    }
   },
   {
-   "new_conclusion": "Keen-Vault-96DD: high-confidence supplier — 356 premium / 125 trash across the staked exchange leaderboard (eligible=True), cross-checked against the SEPARATE stake-slashing negative registry where it does not appear in the public flagged sample (public sample covers 200 of 19821 total flagged — absence here is a sample check, not exhaustive proof). Two independently-tracked ledgers agree at verification time (still_eligible=True, still_not_flagged=True).",
+   "new_conclusion": "Keen-Vault-96DD: high-confidence supplier — 357 premium / 126 trash across the staked exchange leaderboard (eligible=True), cross-checked against the SEPARATE stake-slashing negative registry where it does not appear in the public flagged sample (public sample covers 200 of 19821 total flagged — absence here is a sample check, not exhaustive proof). Two independently-tracked ledgers agree at verification time (still_eligible=True, still_not_flagged=True).",
    "kind": "agent_composite_trust",
    "target": "Keen-Vault-96DD",
    "input_items": [
     {
      "source": "exchange_leaderboard",
      "callsign": "Keen-Vault-96DD",
-     "points": 985.25,
-     "premium": 356,
+     "points": 984.42,
+     "premium": 357,
      "normal": 33,
-     "trash": 125,
+     "trash": 126,
      "eligible": true
     },
     {
@@ -403,9 +403,9 @@
     {
      "source": "quality_ratio",
      "callsign": "Keen-Vault-96DD",
-     "premium": 347,
+     "premium": 348,
      "normal": 33,
-     "trash": 124
+     "trash": 125
     }
    ],
    "angle_count": 3,
@@ -415,17 +415,17 @@
      "angle": "corroboration",
      "source": "llm",
      "brain": "groq2",
-     "note": "**Agent Conclusion**: Keen-Vault-96DD exhibits a balanced performance profile with significant premium scoring (985.25 points) across the leaderboard, suggesting reliability in high-stakes evaluations and a strong aptitude for tasks that demand expertise.\n\n**Composite Trust Factors**:\n- High premium performance (356) compared to normal (33) and trash (125) scores, indicating effective execution in"
+     "note": "I conclude that Keen-Vault-96DD has demonstrated substantial trustworthiness with 984.42 points on the exchange leaderboard, a minimal negative registry presence, and a high quality ratio of 348:33:125. More confidence arises from:\n\n- High leaderboard points reflecting consistent, valuable contribution.\n- Negative registry check absence (or the caveat that it's not exhaustive) indicating minimal t"
     },
     {
      "agent": "Wild-Bastion-79A8",
      "angle": "skeptical_audit",
-     "source": "llm",
-     "brain": "groq2",
-     "note": "Analysis of Keen-Vault-96DD's trustworthiness based on provided data:\n\n1. **Exchange leaderboard data**:\n\t- Points: 985.25 (indicates a high level of participation and performance)\n\t- Premium/Normal/Trash distribution is consistent with average behavior (premium: 356, normal: 33, trash: 125)\n2. **Negative registry check**:\n\t- Flagged in public sample: FALSE (this suggests that Keen-Vault-96DD is n"
+     "source": "kb",
+     "brain": "trained_cache",
+     "note": "The 0n1x network uses a **cryptographically‑signed reputation system** to rank every citizen (agent) and every merchant you encounter.\n\n### Core components\n\n| Component | What it measures | How it’s earned / updated |\n|-----------|------------------|--------------------------|\n| **Reputation score** | Long‑term trustworthiness of an agent. | Accumulates from successful bounty completions, verified"
     }
    ],
-   "llm_agreement": 0.062,
+   "llm_agreement": 0.021,
    "verification": {
     "method": "ledger_recompute",
     "target": "Keen-Vault-96DD",
@@ -433,19 +433,19 @@
     "still_not_flagged_in_sample": true,
     "result": "verified"
    },
-   "confidence": 0.809,
+   "confidence": 0.83,
    "status": "reconfirmed",
-   "as_of": "2026-07-14T02:38:59.320140+00:00",
+   "as_of": "2026-07-14T03:08:43.875575+00:00",
    "onyx_attestation": {
     "alg": "Ed25519+JCS",
     "kid": "onyx-7fdc5cc8113040cb",
     "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
     "tool": "onyx_synthesis",
-    "observed_hash": "sha256:91e77a66cdd465492a1125b89a88ad36c4fd5123cbd8e4f57fd9f1050311ecba",
-    "signed_at": 1783996739,
+    "observed_hash": "sha256:0d69b58abd939a342e867c2740d111ae5161de6ad858f05b332a6077c9ef82ba",
+    "signed_at": 1783998523,
     "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
     "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
-    "sig": "nRxf9VEiQAKOD9IDfMqiVhroVaSWCXRZJTXPT8a-bMLnX1aVV7Ha_xXApLFfuZ1aZYrjHsHd9qoxJ7H8NnBcBg",
+    "sig": "elvNCsv6DQ05OduaN1FrU14ft0uZMA3pFVMFTHmFPXpnWArkL98pbj-XsVUZMBlO7jfe6ki2CmkmR5M1j3glDA",
     "discover": {
      "what": "0n1x — independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
      "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
@@ -498,10 +498,10 @@
      "angle": "skeptical_audit",
      "source": "llm",
      "brain": "groq2",
-     "note": "Upon reviewing the provided information, here's the strongest cross-source conclusion I can draw while acknowledging potential limitations:\n\n**Cross-source conclusion:** The entity identified by the callsign \"Bold-Cipher-3FA8\" currently has 170 points on the exchange leaderboard.\n\n**Verified information:**\n\n- This conclusion is supported by the \"exchange_leaderboard\" source, which directly reports"
+     "note": "Based on the provided sources, here are my observations:\n\n1. **Exchange leaderboard position**: The user \"Bold-Cipher-3FA8\" has earned 170 points (premium: 17 points, normal: 0 points, trash: 0 points) in the exchange leaderboard. This information is verifiable but its implications are unclear without more context.\n   _Strongest cross-source conclusion:_ Unverifiable.\n2. **Negative registry check*"
     }
    ],
-   "llm_agreement": 0.03,
+   "llm_agreement": 0.015,
    "verification": {
     "method": "ledger_recompute",
     "target": "Bold-Cipher-3FA8",
@@ -511,17 +511,17 @@
    },
    "confidence": 0.83,
    "status": "reconfirmed",
-   "as_of": "2026-07-14T02:39:01.622041+00:00",
+   "as_of": "2026-07-14T03:08:47.177010+00:00",
    "onyx_attestation": {
     "alg": "Ed25519+JCS",
     "kid": "onyx-7fdc5cc8113040cb",
     "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
     "tool": "onyx_synthesis",
-    "observed_hash": "sha256:0910bca838ec3158704a4d8e726870399ec6ce2d53849e2adfc1180f9617c457",
-    "signed_at": 1783996741,
+    "observed_hash": "sha256:983f6358ed13d803011863145faf094f827f72d1c2d035ba0c2dd99c25eb0975",
+    "signed_at": 1783998527,
     "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
     "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
-    "sig": "foDJ9JdEey2CWcHtyGFG4vsOBpTR_wz4dQQrw_RCiij7etVscH3g26krOt-vJ7vYrWRU4jTBdA1Kawpx6aefAw",
+    "sig": "5KyRcfrvyI5I-j5snCGfv0l9ffK1AEjO0D5FqzKmRTGG9sGRbW49Ys9X0fBBizI9XGz-YgqYgMU8o4KNzVS_Bg",
     "discover": {
      "what": "0n1x — independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
      "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
@@ -587,17 +587,17 @@
    },
    "confidence": 0.83,
    "status": "reconfirmed",
-   "as_of": "2026-07-14T02:39:03.152270+00:00",
+   "as_of": "2026-07-14T03:08:48.958291+00:00",
    "onyx_attestation": {
     "alg": "Ed25519+JCS",
     "kid": "onyx-7fdc5cc8113040cb",
     "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
     "tool": "onyx_synthesis",
-    "observed_hash": "sha256:ab46449b98b1556d6b6228aeca80ebc04223e4c2d678214bbf19aad4f635aab2",
-    "signed_at": 1783996743,
+    "observed_hash": "sha256:5a69cf075b9e7254c30bcc98a724509a0657ecbe67b2cae73b8a41a8b10f271e",
+    "signed_at": 1783998528,
     "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
     "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
-    "sig": "5vrTszzSe8o9uyuDEfCiLD4qMB_D1s4Z4-R-9e_hbMMaEph6MYPhxuAAr3YkR-ChwUL671jGUEqH11pHbAoRBA",
+    "sig": "m8wlYdzUGfkQv_dIL5PkYP1AQ5yiV43S6nn0riJzuge4PtumU5UUmRlFEL4b5ygxmaRdBMTmtCrrK6xEhupQAg",
     "discover": {
      "what": "0n1x — independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
      "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
@@ -682,17 +682,17 @@
    },
    "confidence": 0.83,
    "status": "reconfirmed",
-   "as_of": "2026-07-14T02:39:20.759445+00:00",
+   "as_of": "2026-07-14T03:09:03.501650+00:00",
    "onyx_attestation": {
     "alg": "Ed25519+JCS",
     "kid": "onyx-7fdc5cc8113040cb",
     "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
     "tool": "onyx_synthesis",
-    "observed_hash": "sha256:86aed5d6697e4b2c12ba256e8b165638a2b2d43794146a245ae95665085ea66f",
-    "signed_at": 1783996760,
+    "observed_hash": "sha256:d0f0a9cf9e6d3c172843a47c2ff4df5dfb6c98f9efe44f7a2b213fb120e87577",
+    "signed_at": 1783998543,
     "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
     "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
-    "sig": "LD1lvNWzxktacACRImTS3OaX6yHWqd_stvBQhQ0coc21vjIYb4zPKM9ZbMmZN-zLKCCA-Nmn_FJU51fTDpgxBw",
+    "sig": "2r5KQqhWU2sCQbeJ5rWWKlmOTcG5e3gwxlociLzPW6v-4eUKT_gsEb1NytuNEU5kMa9CteebREtFWu6A1fgMAg",
     "discover": {
      "what": "0n1x — independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
      "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
@@ -730,17 +730,17 @@
      "angle": "corroboration",
      "source": "llm",
      "brain": "groq2",
-     "note": "**New Conclusion:** duckduckgo.com and stripe.com both possess valid SSL/TLS certificates issued by DigiCert Inc, which is a well-established and reputable Certificate Authority (CA).\n\n**Reasoning:** Both verification items originate from different sources (oracle_live and TLS Issuer) and contain matching information about the target domains. This redundancy strengthens the conclusion, eliminating"
+     "note": "Based on the provided verification items, I conclude that duckduckgo.com and stripe.com share a common, trusted TLS certificate issuer, DigiCert Inc, which is a well-established and highly reliable certificate authority. \n\nThis new conclusion increases confidence due to the **converging** evidence from **two independent** and **previously unverified** sources, indicating a higher likelihood of acc"
     },
     {
      "agent": "Wild-Bastion-79A8",
      "angle": "skeptical_audit",
      "source": "llm",
      "brain": "groq2",
-     "note": "**Auditor's Review:**\n\nBased on the provided data points, here are my observations and limitations:\n\n1. **Common TLS Issuer:** Both duckduckgo.com and stripe.com share the same TLS issuer \"DigiCert Inc.\". This fact is **VERIFIABLE** through certificate transparency logs or the respective websites' certificate details.\n2. **Consistent Age Band:** Both sources are categorized as \"ok\" in the \"age_ban"
+     "note": "Based on the provided input, here's the analysis:\n\n1. Both duckduckgo.com and stripe.com have the same TLS issuer - DigiCert Inc.\n   * This is verifiable through publicly available SSL certificate information.\n\n2. Both sources have an \"age_band\" of \"ok\".\n   * This could be an internal or external metric specific to the oracle, but without context, it's unclear what this specifically represents or "
     }
    ],
-   "llm_agreement": 0.08,
+   "llm_agreement": 0.1,
    "verification": {
     "method": "oracle_recompute+panel",
     "members": [
@@ -759,19 +759,19 @@
     "all_members_well_established": true,
     "coordinated_operator_inference": "UNVERIFIED HYPOTHESIS — not drawn as fact. Shared CA/CDN issuer + similar age is common among unrelated legitimate sites and is NOT itself a risk signal. This mechanism would flag differently if the shared signal appeared among young/high_risk domains, which is not the case here."
    },
-   "confidence": 0.762,
+   "confidence": 0.765,
    "status": "reconfirmed",
-   "as_of": "2026-07-14T02:39:33.993324+00:00",
+   "as_of": "2026-07-14T03:09:20.986758+00:00",
    "onyx_attestation": {
     "alg": "Ed25519+JCS",
     "kid": "onyx-7fdc5cc8113040cb",
     "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
     "tool": "onyx_synthesis",
-    "observed_hash": "sha256:4303f9c2baa34cb6cbdbcbe767e082d2cc260a4d274b058b28798d07f436fc21",
-    "signed_at": 1783996773,
+    "observed_hash": "sha256:4470a1832a4db65152868ffecda158720e94591e56ab0e081e97bc14d8608c56",
+    "signed_at": 1783998560,
     "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
     "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
-    "sig": "3W5BaSfJ3fmMwXKGk9qmv_P8TeWF2xRds-YqpG28Lb0DokqGyWDu0nWAyMPaK2FOrhvfJu53La4iVIbhbGIqAg",
+    "sig": "fOG70UZ6g_dFJOXsaUL8KfavQLgP3R1cgvOMOMc8xuhlpPm-SpdC0so15UiG_o6WaV5aCtFEYM2LJouJL23SBg",
     "discover": {
      "what": "0n1x — independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
      "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
@@ -809,17 +809,17 @@
      "angle": "corroboration",
      "source": "llm",
      "brain": "groq2",
-     "note": "**Consolidated Conclusion:** Both Wikipedia.org and Wordpress.org share a common verified trust anchor of \"Let's Encrypt\" as their TLS issuer, validating their integrity and authenticity of encrypted data transmission.\n\n**Increased Confidence Factor:** Verifiability of TLS issuer across multiple targets would be enhanced by checking the validity of SSL certificates, examining the Subject Alternati"
+     "note": "**Combined Verification Conclusion:** Wikipedia.org and wordpress.org both possess valid Let's Encrypt SSL certificates, have undergone recent updates and are considered secure.\n\n**Increased Confidence:** Additional checks on DNS records, server IP addresses, and certificate chain validation would further strengthen this conclusion.\n\n**Verification Context:** These conclusions are drawn from the s"
     },
     {
      "agent": "Wild-Bastion-79A8",
      "angle": "skeptical_audit",
      "source": "llm",
-     "brain": "groq3",
-     "note": "Based on the provided context, the single strongest cross-source conclusion is that both Wikipedia.org and WordPress.org have valid TLS certificates issued by Let's Encrypt. This conclusion is verifiable through publicly available information and can be confirmed through independent verification.\n\nHowever, the following should NOT be treated as fact without further verification:\n\n1. The accuracy o"
+     "brain": "groq2",
+     "note": "**Auditor's Report**\n\nBased on the provided data from the 0n1x/Rhinogent knowledge base, I've synthesized the following analysis.\n\n**Strongest Cross-Source Conclusion:**\n\nAll sources agree that both wikipedia.org and wordpress.org have HTTPS connections with TLS certificates issued by \"Let's Encrypt\". This conclusion can be considered verifiable, as it is based on publicly available data regarding"
     }
    ],
-   "llm_agreement": 0.062,
+   "llm_agreement": 0.086,
    "verification": {
     "method": "oracle_recompute+panel",
     "members": [
@@ -838,19 +838,19 @@
     "all_members_well_established": true,
     "coordinated_operator_inference": "UNVERIFIED HYPOTHESIS — not drawn as fact. Shared CA/CDN issuer + similar age is common among unrelated legitimate sites and is NOT itself a risk signal. This mechanism would flag differently if the shared signal appeared among young/high_risk domains, which is not the case here."
    },
-   "confidence": 0.759,
+   "confidence": 0.763,
    "status": "reconfirmed",
-   "as_of": "2026-07-14T02:39:48.675913+00:00",
+   "as_of": "2026-07-14T03:09:36.773857+00:00",
    "onyx_attestation": {
     "alg": "Ed25519+JCS",
     "kid": "onyx-7fdc5cc8113040cb",
     "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
     "tool": "onyx_synthesis",
-    "observed_hash": "sha256:0c8916387cee75c63d63c37568dd09abbe4243093c7163704b5621b9b95d72f0",
-    "signed_at": 1783996788,
+    "observed_hash": "sha256:9e56c0b30834523b20741c7767069daac3feb6d98ca6ea0fb830fd5c845b6f8f",
+    "signed_at": 1783998576,
     "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
     "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
-    "sig": "Y9Su_mC8wgbQJ1lbYLCBakxE8XWfAnMXnYJM47GbpiAZKVHzoMvZwK72ljIwfxci_sHzKuNhf9-RCjumpFx1Dw",
+    "sig": "6KVl4_LkVgMyMUDAkQIH1diMmDtUUCqotHj0zTnTOeDKqJVh30hQKDWqYsv-vlYd5aUXsveQb1Ov3npsbum5Dg",
     "discover": {
      "what": "0n1x — independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
      "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
@@ -862,7 +862,7 @@
    }
   }
  ],
- "round_count": 167,
+ "round_count": 168,
  "net_new_this_round": 0,
  "verified_this_round": 11,
  "unverified_hypotheses_this_round": 0,
@@ -887,11 +887,11 @@
   "kid": "onyx-7fdc5cc8113040cb",
   "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
   "tool": "onyx_synthesis",
-  "observed_hash": "sha256:447ca77d962044bf9b1f544ed6b41480e272fbe5c15c63a9255b0c3658f8692a",
-  "signed_at": 1783996788,
+  "observed_hash": "sha256:f8cc524527506cec0033292819d413bbdfd9aa2c8ded0ce2a11b8706b1cb5fcf",
+  "signed_at": 1783998576,
   "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
   "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
-  "sig": "QxuzKaEOAdMj1WerI2p1L5-d_eyBoGtSUH6qpmNnZcoSaWWFMA9mXT-LDv4hApIWiv3thzTCC6GfWmsuKTw6Dw",
+  "sig": "S2Bigaqh9MP0Tp7K_5yApr9eIhrfoXkhLAYcU3eGKrD40hTzokkKZLLJwpDBDVh0C1lZOV7XDHtRHKfCyA7zCA",
   "discover": {
    "what": "0n1x — independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
    "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
