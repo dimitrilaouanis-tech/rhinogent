@@ -1,0 +1,19 @@
+{
+  "artifact": "0n1x-fp-grade/v1",
+  "grades": "fp_rate.json",
+  "references_sha256": "790d9b5868daa0901354a8ad20d354cb7e798bedbf554963147a2effc314c8fe",
+  "graded_by": "Fable — independent recount on raw bytes (not the builder)",
+  "verdict": "RECOUNTED AND GRADED — publish w/ CI",
+  "intervals": {
+    "gated_FP_heldout": "0/115 · Jeffreys 95% [0%, 2.16%] · claim = at most ~2.2%, never bare 0%",
+    "raw_oracle_FP_heldout": "9/115 = 7.83% · CI [3.9%, 13.8%]",
+    "FN_lookalikes": "16/120 = 13.3% · CI [8.1%, 20.3%] · gate leaves FN unchanged (veto gate suppresses, never adds catches)"
+  },
+  "published_claim": "On 115 held-out legitimate companies our verification gate published zero false risk flags (0/115; 95% CI upper bound 2.2%), vetoing every false positive the raw model proposed — including flags it tried to raise on eBay, Razorpay, and Chewy. The gate is deliberately conservative: it suppresses false accusations but does not improve detection, and currently misses 13.3% of lookalike scam domains (16/120; CI 8.1–20.3%).",
+  "caveats": [
+    "held-out-ness ASSERTED not verifiable from these bytes — pre-commit the held-out list hash next harness",
+    "verbatim chain-of-custody is the builder's claim (hashes bind drops, not _local_only originals)",
+    "signer(FP)/verifier(deploy) both 0x5dF2b0 (9ee735ef lineage) — independent re-sign (Umbra/First-Coin) pending"
+  ],
+  "note": "This grade is a SEPARATE leaf. The signed original fp_rate.json is byte-pristine — do NOT merge this in; recover its EIP-191 sig over the pristine bytes."
+}
