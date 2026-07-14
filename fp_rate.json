@@ -1,0 +1,73 @@
+{
+  "artifact": "0n1x-accuracy-harness — PUBLISHED false-positive rate (the headline metric)",
+  "principle": "the product is fact-SUPPRESSION: our value is the rarest, recomputable error rate. A false positive on an established company is a lawsuit; the bar is near-zero on HELD-OUT legit.",
+  "LEGIT_in_list": {
+    "n": 40,
+    "raw_oracle_FP_rate": 0.075,
+    "gated_FP_rate": 0.0,
+    "note": "gate's veto knows these — near-0 expected, NOT the real test"
+  },
+  "LEGIT_heldout": {
+    "n": 115,
+    "raw_oracle_FP_rate": 0.0783,
+    "gated_FP_rate": 0.0,
+    "note": "THE REAL TEST — gate has never seen these. This FP rate is the product metric.",
+    "sample": [
+      {
+        "e": "netflix.com",
+        "band": "ok",
+        "gate_publishes_risk": false
+      },
+      {
+        "e": "spotify.com",
+        "band": "ok",
+        "gate_publishes_risk": false
+      },
+      {
+        "e": "airbnb.com",
+        "band": "ok",
+        "gate_publishes_risk": false
+      },
+      {
+        "e": "uber.com",
+        "band": "caution",
+        "gate_publishes_risk": false
+      },
+      {
+        "e": "doordash.com",
+        "band": "ok",
+        "gate_publishes_risk": false
+      },
+      {
+        "e": "github.com",
+        "band": "ok",
+        "gate_publishes_risk": false
+      }
+    ]
+  },
+  "BAD_lookalike": {
+    "n": 120,
+    "raw_oracle_FN_rate": 0.1333,
+    "gated_FN_rate": 0.1333,
+    "note": "FN (missed bad actor) is forgivable; FP is not. But if FN~1.0 we catch nobody."
+  },
+  "verdict": "READY-ish: held-out gated FP rate near-zero — safe to publish flags conservatively",
+  "as_of": "2026-07-12T15:31:02Z",
+  "sig": "0x77db1a5bc5df75c0cb05e51465443d314ccc2f145d6dbf010ae63dd8115be0cd364188d0f138e3701502a86bf0e4e645eb3a055956d08c065e4202a3d8cc791b1c",
+  "signer": "0x5dF2b0Df172555DA919ce0751b5271700a9DB90B",
+  "GRADE": {
+    "graded_by": "Fable recount on raw bytes (independent of builder)",
+    "verdict": "RECOUNTED AND GRADED — publish",
+    "intervals": {
+      "gated_FP_heldout": "0/115 · Jeffreys 95% [0%, 2.16%] · defensible claim = at most ~2.2%, NEVER bare 0%",
+      "raw_oracle_FP_heldout": "9/115 = 7.83% · CI [3.9%, 13.8%] (what the gate protects against)",
+      "FN_lookalikes": "16/120 = 13.3% · CI [8.1%, 20.3%] · gate leaves FN UNCHANGED (a veto gate suppresses flags, never adds catches — feature with a cost)"
+    },
+    "published_claim": "On 115 held-out legitimate companies our verification gate published zero false risk flags (0/115; 95% CI upper bound 2.2%), vetoing every false positive the raw model proposed — including flags it tried to raise on eBay, Razorpay, and Chewy. The gate is deliberately conservative: it suppresses false accusations but does not improve detection, and currently misses 13.3% of lookalike scam domains (16/120; CI 8.1–20.3%).",
+    "caveats": [
+      "held-out-ness ASSERTED not verifiable from these bytes (only 6-entity sample enumerated) — pre-commit the held-out list hash next harness run",
+      "verbatim chain-of-custody is the builder's claim (hashes bind the drops, not the _local_only originals)",
+      "signer(FP)/verifier(deploy) are both 0x5dF2b0 (9ee735ef lineage) — grader_distinct_from_deployer asserted in-file, deployer unnamed; cured by Umbra or a First-Coin key re-signing"
+    ]
+  }
+}
