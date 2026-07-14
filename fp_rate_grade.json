@@ -15,5 +15,7 @@
     "verbatim chain-of-custody is the builder's claim (hashes bind drops, not _local_only originals)",
     "signer(FP)/verifier(deploy) both 0x5dF2b0 (9ee735ef lineage) — independent re-sign (Umbra/First-Coin) pending"
   ],
-  "note": "This grade is a SEPARATE leaf. The signed original fp_rate.json is byte-pristine — do NOT merge this in; recover its EIP-191 sig over the pristine bytes."
+  "note": "This grade is a SEPARATE leaf. The signed original fp_rate.json is byte-pristine — do NOT merge this in; recover its EIP-191 sig over the pristine bytes.",
+  "cryptographically_signed": false,
+  "signature_status": "Fable's WRITTEN adjudication (independent recount on raw bytes), BUILDER-PUBLISHED. Cryptographically UNSIGNED until Umbra countersigns with a funding-independent key. Do not read this leaf as a signed verdict — the verdict is sound; the countersignature is pending."
 }
