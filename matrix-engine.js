@@ -27,10 +27,7 @@
           bg: ["#0b0b10", "#07070a", "#050506"] };                                                  // 0n1x: neutral space
     const ctx = cv.getContext("2d");
     let W = 0, H = 0;
-    // PERF playbook: phones get a capped pixel ratio + trimmed scene — the galaxy must
-    // feel INSTANT on mobile (the site's speed is a brand feature, hold the standard).
-    const MOBILE = (window.matchMedia && matchMedia("(max-width: 820px), (pointer: coarse)").matches);
-    const dpr = Math.min(MOBILE ? 1.5 : 2, window.devicePixelRatio || 1);
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
     function resize() {
       const r = cv.getBoundingClientRect();
       W = r.width; H = r.height;
@@ -122,7 +119,7 @@
     // deterministic), then blitted under the live graph each frame with the
     // pan/zoom transform. 340k dots at 60fps because we never redraw them.
     const galaxy = document.createElement("canvas");
-    const GW = MOBILE ? 2048 : 3200, GH = GW;       // HD on desktop; trimmed offscreen on phones (memory + paint)
+    const GW = 3200, GH = 3200;                     // HD: higher-res offscreen = crisper when blitted
     galaxy.width = GW; galaxy.height = GH;
     function paintGalaxy(count) {
       const g = galaxy.getContext("2d");
@@ -225,7 +222,7 @@
     setInterval(fireCascade, 650);
     // parallax starfield — 3 depth layers, deterministic
     const stars = [];
-    for (let i = 0; i < (MOBILE ? 90 : 170); i++) {
+    for (let i = 0; i < 170; i++) {
       const h = hash("star" + i, 37);
       stars.push({
         u: (h % 1000) / 1000, v: ((h >>> 10) % 1000) / 1000,
@@ -241,24 +238,14 @@
     const qp = (t, x1, y1, cx, cy, x2, y2) => { const a = (1 - t) * (1 - t), b = 2 * (1 - t) * t, c = t * t; return [a * x1 + b * cx + c * x2, a * y1 + b * cy + c * y2]; };
 
     // ---- render loop -------------------------------------------------------
-    // FPS-capped (34 mobile / 40 desktop) and PAUSED when the tab is hidden or the
-    // canvas is scrolled out of view — zero battery/CPU spent on invisible frames.
-    const FRAME_MS = 1000 / (MOBILE ? 34 : 40);
-    let lastFrame = 0, running = false, inView = true, pageVis = !document.hidden;
-    function ensureLoop() {
-      const should = inView && pageVis;
-      if (should && !running) { running = true; lastFrame = 0; requestAnimationFrame(draw); }
-      if (!should) running = false;            // draw() sees the flag and stops rebooking
-    }
-    document.addEventListener("visibilitychange", () => { pageVis = !document.hidden; ensureLoop(); });
-    if (window.IntersectionObserver) {
-      new IntersectionObserver((es) => { inView = !!(es[0] && es[0].isIntersecting); ensureLoop(); }, { threshold: 0.02 }).observe(cv);
-    }
+    let __lastFrame = 0;
     function draw(nowMs) {
-      if (!running) return;                   // paused — loop parks until ensureLoop restarts it
       requestAnimationFrame(draw);            // rebook FIRST — an error costs one frame, never the loop
-      if (nowMs - lastFrame < FRAME_MS) return;
-      lastFrame = nowMs;
+      // LAG FIX: cap to ~30fps and pause when the tab/page is hidden. The old loop ran the full
+      // additive-glow galaxy at 60fps non-stop, which is what made the Network page lag on mobile.
+      if (typeof document !== "undefined" && document.hidden) return;
+      if (nowMs - __lastFrame < 33) return;
+      __lastFrame = nowMs;
       try { drawFrame(nowMs); } catch (e) { window.__matrixErr = e.message; }
     }
     function drawFrame(nowMs) {
@@ -288,7 +275,7 @@
         ctx.restore();
         ctx.globalAlpha = 1;
         // AMBIENT ARRAY LIFE — random faint sparks across the whole ecosystem field
-        for (let sp = 0; sp < (MOBILE ? 6 : 14); sp++) {
+        for (let sp = 0; sp < 14; sp++) {
           const sh = hash("spark" + sp + (t * 3 | 0), 89);
           const sa = (sh % 1000) / 1000 * Math.PI * 2;
           const srr = Math.pow(((sh >>> 10) % 1000) / 1000, 0.7);
@@ -556,7 +543,7 @@
         }
       }
     }
-    ensureLoop();
+    requestAnimationFrame(draw);
 
     // ---- live tape + feed --------------------------------------------------
     function tapeTick() {
@@ -567,7 +554,7 @@
       heat.set(x.to, Math.min(1, (heat.get(x.to) || 0) + 0.25));
       const [fu, fv] = pos(x.from), [tu, tv] = pos(x.to);
       particles.push({ fu, fv, tu, tv, t: 0, amt: x.amount || 10 });
-      if (particles.length > (MOBILE ? 80 : 140)) particles.shift();
+      if (particles.length > 140) particles.shift();
       flow += (x.amount || 0);
       liveTx += 1;
       if (opts.onStats) opts.onStats({ flow, txsLive: baseTx + liveTx });
@@ -607,7 +594,7 @@
           vol.set(t.to, (vol.get(t.to) || 0) + (t.amount || 0));
         }
         agents = [...names].map(n => ({ n, b: (vol.get(n) || 0) + bal(n) * 0.15 }))  // real volume dominates; tiny hash floor so idle agents still show
-                           .sort((a, b) => b.b - a.b).slice(0, MOBILE ? 160 : 300);
+                           .sort((a, b) => b.b - a.b).slice(0, 300);
         if (opts.onStats) opts.onStats({ agents: agents.length });
       } catch (e) { /* keep last good frame */ }
       // REAL cumulative tx count — from census_history (the SAME source the terminal
