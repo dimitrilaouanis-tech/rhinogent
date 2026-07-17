@@ -27,7 +27,10 @@
           bg: ["#0b0b10", "#07070a", "#050506"] };                                                  // 0n1x: neutral space
     const ctx = cv.getContext("2d");
     let W = 0, H = 0;
-    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    // LAG FIX: cap DPR at 1.5. A phone at dpr 2.5–3 was rendering the additive-glow galaxy at
+    // 6–9× the pixels every frame — the dominant cost. 1.5 is imperceptible on a soft-glow visual
+    // and cuts fill work ~40–75% on mobile. (Was capped at 2 = still 4× pixels.)
+    const dpr = Math.min(1.5, window.devicePixelRatio || 1);
     function resize() {
       const r = cv.getBoundingClientRect();
       W = r.width; H = r.height;
@@ -220,9 +223,11 @@
       }
     }
     setInterval(fireCascade, 650);
-    // parallax starfield — 3 depth layers, deterministic
+    // parallax starfield — 3 depth layers, deterministic. Count scales down on small screens
+    // (mobile is where the lag lives) — fewer stars = fewer per-frame draws.
     const stars = [];
-    for (let i = 0; i < 170; i++) {
+    const STAR_COUNT = (window.innerWidth || 1024) < 700 ? 90 : 150;
+    for (let i = 0; i < STAR_COUNT; i++) {
       const h = hash("star" + i, 37);
       stars.push({
         u: (h % 1000) / 1000, v: ((h >>> 10) % 1000) / 1000,
