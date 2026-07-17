@@ -36,7 +36,7 @@
   {
    "id": "check-merchant",
    "name": "Counterparty Check",
-   "description": "Verify a merchant/counterparty before an agent pays it \u2014 signed risk verdict.",
+   "description": "Returns signed OBSERVED facts about a merchant/counterparty (registry status, domain age, TLS age) with sources. Not a verdict, risk score, or recommendation — the caller decides.",
    "endpoint": "/api/check",
    "method": "GET",
    "input": {

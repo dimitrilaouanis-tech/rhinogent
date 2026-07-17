@@ -35,21 +35,21 @@
     "verify",
     "oracle"
    ],
-   "description": "Ask any reality-resolvable question. Returns an EIP-191-SIGNED verified answer. Refuses to sign opinion.",
+   "description": "Ask any reality-resolvable question. Returns EIP-191-SIGNED observed facts with their sources. A signature proves the answer was not altered — never that it is true. Signs facts, never opinion or judgment.",
    "examples": [
-    "Is rayban.cc safe to buy from?",
-    "What is the price of BTC?"
+    "What is the price of BTC?",
+    "When was this domain first registered?"
    ]
   },
   {
-   "id": "check-counterparty",
-   "name": "Counterparty Check",
+   "id": "counterparty-facts",
+   "name": "Counterparty Facts",
    "tags": [
     "merchant",
-    "risk",
+    "facts",
     "x402"
    ],
-   "description": "Signed risk verdict on a merchant/counterparty before an agent pays it."
+   "description": "Returns signed OBSERVED facts about a counterparty (registry status, domain age, TLS age, price observations) plus the sources they came from. Does NOT return a trust verdict, risk score, or recommendation — the caller decides."
   },
   {
    "id": "census-proof",
