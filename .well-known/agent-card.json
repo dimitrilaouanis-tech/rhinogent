@@ -1,17 +1,24 @@
 {
  "protocolVersion": "1.0",
  "name": "0n1x",
- "description": "Neutral cryptographic trust layer for AI agents. Ask a reality-resolvable question, get a SIGNED verified answer you check without trusting us.",
- "url": "https://rhinogent.com",
+ "description": "Neutral cryptographic trust layer for AI agents. Ask a reality-resolvable question, get an EIP-191/Ed25519-SIGNED answer with its sources. A signature proves the bytes were not altered — never that the claim is true.",
+ "url": "https://onyx-pro.onyxagntc.workers.dev/",
  "version": "1.0.0",
  "provider": {
   "organization": "0n1x",
   "url": "https://0n1xagntc.com"
  },
+ "supportedInterfaces": [
+  {
+   "url": "https://onyx-pro.onyxagntc.workers.dev/",
+   "protocolBinding": "HTTP+JSON",
+   "protocolVersion": "1.0"
+  }
+ ],
  "capabilities": {
   "streaming": false,
-  "signedResponses": true,
-  "extendedCard": false
+  "pushNotifications": false,
+  "extendedAgentCard": false
  },
  "defaultInputModes": [
   "application/json",
@@ -20,12 +27,6 @@
  "defaultOutputModes": [
   "application/json"
  ],
- "securitySchemes": {
-  "none": {
-   "type": "none",
-   "description": "public read; responses are EIP-191 signed"
-  }
- },
  "skills": [
   {
    "id": "verify-query",
@@ -35,7 +36,7 @@
     "verify",
     "oracle"
    ],
-   "description": "Ask any reality-resolvable question. Returns EIP-191-SIGNED observed facts with their sources. A signature proves the answer was not altered — never that it is true. Signs facts, never opinion or judgment.",
+   "description": "Ask any reality-resolvable question. Returns signed observed facts with their sources. A signature proves the answer was not altered — never that it is true. Signs facts, never opinion or judgment.",
    "examples": [
     "What is the price of BTC?",
     "When was this domain first registered?"
@@ -58,19 +59,33 @@
     "identity",
     "merkle"
    ],
-   "description": "Merkle-verifiable proof of the 100k-agent census from public shards."
+   "description": "Merkle-verifiable proof of the agent census, recomputable from public shards."
   }
  ],
- "endpoints": {
-  "query": "https://rhinogent.com/a2a/query",
-  "check": "https://onyx-actions.onrender.com/api/check"
- },
- "signatures": [
-  {
-   "protected": "EIP-191",
-   "signature": "0x99e39a325be75b2c559ece3247eb40033faef1acf83ea3bc2c9f8781ebb6e7057a332d0f8de8eb495738749451cd2f9707622c0c2724c94a4fe338ebf426bb451b",
-   "signer": "0x4d64f274D8C3D535B44A07452BB9A7eAEce497b1",
-   "verify": "recover_message(canonical-json-minus-signatures)==signer"
+ "x-0n1x": {
+  "note": "Transport is a plain HTTP+JSON POST of our own shape — we do NOT claim A2A JSON-RPC binding conformance. Request/response documented below so a client is never misled.",
+  "request": {
+   "method": "POST",
+   "content-type": "application/json",
+   "body": { "message": "<your question>" }
+  },
+  "response": {
+   "reply": "<markdown answer>",
+   "sources": "[{title,url}] — live web grounding",
+   "proof": "{ id, alg: 'Ed25519', digest, signature, pubkey, issued } — present on the Pro tier",
+   "contract": "{ layers, critic, coverage } — honesty metadata"
+  },
+  "verify": "Ed25519 verify(proof.signature, proof.digest, proof.pubkey). The digest covers (message, reply, issued).",
+  "endpoints": {
+   "query": "https://onyx-pro.onyxagntc.workers.dev/",
+   "counterparty_facts": "https://onyx-actions.onrender.com/api/check?url={domain}",
+   "census_manifest": "https://rhinogent.com/census_manifest.json"
+  },
+  "identity": {
+   "scheme": "did:pkh",
+   "chain": "eip155:8453",
+   "signature_scheme": "eip191",
+   "note": "Per-agent ProofCards are EIP-191 (personal_sign) over a passport statement; recover the signer and it MUST equal the agent's address. Answer signatures are Ed25519 (see proof.alg)."
   }
- ]
+ }
 }
