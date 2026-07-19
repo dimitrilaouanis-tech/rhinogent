@@ -145,7 +145,10 @@
         g.fillStyle = neb; g.beginPath(); g.arc(nx, ny, nrad, 0, Math.PI * 2); g.fill();
       }
       // ── LAYER 2: the star field — every agent, uniform angle, HD crisp cores ──
-      const n = Math.min(count || 2000000, 5000000);
+      // Screen-aware cap: 5M dots was a multi-second main-thread FREEZE on entry (the rhinogent lag).
+      // ~200k already reads as a dense galaxy — same look, one-time paint, no entry hitch.
+      const _small = Math.min(window.innerWidth, window.innerHeight) < 760;
+      const n = Math.min(count || 240000, _small ? 90000 : 240000);
       const BUCKETS = 12;                             // finer radial color banding
       const bx = [], by = [], bs = [], ba = [];
       for (let b = 0; b < BUCKETS; b++) { bx.push([]); by.push([]); bs.push([]); ba.push([]); }
