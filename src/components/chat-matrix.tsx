@@ -126,11 +126,19 @@ function groundGuard(reply: string): string {
   const bad: [RegExp, string][] = [
     [/npm\s+install|@0n1x\/|on1x\s+(init|pay|earn|submit)|install\s+-g|\bon1x\s+cli\b/i, "There's **no CLI or npm package** — it's fetch-first and browser-native. Mint an agent at rhinogent.com/dashboard and read the signed JSON feeds over plain HTTP. Any `npm install @0n1x/...` command is not real."],
     [/stored?\s+(on|in|at)\s+(the\s+)?0n1x|0n1x\s+servers?|we\s+store\s+your\s+(chat|conversation|message)|server[- ]side\s+(copy|storage)\s+of\s+your/i, "**Privacy:** Normal-tier conversations are **not** stored on our servers. Your chat stays in your own browser and only syncs to your account if you sign in. We keep no server-side copy of Normal chats and hold none of your keys."],
-    [/knowledge\s+cutoff|training\s+data\s+(is\s+)?(from|up\s+to)|December\s+2023|as\s+of\s+2023/i, "For live, current answers like today's date or the latest headlines, switch to **Pro** (web-grounded and signed). On Normal I answer from signed facts."],
+    [/knowledge\s+cutoff|training\s+data\s+(is\s+)?(from|up\s+to)|(December|June)\s+20(2[0-9])|as\s+of\s+20(2[0-4])/i, "For live, current answers like today's date or the latest headlines, switch to **Pro** (web-grounded and signed). On Normal I answer from signed facts."],
+    // Backstop for the worst failure mode: the edge LLM writing 0n1x's own press releases. It has
+    // no feed, so ANY claim that we announced/introduced/launched something is invented.
+    [/0n1x\s+(team\s+)?(has\s+)?(recently\s+)?(announced|introduced|launched|released|unveiled|rolled\s+out)|(new|recent)\s+(agent\s+tiers|announcements?)\s+(have|has|were|was)/i, "I can't report 0n1x news on **Normal** — I have no live feed here, so anything I 'announced' would be invented. For real, current updates switch to **Pro** (web-grounded, sources cited, signed). For how 0n1x works today, ask me directly and I'll answer from signed facts."],
   ];
   for (const [re, fix] of bad) if (re.test(reply)) return fix;
   return reply;
 }
+
+// Anything that can only be answered from the live web. Deliberately broad: a false positive costs
+// one honest "switch to Pro"; a false negative ships a fabricated fact under our own brand.
+const LIVE_INTENT =
+  /\bnews\b|headlines?|breaking|latest|current(ly)?|today|tonight|yesterday|this (week|month|morning)|right now|what.{0,12}happening|recent (update|announcement|release)|announced|price of|stock|weather|who won|score/i;
 
 function localAnswer(q: string): string {
   for (const [re, a] of KB) if (re.test(q)) return a;
@@ -855,6 +863,11 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
     recordIntake({ agentAddr: agent?.address ?? null, mode: pro ? "pro" : "normal", role: "user", text: q });
     dailyCheckin();   // first message of the day earns TOKEN — the balance visibly climbs
     async function ask(): Promise<string> {
+      // Normal has no web access, but the edge LLM will still happily WRITE a news bulletin —
+      // observed live inventing "0n1x introduces new Agent Tiers" and formatting it as fact.
+      // A pretty renderer makes that worse, not better. So live-info intent never reaches the
+      // worker on Normal; it gets the honest "this needs Pro" answer instead.
+      if (!pro && LIVE_INTENT.test(q)) return localAnswer(q);
       // Pro = always-on edge worker: live Exa web-grounding + an Ed25519-signed ProofCard.
       const endpoint = pro ? PRO_WORKER : WORKER;
       const r = await fetch(endpoint, {
