@@ -277,7 +277,7 @@ body { font-feature-settings: "cv11", "ss01"; text-rendering: optimizeLegibility
      travels around the perimeter — jade → cyan → indigo → violet → jade, subtle but colorful */
   background:
     linear-gradient(var(--surface), var(--surface)) padding-box,
-    linear-gradient(110deg, #9fe9cd, #a6e0ee, #b3aeff, #d7b8f5, #9fe9cd) border-box;
+    linear-gradient(110deg, #5fd7b0, #6cc9e0, #8f88f5, #b98ae8, #5fd7b0) border-box;
   background-size: 300% 100%;
   border: 1.25px solid transparent;
   box-shadow: 0 1px 10px -8px rgba(99, 91, 255, 0.18);
@@ -437,16 +437,5 @@ h2.display { letter-spacing: -0.03em; }
   .thinking-shimmer { animation: thinkingShimmer 2.2s linear infinite; }
 }
 
-/* One-tap Pro handoff chip — same light multi-hue frame as the Pro composer, so the
-   affordance visually promises the surface it takes you to. */
-.pro-suggest {
-  border-color: transparent !important;
-  background:
-    linear-gradient(var(--surface), var(--surface)) padding-box,
-    linear-gradient(110deg, #9fe9cd, #a6e0ee, #b3aeff, #d7b8f5, #9fe9cd) border-box;
-  background-size: 300% 100%;
-  border: 1.25px solid transparent;
-}
 @media (prefers-reduced-motion: no-preference) {
-  .pro-suggest { animation: proSheen 5.5s linear infinite; }
 }
