@@ -27,7 +27,7 @@ export default function McpPage() {
   "mcpServers": {
     "0n1x": {
       "type": "streamable-http",
-      "url": "https://rhinogent.com/mcp"
+      "url": "https://onyx-actions.onrender.com/mcp/"
     }
   }
 }`}
