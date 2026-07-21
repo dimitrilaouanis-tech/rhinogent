@@ -558,7 +558,9 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
   // EVERY msgs/busy change, so reading back through a long answer yanked you down mid-scroll.
   // Now we only follow when you're already at the bottom; scroll up and we let go until you return.
   const stickRef = useRef(true);
-  const [atBottom, setAtBottom] = useState(true);   // drives the "jump to latest" pill
+  // kept as a setter-only signal: nothing renders it now, but the auto-follow logic below
+  // still reads stickRef, and these calls document where "stuck to bottom" flips.
+  const [, setAtBottom] = useState(true);
   // DeepSeek-style: on send, pin the new QUESTION to the top of the viewport and let the answer
   // stream into the space below it (instead of chasing the bottom). We anchor the last user bubble.
   const lastUserRef = useRef<HTMLDivElement | null>(null);
@@ -576,11 +578,6 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
     el.addEventListener("wheel", onGrab, { passive: true });
     return () => { el.removeEventListener("scroll", onScroll); el.removeEventListener("touchstart", onGrab); el.removeEventListener("wheel", onGrab); };
   }, []);
-  const jumpToLatest = () => {
-    const el = scroller.current;
-    if (el) el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
-    stickRef.current = true; setAtBottom(true);
-  };
   // Follow the growing answer down — but ONLY on real content growth (ResizeObserver fires when the
   // transcript resizes, not every frame), and ONLY while you're stuck to the bottom. The old
   // per-frame rAF loop wrote scrollTop 60×/s and fought your finger on the way down (the jank).
@@ -1452,17 +1449,6 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
             </div>
           )}
         </div>
-        {/* jump-to-latest — shows once you grab/scroll the transcript (auto-push paused); tap to re-follow */}
-        {!atBottom && msgs.length > 0 && (
-          <div className="pointer-events-none sticky bottom-3 z-20 flex justify-center">
-            <button
-              onClick={jumpToLatest}
-              className="pointer-events-auto flex items-center gap-1.5 rounded-full border border-border bg-surface/95 px-3.5 py-1.5 text-xs font-medium text-foreground shadow-lg backdrop-blur transition-colors hover:border-muted-2"
-            >
-              <span className="text-accent">↓</span> Jump to latest
-            </button>
-          </div>
-        )}
       </div>
 
       {/* composer — clean & professional; Pro mode adds a quiet jade cue */}
