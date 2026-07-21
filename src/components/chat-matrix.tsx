@@ -74,6 +74,9 @@ function groundGuard(reply: string): string {
   for (const [re, fix] of bad) if (re.test(reply)) return fix;
   return reply;
 }
+// Questions that can only be answered from the live web — Normal cannot serve these honestly.
+const LIVE_INTENT = /\bnews\b|headline|latest|breaking|today|right now|current(ly)?\b|this (week|month)|price of|stock|weather|what.{0,12}happening/i;
+
 function localAnswer(q: string): string {
   for (const [re, a] of KB) if (re.test(q)) return a;
   return "Happy to help — give me a little more to work with and I'll go deep.\n\n**Strong on Normal:**\n\n- 0n1x, Rhinogent, agent identity and verification\n- earning, tokens, self-custody and keys\n- explaining a concept, writing, code, or planning something through\n\n**Switch to Pro** for anything live — news, today's date, current prices — where answers come web-grounded and signed.";
@@ -238,6 +241,9 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
   const [busy, setBusy] = useState(false);
   const [balance, setBalance] = useState<number>(0);
   const [pro, setPro] = useState<boolean>(false);   // Pro = burn token, full tools + web; Normal = free
+  // Normal has no web access. When the question clearly wants LIVE information, don't dead-end
+  // the user with "switch to Pro" prose — remember the question and offer a one-tap re-ask on Pro.
+  const [proSuggest, setProSuggest] = useState<string | null>(null);
   const [conn, setConn] = useState<"ok" | "retrying" | "down">("ok");   // live connection status to the network brain
   const [history, setHistory] = useState<HistItem[]>([]);
   const [swipeId, setSwipeId] = useState<string | null>(null);   // which sidebar row is swiped open (armed for delete)
@@ -770,6 +776,8 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
   async function send(override?: string) {
     const q = (typeof override === "string" ? override : input).trim();
     if (!q || busy) return;
+    // Live-information intent on Normal → surface the one-tap Pro re-ask alongside the answer.
+    setProSuggest(!pro && LIVE_INTENT.test(q) ? q : null);
     // GUEST PREVIEW: 3 free Normal messages, then the soft create-account gate.
     // The credit is only CONSUMED on a successful answer (a network hiccup shouldn't eat a preview).
     let consumeGuest = false;
@@ -1346,6 +1354,17 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
                           <div className="chat-md mt-1 rounded-xl border border-border/60 bg-surface/50 px-3 py-2 text-[11.5px] leading-relaxed text-muted" dangerouslySetInnerHTML={{ __html: mdToHtml(proof) }} />
                         )}
                       </div>
+                    )}
+                    {/* Live-info asked on Normal: one tap re-asks the SAME question on Pro (web-grounded
+                        + signed) instead of making the user retype and hunt for the toggle. */}
+                    {proSuggest && !pro && !busy && i === msgs.length - 1 && (
+                      <button
+                        onClick={() => { const again = proSuggest; setProSuggest(null); setPro(true); send(again); }}
+                        className="pro-suggest mt-2 flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-[12.5px] font-medium text-foreground transition-all hover:-translate-y-px"
+                      >
+                        <span style={{ color: "#3fdda0" }}>⚡</span>
+                        Answer with Pro — live web + signed
+                      </button>
                     )}
                     {m.text && (
                       <div className="mt-1 flex items-center gap-1">
