@@ -34,6 +34,8 @@ export function MiniNav({ current }: { current?: string }) {
           <Link
             key={l.href}
             href={l.href}
+            /* static export has no RSC payload files — prefetch just 404s */
+            prefetch={false}
             className={`shrink-0 whitespace-nowrap rounded-full px-3 py-1 text-[12px] font-medium transition-colors ${
               current === l.href ? "bg-accent/10 text-accent" : "text-muted hover:text-foreground"
             }`}

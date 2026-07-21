@@ -22,12 +22,60 @@ function mdToHtml(src: string): string {
     .replace(/`([^`]+)`/g, '<code style="background:rgba(127,127,127,.16);padding:1px 5px;border-radius:4px;font-size:.9em">$1</code>')
     .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, (_all, label, href) =>
       /["'<>`]/.test(href) ? `${label} (${href})` : `<a href="${href}" target="_blank" rel="noreferrer noopener" style="color:#3fdda0">${label}</a>`);
+  // A bare link on its own line becomes a SOURCE CARD (domain + path), not a naked URL.
+  const sourceCard = (href: string, label?: string) => {
+    let host = href; try { host = new URL(href).hostname.replace(/^www\./, ""); } catch { /**/ }
+    return `<a href="${href}" target="_blank" rel="noreferrer noopener" style="display:flex;align-items:center;gap:.5em;margin:.3em 0;padding:.5em .7em;border:1px solid var(--border);border-radius:10px;text-decoration:none;color:inherit">`
+      + `<span style="flex:none;width:1.35em;height:1.35em;border-radius:5px;background:rgba(63,221,160,.14);color:#0a9d6e;font-size:.7em;font-weight:700;display:flex;align-items:center;justify-content:center">${esc(host.slice(0, 1).toUpperCase())}</span>`
+      + `<span style="min-width:0"><span style="display:block;font-size:.92em;font-weight:560;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${inline(label || host)}</span>`
+      + `<span style="display:block;font-size:.78em;color:var(--muted-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(host)}</span></span></a>`;
+  };
   const lines = src.split("\n");
   let html = "", list: "ul" | "ol" | null = null;
+  let fence: string[] | null = null, fenceLang = "";
   const closeList = () => { if (list) { html += `</${list}>`; list = null; } };
-  for (const raw of lines) {
+  for (let li = 0; li < lines.length; li++) {
+    const raw = lines[li];
     const line = raw.trimEnd();
     let m;
+    // ``` fenced code — collect verbatim until the closing fence
+    if ((m = line.match(/^\s*```\s*([a-zA-Z0-9+#-]*)\s*$/))) {
+      if (fence === null) { closeList(); fence = []; fenceLang = m[1] || ""; }
+      else {
+        html += `<pre style="margin:.6em 0;padding:.75em .85em;border-radius:12px;background:#0d1118;color:#e8ecf4;overflow-x:auto;font-size:.85em;line-height:1.55">`
+          + (fenceLang ? `<span style="display:block;margin-bottom:.4em;font-size:.8em;color:#7d8798">${esc(fenceLang)}</span>` : "")
+          + `<code>${esc(fence.join("\n"))}</code></pre>`;
+        fence = null; fenceLang = "";
+      }
+      continue;
+    }
+    if (fence !== null) { fence.push(raw); continue; }
+    // | a | b |  markdown table (with or without a --- separator row)
+    if (/^\s*\|.*\|\s*$/.test(line) && li + 1 < lines.length && /^\s*\|[\s:|-]+\|\s*$/.test(lines[li + 1])) {
+      closeList();
+      const cells = (r: string) => r.trim().replace(/^\||\|$/g, "").split("|").map((c) => c.trim());
+      const head = cells(line);
+      let r = li + 2; const rows: string[][] = [];
+      while (r < lines.length && /^\s*\|.*\|\s*$/.test(lines[r])) { rows.push(cells(lines[r])); r++; }
+      li = r - 1;
+      const th = head.map((c) => `<th style="text-align:left;padding:.45em .6em;border-bottom:1px solid var(--border);font-weight:620;white-space:nowrap">${inline(c)}</th>`).join("");
+      const tb = rows.map((row) => `<tr>${row.map((c) => `<td style="padding:.45em .6em;border-bottom:1px solid var(--border);vertical-align:top">${inline(c)}</td>`).join("")}</tr>`).join("");
+      html += `<div style="overflow-x:auto;margin:.6em 0"><table style="border-collapse:collapse;width:100%;font-size:.94em"><thead><tr>${th}</tr></thead><tbody>${tb}</tbody></table></div>`;
+      continue;
+    }
+    // > blockquote
+    if ((m = line.match(/^\s*>\s?(.*)/))) {
+      closeList();
+      html += `<div style="margin:.55em 0;padding:.15em 0 .15em .85em;border-left:3px solid var(--accent);color:var(--muted)">${inline(m[1])}</div>`;
+      continue;
+    }
+    // a lone URL / lone [label](url) on its own line → source card
+    if ((m = line.match(/^\s*(?:[-*]\s+)?\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)\s*$/)) && !/["'<>`]/.test(m[2])) {
+      closeList(); html += sourceCard(m[2], m[1]); continue;
+    }
+    if ((m = line.match(/^\s*(https?:\/\/\S+)\s*$/)) && !/["'<>`]/.test(m[1])) {
+      closeList(); html += sourceCard(m[1]); continue;
+    }
     // Gemini/Meta-grade rhythm: headings breathe above, lists get real spacing, paragraphs
     // separate. The old values (.15em li, .3em lists) packed everything into a dense block.
     if ((m = line.match(/^#{1,3}\s+(.*)/))) { closeList(); html += `<div style="font-weight:660;font-size:1.02em;letter-spacing:-.014em;margin:1.15em 0 .3em">${inline(m[1])}</div>`; }
@@ -35,6 +83,10 @@ function mdToHtml(src: string): string {
     else if ((m = line.match(/^\s*\d+\.\s+(.*)/))) { if (list !== "ol") { closeList(); html += '<ol style="margin:.45em 0 .6em 1.15em;list-style:decimal">'; list = "ol"; } html += `<li style="margin:.3em 0;padding-left:.16em;text-wrap:pretty">${inline(m[1])}</li>`; }
     else if (line === "") { closeList(); html += '<div style="height:.34em"></div>'; }
     else { closeList(); html += `<div style="margin:.5em 0;text-wrap:pretty">${inline(line)}</div>`; }
+  }
+  // Streaming can end mid-fence — flush what we have rather than dropping the tail.
+  if (fence !== null && fence.length) {
+    html += `<pre style="margin:.6em 0;padding:.75em .85em;border-radius:12px;background:#0d1118;color:#e8ecf4;overflow-x:auto;font-size:.85em;line-height:1.55"><code>${esc(fence.join("\n"))}</code></pre>`;
   }
   closeList();
   return html;
