@@ -1,19 +1,24 @@
 {
  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-11-25/server.schema.json",
  "name": "io.0n1x/trust",
- "description": "Verifiable trust layer \u2014 signed reality-verified answers, verify-before-you-transact counterparty attestation, merchant checks, Merkle census proof.",
- "version": "1.0.0",
+ "description": "Verifiable trust layer — signed reality-verified answers, verify-before-you-transact counterparty attestation, merchant checks, Merkle census proof.",
+ "version": "1.1.0",
  "protocolVersion": "2025-11-25",
  "remotes": [
   {
    "type": "streamable-http",
-   "url": "https://rhinogent.com/mcp"
+   "url": "https://onyx-actions.onrender.com/mcp/"
   }
  ],
  "tools": [
-  "verify_query",
-  "attest_agent",
-  "check_merchant",
-  "census_proof"
+  "rhinogent_identity",
+  "rhinogent_mandate",
+  "rhinogent_verify_counterparty",
+  "onyx_agent_verify",
+  "onyx_attestation_verify",
+  "onyx_merchant_fact_check",
+  "onyx_agent_registry",
+  "onyx_market_rank",
+  "onyx_verify_explain"
  ]
 }
