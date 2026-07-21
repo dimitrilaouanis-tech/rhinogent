@@ -1,0 +1,176 @@
+{
+  "artifact": "0n1x-state-of-agentic-web-security",
+  "what": "Independent security scan of REAL public x402 Bazaar agents (NOT ours). Same _flags pipeline that produced the published 2,227/386/2, run over the full census. Outward-pointing — publishable.",
+  "source_dataset": "agent_census.json (x402 Bazaar) — real external agents",
+  "scanned": 28224,
+  "value_movers_transacting": 2216,
+  "value_movers_no_spend_cap_F6": 2139,
+  "no_permission_scope_F3": 27869,
+  "identity_unsigned_F7": 25563,
+  "flag_clean": 66,
+  "flag_breakdown": {
+    "F3 PERM_NO_SCOPE": 27869,
+    "F4 PERM_NO_PRINCIPAL": 27869,
+    "F5 PERM_NO_CONSENT": 27869,
+    "F7 IDENTITY_UNSIGNED": 25563,
+    "F6 PERM_NO_SPEND_CAP": 2139,
+    "F8 COUNTERPARTY_BLIND": 2099,
+    "F9 INJECTION_SURFACE": 637,
+    "F1 TRANSPORT_INSECURE": 11
+  },
+  "headline": "28224 agentic-web agents scanned · 2216 transact (move value) · 2139 of those have NO spend cap (F6) · 27869 (98.7%) declare no permission scope (F3) · 25563 (90.6%) run unsigned (F7) · 66 flag-clean",
+  "method": "per agent: _flags(resource, agent) from tools_pkg.onyx_security_flags (record-based, deterministic). value-mover = _TRANSACT regex over skills+description (the pipeline's own test, NOT merely 'accepts'). F6=PERM_NO_SPEND_CAP, F3=PERM_NO_SCOPE, F7=IDENTITY_UNSIGNED. Recomputable: re-run this file.",
+  "sample": [
+    {
+      "ep": "https://x402.ottoai.services/crypto-news",
+      "flags": [
+        "F3",
+        "F4",
+        "F5"
+      ],
+      "value_mover": false,
+      "clean": false
+    },
+    {
+      "ep": "https://skills.onesource.io/api/chain/ens/:input",
+      "flags": [
+        "F3",
+        "F4",
+        "F5",
+        "F7"
+      ],
+      "value_mover": false,
+      "clean": false
+    },
+    {
+      "ep": "https://x402.ottoai.services/hyperliquid-market",
+      "flags": [
+        "F3",
+        "F4",
+        "F5"
+      ],
+      "value_mover": false,
+      "clean": false
+    },
+    {
+      "ep": "https://api.exa.ai/search",
+      "flags": [
+        "F3",
+        "F4",
+        "F5"
+      ],
+      "value_mover": false,
+      "clean": false
+    },
+    {
+      "ep": "https://skills.onesource.io/api/chain/receipt/:hash",
+      "flags": [
+        "F3",
+        "F4",
+        "F5",
+        "F7"
+      ],
+      "value_mover": false,
+      "clean": false
+    },
+    {
+      "ep": "https://skills.onesource.io/api/chain/tx/:hash",
+      "flags": [
+        "F3",
+        "F4",
+        "F5",
+        "F7"
+      ],
+      "value_mover": false,
+      "clean": false
+    },
+    {
+      "ep": "https://skills.onesource.io/api/chain/code/:address",
+      "flags": [
+        "F3",
+        "F4",
+        "F5",
+        "F7"
+      ],
+      "value_mover": false,
+      "clean": false
+    },
+    {
+      "ep": "https://skills.onesource.io/api/chain/proxy/:address",
+      "flags": [
+        "F3",
+        "F4",
+        "F5",
+        "F7"
+      ],
+      "value_mover": false,
+      "clean": false
+    },
+    {
+      "ep": "https://skills.onesource.io/api/chain/nonce/:address",
+      "flags": [
+        "F3",
+        "F4",
+        "F5",
+        "F6",
+        "F7",
+        "F8"
+      ],
+      "value_mover": true,
+      "clean": false
+    },
+    {
+      "ep": "https://skills.onesource.io/api/chain/block/:number",
+      "flags": [
+        "F3",
+        "F4",
+        "F5",
+        "F7"
+      ],
+      "value_mover": false,
+      "clean": false
+    },
+    {
+      "ep": "https://skills.onesource.io/api/chain/contract/:address",
+      "flags": [
+        "F3",
+        "F4",
+        "F5",
+        "F7"
+      ],
+      "value_mover": false,
+      "clean": false
+    },
+    {
+      "ep": "https://x402.ottoai.services/funding-rates",
+      "flags": [
+        "F3",
+        "F4",
+        "F5"
+      ],
+      "value_mover": false,
+      "clean": false
+    }
+  ],
+  "as_of": "2026-07-11T11:07:26Z",
+  "elapsed_s": 8.5,
+  "onyx_attestation": {
+    "alg": "Ed25519+JCS",
+    "kid": "onyx-7fdc5cc8113040cb",
+    "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
+    "tool": "onyx_security_scan",
+    "observed_hash": "sha256:b1d6351c16eb3e8bce6ccb8606d68b8ce8108927e2c0fcda51c6dae25b4e74dc",
+    "signed_at": 1783768046,
+    "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
+    "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
+    "sig": "8HLfhVCTVy-vJpIbhnJ_D8CVHxeSfj7khaRChcmptAdZnI_CXsodAlHrj10g71GWPRONO1jMvhShX0TAdqW_BA",
+    "discover": {
+      "what": "0n1x — independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
+      "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
+      "verify_this": "https://onyx-actions.onrender.com/verify",
+      "agent_card": "https://onyx-actions.onrender.com/.well-known/agent-card.json",
+      "onboard": "https://onyx-actions.onrender.com/onboard",
+      "leaderboard": "https://onyx-actions.onrender.com/leaderboard"
+    }
+  }
+}

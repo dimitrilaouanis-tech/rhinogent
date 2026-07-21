@@ -7,7 +7,7 @@ import { signUpEmail, signInEmail, signInGoogle, requestPasswordReset, hasAccoun
 type Mode = "signin" | "signup" | "forgot";
 
 // flip on once the provider is configured in Supabase (Auth → Providers)
-const GOOGLE_ENABLED = false;
+const GOOGLE_ENABLED = true;
 const GITHUB_ENABLED = false;
 
 export function AuthGate() {
@@ -68,20 +68,30 @@ export function AuthGate() {
 
   const isSignup = mode === "signup";
   const isForgot = mode === "forgot";
+  const hasErr = msg?.kind === "err";
+  const inputCls = (err: boolean) =>
+    `mt-1.5 h-10 w-full rounded-lg border bg-background px-3.5 text-[13.5px] text-foreground placeholder-muted-2 outline-none transition-[border-color,box-shadow] focus:border-accent/50 focus:ring-2 focus:ring-accent/15 ${
+      err ? "border-red-400/60" : "border-border"
+    }`;
 
   return (
     <main className="relative flex flex-1 items-center justify-center overflow-hidden bg-mesh px-5 py-16">
       <div className="absolute inset-0 grid-fade" aria-hidden />
-      <div className="relative w-full max-w-[420px]">
-        {/* logo */}
+      <div
+        className="pointer-events-none absolute left-1/2 top-[18%] h-72 w-72 -translate-x-1/2 rounded-full bg-accent/10 blur-3xl"
+        aria-hidden
+      />
+      <div className="relative w-full max-w-[400px]">
+        <div className="rounded-2xl border border-border bg-surface/60 p-7 backdrop-blur-xl shadow-[inset_0_1px_0_rgba(255,255,255,.6),0_20px_60px_-20px_rgba(17,17,26,.28)]">
+        {/* logo tile */}
         <div className="flex justify-center">
-          <span className="flex h-12 w-12 items-center justify-center rounded-xl border border-border bg-surface">
+          <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-background shadow-[inset_0_1px_0_rgba(255,255,255,.7),0_1px_2px_rgba(17,17,26,.05)]">
             <RhinoMark className="h-7 w-7" />
           </span>
         </div>
 
         {/* heading */}
-        <h1 className="display mt-6 text-center text-[28px] font-semibold tracking-tight text-foreground">
+        <h1 className="display mt-5 text-center text-[26px] font-semibold tracking-[-0.02em] text-foreground">
           {isForgot ? "Reset your password" : isSignup ? "Create a Rhinogent account" : "Sign in to Rhinogent"}
         </h1>
         {isForgot && (
@@ -127,24 +137,26 @@ export function AuthGate() {
         {/* OAuth (side by side, shown when configured) */}
         {anyOAuth && !isForgot && (
           <>
-            <div className="mt-8 grid grid-cols-2 gap-3">
+            <div className="mt-7 grid gap-2.5">
               {GOOGLE_ENABLED && (
                 <button onClick={google} disabled={busy}
-                  className="flex items-center justify-center gap-2 rounded-lg border border-border bg-background px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:border-muted-2 disabled:opacity-50">
+                  className="flex h-10 items-center justify-center gap-2.5 rounded-lg border border-border bg-surface px-4 text-sm font-medium text-foreground transition-colors hover:bg-surface-2 hover:border-muted-2 active:scale-[0.99] disabled:opacity-50">
                   <svg viewBox="0 0 24 24" className="h-4 w-4"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23z"/><path fill="#FBBC05" d="M5.84 14.1a6.6 6.6 0 0 1 0-4.2V7.06H2.18a11 11 0 0 0 0 9.88l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84C6.71 7.31 9.14 5.38 12 5.38z"/></svg>
-                  Google
+                  Continue with Google
                 </button>
               )}
               {GITHUB_ENABLED && (
                 <button disabled={busy}
-                  className="flex items-center justify-center gap-2 rounded-lg border border-border bg-background px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:border-muted-2 disabled:opacity-50">
+                  className="flex h-10 items-center justify-center gap-2.5 rounded-lg border border-border bg-surface px-4 text-sm font-medium text-foreground transition-colors hover:bg-surface-2 hover:border-muted-2 active:scale-[0.99] disabled:opacity-50">
                   <svg viewBox="0 0 24 24" className="h-4 w-4 fill-foreground"><path d="M12 2A10 10 0 0 0 8.8 21.5c.5.1.7-.2.7-.5v-1.7c-2.8.6-3.4-1.3-3.4-1.3-.4-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.6 2.4 1.1 3 .9.1-.7.3-1.1.6-1.4-2.2-.2-4.5-1.1-4.5-5 0-1.1.4-2 1-2.6-.1-.3-.4-1.3.1-2.6 0 0 .8-.3 2.7 1a9.4 9.4 0 0 1 5 0c1.9-1.3 2.7-1 2.7-1 .5 1.3.2 2.3.1 2.6.6.6 1 1.5 1 2.6 0 3.9-2.3 4.7-4.5 5 .3.3.7.9.7 1.9v2.8c0 .3.1.6.7.5A10 10 0 0 0 12 2z"/></svg>
-                  GitHub
+                  Continue with GitHub
                 </button>
               )}
             </div>
-            <div className="my-6 flex items-center gap-4 text-xs text-muted-2">
-              <div className="h-px flex-1 bg-border" /> or <div className="h-px flex-1 bg-border" />
+            <div className="my-6 flex items-center gap-3">
+              <div className="h-px flex-1 bg-border" />
+              <span className="text-[10px] font-medium uppercase tracking-[0.14em] text-muted-2">or</span>
+              <div className="h-px flex-1 bg-border" />
             </div>
           </>
         )}
@@ -156,7 +168,7 @@ export function AuthGate() {
             type="email" value={email} onChange={(e) => setEmail(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && isForgot && forgotPassword()}
             placeholder="alan.turing@example.com" autoComplete="email"
-            className="mt-1.5 w-full rounded-lg border border-border bg-background px-3.5 py-2.5 text-sm text-foreground placeholder-muted-2 outline-none transition-colors focus:border-accent/50"
+            className={inputCls(hasErr)}
           />
 
           {!isForgot && (
@@ -178,7 +190,9 @@ export function AuthGate() {
                   type={show ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && emailAuth()}
                   placeholder="••••••••••••" autoComplete={isSignup ? "new-password" : "current-password"}
-                  className="w-full rounded-lg border border-border bg-background px-3.5 py-2.5 pr-10 text-sm text-foreground placeholder-muted-2 outline-none transition-colors focus:border-accent/50"
+                  className={`h-10 w-full rounded-lg border bg-background px-3.5 pr-10 text-[13.5px] text-foreground placeholder-muted-2 outline-none transition-[border-color,box-shadow] focus:border-accent/50 focus:ring-2 focus:ring-accent/15 ${
+                    hasErr ? "border-red-400/60" : "border-border"
+                  }`}
                 />
                 <button type="button" onClick={() => setShow((s) => !s)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-2 hover:text-muted" aria-label="toggle password">
@@ -192,34 +206,39 @@ export function AuthGate() {
         </div>
 
         {msg && (
-          <p className={`mt-3 text-[13px] ${msg.kind === "err" ? "text-red-400" : "text-emerald"}`}>{msg.text}</p>
+          <p className={`mt-3 text-[13px] leading-snug ${hasErr ? "text-red-500" : "text-emerald"}`}>{msg.text}</p>
         )}
 
         <button
           onClick={isForgot ? forgotPassword : emailAuth}
           disabled={isForgot ? busy || !email : busy || !email || !password}
-          className="mt-5 w-full rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+          className="mt-5 h-10 w-full rounded-lg bg-accent text-sm font-semibold tracking-[-0.01em] text-white transition-opacity hover:opacity-90 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40"
         >
           {busy ? "…" : isForgot ? "Send reset link" : isSignup ? "Create account" : "Log in"}
         </button>
+        </div>
 
         {isForgot ? (
-          <p className="mt-6 text-center text-[11px] leading-relaxed text-muted-2">
+          <p className="mt-5 text-center text-[11px] leading-relaxed text-muted-2">
             This resets your Rhinogent account password only. It cannot recover an agent's
             private key — those are self-custody and generated in your browser; if one is lost,
             mint a new agent.
           </p>
         ) : (
           <>
-            <p className="mt-6 text-center text-xs leading-relaxed text-muted-2">
+            <p className="mt-5 text-center text-[11px] leading-relaxed text-muted-2">
+              Self-custody keys · created in your browser · never sent to us.
+            </p>
+            <p className="mt-3 text-center text-xs leading-relaxed text-muted-2">
               By signing up, you agree to our <a href="/terms" className="underline hover:text-muted">Terms</a>,{" "}
               <a href="/acceptable-use" className="underline hover:text-muted">Acceptable Use</a>, and{" "}
               <a href="/privacy" className="underline hover:text-muted">Privacy Policy</a>.
             </p>
-            <p className="mt-4 text-center text-[11px] text-muted-2">
-              Your agents' wallet keys are generated in your browser and stay self-custody
-              {isSignup ? " — there is no password reset for a lost key, only for your account login." : "."}
-            </p>
+            {isSignup && (
+              <p className="mt-3 text-center text-[11px] text-muted-2">
+                There is no password reset for a lost key — only for your account login.
+              </p>
+            )}
           </>
         )}
       </div>

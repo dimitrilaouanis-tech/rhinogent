@@ -1,0 +1,232 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   design-motion.css — Rhinogent / 0n1x animation & polish pass
+   ───────────────────────────────────────────────────────────────────────────
+   Load AFTER globals.css (it extends, never redefines, the tokens/keyframes there).
+   Reuses existing tokens: --accent #635bff · --gold/-soft · --cyber #18b8d8 ·
+   jade #3fdda0 · --border --surface --foreground --muted --muted-2.
+   Motion law: 150–300ms · cubic-bezier(.32,.72,.24,1) · transform/opacity only ·
+   one hero per page · every keyframe has a reduced-motion collapse.
+   NOTE: does NOT redefine anything in globals.css (pulse-node, animate-rise,
+   chip-in, rv, card-x, btn-grad, live-dot, vc-*, proGlow, balroll are all left alone).
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  --ease-calm: cubic-bezier(.32, .72, .24, 1);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   ASK 1 · Signed-answer reveal  (HIGHEST ROI — the differentiator, made felt)
+   Target: the 🔏 Signed pill <button> at chat-matrix.tsx:1089.
+   The proof only exists once the answer finishes, so mounting the pill = the
+   "earned" moment. Fade + rise, no flash. Hover → calm tooltip.
+   ───────────────────────────────────────────────────────────────────────── */
+@keyframes signed-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.signed-reveal {
+  animation: signed-in .28s var(--ease-calm) both;
+  animation-delay: .12s;            /* lands just after the bubble settles */
+  position: relative;
+}
+/* the seal glyph gets one soft jade breath as it arrives, then rests */
+@keyframes signed-seal-settle {
+  0%   { filter: drop-shadow(0 0 0 rgba(63, 221, 160, 0)); }
+  45%  { filter: drop-shadow(0 0 5px rgba(63, 221, 160, .55)); }
+  100% { filter: drop-shadow(0 0 0 rgba(63, 221, 160, 0)); }
+}
+.signed-reveal::first-letter { /* the 🔏 emoji */
+  animation: signed-seal-settle 1.1s ease-out .18s 1 both;
+}
+/* verified border warms toward jade on hover — reinforces trust, calm */
+.signed-reveal:hover {
+  border-color: rgba(63, 221, 160, .5) !important;
+  transition: border-color .2s var(--ease-calm);
+}
+/* optional calm tooltip: add data-tip="Ed25519 · verify yourself" to the button */
+.signed-reveal[data-tip]::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  white-space: nowrap;
+  padding: 5px 9px;
+  border-radius: 8px;
+  font-size: 10.5px;
+  color: var(--surface);
+  background: var(--foreground);
+  box-shadow: 0 4px 14px -6px rgba(10, 14, 39, .4);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .18s var(--ease-calm), transform .18s var(--ease-calm);
+}
+.signed-reveal[data-tip]:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .signed-reveal { animation: none; }
+  .signed-reveal::first-letter { animation: none; }
+  .signed-reveal[data-tip]::after { transition: none; }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   ASK 2 · Logo micro-animation  (breathing cyber eye + horn sheen on hover)
+   Apply .logo-live to the RhinoMark <svg>; tag the eye <circle> .logo-eye and
+   each horn <path> .logo-horn. Idle-calm ~4s breath; horn sheen only on hover.
+   ───────────────────────────────────────────────────────────────────────── */
+@keyframes eye-breathe {
+  0%, 100% { opacity: .82; }
+  50%      { opacity: 1; filter: drop-shadow(0 0 3.5px rgba(24, 184, 216, .7)); }
+}
+.logo-eye {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: eye-breathe 4s ease-in-out infinite;
+}
+/* horn catches a slow gold sheen when the mark is hovered — brightens the fill */
+.logo-horn {
+  transition: filter .3s var(--ease-calm);
+}
+.logo-live:hover .logo-horn {
+  filter: drop-shadow(0 0 4px rgba(243, 207, 115, .65)) brightness(1.06);
+}
+.logo-live:hover .logo-eye {
+  animation-duration: 2.6s; /* eye quickens slightly on attention — still calm */
+}
+@media (prefers-reduced-motion: reduce) {
+  .logo-eye, .logo-live:hover .logo-eye { animation: none; opacity: 1; }
+  .logo-live:hover .logo-horn { filter: none; }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   ASK 3 · Message send / receive
+   User bubble rises from the composer; assistant bubble does a soft arrive
+   under the JS typewriter (which stays — this only softens the container).
+   Add .msg-user-in to the user bubble div (chat-matrix.tsx:1072),
+   .msg-assistant-in to the assistant bubble div (:1084).
+   ───────────────────────────────────────────────────────────────────────── */
+@keyframes msg-user-in {
+  from { opacity: 0; transform: translateY(10px) scale(.99); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.msg-user-in { animation: msg-user-in .22s var(--ease-calm) both; }
+
+@keyframes msg-assistant-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.msg-assistant-in { animation: msg-assistant-in .26s var(--ease-calm) both; }
+
+/* soft streaming caret — attach .stream-caret to the streaming assistant bubble
+   while busy; a gentle blink that reads as "thinking", not a hard terminal cursor.
+   (Pairs with keeping the JS step at ~26ms; see integration note for cadence.) */
+@keyframes stream-caret {
+  0%, 100% { opacity: 0; }
+  50%      { opacity: .55; }
+}
+.stream-caret::after {
+  content: "";
+  display: inline-block;
+  width: .5ch;
+  height: 1.05em;
+  margin-left: 1px;
+  vertical-align: text-bottom;
+  border-radius: 1px;
+  background: var(--cyber);
+  animation: stream-caret 1s steps(1, end) infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .msg-user-in, .msg-assistant-in { animation: none; }
+  .stream-caret::after { animation: none; opacity: 0; }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   ASK 4 · Network / galaxy page — light FRAME + gentle entrance
+   Do NOT touch the dark additive galaxy itself. Wrap the canvas container in
+   .galaxy-frame for a light hairline frame + fade+scale-from-.98 entrance.
+   ───────────────────────────────────────────────────────────────────────── */
+@keyframes galaxy-enter {
+  from { opacity: 0; transform: scale(.98); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.galaxy-frame {
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  overflow: hidden;
+  /* light "scope bezel" so the dark galaxy sits inside the white page cleanly */
+  box-shadow:
+    0 1px 2px rgba(10, 14, 39, .04),
+    0 24px 60px -32px rgba(10, 14, 39, .18),
+    inset 0 0 0 1px rgba(255, 255, 255, .04);
+  animation: galaxy-enter .3s var(--ease-calm) both;
+  will-change: transform, opacity;
+}
+@media (prefers-reduced-motion: reduce) {
+  .galaxy-frame { animation: none; transform: none; }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   ASK 5 · Empty state — "How can I help?" + staggered suggested-prompt chips
+   The chips ALREADY animate via inline chip-in (globals.css) at :1052.
+   This class-based version lets the twin DELETE the inline style/animationDelay
+   and just add className="suggest-chip" — stagger handled by :nth-child.
+   ───────────────────────────────────────────────────────────────────────── */
+@keyframes suggest-in {
+  from { opacity: 0; transform: translateY(6px) scale(.98); }
+  to   { opacity: 1; transform: none; }
+}
+.suggest-chip {
+  animation: suggest-in .38s var(--ease-calm) both;
+}
+.suggest-chip:nth-child(1) { animation-delay: .06s; }
+.suggest-chip:nth-child(2) { animation-delay: .115s; }
+.suggest-chip:nth-child(3) { animation-delay: .17s; }
+.suggest-chip:nth-child(4) { animation-delay: .225s; }
+/* the heading gets one quiet rise as the empty state opens (hero for this view) */
+@keyframes empty-rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.empty-rise { animation: empty-rise .3s var(--ease-calm) both; }
+@media (prefers-reduced-motion: reduce) {
+  .suggest-chip, .empty-rise { animation: none; transform: none; opacity: 1; }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   ASK 6 · 0n1x landing — ONE hero motion (living network) + calm scroll reveals
+   Section reveals already use .rv/.rv.in (globals.css) — reuse those, don't
+   re-add. This adds only the single hero: a slow breathing "living network"
+   glow you place behind the hero headline. Apply .hero-network to a positioned
+   ::before host (an empty absolutely-positioned div behind the hero).
+   ───────────────────────────────────────────────────────────────────────── */
+@keyframes hero-network-breathe {
+  0%, 100% { opacity: .5;  transform: scale(1); }
+  50%      { opacity: .85; transform: scale(1.03); }
+}
+.hero-network {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(38rem 26rem at 68% 8%, rgba(24, 184, 216, .10), transparent 60%),
+    radial-gradient(44rem 30rem at 30% 0%, rgba(99, 91, 255, .10), transparent 62%),
+    radial-gradient(30rem 22rem at 55% 30%, rgba(224, 169, 46, .05), transparent 65%);
+  animation: hero-network-breathe 9s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-network { animation: none; opacity: .6; transform: none; }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Shared micro-interaction · calm hover lift for suggested chips / small pills
+   (opt-in helper, transform-only). Use where a chip needs a touch more life.
+   ───────────────────────────────────────────────────────────────────────── */
+.lift-soft { transition: transform .18s var(--ease-calm); }
+.lift-soft:hover { transform: translateY(-1px); }
+@media (prefers-reduced-motion: reduce) {
+  .lift-soft:hover { transform: none; }
+}

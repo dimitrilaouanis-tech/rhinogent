@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { feedFetch } from "@/lib/feeds";
 
 // Real, verified agents — the differentiator. Every card here is a real cohort agent
 // pulled live from the signed census shard, each with a checkable ProofCard and an
@@ -20,11 +21,11 @@ export function VerifiedAgents() {
   const [merkle, setMerkle] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("/census2/shard-000.json", { cache: "no-store" })
+    feedFetch("/census2/shard-000.json")
       .then((r) => r.json())
       .then((d: Agent[]) => setAgents((d || []).slice(0, 12)))
       .catch(() => {});
-    fetch("/census_manifest.json", { cache: "no-store" })
+    feedFetch("/census_manifest.json")
       .then((r) => r.json())
       .then((m) => setMerkle(m?.merkle_root || null))
       .catch(() => {});

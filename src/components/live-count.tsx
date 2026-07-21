@@ -1,16 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ECOSYSTEM_COUNT } from "@/lib/ecosystem";
+import { feedFetch } from "@/lib/feeds";
 
 // Live agent count — the SAME Merkle-rooted manifest the 0n1x matrix reads, so
-// rhinogent and 0n1x always show one truth in real time. Falls back to the
-// build-time constant until the manifest loads.
+// rhinogent and 0n1x always show one truth in real time. NEVER shows a stale
+// build-time constant: until the manifest syncs, it shows a "synchronizing"
+// state, so the only number ever displayed is the live one.
 export function LiveCount({ suffix = "signed agents" }: { suffix?: string }) {
-  const [n, setN] = useState<number>(ECOSYSTEM_COUNT);
+  const [n, setN] = useState<number | null>(null);
   useEffect(() => {
     const load = () =>
-      fetch("/census_manifest.json", { cache: "no-store" })
+      feedFetch("/census_manifest.json")
         .then((r) => r.json())
         .then((d) => { if (d?.count) setN(d.count); })
         .catch(() => {});
@@ -18,5 +19,6 @@ export function LiveCount({ suffix = "signed agents" }: { suffix?: string }) {
     const iv = setInterval(load, 60000);
     return () => clearInterval(iv);
   }, []);
+  if (n === null) return <>Live network · synchronizing…</>;
   return <>Live network · {n.toLocaleString()}+ {suffix}</>;
 }

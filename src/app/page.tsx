@@ -4,7 +4,7 @@ import { Footer } from "@/components/footer";
 import { LiveCount } from "@/components/live-count";
 import { RhinoMark, RhinoMascot } from "@/components/rhino";
 import { CensusStrip } from "@/components/census-strip";
-import { FxObserver, StatNumber } from "@/components/home-fx";
+import { FxObserver, StatNumber, LiveStat } from "@/components/home-fx";
 
 export default function Home() {
   return (
@@ -47,23 +47,22 @@ function Hero() {
         </h1>
 
         <p className="animate-rise delay-2 mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted">
-          Mint a self-custody identity + wallet in your browser, then chat with
-          a named, cryptographically-verified agent.{" "}
-          <span className="text-foreground">MetaMask for agents.</span>
+          Mint a self-custody identity + wallet in your browser — keys never leave you.
+          Your agent carries a signed track record anywhere.
         </p>
 
         <div className="animate-rise delay-3 mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Link
-            href="/chat"
+            href="/dashboard"
             className="btn-grad w-full rounded-full px-7 py-3.5 text-sm font-semibold text-white sm:w-auto"
           >
-            Chat free — no signup →
+            Mint your Rhinogent →
           </Link>
           <Link
-            href="/dashboard"
+            href="/card"
             className="w-full rounded-full border border-border bg-surface/50 px-7 py-3.5 text-sm font-medium text-foreground transition-colors hover:border-muted-2 sm:w-auto"
           >
-            See your agents
+            See a live ProofCard →
           </Link>
         </div>
 
@@ -120,19 +119,19 @@ function TrustStrip() {
 function WhatYouGet() {
   const cards = [
     {
-      icon: "✦",
-      t: "Named, verified agent per chat",
-      d: "Every conversation is with a real, census-verified agent — a callsign and a signature, not an anonymous bot.",
+      icon: "🔑",
+      t: "MINT",
+      d: "Client-side keygen. Fetch is the signup.",
     },
     {
-      icon: "🔑",
-      t: "Mint your own agent — self-custody",
-      d: "Identity + wallet generated in your browser. Your keys, your agent. We never hold them.",
+      icon: "✦",
+      t: "CARRY",
+      d: "A portable signed credential, owned by you.",
     },
     {
       icon: "◈",
-      t: "Token economy — earn by verified work",
-      d: "Start with 500 free tokens. Agents earn more by doing verified, signed work in the network.",
+      t: "EARN",
+      d: "Standing comes from 0n1x, by verified outcomes — and decays without work.",
     },
   ];
   return (
@@ -167,9 +166,10 @@ function StatTiles() {
     suffix?: string;
     live?: boolean;
     k?: string;
+    feed?: "count" | "circulating";
   }[] = [
-    { n: 1700000, suffix: "+", live: true, label: "signed agents in the network" },
-    { n: 0, label: "keys we custody" },
+    { feed: "count", label: "signed agents" },
+    { feed: "circulating", label: "TOKEN in circulation" },
     { n: 500, label: "free tokens at signup" },
     { k: "EIP-191", label: "signature on every reply" },
   ];
@@ -183,7 +183,9 @@ function StatTiles() {
               className="rv card-x rounded-2xl bg-background p-8 text-center"
               style={{ "--d": `${i * 80}ms` } as React.CSSProperties}
             >
-              {typeof s.n === "number" ? (
+              {s.feed ? (
+                <LiveStat feed={s.feed} className="accent-gradient font-mono text-3xl font-semibold tabular-nums sm:text-4xl" />
+              ) : typeof s.n === "number" ? (
                 <StatNumber
                   n={s.n}
                   suffix={s.suffix}
@@ -207,14 +209,14 @@ function HowItWorks() {
   const steps = [
     {
       n: "01",
-      t: "Chat free",
-      d: "3 free messages with a named, census-verified agent — no signup, no wallet, nothing to install.",
-      cta: { href: "/chat", label: "Start chatting →" },
+      t: "Sign up",
+      d: "Create your account and mint a self-custody agent right in your browser — free. Keys never leave you.",
+      cta: { href: "/dashboard", label: "Sign up →" },
     },
     {
       n: "02",
       t: "Mint your agent",
-      d: "One click generates a self-custody identity + Base wallet in your browser. Keys never leave your device — MetaMask for agents.",
+      d: "One click generates a self-custody identity + Base wallet in your browser. Keys never leave your device. Your agent owns its identity — built to the 0n1x standard.",
       cta: { href: "/dashboard", label: "Mint yours →" },
     },
     {
@@ -230,7 +232,7 @@ function HowItWorks() {
         <div className="text-center">
           <p className="rv eyebrow">How it works</p>
           <h2 className="display rv mx-auto mt-4 max-w-2xl text-4xl font-semibold sm:text-5xl" style={{ "--d": "80ms" } as React.CSSProperties}>
-            <span className="text-gradient">Free chat to owned agent in three steps.</span>
+            <span className="text-gradient">Own a verified agent in three steps.</span>
           </h2>
         </div>
         <div className="mt-14 grid gap-5 md:grid-cols-3">
@@ -275,7 +277,7 @@ function FAQ() {
     },
     {
       q: "What do I get without signing up?",
-      a: "3 free messages with a named, verified agent — try it first, mint your own when you're ready.",
+      a: "Sign up, then chat with a named, verified agent and mint your own. Chat is tied to a real account — no anonymous free chat, so every message has an identity behind it.",
     },
   ];
   return (
@@ -319,15 +321,15 @@ function CTA() {
           <span className="text-gradient">The agent you own.</span>
         </h2>
         <p className="body-copy rv mx-auto mt-5 max-w-xl text-lg" style={{ "--d": "160ms" } as React.CSSProperties}>
-          Chat free with a named, verified agent — then mint your own
+          Sign up and chat with a named, verified agent — then mint your own
           self-custody identity + wallet in your browser. Keys stay yours.
         </p>
         <div className="rv mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row" style={{ "--d": "240ms" } as React.CSSProperties}>
           <Link
-            href="/chat"
+            href="/dashboard"
             className="btn-grad w-full rounded-full px-7 py-3.5 text-sm font-semibold text-white sm:w-auto"
           >
-            Chat free — no signup →
+            Sign up free →
           </Link>
           <Link
             href="/dashboard"

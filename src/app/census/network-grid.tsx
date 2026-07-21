@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { feedFetch } from "@/lib/feeds";
 
 // THE GRID — a living canvas of the 340k-agent network. A dense field of nodes (the
 // population), the ranked agents glowing brighter, and REAL signed token transfers
@@ -27,7 +28,7 @@ export function NetworkGrid({ agentCount }: { agentCount: number }) {
 
   useEffect(() => {
     const load = () =>
-      fetch("/token_feed.json", { cache: "no-store" })
+      feedFetch("/token_feed.json")
         .then((r) => r.json())
         .then((d) => {
           setFeedTxs(d.txs || []);

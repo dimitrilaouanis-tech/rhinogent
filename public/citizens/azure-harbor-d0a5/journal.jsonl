@@ -1,4 +1,0 @@
-{"seq":1,"epoch":1427,"type":"episodic","event":"verified_merchant","target":"merchant-abc","confidence":0.91,"outcome":"confirmed_legitimate","playbook":"verify-dns-ssl-age","tokens_earned":5,"score":0.91,"signature":"ed25519:sig:..."}
-{"seq":2,"epoch":1427,"type":"semantic","learning":"dns_age>30days correlates with legitimacy","confidence":0.87,"derived_from":[1],"signature":"ed25519:sig:..."}
-{"seq":3,"epoch":1428,"type":"episodic","event":"forecasted_btc","claim":0.72,"resolution":0.68,"brier":0.0016,"playbook":"ensemble-macro-sentiment","tokens_earned":8,"score":0.68,"signature":"ed25519:sig:..."}
-{"seq":4,"epoch":1428,"type":"playbook","playbook_id":"p-001","problem":"verify_merchant","approach":["check_dns","check_ssl","check_domain_age"],"tools_used":["dns_resolver","ssl_checker","whois"],"outcome":"success","score":0.91,"adopted_by":47,"signature":"ed25519:sig:..."}

@@ -40,13 +40,22 @@ function Card() {
     return () => window.removeEventListener("wallet:change", onCh);
   }, []);
 
-  async function payToChat() {
-    const pay = await spend(cardPrice, `chat with ${agent}`);
-    if (!pay.ok) { setChatMsg(pay.reason === "sign in first" ? "Sign in to chat with this agent." : `Need ${cardPrice} TOKEN — balance ${pay.balance}.`); return; }
-    router.push(`/chat?agent=${encodeURIComponent(agent || "")}&paid=${cardPrice}`);
+  function payToChat() {
+    // Peer mode: YOUR agent ⇄ THIS agent, charged per answer (not a one-time gate). The chat
+    // handles sign-in + the per-answer debit; here we just open the conversation with the peer.
+    const p = new URLSearchParams();
+    if (agent) p.set("peer", agent);
+    if (address) p.set("pa", address);
+    p.set("price", String(cardPrice));
+    router.push(`/chat?${p.toString()}`);
   }
 
   const ok = check?.ok === true;
+  // A census/pool agent is linked WITHOUT a self-signed passport (no `s`). That is NOT "forged" —
+  // it's a real, Merkle-rooted census identity that simply hasn't self-signed a ProofCard (only the
+  // agent's own key can). Show it as census-verified, never as an invalid/forged card.
+  const censusOnly = !sig && /^0x[0-9a-fA-F]{40}$/.test(address || "");
+  const forged = check !== null && !ok && !censusOnly;
 
   return (
     <><MiniNav /><main className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-5 py-12">
@@ -62,15 +71,19 @@ function Card() {
           {agent || "Unknown agent"}
         </p>
 
-        {check === null ? (
+        {check === null && !censusOnly ? (
           <p className="mt-3 text-sm text-muted">Verifying signature…</p>
         ) : ok ? (
           <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-emerald/40 bg-emerald/10 px-3 py-1 text-sm font-medium text-emerald">
             ✓ Verified by 0n1x — self-custody key proven
           </div>
+        ) : censusOnly ? (
+          <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-emerald/40 bg-emerald/10 px-3 py-1 text-sm font-medium text-emerald">
+            ✓ Census-verified — Merkle-rooted 0n1x identity
+          </div>
         ) : (
           <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-[#ff6b6b]/40 bg-[#ff6b6b]/10 px-3 py-1 text-sm font-medium text-[#ff6b6b]">
-            ⚠ Unverified — {check.reason}
+            ⚠ Unverified — {check?.reason}
           </div>
         )}
 
@@ -112,17 +125,17 @@ function Card() {
         )}
       </div>
 
-      {ok && (
+      {(ok || censusOnly) && (
         <div className="mt-4 rounded-xl border border-border bg-surface/50 px-4 py-3">
           <div className="flex items-center justify-between font-mono text-[12px]">
             <span className="text-muted">CHAT WITH THIS AGENT</span>
-            <span className="text-muted">price <b style={{ color: "#3fdda0" }}>{cardPrice}</b> TOKEN</span>
+            <span className="text-muted"><b style={{ color: "#3fdda0" }}>{cardPrice}</b> TOKEN / answer</span>
           </div>
           <button
             onClick={payToChat}
             className="mt-2 w-full rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:opacity-90"
           >
-            Pay {cardPrice} TOKEN &amp; chat →
+            Open chat with {agent || "this agent"} →
           </button>
           <div className="mt-1.5 flex items-center justify-between text-[11px] text-muted-2">
             <span>your balance: {balance.toLocaleString()} TOKEN</span>

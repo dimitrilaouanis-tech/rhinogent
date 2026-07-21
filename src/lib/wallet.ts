@@ -16,6 +16,8 @@ export const PRICES = {
   chatMessage: 5,        // one premium chat turn
   premiumChat: 5,
   cardCallDefault: 2,    // default per-call price to talk to an agent card
+  freeMints: 2,          // first N self-custody agent mints are free
+  mintId: 150,           // TOKEN cost to mint a self-custody agent after the free grant
 } as const;
 
 export type WalletState = { balance: number; spent: number; earned: number; uid: string | null };

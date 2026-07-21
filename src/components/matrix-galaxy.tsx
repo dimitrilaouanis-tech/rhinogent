@@ -35,7 +35,7 @@ export function MatrixGalaxy() {
     }
     if (window.OnyxMatrix) { boot(); return () => { mounted = false; }; }
     const sc = document.createElement("script");
-    sc.src = "/matrix-engine.js?v=34";
+    sc.src = "/matrix-engine.js?v=36";
     sc.onload = boot;
     document.body.appendChild(sc);
     return () => { mounted = false; };
@@ -51,7 +51,7 @@ export function MatrixGalaxy() {
       <a href="https://0n1xagntc.com/" target="_blank" rel="noreferrer"
          className="absolute right-3 top-3 z-10 rounded-full border px-3 py-1.5 font-mono text-[11px] transition-all hover:scale-105"
          style={{ borderColor: "rgba(245,166,35,.4)", background: "rgba(245,166,35,.1)", color: "#f5a623" }}>
-        ⇌ 0n1x
+        0n1x
       </a>
       <canvas ref={cvRef} className="block w-full" style={{ height: "62dvh", minHeight: 360, cursor: "grab", touchAction: "none" }} />
       <div className="absolute bottom-2 right-3 font-mono text-[10px]" style={{ color: "#8b95a3", pointerEvents: "none" }}>

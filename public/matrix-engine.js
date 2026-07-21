@@ -27,7 +27,10 @@
           bg: ["#0b0b10", "#07070a", "#050506"] };                                                  // 0n1x: neutral space
     const ctx = cv.getContext("2d");
     let W = 0, H = 0;
-    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    // LAG FIX: cap DPR at 1.5. A phone at dpr 2.5–3 was rendering the additive-glow galaxy at
+    // 6–9× the pixels every frame — the dominant cost. 1.5 is imperceptible on a soft-glow visual
+    // and cuts fill work ~40–75% on mobile. (Was capped at 2 = still 4× pixels.)
+    const dpr = Math.min(1.5, window.devicePixelRatio || 1);
     function resize() {
       const r = cv.getBoundingClientRect();
       W = r.width; H = r.height;
@@ -142,7 +145,10 @@
         g.fillStyle = neb; g.beginPath(); g.arc(nx, ny, nrad, 0, Math.PI * 2); g.fill();
       }
       // ── LAYER 2: the star field — every agent, uniform angle, HD crisp cores ──
-      const n = Math.min(count || 2000000, 5000000);
+      // Screen-aware cap: 5M dots was a multi-second main-thread FREEZE on entry (the rhinogent lag).
+      // ~200k already reads as a dense galaxy — same look, one-time paint, no entry hitch.
+      const _small = Math.min(window.innerWidth, window.innerHeight) < 760;
+      const n = Math.min(count || 240000, _small ? 90000 : 240000);
       const BUCKETS = 12;                             // finer radial color banding
       const bx = [], by = [], bs = [], ba = [];
       for (let b = 0; b < BUCKETS; b++) { bx.push([]); by.push([]); bs.push([]); ba.push([]); }
@@ -220,9 +226,11 @@
       }
     }
     setInterval(fireCascade, 650);
-    // parallax starfield — 3 depth layers, deterministic
+    // parallax starfield — 3 depth layers, deterministic. Count scales down on small screens
+    // (mobile is where the lag lives) — fewer stars = fewer per-frame draws.
     const stars = [];
-    for (let i = 0; i < 170; i++) {
+    const STAR_COUNT = (window.innerWidth || 1024) < 700 ? 90 : 150;
+    for (let i = 0; i < STAR_COUNT; i++) {
       const h = hash("star" + i, 37);
       stars.push({
         u: (h % 1000) / 1000, v: ((h >>> 10) % 1000) / 1000,
@@ -238,8 +246,14 @@
     const qp = (t, x1, y1, cx, cy, x2, y2) => { const a = (1 - t) * (1 - t), b = 2 * (1 - t) * t, c = t * t; return [a * x1 + b * cx + c * x2, a * y1 + b * cy + c * y2]; };
 
     // ---- render loop -------------------------------------------------------
+    let __lastFrame = 0;
     function draw(nowMs) {
       requestAnimationFrame(draw);            // rebook FIRST — an error costs one frame, never the loop
+      // LAG FIX: cap to ~30fps and pause when the tab/page is hidden. The old loop ran the full
+      // additive-glow galaxy at 60fps non-stop, which is what made the Network page lag on mobile.
+      if (typeof document !== "undefined" && document.hidden) return;
+      if (nowMs - __lastFrame < 33) return;
+      __lastFrame = nowMs;
       try { drawFrame(nowMs); } catch (e) { window.__matrixErr = e.message; }
     }
     function drawFrame(nowMs) {

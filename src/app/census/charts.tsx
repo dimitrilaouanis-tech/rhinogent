@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { feedFetch } from "@/lib/feeds";
 
 // Matrix statistics — patterns borrowed from the best live-network dashboards:
 //  · mempool.space  → the EPOCH LANE (confirmed epoch tiles marching right, live tile forming)
@@ -34,7 +35,7 @@ function Spark({ vals, color = "#635bff" }: { vals: number[]; color?: string }) 
 function ForecastCard() {
   const [f, setF] = useState<any>(null);
   useEffect(() => {
-    const load = () => fetch("/forecast_feed.json", { cache: "no-store" }).then((r) => r.json()).then(setF).catch(() => {});
+    const load = () => feedFetch("/forecast_feed.json").then((r) => r.json()).then(setF).catch(() => {});
     load();
     const iv = setInterval(load, 60000);
     return () => clearInterval(iv);
@@ -78,7 +79,7 @@ export function MatrixCharts({ ranking, agents, metrics }: { ranking: Mover[]; a
 
   useEffect(() => {
     const load = () =>
-      fetch("/census_history.json", { cache: "no-store" })
+      feedFetch("/census_history.json")
         .then((r) => r.json())
         .then((d) => { if (Array.isArray(d)) { setHist(d.slice(-48)); setCountdown(60); } })
         .catch(() => {});

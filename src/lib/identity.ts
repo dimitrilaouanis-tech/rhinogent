@@ -80,6 +80,53 @@ export async function proofCardUrl(agent: Agent): Promise<string> {
   return `${SITE}/card?${q.toString()}`;
 }
 
+/** UNIVERSAL AGENT CARD — one self-contained JSON any platform can parse (CLI or non-CLI).
+ *  A2A-shaped top level (name/url/provider/capabilities/skills) so agent frameworks discover it,
+ *  a did:pkh + chain identity so wallets/ERC-8004 tooling resolve it, and an inline EIP-191 proof
+ *  so anyone can verify the agent controls the key with NO backend. Drop the link OR this JSON
+ *  anywhere; every layer degrades gracefully to what the consumer understands. */
+export async function agentCardJson(agent: Agent): Promise<Record<string, unknown>> {
+  const f = await signProof(agent);
+  const cardUrl = `${SITE}/card?n=${encodeURIComponent(f.agent)}&a=${f.address}&i=${f.issued}&s=${f.sig}`;
+  return {
+    // A2A discovery layer
+    protocolVersion: "0.3.0",
+    name: agent.id,
+    description: `Self-custody Rhinogent agent in the 0n1x network — the agent you own.`,
+    url: cardUrl,
+    preferredTransport: "HTTP+JSON",
+    provider: { organization: "0n1x", url: "https://0n1xagntc.com" },
+    capabilities: { streaming: false, pushNotifications: false },
+    skills: [
+      { id: "verify-before-pay", name: "Verify before pay", description: "Check a counterparty is real before settling.", tags: ["trust", "verification"] },
+      { id: "signed-answer", name: "Signed answer", description: "Answers grounded in the live web and Ed25519/EIP-191 signed.", tags: ["chat"] },
+    ],
+    // identity layer — did:pkh + chain so wallets / ERC-8004 tooling resolve it
+    identity: {
+      did: agent.did,
+      address: agent.address,
+      chain: "eip155:8453",
+      caip10: `eip155:8453:${agent.address}`,
+      selfCustody: true,
+    },
+    // fetch-first endpoints for non-CLI agents (plain HTTP, no install)
+    endpoints: {
+      onboard: `https://onyx-actions.onrender.com/onboard?address=${agent.address}`,
+      verify: "https://onyx-actions.onrender.com/api/check?url={domain}",
+      manifest: "https://rhinogent.com/manifest.json",
+      chat: cardUrl,
+    },
+    // proof layer — inline EIP-191 passport, verifiable with zero backend
+    proof: {
+      type: "EIP191-PersonalSign",
+      issued: f.issued,
+      message: passportMessage(f.agent, agent.did, f.issued),
+      signature: f.sig,
+      recover: "recover the signer from (message, signature); it MUST equal identity.address",
+    },
+  };
+}
+
 export type PassportCheck = {
   ok: boolean;
   agent?: string;

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { feedFetch } from "@/lib/feeds";
 
 /* Scroll-reveal driver: adds .in to every .rv element (and .play to the
    verify-card) when it enters the viewport. Static export → runs client-side. */
@@ -30,6 +31,23 @@ export function FxObserver() {
 
 /* Count-up stat number: easeOutQuart on reveal, tabular-nums, comma-format,
    min-width in ch to prevent layout jitter. Reduced-motion → instant. */
+// Live network stat — reads the SAME Merkle-rooted census manifest 0n1x reads, so the
+// number is always the synced live one, never a stale build-time constant.
+export function LiveStat({ feed, className = "" }: { feed: "count" | "circulating"; className?: string }) {
+  const [n, setN] = useState<number | null>(null);
+  useEffect(() => {
+    const load = () =>
+      feedFetch("/census_manifest.json")
+        .then((r) => r.json())
+        .then((d) => { if (typeof d?.[feed] === "number") setN(d[feed]); })
+        .catch(() => {});
+    load();
+    const iv = setInterval(load, 60000);
+    return () => clearInterval(iv);
+  }, [feed]);
+  return <span className={className}>{n === null ? "syncing…" : n.toLocaleString()}</span>;
+}
+
 export function StatNumber({
   n,
   suffix = "",

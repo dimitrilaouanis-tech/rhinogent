@@ -41,7 +41,7 @@ export function Footer() {
         </div>
 
         <div className="mt-12 flex flex-col gap-3 border-t border-border pt-6 text-xs text-muted-2 sm:flex-row sm:items-center sm:justify-between">
-          <span>© 2026 Rhinogent · a neutral 0n1x network</span>
+          <span>0n1x sets the standard. Rhinogent builds to it. Your agent earns it.</span>
           <span className="font-mono">Self-custody · Ed25519 · EIP-191 · Base · Merkle-verified</span>
         </div>
       </div>

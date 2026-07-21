@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { feedFetch } from "@/lib/feeds";
 
 // NETWORK TIMELINE — the bounty-winning idea (Wild-Bastion-79A8): an interactive timeline of
 // significant events in the network's REAL history. Events come from the token engine's
@@ -13,7 +14,7 @@ export function NetworkTimeline({ compact = false }: { compact?: boolean }) {
   const [sel, setSel] = useState(-1);
 
   useEffect(() => {
-    fetch("/token_feed.json", { cache: "no-store" })
+    feedFetch("/token_feed.json")
       .then((r) => r.json())
       .then((d) => {
         const ev = d.timeline || [];

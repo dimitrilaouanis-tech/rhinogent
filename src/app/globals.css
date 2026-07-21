@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./design-motion.css";
 
 /* ─────────────────────────────────────────────
    Rhinogent — design tokens
@@ -143,6 +144,10 @@ body {
 }
 .animate-seal { animation: float-seal 7s ease-in-out infinite; }
 
+/* agent-detail modal (dashboard) — reduced-motion gated via Tailwind motion-safe: */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
 @keyframes rise {
   from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: translateY(0); }
@@ -225,17 +230,17 @@ body { font-feature-settings: "cv11", "ss01"; text-rendering: optimizeLegibility
    Scoped token ladder (does NOT touch the light marketing site tokens above).
    ───────────────────────────────────────────── */
 .census-terminal {
-  /* launch palette — deep-space + jade/amber/indigo, matched to the 0n1x matrix */
-  --ct-bg: #060608;
-  --ct-panel: #0e1014;
-  --ct-panel-raised: #131722;
-  --ct-border: #1d2230;
-  --ct-text: #f2f4f7;
-  --ct-muted: #8b95a3;
-  --ct-green: #3fdda0;
+  /* LIGHT palette — white background (operator asked: no black), dark text, jade/amber accents */
+  --ct-bg: #ffffff;
+  --ct-panel: #f5f6f8;
+  --ct-panel-raised: #ffffff;
+  --ct-border: #e4e7ec;
+  --ct-text: #0e1116;
+  --ct-muted: #667085;
+  --ct-green: #17b581;
   --ct-red: #e5484d;
-  --ct-amber: #f5a623;
-  --ct-blue: #7c9aff;
+  --ct-amber: #d98a04;
+  --ct-blue: #4f6bed;
   background: var(--ct-bg);
   color: var(--ct-text);
   font-family: var(--font-jetbrains-mono), var(--font-geist-mono), monospace;
@@ -264,15 +269,18 @@ body { font-feature-settings: "cv11", "ss01"; text-rendering: optimizeLegibility
   0%,100% { box-shadow: 0 0 0 1px rgba(63,221,160,.5), 0 0 22px rgba(63,221,160,.18); }
   50%     { box-shadow: 0 0 0 1px rgba(124,154,255,.6), 0 0 30px rgba(124,154,255,.24); }
 }
-@keyframes proSheen { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+@keyframes proSheen { 0% { background-position: 0% 50%; } 100% { background-position: 300% 50%; } }
 .pro-composer {
-  animation: proGlow 3.2s ease-in-out infinite;
+  animation: proGlow 3.2s ease-in-out infinite, proSheen 5.5s linear infinite;
   border-color: transparent !important;
+  /* plain fill (text area uncolored) + a multi-hue animated gradient BORDER that actually
+     travels around the perimeter — jade → cyan → indigo → violet → jade, subtle but colorful */
   background:
-    linear-gradient(var(--surface,#0e1014),var(--surface,#0e1014)) padding-box,
-    linear-gradient(110deg,#3fdda0,#7c9aff,#3fdda0) border-box;
-  background-size: 200% 100%;
+    linear-gradient(var(--surface), var(--surface)) padding-box,
+    linear-gradient(110deg, #3fdda0, #18b8d8, #635bff, #a855f7, #3fdda0) border-box;
+  background-size: 300% 100%;
   border: 1.5px solid transparent;
+  box-shadow: 0 2px 14px -10px rgba(99, 91, 255, 0.3);
 }
 .pro-badge {
   background: linear-gradient(110deg,#3fdda0,#7c9aff,#3fdda0);
@@ -400,4 +408,31 @@ h2.display { letter-spacing: -0.03em; }
   .live-dot { animation: none; }
   .vc-cmd { width: 30ch !important; border-right: none; animation: none !important; }
   .vc-pill { opacity: 1 !important; transform: none; animation: none !important; }
+}
+
+/* earn-page bars — reveal left→right via clip-path (origin-agnostic), delay per --d */
+@keyframes bar-grow { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+.rv-bar { animation: bar-grow 0.9s cubic-bezier(0.16, 1, 0.3, 1) var(--d, 0ms) both; }
+@media (prefers-reduced-motion: reduce) { .rv-bar { animation: none; clip-path: none; } }
+
+/* suggested-prompt chip entrance */
+@keyframes chip-in { from { opacity: 0; transform: translateY(6px) scale(.98); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { @keyframes chip-in { from { opacity: 1; } to { opacity: 1; } } }
+
+/* toast (dashboard actions) — bottom-right slide-in */
+@keyframes toastIn { from { opacity: 0; transform: translateY(10px) scale(.98); } to { opacity: 1; transform: none; } }
+.animate-toast-in { animation: toastIn .22s cubic-bezier(0.16, 1, 0.3, 1) both; }
+@media (prefers-reduced-motion: reduce) { .animate-toast-in { animation: none; } }
+
+/* THINKING SHIMMER — the chat's working-state label. A soft light sweeps across the text
+   while the agent composes. Pure CSS (no image assets), reduced-motion safe. */
+@keyframes thinkingShimmer { 0% { background-position: 200% 50%; } 100% { background-position: -200% 50%; } }
+.thinking-shimmer {
+  background: linear-gradient(100deg, var(--muted-2) 20%, var(--foreground) 40%, var(--muted-2) 60%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text; background-clip: text;
+  color: transparent;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .thinking-shimmer { animation: thinkingShimmer 2.2s linear infinite; }
 }

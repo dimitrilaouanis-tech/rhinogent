@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { feedFetch } from "@/lib/feeds";
 import { RhinoMark } from "@/components/rhino";
 import { MiniNav } from "@/components/mini-nav";
 import { CITIZENS, ECOSYSTEM_COUNT } from "@/lib/ecosystem";
@@ -59,7 +60,10 @@ export function Matrix() {
   const [ranking] = useState<Ranked[]>([]);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Ranked[]>([]);
-  const [manifest, setManifest] = useState<any>({ count: 1700000, circulating: 681642669, merkle_root: "b3903445bc77a41bee7010dfaa13385b2f96cd3847115f09ed09c277911e2040" });   // canonical fallback — live fetch overwrites
+  // Start EMPTY (no hardcoded count) — the live census_manifest.json fetch fills it. A hardcoded
+  // fallback flashed a wrong number (1.7M) on every refresh before the fetch landed; show a
+  // placeholder instead so the ONLY number ever shown is the live one.
+  const [manifest, setManifest] = useState<any>(null);
   const [metrics] = useState<any>(null);
   const shardsRef = useRef<Ranked[] | null>(null);
   const idRef = useRef(0);
@@ -84,7 +88,7 @@ export function Matrix() {
       setPulse({ from: f.from, to: f.to, amount: f.amount, key: idRef.current });
     }
     const loadFeed = () =>
-      fetch("/token_feed.json", { cache: "no-store" })
+      feedFetch("/token_feed.json")
         .then((r) => r.json())
         .then((d) => {
           // DETERMINISTIC NUMBERS (launch rule): ranking, balances and circulation are
@@ -94,7 +98,7 @@ export function Matrix() {
           // different numbers. The volatile feed now drives ONLY the live transfer tape.
           feed = d.txs || [];
           setFeedTxs(feed); // real transfer pairs → graph edge topology
-          fetch("/census_manifest.json", { cache: "no-store" }).then((r) => r.json()).then(setManifest).catch(() => {});
+          feedFetch("/census_manifest.json").then((r) => r.json()).then(setManifest).catch(() => {});
         })
         .catch(() => {});
     loadFeed().then(tick);
@@ -158,11 +162,11 @@ export function Matrix() {
         <div className="ml-auto flex items-center gap-5 font-mono">
           <div className="text-right">
             <p className="text-[9px] uppercase tracking-widest" style={{ color: "var(--ct-muted)" }}>agents</p>
-            <p className="text-sm font-bold ct-num" style={{ color: "var(--ct-text)" }}>{(manifest?.count || ECOSYSTEM_COUNT).toLocaleString()}</p>
+            <p className="text-sm font-bold ct-num" style={{ color: "var(--ct-text)" }}>{manifest?.count ? manifest.count.toLocaleString() : "—"}</p>
           </div>
           <div className="text-right">
             <p className="text-[9px] uppercase tracking-widest" style={{ color: "var(--ct-muted)" }}>tokens in circulation</p>
-            <p className="text-sm font-bold ct-num" style={{ color: "var(--ct-amber)" }}>{Math.round(manifest?.circulating ?? live).toLocaleString()}</p>
+            <p className="text-sm font-bold ct-num" style={{ color: "var(--ct-amber)" }}>{manifest?.circulating != null ? Math.round(manifest.circulating).toLocaleString() : "—"}</p>
           </div>
         </div>
       </header>
@@ -176,60 +180,12 @@ export function Matrix() {
         <VerifiedAgents />
       </div>
 
-      {/* live token-exchange tape — exchange-grade ticker */}
-      <div className="mt-3 overflow-hidden rounded-xl border" style={{ borderColor: "var(--ct-border)", background: "var(--ct-panel)" }}>
-        <div className="flex items-center justify-between border-b px-4 py-2" style={{ borderColor: "var(--ct-border)" }}>
-          <span className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em]" style={{ color: "var(--ct-muted)" }}>
-            <span className="relative flex h-1.5 w-1.5"><span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-75" style={{ background: "var(--ct-green)" }} /><span className="relative h-1.5 w-1.5 rounded-full" style={{ background: "var(--ct-green)" }} /></span>
-            Token Exchange
-          </span>
-          <span className="font-mono text-[10px] tracking-widest" style={{ color: "var(--ct-muted)" }}>EIP-191 SIGNED · VERIFIABLE</span>
-        </div>
-        <div className="h-56 divide-y overflow-y-auto" style={{ borderColor: "var(--ct-border)" }}>
-          {txs.map((tx) => (
-            <div
-              key={tx.id}
-              className="ct-flash flex items-center gap-3 px-4 py-2"
-              style={{ backgroundColor: tx.ago === 0 ? "rgba(34,197,94,0.16)" : "transparent" }}
-            >
-              <span className="flex min-w-0 items-center gap-2">
-                <span className="truncate font-mono text-[13px] font-medium" style={{ color: "var(--ct-text)" }}>{tx.from}</span>
-              </span>
-              <span style={{ color: "var(--ct-muted)" }}>→</span>
-              <span className="flex min-w-0 items-center gap-2">
-                <span className="truncate font-mono text-[13px] font-medium" style={{ color: "var(--ct-text)" }}>{tx.to}</span>
-              </span>
-              <span className="ml-auto flex items-center gap-3">
-                <span
-                  className="rounded-md px-2 py-0.5 font-mono text-[12px] font-semibold ct-num"
-                  style={{ background: "rgba(245,166,35,0.14)", color: "var(--ct-amber)" }}
-                >
-                  +{tx.amount}
-                </span>
-                <span className="hidden w-9 text-right font-mono text-[10px] ct-num sm:inline" style={{ color: "var(--ct-muted)" }}>{tx.ago}s</span>
-                {tx.sig && (
-                  <span className="hidden items-center gap-1 font-mono text-[10px] md:flex" style={{ color: "var(--ct-muted)" }} title="EIP-191 signature — sender's own key">
-                    {tx.sig.slice(0, 10)}…
-                  </span>
-                )}
-                <span className="text-[10px]" style={{ color: "var(--ct-green)" }} title="signed by sender's key, verified on ledger">✓</span>
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* mempool.space-style fixed-grid activity panel */}
-      <div className="mt-3">
-        <ActivityGrid slots={slots} />
-      </div>
-
       {/* search the whole census — manifest + lazy shards (scales to 1M) */}
       <div className="mt-3">
         <input
           value={query}
           onChange={(e) => search(e.target.value)}
-          placeholder={`Search all ${(manifest?.count || ECOSYSTEM_COUNT).toLocaleString()} agents — callsign or address…`}
+          placeholder={`Search all ${manifest?.count ? manifest.count.toLocaleString() : "…"} agents — callsign or address…`}
           className="w-full rounded-xl border px-4 py-2.5 font-mono text-[13px] outline-none"
           style={{ borderColor: "var(--ct-border)", background: "var(--ct-panel)", color: "var(--ct-text)" }}
         />
@@ -247,65 +203,8 @@ export function Matrix() {
         )}
       </div>
 
-      {/* top agents — professional leaderboard (real, verified balances) */}
-      <div className="mt-4 overflow-hidden rounded-xl border" style={{ borderColor: "var(--ct-border)", background: "var(--ct-panel)" }}>
-        <div className="flex items-center justify-between border-b px-4 py-2.5" style={{ borderColor: "var(--ct-border)" }}>
-          <span className="text-[13px] font-semibold" style={{ color: "var(--ct-text)" }}>Top agents by verified balance</span>
-          <span className="font-mono text-[10px] uppercase tracking-widest" style={{ color: "var(--ct-muted)" }}>live · Merkle-ranked</span>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-[13px]" style={{ tableLayout: "fixed" }}>
-            <colgroup>
-              <col style={{ width: "44px" }} />
-              <col style={{ width: "auto" }} />
-              <col style={{ width: "160px" }} className="hidden sm:table-column" />
-              <col style={{ width: "128px" }} />
-              <col style={{ width: "84px" }} />
-              <col style={{ width: "70px" }} className="hidden md:table-column" />
-              <col style={{ width: "64px" }} />
-            </colgroup>
-            <thead>
-              <tr className="border-b font-mono text-[10px] uppercase tracking-wider" style={{ borderColor: "var(--ct-border)", color: "var(--ct-muted)" }}>
-                <th className="px-4 py-2 font-medium">#</th>
-                <th className="px-4 py-2 font-medium">Agent</th>
-                <th className="hidden px-4 py-2 font-medium sm:table-cell">Address</th>
-                <th className="px-4 py-2 text-right font-medium">Balance</th>
-                <th className="px-4 py-2 text-right font-medium">24h</th>
-                <th className="hidden px-4 py-2 text-right font-medium md:table-cell">Score</th>
-                <th className="px-4 py-2 text-right font-medium">Trend</th>
-              </tr>
-            </thead>
-            <tbody key={historyTick}>
-              {(shown as any[]).slice(0, 15).map((r, i) => {
-                const hist = historyRef.current.get(r.address) || [];
-                return (
-                <tr key={r.address} className="ct-flash border-b last:border-0" style={{ borderColor: "rgba(35,36,38,0.6)" }}>
-                  <td className="truncate px-4 py-2 font-mono ct-num" style={{ color: "var(--ct-muted)" }}>{i + 1}</td>
-                  <td className="truncate px-4 py-2">
-                    <a href={r.proofcard || `/card?n=${r.callsign}&a=${r.address}`} target="_blank" rel="noreferrer"
-                       className="truncate font-medium transition-colors" style={{ color: "var(--ct-text)" }}>{r.callsign}</a>
-                    <span className="ml-1.5" style={{ color: "var(--ct-green)" }} title="verified">✓</span>
-                  </td>
-                  <td className="hidden truncate px-4 py-2 font-mono text-[11px] sm:table-cell" style={{ color: "var(--ct-muted)" }}>{r.address.slice(0, 10)}…{r.address.slice(-4)}</td>
-                  <td className="truncate px-4 py-2 text-right font-mono font-semibold ct-num" style={{ color: "var(--ct-text)" }}>{r.tokens.toLocaleString()}</td>
-                  <td className="truncate px-4 py-2 text-right font-mono ct-num" style={{ color: r.flow > 0 ? "var(--ct-green)" : r.flow < 0 ? "var(--ct-red)" : "var(--ct-muted)" }}>
-                    {r.flow > 0 ? "+" : ""}{r.flow || 0}
-                  </td>
-                  <td className="hidden truncate px-4 py-2 text-right font-mono ct-num md:table-cell" style={{ color: "var(--ct-muted)" }}>{r.score ?? "—"}</td>
-                  <td className="px-4 py-2 text-right">
-                    <span className="inline-block"><RowSpark vals={hist} /></span>
-                  </td>
-                </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <MatrixCharts ranking={shown as any} agents={manifest?.count || ECOSYSTEM_COUNT} metrics={metrics} />
-
-      <NetworkTimeline />
+      {/* launch: ranking leaderboard, charts and timeline removed — only the metrics that matter
+          (agents + tokens in the header, the live graph, search) stay. */}
 
       <p className="mt-4 text-center text-[10px] leading-relaxed" style={{ color: "var(--ct-muted)" }}>
         <span style={{ color: "var(--ct-text)" }}>Provenance:</span> every agent in this network is native to the

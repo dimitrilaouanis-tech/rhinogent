@@ -101,7 +101,7 @@ export function RhinoMark({ className }: { className?: string }) {
     <svg
       viewBox="0 0 230 210"
       fill="none"
-      className={className}
+      className={`logo-live ${className ?? ""}`}
       role="img"
       aria-label="Rhinogent"
     >
@@ -116,9 +116,9 @@ export function RhinoMark({ className }: { className?: string }) {
         </linearGradient>
       </defs>
       <path d={HEAD} fill="url(#hide-m)" />
-      <path d={HORN_SMALL} fill="url(#horn-m)" />
-      <path d={HORN_BIG} fill="url(#horn-m)" />
-      <circle cx="116" cy="84" r="4.5" fill="var(--cyber)" />
+      <path className="logo-horn" d={HORN_SMALL} fill="url(#horn-m)" />
+      <path className="logo-horn" d={HORN_BIG} fill="url(#horn-m)" />
+      <circle className="logo-eye" cx="116" cy="84" r="4.5" fill="var(--cyber)" />
     </svg>
   );
 }

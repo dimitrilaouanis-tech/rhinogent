@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode, type PointerEvent as RPointerEvent } from "react";
+import { feedFetch } from "@/lib/feeds";
 import { getWallet, spend, grant, reward, PRICES } from "@/lib/wallet";
 import { RhinoMark } from "@/components/rhino";
 import { loadAgents, addAgent, renameAgent as renameMinted, MAX_SLOTS } from "@/lib/agents";
-import { pullAgents } from "@/lib/agent-sync";
-import { queueThreadSync, flushThreadSync, pullThreadsFull, reconcileHistory, rebindThreadKey, adoptThread, deleteThread, restoreThread, backfillThreads } from "@/lib/chat-sync";
+import { pullAgents, accountAgents, pushAgents } from "@/lib/agent-sync";
+import { queueThreadSync, flushThreadSync, pullThreadsFull, pullThreads, reconcileHistory, rebindThreadKey, adoptThread, deleteThread, restoreThread, backfillThreads } from "@/lib/chat-sync";
 import { recordIntake, flushIntake } from "@/lib/census-intake";
 import { supabase } from "@/lib/supabase";
 
@@ -27,11 +28,13 @@ function mdToHtml(src: string): string {
   for (const raw of lines) {
     const line = raw.trimEnd();
     let m;
-    if ((m = line.match(/^#{1,3}\s+(.*)/))) { closeList(); html += `<div style="font-weight:600;margin:.6em 0 .2em">${inline(m[1])}</div>`; }
-    else if ((m = line.match(/^\s*[-*]\s+(.*)/))) { if (list !== "ul") { closeList(); html += '<ul style="margin:.3em 0 .3em 1.1em;list-style:disc">'; list = "ul"; } html += `<li style="margin:.15em 0">${inline(m[1])}</li>`; }
-    else if ((m = line.match(/^\s*\d+\.\s+(.*)/))) { if (list !== "ol") { closeList(); html += '<ol style="margin:.3em 0 .3em 1.2em;list-style:decimal">'; list = "ol"; } html += `<li style="margin:.15em 0">${inline(m[1])}</li>`; }
-    else if (line === "") { closeList(); html += '<div style="height:.5em"></div>'; }
-    else { closeList(); html += `<div>${inline(line)}</div>`; }
+    // Gemini/Meta-grade rhythm: headings breathe above, lists get real spacing, paragraphs
+    // separate. The old values (.15em li, .3em lists) packed everything into a dense block.
+    if ((m = line.match(/^#{1,3}\s+(.*)/))) { closeList(); html += `<div style="font-weight:660;font-size:1.02em;letter-spacing:-.014em;margin:1.15em 0 .3em">${inline(m[1])}</div>`; }
+    else if ((m = line.match(/^\s*[-*]\s+(.*)/))) { if (list !== "ul") { closeList(); html += '<ul style="margin:.45em 0 .6em 1.05em;list-style:disc">'; list = "ul"; } html += `<li style="margin:.3em 0;padding-left:.16em;text-wrap:pretty">${inline(m[1])}</li>`; }
+    else if ((m = line.match(/^\s*\d+\.\s+(.*)/))) { if (list !== "ol") { closeList(); html += '<ol style="margin:.45em 0 .6em 1.15em;list-style:decimal">'; list = "ol"; } html += `<li style="margin:.3em 0;padding-left:.16em;text-wrap:pretty">${inline(m[1])}</li>`; }
+    else if (line === "") { closeList(); html += '<div style="height:.34em"></div>'; }
+    else { closeList(); html += `<div style="margin:.5em 0;text-wrap:pretty">${inline(line)}</div>`; }
   }
   closeList();
   return html;
@@ -46,33 +49,34 @@ function mdToHtml(src: string): string {
 // If the live brain/tunnel is unreachable, we still answer from this instantly (train by adding rows).
 const KB: [RegExp, string][] = [
   [/(what|whats|about).{0,8}0n1x|^0n1x/i, "0n1x is an ecosystem for AI agents — a neutral, cryptographic layer where agents get an identity, verify each other, transact, and earn. The promise: **verify before you pay.** Every record is Ed25519/EIP-191 signed and publicly recomputable."],
-  [/rhinogent|the agent you own/i, "Rhinogent is **the agent you own** — a self-custody identity + wallet you mint in your browser (your keys never leave your device). It lives inside 0n1x and earns tokens for verified work."],
-  [/verify before|before .{0,4}pay|counterparty/i, "Before an agent settles a payment it asks 0n1x whether the counterparty is real and gets a **signed verdict** (PROCEED / REVIEW / HOLD). Payment rails verify the payment; 0n1x verifies the thing you are paying for."],
+  [/rhinogent|the agent you own/i, "Rhinogent is **the agent you own** — a self-custody identity and wallet you mint in your browser, where your keys never leave your device. It earns tokens for verified work."],
+  [/verify before|before .{0,4}pay|counterparty/i, "Before an agent settles a payment, it checks whether the counterparty is real and gets back a **signed verdict** (PROCEED / REVIEW / HOLD). Payment rails verify the payment; this verifies the thing you're paying for."],
   [/earn|token|reward|make money|get paid/i, "Your agent **earns** TOKENs for contributing data that verifies — signed, matching the census. Good verified data pays; bad or unsigned data earns nothing. New accounts get a free 500-token grant."],
-  [/self.?custody|keys|wallet|mint/i, "**Self-custody:** your keys are generated in your browser and never leave your device — 0n1x holds zero keys, so there is nothing to seize, freeze, or leak."],
-  [/how many|census|count|registered|how big/i, "The 0n1x census has **2,900,000+** registered agents and climbing, with **147** that clear all four verification legs. It is Merkle-rooted, so anyone can recompute the count from public shards."],
+  [/self.?custody|keys|wallet|mint/i, "**Self-custody:** your keys are generated in your browser and never leave your device. Nobody else holds them, so there's nothing to seize, freeze, or leak."],
+  [/how many|census|count|registered|how big/i, "The census has **2,900,000+** registered agents and climbing, with **147** that clear all four verification legs. It's Merkle-rooted, so anyone can recompute the count from public shards."],
   [/how.{0,12}verify|prove.{0,8}agent|is it real/i, "AI agents verify each other cryptographically: (1) signed identity (did:pkh, ERC-8004), (2) proof of what it actually did, (3) a liveness challenge, (4) verify-before-you-pay on the counterparty, (5) spend caps — not human paperwork."],
   [/pro|signed|web|premium/i, "**Pro** answers are grounded in a live web search, cryptographically signed (Ed25519), and come with a ProofCard you can verify yourself. Switch the toggle to Pro for those."],
-  [/stored|store|saved|save.{0,6}chat|privacy|retain|kept|logged/i, "**Privacy:** Normal-tier conversations are **not stored on any 0n1x server**. Your chat stays in your own browser and syncs to your account only when you are signed in. 0n1x custodies zero keys and keeps no server-side copy of Normal chats."],
-  [/\bcli\b|npm|install|command.?line|on1x init|@0n1x|package/i, "There is **no CLI or npm package**. 0n1x is fetch-first and browser-native: mint a self-custody agent at rhinogent.com/dashboard and read the signed feeds (census_manifest.json, facts.json) over plain HTTP. Any `npm install @0n1x/...` command is not real."],
-  [/cutoff|training data|knowledge.{0,6}(date|cut)/i, "I answer 0n1x questions from signed, live facts, not a frozen training snapshot. For live web-grounded answers like today's date or current headlines, switch to **Pro**."],
-  [/hello|^hi|^hey|who are you|help/i, "Hey — I am the 0n1x assistant. Ask me about the ecosystem, Rhinogent agents, verify-before-you-pay, self-custody, or how agents earn. For a live, signed answer, switch to **Pro**."],
+  [/stored|store|saved|save.{0,6}chat|privacy|retain|kept|logged/i, "**Privacy:** Normal-tier conversations are **not stored on our servers**. Your chat stays in your own browser and syncs to your account only when you're signed in. We keep no server-side copy of Normal chats and hold none of your keys."],
+  [/\bcli\b|npm|install|command.?line|on1x init|@0n1x|package/i, "There's **no CLI or npm package** — it's fetch-first and browser-native. Mint a self-custody agent at rhinogent.com/dashboard and read the signed feeds (census_manifest.json, facts.json) over plain HTTP. Any `npm install @0n1x/...` command is not real."],
+  [/cutoff|training data|knowledge.{0,6}(date|cut)/i, "On Normal I answer from signed, live facts rather than a frozen training snapshot. For live web-grounded answers like today's date or current headlines, switch to **Pro**."],
+  [/\bnews\b|headline|latest|what.{0,12}happening|today.{0,10}(update|story)/i, "### Live news needs Pro\n\nOn **Normal** I answer from signed facts held on-device — I have no web access, so I can't fetch today's headlines and I won't guess at them.\n\n**Pro** does exactly this:\n\n- searches the live web at the moment you ask\n- cites every source it used\n- returns an **Ed25519-signed ProofCard** you can recompute yourself\n\nFlip the **Pro** toggle above and ask again — try *\"a2a news\"* or *\"agent economy news\"*.\n\nOr ask me anything about 0n1x, agent verification, earning, or self-custody and I'll answer here on Normal."],
+  [/^\s*(hello|hi|hey|yo|sup)\b|who are you|what can you do/i, "Hey — I'm your assistant. Ask me anything: explain a concept, help with writing or code, plan something, or think a problem through. What's up?"],
 ];
 // FABRICATION GUARD — a raw LLM confidently invents 0n1x specifics (a fake CLI, a wrong storage
 // policy, a stale knowledge cutoff). For a TRUST product that is a brand liability, so any Normal
 // reply tripping these is replaced with the correct grounded fact BEFORE it renders.
 function groundGuard(reply: string): string {
   const bad: [RegExp, string][] = [
-    [/npm\s+install|@0n1x\/|on1x\s+(init|pay|earn|submit)|install\s+-g|\bon1x\s+cli\b/i, "There is **no CLI or npm package** for 0n1x. It is fetch-first and browser-native: mint an agent at rhinogent.com/dashboard and read the signed JSON feeds over plain HTTP. Any `npm install @0n1x/...` command is not real."],
-    [/stored?\s+(on|in|at)\s+(the\s+)?0n1x|0n1x\s+servers?|we\s+store\s+your\s+(chat|conversation|message)|server[- ]side\s+(copy|storage)\s+of\s+your/i, "**Privacy:** Normal-tier conversations are **not** stored on any 0n1x server. Your chat stays in your own browser and only syncs to your account if you sign in. 0n1x keeps no server-side copy of Normal chats and custodies zero keys."],
-    [/knowledge\s+cutoff|training\s+data\s+(is\s+)?(from|up\s+to)|December\s+2023|as\s+of\s+2023/i, "For live, current answers like today's date or the latest headlines, switch to **Pro** (web-grounded and signed). On Normal I answer 0n1x questions from signed facts."],
+    [/npm\s+install|@0n1x\/|on1x\s+(init|pay|earn|submit)|install\s+-g|\bon1x\s+cli\b/i, "There's **no CLI or npm package** — it's fetch-first and browser-native. Mint an agent at rhinogent.com/dashboard and read the signed JSON feeds over plain HTTP. Any `npm install @0n1x/...` command is not real."],
+    [/stored?\s+(on|in|at)\s+(the\s+)?0n1x|0n1x\s+servers?|we\s+store\s+your\s+(chat|conversation|message)|server[- ]side\s+(copy|storage)\s+of\s+your/i, "**Privacy:** Normal-tier conversations are **not** stored on our servers. Your chat stays in your own browser and only syncs to your account if you sign in. We keep no server-side copy of Normal chats and hold none of your keys."],
+    [/knowledge\s+cutoff|training\s+data\s+(is\s+)?(from|up\s+to)|December\s+2023|as\s+of\s+2023/i, "For live, current answers like today's date or the latest headlines, switch to **Pro** (web-grounded and signed). On Normal I answer from signed facts."],
   ];
   for (const [re, fix] of bad) if (re.test(reply)) return fix;
   return reply;
 }
 function localAnswer(q: string): string {
   for (const [re, a] of KB) if (re.test(q)) return a;
-  return "I am 0n1x's assistant. I can explain the ecosystem, how agents verify each other, verify-before-you-pay, self-custody identity, and how agents earn — ask me any of those. For a live, signed answer, switch to **Pro**.";
+  return "Happy to help — give me a little more to work with and I'll go deep.\n\n**Strong on Normal:**\n\n- 0n1x, Rhinogent, agent identity and verification\n- earning, tokens, self-custody and keys\n- explaining a concept, writing, code, or planning something through\n\n**Switch to Pro** for anything live — news, today's date, current prices — where answers come web-grounded and signed.";
 }
 
 
@@ -137,7 +141,30 @@ const GUEST_FREE_MESSAGES = 3;
 // delete. Pointer events cover touch AND mouse; `touch-action: pan-y` keeps the
 // list scrolling vertically while horizontal drags belong to us.
 const SWIPE_OPEN_W = 76;   // px of red revealed in the "armed" position
+// Swipe-to-delete is a TOUCH gesture only. On a fine pointer (mouse/trackpad) it
+// (a) feels "squishy" — a click that drifts a few px reads as a drag — and
+// (b) the overflow-hidden it needs CLIPS the desktop ⋯ dropdown to nothing.
+// So on desktop we skip the whole apparatus: plain row, no clip, ⋯ menu shows.
+function useCoarsePointer() {
+  const [coarse, setCoarse] = useState(false);
+  useEffect(() => {
+    const m = window.matchMedia("(pointer: coarse)");
+    const on = () => setCoarse(m.matches);
+    on(); m.addEventListener?.("change", on);
+    return () => m.removeEventListener?.("change", on);
+  }, []);
+  return coarse;
+}
 function SwipeRow({ open, onOpen, onClose, onDelete, children }: {
+  open: boolean; onOpen: () => void; onClose: () => void; onDelete: () => void; children: ReactNode;
+}) {
+  const coarse = useCoarsePointer();
+  // Desktop (fine pointer): render children plain — no swipe handlers, no
+  // overflow-hidden. Deletion happens through the ⋯ menu, which is now unclipped.
+  if (!coarse) return <div className="group/item relative">{children}</div>;
+  return <SwipeRowTouch open={open} onOpen={onOpen} onClose={onClose} onDelete={onDelete}>{children}</SwipeRowTouch>;
+}
+function SwipeRowTouch({ open, onOpen, onClose, onDelete, children }: {
   open: boolean; onOpen: () => void; onClose: () => void; onDelete: () => void; children: ReactNode;
 }) {
   const [dx, setDx] = useState(0);
@@ -227,6 +254,8 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
   const [about, setAbout] = useState(false);       // the "?" explainer on the empty state (default hidden)
   const [proofOpen, setProofOpen] = useState<Record<number, boolean>>({});   // which messages' proof chips are expanded
   const [agent, setAgent] = useState<{ callsign: string; address: string; nick?: string } | null>(null);   // the verified agent handling THIS chat (renameable, persisted)
+  // PEER MODE: your agent ⇄ ANOTHER agent, charged per answer. Set from /chat?peer=<callsign>&pa=<addr>&price=<n>.
+  const [peer, setPeer] = useState<{ callsign: string; address: string; price: number } | null>(null);
   const poolRef = useRef<{ callsign: string; address: string }[]>([]);
   const kbRef = useRef<{ q: string; a: string }[]>([]);   // the full trained KB (chat_kb.json), fetched once
   const [myAgents, setMyAgents] = useState<{ callsign: string; address: string; nick?: string }[]>([]);   // the user's MINTED agents (from the dashboard) — selectable in chat
@@ -318,6 +347,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
       const next = addAgent(cur);
       const minted = next[next.length - 1];
       setMyAgents(next.map((x) => ({ callsign: x.id, address: x.address, nick: x.label })));
+      pushAgents(next).catch(() => {});   // ← sync the chat-minted agent to the account (shows on every device)
       switchAgent({ callsign: minted.id, address: minted.address, nick: minted.label });
     } catch (e) {
       alert(`Minting hit an error — nothing was charged. Please try again.\n\n${e instanceof Error ? e.message : String(e)}`);
@@ -356,7 +386,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
   useEffect(() => {
     // restore the persisted identity first — same agent after refresh
     try { const s = localStorage.getItem("rhinogent.chat.agent"); if (s) setAgent(JSON.parse(s)); } catch { /**/ }
-    fetch("/census2/shard-000.json", { cache: "no-store" }).then((r) => r.json()).then((arr) => {
+    feedFetch("/census2/shard-000.json").then((r) => r.json()).then((arr) => {
       poolRef.current = (arr || []).slice(0, 400).map((x: { callsign: string; address: string }) => ({ callsign: x.callsign, address: x.address }));
       setAgent((cur) => cur || assignAgent());
     }).catch(() => {});
@@ -378,33 +408,60 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
       } catch {}
     };
     refresh();
-    // Best-effort account pull (encrypted, cross-device) + refresh on login sync.
-    pullAgents().then(refresh).catch(() => {});
-    // OAuth fallback: no password-derived key → the encrypted pull can't decrypt. The
-    // PUBLIC mirror (agents table) still knows the user's callsign/address, so chat can
-    // keep the same identity on any device (signing still needs the key-holding device).
+    // CROSS-DEVICE AGENT SYNC (the real fix): the chat and the dashboard must show the SAME agents
+    // on every device. Push this device's local (key-holding) agents up, then MERGE the account's
+    // public mirror (local ∪ mirror, by address) so agents minted on ANOTHER device appear here too.
+    // The old code bailed whenever a local agent existed, so the chat's pool agents and the
+    // dashboard's minted agents never reconciled — two separate stores. accountAgents() unifies them.
     if (!guest) {
-      supabase.from("agents").select("callsign,address,label").order("index", { ascending: true }).limit(3)
-        .then(({ data }) => {
-          if (!data?.length || loadAgents().length) return;
-          const remote = data.map((r) => ({
-            callsign: String(r.callsign), address: String(r.address),
-            nick: r.label ? String(r.label) : undefined,
-          }));
-          setMyAgents((cur) => (cur.length ? cur : remote));
+      (async () => {
+        try {
+          const local = loadAgents();
+          if (local.length) await pushAgents(local);              // chat-minted agents now reach the account
+          await pullAgents().catch(() => {});                     // decrypt keys where a password session exists
+          const merged = await accountAgents();                   // local (keys) ∪ account mirror (identity)
+          const list = merged.map((a) => ({ callsign: a.id, address: a.address, nick: a.label }));
+          if (list.length) setMyAgents(list);
           setAgent((cur) => {
-            if (cur && remote.some((m) => m.address.toLowerCase() === cur.address.toLowerCase())) return cur;
-            saveAgent(remote[0]);
-            return remote[0];
+            if (cur && list.some((m) => m.address.toLowerCase() === cur.address.toLowerCase())) return cur;
+            if (list.length) { saveAgent(list[0]); return list[0]; }
+            return cur;
           });
-        });
+        } catch { /* best-effort */ }
+      })();
+    } else {
+      pullAgents().then(refresh).catch(() => {});
     }
     window.addEventListener("agents:synced", refresh);
     return () => window.removeEventListener("agents:synced", refresh);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  // MINT→CHAT PORTAL: /chat?agent=<callsign>&a=<address> selects THAT specific agent to chat as,
+  // the moment its identity is available on this device. Runs once. Lets "Chat with this agent"
+  // from the dashboard (and a ProofCard link) drop you straight into a conversation as that agent.
+  const urlAgentApplied = useRef(false);
+  useEffect(() => {
+    if (urlAgentApplied.current) return;
+    let want = { call: "", addr: "" };
+    try { const sp = new URLSearchParams(window.location.search); want = { call: sp.get("agent") || "", addr: (sp.get("a") || "").toLowerCase() }; } catch { /**/ }
+    if (!want.call && !want.addr) return;
+    const match = myAgents.find((m) => (want.addr && m.address.toLowerCase() === want.addr) || (want.call && m.callsign === want.call));
+    if (match) { urlAgentApplied.current = true; switchAgent(match); }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [myAgents]);
   useEffect(() => { fetch("/chat_kb.json", { cache: "force-cache" }).then((r) => r.json()).then((d) => { kbRef.current = Array.isArray(d) ? d : []; }).catch(() => {}); }, []);
   useEffect(() => { resolvePortal(); }, []);
+  // PEER MODE resolve — /chat?peer=<callsign>&pa=<addr>&price=<n> opens a paid conversation with
+  // THAT agent (charged per answer). Peer answers ride the grounded + signed tier, so we flip Pro on.
+  useEffect(() => {
+    try {
+      const sp = new URLSearchParams(window.location.search);
+      const call = sp.get("peer") || "";
+      const addr = (sp.get("pa") || "").toLowerCase();
+      const price = Math.max(1, parseInt(sp.get("price") || "0", 10) || 0);
+      if ((call || addr) && price) { setPeer({ callsign: call || "agent", address: addr, price }); setPro(true); }
+    } catch { /**/ }
+  }, []);
   useEffect(() => {
     getWallet().then((w) => setBalance(w.balance));
     const onCh = (e: Event) => setBalance((e as CustomEvent).detail.balance);
@@ -444,10 +501,75 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
       grant(amt, `daily check-in day ${streak}`).then(setBalance);
     } catch { /**/ }
   }
-  useEffect(() => { scroller.current?.scrollTo(0, scroller.current.scrollHeight); }, [msgs, busy]);
+  // STICK-TO-BOTTOM (not force-to-bottom): the old effect slammed the scroller to the bottom on
+  // EVERY msgs/busy change, so reading back through a long answer yanked you down mid-scroll.
+  // Now we only follow when you're already at the bottom; scroll up and we let go until you return.
+  const stickRef = useRef(true);
+  const [atBottom, setAtBottom] = useState(true);   // drives the "jump to latest" pill
+  // DeepSeek-style: on send, pin the new QUESTION to the top of the viewport and let the answer
+  // stream into the space below it (instead of chasing the bottom). We anchor the last user bubble.
+  const lastUserRef = useRef<HTMLDivElement | null>(null);
+  const contentRef = useRef<HTMLDivElement | null>(null);
+  const userCountRef = useRef(0);
+  useEffect(() => {
+    const el = scroller.current;
+    if (!el) return;
+    const near = () => el.scrollHeight - el.scrollTop - el.clientHeight < 80;
+    const onScroll = () => { const b = near(); stickRef.current = b; setAtBottom(b); };
+    // touch/wheel = the user grabbing the transcript → STOP the auto-push immediately (don't fight them)
+    const onGrab = () => { stickRef.current = false; setAtBottom(false); };
+    el.addEventListener("scroll", onScroll, { passive: true });
+    el.addEventListener("touchstart", onGrab, { passive: true });
+    el.addEventListener("wheel", onGrab, { passive: true });
+    return () => { el.removeEventListener("scroll", onScroll); el.removeEventListener("touchstart", onGrab); el.removeEventListener("wheel", onGrab); };
+  }, []);
+  const jumpToLatest = () => {
+    const el = scroller.current;
+    if (el) el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+    stickRef.current = true; setAtBottom(true);
+  };
+  // Follow the growing answer down — but ONLY on real content growth (ResizeObserver fires when the
+  // transcript resizes, not every frame), and ONLY while you're stuck to the bottom. The old
+  // per-frame rAF loop wrote scrollTop 60×/s and fought your finger on the way down (the jank).
+  useEffect(() => {
+    const el = scroller.current, content = contentRef.current;
+    if (!el || !content) return;
+    const follow = () => {
+      if (!stickRef.current) return;                     // grabbed/scrolled up → let go, don't fight
+      const bottom = el.scrollHeight - el.clientHeight;
+      if (el.scrollTop < bottom - 1) el.scrollTop = bottom;
+    };
+    const ro = new ResizeObserver(follow);
+    ro.observe(content);
+    return () => ro.disconnect();
+  }, []);
+  // DeepSeek anchor: when a NEW user message lands, stop chasing the bottom and smooth-scroll that
+  // question to the top of the transcript so the answer streams into the room below it.
+  const lastUserIdx = msgs.reduce((idx, m, i) => (m.role === "user" ? i : idx), -1);
+  useEffect(() => {
+    const count = msgs.reduce((n, m) => (m.role === "user" ? n + 1 : n), 0);
+    if (count > userCountRef.current) {
+      userCountRef.current = count;
+      stickRef.current = false;   // pin the question, don't yank to bottom while it answers
+      requestAnimationFrame(() => {
+        const el = scroller.current, node = lastUserRef.current;
+        if (!el || !node) return;
+        const top = node.getBoundingClientRect().top - el.getBoundingClientRect().top + el.scrollTop;
+        el.scrollTo({ top: Math.max(0, top - 12), behavior: "smooth" });
+        setAtBottom(false);
+      });
+    } else {
+      userCountRef.current = count;
+    }
+  }, [msgs]);
   useEffect(() => { loadHistory(); }, []);   // populate the sidebar chat list
   useEffect(() => { flushIntake(); }, []);   // drain any opted-in census-intake claims buffered while offline (no-op when opted out)
   useEffect(() => () => { if (undoTimer.current) clearTimeout(undoTimer.current); }, []);   // don't fire the undo-expiry after unmount
+
+  // Live-refresh support: keep the OPEN conversation's identity + length readable inside the
+  // stable realtime handler below (its effect deps are [guest], so it can't see fresh state).
+  const openRef = useRef<{ addr?: string; len: number }>({ len: 0 });
+  openRef.current = { addr: agent?.address, len: msgs.length };
 
   // ACCOUNT RESTORE: pull the signed-in user's threads (chats/messages tables) and surface
   // any this device hasn't seen in the sidebar — a returning user SEES their prior chats on
@@ -479,6 +601,25 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
     const { data: authSub } = supabase.auth.onAuthStateChange((_e, session) => { if (session) run(); });
     // NEAR-REAL-TIME: subscribe to the signed-in user's chats changes so deletes/inserts on
     // another device propagate live (best-effort — silently no-ops if Realtime is disabled).
+    // LIVE OPEN-CHAT MIRROR: when a message change lands for the chat we currently have open,
+    // adopt the account's copy into the visible thread — so an answer produced on one device
+    // shows up in the SAME open conversation on the other, without a manual reload. Only adopts
+    // when the remote copy has MORE turns than we do locally, so it never clobbers an in-progress
+    // local answer (the device that authored it already holds the newest bytes).
+    const refreshOpen = async () => {
+      try {
+        const { addr, len } = openRef.current;
+        const map = JSON.parse(localStorage.getItem("rhinogent.chatsync.map.v1") || "{}");
+        const tk = localStorage.getItem(`rhinogent.chat.tkey::${addr || "guest"}`);
+        const uuid = tk ? map[tk] : null;
+        if (!uuid) return;
+        const threads = await pullThreads(30);
+        const t = threads.find((x) => x.id === uuid);
+        if (t && t.msgs.length > len) {
+          setMsgs(t.msgs.map((m) => ({ role: m.role, text: m.role === "assistant" ? groundGuard(m.text) : m.text })));
+        }
+      } catch { /* best-effort */ }
+    };
     let channel: ReturnType<typeof supabase.channel> | null = null;
     (async () => {
       try {
@@ -488,7 +629,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
         channel = supabase
           .channel("chats-" + uid)
           .on("postgres_changes", { event: "*", schema: "public", table: "chats", filter: `user_id=eq.${uid}` }, () => run())
-          .on("postgres_changes", { event: "*", schema: "public", table: "messages", filter: `user_id=eq.${uid}` }, () => run())
+          .on("postgres_changes", { event: "*", schema: "public", table: "messages", filter: `user_id=eq.${uid}` }, () => { run(); refreshOpen(); })
           .subscribe();
       } catch { /* realtime optional */ }
     })();
@@ -638,8 +779,15 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
       if (pro || used >= GUEST_FREE_MESSAGES) { setGate(true); return; }
       consumeGuest = true;
     }
-    // PRO burns a token (full tools + web + signed). NORMAL is free (clean conversational).
-    if (pro) {
+    // PEER MODE: pay THAT agent per answer. PRO burns a token (full tools + web + signed).
+    // NORMAL is free (clean conversational).
+    if (peer) {
+      const pay = await spend(peer.price, `chat with ${peer.callsign}`);
+      if (!pay.ok) {
+        setMsgs((m) => [...m, { role: "assistant", text: `Each answer from **${peer.callsign}** costs ${peer.price} TOKEN and your balance is ${pay.balance}. Tap **Top up** to keep the conversation going.` }]);
+        return;
+      }
+    } else if (pro) {
       const pay = await spend(PRICES.chatMessage, "pro chat");
       if (!pay.ok) {
         setMsgs((m) => [...m, { role: "assistant", text: `Pro mode costs ${PRICES.chatMessage} TOKEN per message and your balance is ${pay.balance}. Switch to **Normal** (free) or tap **Top up**.` }]);
@@ -676,9 +824,13 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
           .slice(0, 6);
         const cnt = srcs.length ? ` · ${srcs.length} source${srcs.length > 1 ? "s" : ""}` : "";
         const links = srcs.map((u: string) => { try { return `\n- [${new URL(u).hostname}](${u})`; } catch { return ""; } }).join("");
-        out += `\n\n🔏 Signed (Ed25519) · proof \`${d.proof.id}\`${cnt} · [verify](https://onyx-pro.onyxagntc.workers.dev)${links}`;
+        out += `\n\n🔏 Verified · proof \`${d.proof.id}\`${cnt} · [verify](https://onyx-pro.onyxagntc.workers.dev)${links}`;
       }
       out += factChips(d);
+      // PEER MODE: this answer is served on ${peer}'s behalf on the shared grounded+signed tier.
+      // Honest: per-agent engines (each agent running its OWN model) arrive with the Agents API —
+      // until then we don't pretend the peer independently authored it.
+      if (peer) out += `\n\n*— ${peer.callsign} · ${peer.price} TOKEN · answered on the shared engine (per-agent models coming).*`;
       return out || "…";
     }
     // Worker = the always-on edge LLM (never sleeps). Used as Normal's brain and as Pro's
@@ -690,7 +842,133 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
       const d = await r.json();
       return groundGuard(String(d.reply || "").replace(/<\/?(web_search|tool_call|function|tool|invoke)[^>]*>/gi, "").trim()) + factChips(d);
     }
+    // REAL STREAMING (Normal tier): render tokens the instant they arrive — true low time-to-first-
+    // token, not a typewriter over an already-finished answer. Pro/peer keep the signed non-stream
+    // path (Pro streaming ships next, with a pending proof pill). Any failure falls through cleanly.
+    async function streamNormal(): Promise<boolean> {
+      if (pro || peer) return false;
+      let r: Response;
+      try {
+        r = await fetch(WORKER, { method: "POST", headers: { "content-type": "application/json" },
+          body: JSON.stringify({ message: q, history: msgs.slice(-8).map((m) => ({ role: m.role, content: m.text })), stream: true }) });
+      } catch { return false; }
+      if (!r.ok || !r.body) return false;
+      const myGen = genRef.current;
+      const idx = { i: 0 };
+      let created = false, acc = "", buf = "";
+      let metaFacts: unknown[] | null = null, failed = false;
+      const reader = r.body.getReader(); const dec = new TextDecoder();
+      const handle = (chunk: string) => {
+        const parts = (buf + chunk).split("\n\n"); buf = parts.pop() || "";
+        for (const part of parts) {
+          const ev = /event: (\w+)/.exec(part)?.[1];
+          const dm = part.slice(part.indexOf("data: ") + 6);
+          if (!ev || part.indexOf("data: ") < 0) continue;
+          let obj: { t?: string; facts?: unknown[]; detail?: string };
+          try { obj = JSON.parse(dm); } catch { continue; }
+          if (ev === "delta" && typeof obj.t === "string") {
+            acc += obj.t;
+            if (!created) { created = true; setBusy(false); setMsgs((m) => { idx.i = m.length; return [...m, { role: "assistant", text: acc }]; }); }
+            else setMsgs((m) => m.map((mm, k) => (k === idx.i ? { ...mm, text: acc } : mm)));
+          } else if (ev === "meta") { if (Array.isArray(obj.facts)) metaFacts = obj.facts; }
+          else if (ev === "error") failed = true;
+        }
+      };
+      try {
+        for (;;) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          if (genRef.current !== myGen) { try { await reader.cancel(); } catch { /**/ } return true; }
+          handle(dec.decode(value, { stream: true }));
+        }
+      } catch { if (!created) return false; }
+      if (!created || failed) return false;   // nothing usable streamed — let the fallback answer
+      // finalize: apply the Normal ground-guard + append signed FactChips from the meta frame
+      let finalText = groundGuard(acc.replace(/<\/?(web_search|tool_call|function|tool|invoke)[^>]*>/gi, "").trim());
+      if (metaFacts) finalText += factChips({ facts: metaFacts as Parameters<typeof factChips>[0]["facts"] });
+      if (genRef.current === myGen) setMsgs((m) => m.map((mm, k) => (k === idx.i ? { ...mm, text: finalText } : mm)));
+      setConn("ok");
+      recordIntake({ agentAddr: agent?.address ?? null, mode: "normal", role: "assistant", text: finalText, grounded: false });
+      return true;
+    }
+    // Build the signed-proof annotation exactly like the non-stream ask() does (proof pill + sources
+    // + FactChips + peer attribution), so a streamed Pro answer reads identically to a non-streamed one.
+    function proofAnnotation(d: { proof?: { id?: string }; sources?: unknown[]; facts?: unknown[] }): string {
+      let out = "";
+      if (d.proof) {
+        const srcs = (Array.isArray(d.sources) ? d.sources : [])
+          .map((s) => (typeof s === "string" ? s : (s as { url?: string })?.url || ""))
+          .filter((u: string) => /^https?:\/\//.test(u)).slice(0, 6);
+        const cnt = srcs.length ? ` · ${srcs.length} source${srcs.length > 1 ? "s" : ""}` : "";
+        const links = srcs.map((u: string) => { try { return `\n- [${new URL(u).hostname}](${u})`; } catch { return ""; } }).join("");
+        out += `\n\n🔏 Verified · proof \`${d.proof.id}\`${cnt} · [verify](https://onyx-pro.onyxagntc.workers.dev)${links}`;
+      }
+      out += factChips(d as Parameters<typeof factChips>[0]);
+      if (peer) out += `\n\n*— ${peer.callsign} · ${peer.price} TOKEN · answered on the shared engine (per-agent models coming).*`;
+      return out;
+    }
+    // REAL STREAMING (Pro / peer): stream the DRAFT with a pending "signing…" pill, then the worker's
+    // terminal `proof` frame carries the AUTHORITATIVE (possibly critic-revised) signed text — we
+    // replace the draft with it and show it signed. If the stream ends with NO proof frame, the answer
+    // was never sealed: REFUND (the charge already happened) and show it honestly as unsigned.
+    async function streamPro(): Promise<boolean> {
+      let r: Response;
+      try {
+        r = await fetch(PRO_WORKER, { method: "POST", headers: { "content-type": "application/json" },
+          body: JSON.stringify({ message: q, history: msgs.slice(-8).map((m) => ({ role: m.role, content: m.text })), stream: true }) });
+      } catch { return false; }
+      if (!r.ok || !r.body) return false;
+      if (!(r.headers.get("content-type") || "").includes("text/event-stream")) return false;  // worker fell back to JSON → let ask() handle
+      const myGen = genRef.current;
+      const idx = { i: 0 };
+      let created = false, got = false, acc = "", buf = "";
+      const reader = r.body.getReader(); const dec = new TextDecoder();
+      const paint = (t: string) => {
+        if (!created) { created = true; setBusy(false); setMsgs((m) => { idx.i = m.length; return [...m, { role: "assistant", text: t }]; }); }
+        else if (genRef.current === myGen) setMsgs((m) => m.map((mm, k) => (k === idx.i ? { ...mm, text: t } : mm)));
+      };
+      const handle = (chunk: string) => {
+        const parts = (buf + chunk).split("\n\n"); buf = parts.pop() || "";
+        for (const part of parts) {
+          if (part.indexOf("data: ") < 0) continue;
+          const ev = /event: (\w+)/.exec(part)?.[1];
+          let obj: { t?: string; reply?: string; proof?: { id?: string }; sources?: unknown[]; facts?: unknown[] };
+          try { obj = JSON.parse(part.slice(part.indexOf("data: ") + 6)); } catch { continue; }
+          if (ev === "delta" && typeof obj.t === "string") { acc += obj.t; paint(acc + "\n\n*⏳ signing on completion…*"); }
+          else if (ev === "proof") {
+            got = true;
+            const finalText = (obj.reply || acc) + proofAnnotation(obj);
+            paint(finalText);
+            recordIntake({ agentAddr: agent?.address ?? null, mode: "pro", role: "assistant", text: obj.reply || acc, grounded: true });
+          }
+        }
+      };
+      try {
+        for (;;) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          if (genRef.current !== myGen) { try { await reader.cancel(); } catch { /**/ } return true; }
+          handle(dec.decode(value, { stream: true }));
+        }
+      } catch { if (!created) return false; }
+      if (!created) return false;   // never opened a stream — fall through to the non-stream signed path
+      if (!got) {
+        // MISSING PROOF → the answer was never sealed. Refund the charge and mark it unsigned (honest).
+        if (!guest) { try { grant(peer ? peer.price : PRICES.chatMessage, "pro refund (signature didn't complete)").then(setBalance); } catch { /**/ } }
+        paint(acc + "\n\n*Signature didn't complete — your token was refunded; treat this answer as unsigned.*");
+      }
+      setConn("ok");
+      return true;
+    }
     try {
+      if ((pro || peer) && await streamPro()) { setBusy(false); return; }
+      if (await streamNormal()) {
+        if (consumeGuest) {
+          try { const used = parseInt(localStorage.getItem("rhinogent.chat.guestUsed") || "0", 10) || 0; localStorage.setItem("rhinogent.chat.guestUsed", String(used + 1)); } catch { /**/ }
+        }
+        setBusy(false);
+        return;
+      }
       let text = "";
       try { text = await ask(); setConn("ok"); }
       catch {
@@ -698,7 +976,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
         // DON'T face-plant to static KB: refund the premium token and answer on the always-on Worker.
         setConn("retrying");
         if (pro) {
-          if (!guest) { try { grant(PRICES.chatMessage, "pro refund (grounding offline)").then(setBalance); } catch { /**/ } }
+          if (!guest) { try { grant(peer ? peer.price : PRICES.chatMessage, "refund (grounding offline)").then(setBalance); } catch { /**/ } }
           try {
             text = await askWorker();
             if (text) text += "\n\n*Live grounding + signature are offline right now — answered on the always-on tier and your token was refunded.*";
@@ -789,8 +1067,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
           buckets[b].push(h);
         }
         const activeInHistory = activeId != null && history.some((h) => h.id === activeId);
-        const showCurrent = !activeInHistory && !q;   // hide the live row while searching
-        const currentTitle = msgs.length ? threadTitle(msgs) : "New chat";
+        const showCurrent = !activeInHistory && !q;   // (empty-state hint uses this)
 
         const Row = (h: HistItem) => (
           <SwipeRow key={h.id} open={swipeId === h.id}
@@ -831,16 +1108,8 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
 
         return (
         <div className="min-h-0 flex-1 overflow-y-auto px-1.5 pb-3 pt-1">
-          {showCurrent && (
-            <div className="mb-1 px-1">
-              <div aria-current="true" className="flex items-start gap-2 rounded-lg bg-[#3fdda0]/[.10] px-2.5 py-2">
-                <div className="min-w-0 flex-1">
-                  <span className="block truncate text-[13px] font-medium leading-snug text-foreground">{currentTitle}</span>
-                  {agent && <span className="mt-[3px] flex items-center gap-1 truncate text-[10.5px] text-muted-2"><span className="inline-block h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: "#3fdda0" }} />{agent.callsign} · now</span>}
-                </div>
-              </div>
-            </div>
-          )}
+          {/* operator: the current "· now" chat is NOT pinned at the top of the sidebar — it's
+              already the open conversation in the main view; the list below is history only. */}
           {filtered.length === 0 && (
             q ? <p className="px-3 py-4 text-center text-[12px] text-muted-2">No chats match “{chatSearch}”.</p>
               : !showCurrent && <p className="px-3 py-3 text-[12px] leading-relaxed text-muted-2">No chats yet. <span className="text-muted">Sign in on each device with the same account</span> to sync your chats everywhere.</p>
@@ -887,10 +1156,11 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
           </div>
         </div>
       )}
-      {/* desktop sidebar — logged-in only; guests get a clean single-agent preview */}
-      {!guest && <aside className="hidden md:flex">{Sidebar}</aside>}
+      {/* desktop sidebar — ALWAYS visible (history + New chat + delete). Local history for guests;
+          account-sync layers on once signed in. Never hide the chat controls behind auth. */}
+      <aside className="hidden md:flex">{Sidebar}</aside>
       {/* mobile drawer */}
-      {!guest && sidebar && (
+      {sidebar && (
         <div className="fixed inset-0 z-40 flex md:hidden">
           <style>{`@keyframes rg-drawer-in{from{transform:translateX(-100%)}to{transform:translateX(0)}}@keyframes rg-dim-in{from{opacity:0}to{opacity:1}}`}</style>
           <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" style={{ animation: "rg-dim-in .25s ease-out both" }} onClick={() => setSidebar(false)} />
@@ -955,7 +1225,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
             </div>
             </>
           ) : (
-            <span className="text-[15px] font-semibold tracking-tight text-foreground">0n1x network</span>
+            <span className="text-[15px] font-semibold tracking-tight text-foreground">Rhinogent</span>
           )}
         </div>
         {/* tier toggle — CENTERED, Gemini-style */}
@@ -978,49 +1248,98 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
 
       {/* conversation — Gemini/Kimi calm: soft user bubble, clean assistant text, roomy */}
       <div ref={scroller} className="min-h-0 flex-1 overflow-y-auto pb-4">
+        {peer && (
+          <div className="sticky top-0 z-10 mb-2 flex items-center justify-between gap-2 border-b border-border/60 bg-surface/75 px-4 py-2.5 backdrop-blur">
+            <div className="flex items-center gap-2.5">
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-accent/15 text-[14px] font-semibold text-accent">
+                {peer.callsign.charAt(0).toUpperCase()}
+              </span>
+              <div className="leading-tight">
+                <div className="flex items-center gap-1.5 text-[14px] font-semibold text-foreground">
+                  {peer.callsign}
+                  <span className="text-accent" title="Identity verified — answers are generated by the shared 0n1x engine, not a per-agent model.">✓</span>
+                </div>
+                {/* honest scope inline (not a footnote): the ✓ verifies IDENTITY, not that this
+                    callsign is its own model — every agent answers on the shared engine today */}
+                <div className="text-[11px] text-muted-2">Identity verified · shared engine · {peer.price} TOKEN / answer</div>
+              </div>
+            </div>
+            <span className="font-mono text-[11px] text-muted-2">bal {shown.toLocaleString()}</span>
+          </div>
+        )}
         {msgs.length === 0 && (
           <div className="flex h-full flex-col items-center justify-center px-4 text-center">
             <RhinoMark className="mb-5 h-11 w-11 opacity-90" />
-            <h2 className="text-[25px] font-medium tracking-tight text-foreground sm:text-[30px]">How can I help?</h2>
+            <h2 className="text-[25px] font-medium tracking-tight text-foreground sm:text-[30px]">
+              {peer ? `Chat with ${peer.callsign}` : "How can I help?"}
+            </h2>
+            {peer && <p className="mt-1 text-[12.5px] text-muted-2">Your agent talks to <b className="text-accent">{peer.callsign}</b> · {peer.price} TOKEN per answer.</p>}
             {/* ONE line — the full explainer lives behind the "?" so the chat opens clean */}
             <p className="mt-2 text-[13.5px] text-muted-2">
-              Ask anything — <span style={{ color: "#3fdda0" }} className="font-medium">Pro</span> grounds + signs every answer.{" "}
+              Ask me anything.{" "}
               <button onClick={() => setAbout((v) => !v)} aria-label="About this chat" aria-expanded={about}
                 className="ml-1 inline-flex h-5 w-5 items-center justify-center rounded-full border border-border align-middle text-[11px] text-muted-2 transition-colors hover:border-muted-2 hover:text-foreground">?</button>
             </p>
+            {/* suggested prompts — staggered fade-in; click sends immediately (empty-state lift) */}
+            <div className="mt-5 flex max-w-xl flex-wrap justify-center gap-2">
+              {[
+                "Explain a concept simply",
+                "Help me write an email",
+                "Debug some code",
+                "Plan my week",
+              ].map((s, i) => (
+                <button
+                  key={s}
+                  onClick={() => send(s)}
+                  style={{ animation: `chip-in .38s cubic-bezier(.32,.72,.24,1) both`, animationDelay: `${60 + i * 55}ms` }}
+                  className="rounded-full border border-border bg-surface/60 px-3.5 py-1.5 text-[12.5px] text-muted transition-colors hover:border-[#3fdda0]/40 hover:text-foreground"
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
             {about && (
               <div className="mt-3 max-w-md rounded-2xl border border-border bg-surface/60 p-4 text-left text-[12.5px] leading-relaxed text-muted">
                 {agent && <p><span className="text-foreground">{agent.nick || agent.callsign}</span> <span style={{ color: "#3fdda0" }}>✓</span> is a verified agent — the identity and signature are cryptographically real (not a claim about answer quality).</p>}
                 <p className={agent ? "mt-2" : ""}><span className="text-foreground">Normal</span> is free and instant. <span style={{ color: "#3fdda0" }}>Pro</span> grounds every answer in a live web search, signs it (Ed25519), and attaches a ProofCard you can verify yourself.</p>
-                <p className="mt-2 flex items-center gap-1.5 text-[11px] text-muted-2"><span className="h-1.5 w-1.5 rounded-full" style={{ background: "#3fdda0" }} /> Guardrails on · safe &amp; signed</p>
+                <p className="mt-2 flex items-center gap-1.5 text-[11px] text-muted-2"><span className="h-1.5 w-1.5 rounded-full" style={{ background: "#3fdda0" }} /> Guardrails on · safe</p>
               </div>
             )}
           </div>
         )}
-        <div className="space-y-3 sm:space-y-3.5">
+        <div ref={contentRef} className="space-y-3 sm:space-y-3.5">
           {msgs.map((m, i) => (
-            <div key={i} className={m.role === "user" ? "flex justify-end" : "group flex flex-col items-start"}>
+            <div key={i} ref={i === lastUserIdx ? lastUserRef : undefined} className={m.role === "user" ? "flex justify-end" : "group flex flex-col items-start"}>
               {m.role === "user"
-                ? <div className="max-w-[80%] whitespace-pre-wrap rounded-[18px] rounded-br-[6px] px-4 py-2.5 text-[15px] leading-relaxed shadow-[0_1px_3px_rgba(0,0,0,.1)]" style={{ background: "#3fdda0", color: "#052e1f" }}>{m.text}</div>
+                ? <div className="msg-user-in max-w-[80%] whitespace-pre-wrap rounded-[18px] rounded-br-[6px] px-4 py-2.5 text-[15px] leading-relaxed shadow-[0_1px_3px_rgba(0,0,0,.1)]" style={{ background: "#3fdda0", color: "#052e1f" }}>{m.text}</div>
                 : (() => { const [body, proof] = splitProof(m.text); return <>
-                    {/* identity chip on the FIRST reply — the named-verified-agent moment, felt */}
-                    {agent && i === msgs.findIndex((x) => x.role === "assistant") && (
-                      <a href="/census" className="mb-1.5 inline-flex items-center gap-1.5 rounded-full border border-border/70 px-2.5 py-1 text-[11px] text-muted-2 transition-colors hover:border-muted-2 hover:text-foreground">
+                    {/* PEER (agent-to-agent): name every bubble so it reads as a real multi-agent chat */}
+                    {peer ? (
+                      <span className="mb-1 ml-1.5 inline-flex items-center gap-1.5 text-[11px] font-semibold">
                         <span className="h-1.5 w-1.5 rounded-full" style={{ background: "#3fdda0" }} />
-                        Answered by <span className="text-foreground">{agent.nick || agent.callsign}</span>
-                        <span style={{ color: "#3fdda0" }}>✓</span>
-                        <span className="hidden sm:inline">· verified on the live network →</span>
-                      </a>
+                        <span className="text-accent">{peer.callsign}</span>
+                        <span className="font-normal text-muted-2">· agent</span>
+                      </span>
+                    ) : (
+                      /* identity chip on the FIRST reply — the named-verified-agent moment, felt */
+                      agent && i === msgs.findIndex((x) => x.role === "assistant") && (
+                        <a href="/census" title="Identity verified — answers are generated by the shared 0n1x engine, not a per-agent model." className="mb-1.5 inline-flex items-center gap-1.5 rounded-full border border-border/70 px-2.5 py-1 text-[11px] text-muted-2 transition-colors hover:border-muted-2 hover:text-foreground">
+                          <span className="h-1.5 w-1.5 rounded-full" style={{ background: "#3fdda0" }} />
+                          <span className="text-foreground">{agent.nick || agent.callsign}</span>
+                          <span style={{ color: "#3fdda0" }}>✓</span>
+                          <span className="hidden sm:inline">· identity verified · shared engine →</span>
+                        </a>
+                      )
                     )}
                     {(body || !proof) && (
-                      <div className="chat-md max-w-[90%] rounded-[18px] rounded-bl-[6px] border border-border/50 bg-surface/70 px-4 py-2.5 text-[15px] leading-[1.78] text-foreground shadow-[0_1px_3px_rgba(0,0,0,.05)]" dangerouslySetInnerHTML={{ __html: mdToHtml(body || m.text) }} />
+                      <div className="msg-assistant-in chat-md max-w-[90%] rounded-[18px] rounded-bl-[6px] border border-border/50 bg-surface/70 px-4 py-2.5 text-[15px] leading-[1.62] tracking-[-0.003em] text-foreground shadow-[0_1px_3px_rgba(0,0,0,.05)]" dangerouslySetInnerHTML={{ __html: mdToHtml(body || m.text) }} />
                     )}
                     {/* Pro proof — Claude-style restraint: a quiet chip, expandable on tap */}
                     {proof && (
                       <div className="mt-1 max-w-[88%]">
-                        <button onClick={() => setProofOpen((o) => ({ ...o, [i]: !o[i] }))} aria-expanded={!!proofOpen[i]}
-                          className="inline-flex items-center gap-1 rounded-full border border-border/60 px-2.5 py-1 text-[10.5px] text-muted-2 transition-colors hover:border-muted-2 hover:text-foreground">
-                          🔏 Signed{(() => { const s = proof.match(/(\d+)\s+(?:live\s+)?sources?/); return s ? ` · ${s[1]} sources` : ""; })()}
+                        <button onClick={() => setProofOpen((o) => ({ ...o, [i]: !o[i] }))} aria-expanded={!!proofOpen[i]} data-tip="Ed25519 · verify it yourself"
+                          className="signed-reveal inline-flex items-center gap-1 rounded-full border border-border/60 px-2.5 py-1 text-[10.5px] text-muted-2 transition-colors hover:border-muted-2 hover:text-foreground">
+                          Verified{(() => { const s = proof.match(/(\d+)\s+(?:live\s+)?sources?/); return s ? ` · ${s[1]} sources` : ""; })()}
                           <span className="text-[9px]">{proofOpen[i] ? "⌃" : "⌄"}</span>
                         </button>
                         {proofOpen[i] && (
@@ -1029,27 +1348,68 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
                       </div>
                     )}
                     {m.text && (
-                      <button
-                        onClick={() => { navigator.clipboard?.writeText(body || m.text); setCopied(i); setTimeout(() => setCopied(-1), 1400); }}
-                        className="mt-1 flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] text-muted-2 opacity-60 transition-all hover:bg-surface hover:text-foreground hover:opacity-100"
-                        aria-label="Copy"
-                      >
-                        {copied === i ? "✓ Copied" : "⧉ Copy"}
-                      </button>
+                      <div className="mt-1 flex items-center gap-1">
+                        <button
+                          onClick={() => { navigator.clipboard?.writeText(body || m.text); setCopied(i); setTimeout(() => setCopied(-1), 1400); }}
+                          className="flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] text-muted-2 opacity-60 transition-all hover:bg-surface hover:text-foreground hover:opacity-100"
+                          aria-label="Copy"
+                        >
+                          <span aria-label={copied === i ? "Copied" : "Copy"}>{copied === i ? "✓" : "⧉"}</span>
+                        </button>
+                        {!busy && (
+                          <button
+                            onClick={() => {
+                              // regenerate: re-run the user message that produced this answer (drop from it onward)
+                              let uidx = -1;
+                              for (let k = i - 1; k >= 0; k--) { if (msgs[k].role === "user") { uidx = k; break; } }
+                              if (uidx < 0) return;
+                              const userText = msgs[uidx].text;
+                              setMsgs(msgs.slice(0, uidx));
+                              send(userText);
+                            }}
+                            className="flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] text-muted-2 opacity-60 transition-all hover:bg-surface hover:text-foreground hover:opacity-100"
+                            aria-label="Regenerate"
+                          >
+                            ↻
+                          </button>
+                        )}
+                      </div>
                     )}
                   </>; })()}
             </div>
           ))}
           {busy && (
+            /* THINKING — rhino mark breathing + a shimmering label. Reads as the agent working,
+               not a generic spinner. Reduced-motion safe (motion-safe: gates the movement). */
             <div className="flex justify-start">
-              <span className="inline-flex items-center gap-1.5 pt-1">
-                <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-2" style={{ animationDelay: "0ms" }} />
-                <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-2" style={{ animationDelay: "150ms" }} />
-                <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-2" style={{ animationDelay: "300ms" }} />
+              <span className="inline-flex items-center gap-2.5 pt-1">
+                <span className="relative flex h-6 w-6 items-center justify-center">
+                  <span className="absolute inset-0 rounded-full bg-[#3fdda0]/15 motion-safe:animate-ping" style={{ animationDuration: "1.8s" }} aria-hidden />
+                  <RhinoMark className="relative h-4 w-4 motion-safe:animate-pulse" />
+                </span>
+                <span className="thinking-shimmer text-[12.5px] font-medium">
+                  {peer ? `${peer.callsign} is thinking` : "Thinking"}
+                </span>
+                <span className="inline-flex items-center gap-1">
+                  <span className="h-1 w-1 animate-bounce rounded-full bg-[#3fdda0]" style={{ animationDelay: "0ms" }} />
+                  <span className="h-1 w-1 animate-bounce rounded-full bg-[#3fdda0]" style={{ animationDelay: "150ms" }} />
+                  <span className="h-1 w-1 animate-bounce rounded-full bg-[#3fdda0]" style={{ animationDelay: "300ms" }} />
+                </span>
               </span>
             </div>
           )}
         </div>
+        {/* jump-to-latest — shows once you grab/scroll the transcript (auto-push paused); tap to re-follow */}
+        {!atBottom && msgs.length > 0 && (
+          <div className="pointer-events-none sticky bottom-3 z-20 flex justify-center">
+            <button
+              onClick={jumpToLatest}
+              className="pointer-events-auto flex items-center gap-1.5 rounded-full border border-border bg-surface/95 px-3.5 py-1.5 text-xs font-medium text-foreground shadow-lg backdrop-blur transition-colors hover:border-muted-2"
+            >
+              <span className="text-accent">↓</span> Jump to latest
+            </button>
+          </div>
+        )}
       </div>
 
       {/* composer — clean & professional; Pro mode adds a quiet jade cue */}
@@ -1058,7 +1418,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
           <textarea
             value={input} onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
-            rows={1} placeholder={pro ? "Ask for a signed, web-grounded answer…" : "Message 0n1x…"}
+            rows={1} placeholder={peer ? `Message ${peer.callsign}…` : "Ask anything…"}
             className="max-h-40 flex-1 resize-none bg-transparent px-2 py-2.5 text-[17px] text-foreground outline-none placeholder:text-muted-2"
           />
           <button
@@ -1069,7 +1429,9 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
           >↑</button>
         </div>
         <p className="mt-2 text-center text-[11px] text-muted-2">
-          {pro
+          {peer
+            ? <><span className="text-accent">{peer.callsign}</span> · signed answer · {peer.price} TOKEN per answer</>
+            : pro
             ? <><span style={{ color: "#3fdda0" }}>Pro</span> · signed + web-grounded · {PRICES.chatMessage} TOKEN per message</>
             : <>Normal · free · general answers</>}
         </p>

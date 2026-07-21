@@ -106,16 +106,23 @@ export function FlowGraphCanvas2D({ nodes, pulse, txs }: { nodes: Node[]; pulse:
       return [a * x1 + b * cx + c * x2, a * y1 + b * cy + c * y2];
     };
 
-    let raf = 0;
-    const draw = () => {
+    let raf = 0, lastFrame = 0;
+    const draw = (ts?: number) => {
+      raf = requestAnimationFrame(draw);
+      // LAG FIX: cap to ~30fps and pause entirely when the tab/section is hidden — the old loop
+      // redrew 120 nodes + particles at full 60fps non-stop, pinning the CPU on the Network page.
+      const t = ts || performance.now();
+      if (typeof document !== "undefined" && document.hidden) return;
+      if (t - lastFrame < 33) return;
+      lastFrame = t;
       const zoom = viewRef.current.s;
       const bg = ctx.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, Math.max(W, H) * 0.72);
-      bg.addColorStop(0, "#0d0d10");
-      bg.addColorStop(1, "#060607");
+      bg.addColorStop(0, "#ffffff");
+      bg.addColorStop(1, "#eef1f5");
       ctx.fillStyle = bg;
       ctx.fillRect(0, 0, W, H);
 
-      const ranked = nodesRef.current.slice(0, 120);
+      const ranked = nodesRef.current.slice(0, 70);
       const maxTok = Math.max(1, ...ranked.map((r) => r.tokens));
       const inSet = new Set(ranked.map((r) => r.callsign));
 
@@ -131,7 +138,7 @@ export function FlowGraphCanvas2D({ nodes, pulse, txs }: { nodes: Node[]; pulse:
         const [au, av] = pos(e.a), [bu, bv] = pos(e.b);
         const x1 = sx(au), y1 = sy(av), x2 = sx(bu), y2 = sy(bv);
         const [qx, qy] = curveCtrl(x1, y1, x2, y2);
-        ctx.strokeStyle = `rgba(180,195,235,${Math.min(0.34, 0.10 + e.n * 0.05)})`;
+        ctx.strokeStyle = `rgba(70,100,190,${Math.min(0.42, 0.16 + e.n * 0.06)})`;
         ctx.lineWidth = Math.min(1.8, 0.7 + (e.n - 1) * 0.3);
         ctx.beginPath();
         ctx.moveTo(x1, y1);
@@ -173,7 +180,7 @@ export function FlowGraphCanvas2D({ nodes, pulse, txs }: { nodes: Node[]; pulse:
         ctx.stroke();
 
         if (idx < 8 || zoom > 2.2) {
-          ctx.fillStyle = "rgba(160,166,178,0.9)";
+          ctx.fillStyle = "rgba(55,62,76,0.92)";
           ctx.font = "9px var(--font-jetbrains-mono), monospace";
           ctx.fillText(r.callsign, x + s + 4, y + 3);
         }
@@ -188,7 +195,7 @@ export function FlowGraphCanvas2D({ nodes, pulse, txs }: { nodes: Node[]; pulse:
         const head = Math.min(1, p.t);
         const size = (1.4 + Math.min(1.8, p.amt / 30)) * zs;
         if (p.t < 1) {
-          ctx.strokeStyle = `rgba(255,246,230,${0.14 * (1 - p.t)})`;
+          ctx.strokeStyle = `rgba(210,140,20,${0.22 * (1 - p.t)})`;
           ctx.lineWidth = 0.6;
           ctx.beginPath();
           ctx.moveTo(fx, fy);
@@ -201,7 +208,7 @@ export function FlowGraphCanvas2D({ nodes, pulse, txs }: { nodes: Node[]; pulse:
           const a = (k === 0 ? 0.95 : 0.28 * (1 - k / 5)) * Math.max(0, 1 - p.t * 0.6);
           ctx.beginPath();
           ctx.arc(x, y, k === 0 ? size : size * (1 - k * 0.12), 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(255,246,230,${a})`;
+          ctx.fillStyle = `rgba(210,140,20,${a})`;
           ctx.fill();
         }
       }
@@ -226,18 +233,17 @@ export function FlowGraphCanvas2D({ nodes, pulse, txs }: { nodes: Node[]; pulse:
           let bx = m.x + 12, by = m.y - bh - 6;
           if (bx + bw > W - 4) bx = m.x - bw - 12;
           if (by < 4) by = m.y + 12;
-          ctx.fillStyle = "#18191a";
+          ctx.fillStyle = "#ffffff";
           ctx.strokeStyle = "#232426";
           ctx.lineWidth = 1;
           ctx.beginPath();
           ctx.rect(Math.round(bx) + 0.5, Math.round(by) + 0.5, bw, bh);
           ctx.fill(); ctx.stroke();
-          ctx.fillStyle = "rgba(234,234,234,0.95)";
+          ctx.fillStyle = "rgba(20,24,34,0.92)";
           ctx.fillText(label, bx + 4, by + 13.5);
         }
       }
-
-      raf = requestAnimationFrame(draw);
+      // (RAF is scheduled at the top of draw now — no second schedule here)
     };
     raf = requestAnimationFrame(draw);
     return () => {
@@ -268,7 +274,7 @@ export function FlowGraphCanvas2D({ nodes, pulse, txs }: { nodes: Node[]; pulse:
   }, [pulse]);
 
   return (
-    <div className="relative overflow-hidden rounded-xl border" style={{ borderColor: "var(--ct-border)", background: "#060607" }}>
+    <div className="relative overflow-hidden rounded-xl border" style={{ borderColor: "var(--ct-border)", background: "var(--ct-panel)" }}>
       <canvas ref={ref} className="block h-[420px] w-full" />
       <div className="pointer-events-none absolute left-4 top-3 font-mono text-[11px]" style={{ color: "var(--ct-green)" }}>
         <span className="flex items-center gap-1.5">
