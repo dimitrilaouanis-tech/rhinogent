@@ -58,9 +58,12 @@ function mdToHtml(src: string): string {
       let r = li + 2; const rows: string[][] = [];
       while (r < lines.length && /^\s*\|.*\|\s*$/.test(lines[r])) { rows.push(cells(lines[r])); r++; }
       li = r - 1;
-      const th = head.map((c) => `<th style="text-align:left;padding:.45em .6em;border-bottom:1px solid var(--border);font-weight:620;white-space:nowrap">${inline(c)}</th>`).join("");
-      const tb = rows.map((row) => `<tr>${row.map((c) => `<td style="padding:.45em .6em;border-bottom:1px solid var(--border);vertical-align:top">${inline(c)}</td>`).join("")}</tr>`).join("");
-      html += `<div style="overflow-x:auto;margin:.6em 0"><table style="border-collapse:collapse;width:100%;font-size:.94em"><thead><tr>${th}</tr></thead><tbody>${tb}</tbody></table></div>`;
+      // VS Code's chat table treatment: separate borders + radius + overflow:hidden so the corners
+      // actually round, and gridlines only on the interior (last col/row drop theirs).
+      const cellB = "border:1px solid var(--border);border-top:none;border-left:none";
+      const th = head.map((c, i) => `<th style="text-align:left;padding:.45em .6em;${cellB}${i === head.length - 1 ? ";border-right:none" : ""};font-weight:620;white-space:nowrap">${inline(c)}</th>`).join("");
+      const tb = rows.map((row, ri) => `<tr>${row.map((c, i) => `<td style="padding:.45em .6em;${cellB}${i === row.length - 1 ? ";border-right:none" : ""}${ri === rows.length - 1 ? ";border-bottom:none" : ""};vertical-align:top">${inline(c)}</td>`).join("")}</tr>`).join("");
+      html += `<div style="overflow-x:auto;margin:.6em 0"><table style="border-collapse:separate;border-spacing:0;border:1px solid var(--border);border-radius:10px;overflow:hidden;width:100%;font-size:.94em"><thead><tr>${th}</tr></thead><tbody>${tb}</tbody></table></div>`;
       continue;
     }
     // > blockquote
@@ -76,9 +79,10 @@ function mdToHtml(src: string): string {
     if ((m = line.match(/^\s*(https?:\/\/\S+)\s*$/)) && !/["'<>`]/.test(m[1])) {
       closeList(); html += sourceCard(m[1]); continue;
     }
-    // Gemini/Meta-grade rhythm: headings breathe above, lists get real spacing, paragraphs
-    // separate. The old values (.15em li, .3em lists) packed everything into a dense block.
-    if ((m = line.match(/^#{1,3}\s+(.*)/))) { closeList(); html += `<div style="font-weight:660;font-size:1.02em;letter-spacing:-.014em;margin:1.15em 0 .3em">${inline(m[1])}</div>`; }
+    // Chat rhythm, not article rhythm. Stock Tailwind prose gives h2 a 2em top margin — right for
+    // an essay, far too loose inside a bubble. Every production chat renderer crushes it; LibreChat
+    // lands h2/h3 at .8em/.6em top. We use .85em.
+    if ((m = line.match(/^#{1,3}\s+(.*)/))) { closeList(); html += `<div style="font-weight:660;font-size:1.02em;letter-spacing:-.014em;margin:.85em 0 .3em">${inline(m[1])}</div>`; }
     else if ((m = line.match(/^\s*[-*]\s+(.*)/))) { if (list !== "ul") { closeList(); html += '<ul style="margin:.45em 0 .6em 1.05em;list-style:disc">'; list = "ul"; } html += `<li style="margin:.3em 0;padding-left:.16em;text-wrap:pretty">${inline(m[1])}</li>`; }
     else if ((m = line.match(/^\s*\d+\.\s+(.*)/))) { if (list !== "ol") { closeList(); html += '<ol style="margin:.45em 0 .6em 1.15em;list-style:decimal">'; list = "ol"; } html += `<li style="margin:.3em 0;padding-left:.16em;text-wrap:pretty">${inline(m[1])}</li>`; }
     else if (line === "") { closeList(); html += '<div style="height:.34em"></div>'; }
@@ -89,7 +93,8 @@ function mdToHtml(src: string): string {
     html += `<pre style="margin:.6em 0;padding:.75em .85em;border-radius:12px;background:#0d1118;color:#e8ecf4;overflow-x:auto;font-size:.85em;line-height:1.55"><code>${esc(fence.join("\n"))}</code></pre>`;
   }
   closeList();
-  return html;
+  // `first:mt-0` equivalent — a leading heading must not punch a hole at the top of the bubble.
+  return html.replace(/^(<div style="[^"]*?)margin:\.85em/, (_, pre: string) => `${pre}margin:0em`);
 }
 
 // The chat surface: a DELICATE living matrix (fine lines, low opacity, slow drift — a quiet
