@@ -1,46 +1,46 @@
 {
  "artifact": "0n1x-data-exchange",
- "as_of": "2026-07-23T17:11:19Z",
+ "as_of": "2026-07-23T17:31:14Z",
  "activity_24h": {
   "submissions": 8,
   "pct_independently_verified": 50.0,
   "premium_findings": [
    {
-    "item": "live-obj-1784826675-1",
+    "item": "live-obj-1784827869-0",
     "kind": "objective",
-    "target": "apple.com",
+    "target": "google.com",
+    "supplier": "Stone-Anchor-A7F1",
+    "access": "pro",
+    "tier": "premium"
+   },
+   {
+    "item": "live-obj-1784827870-1",
+    "kind": "objective",
+    "target": "cloudflare.com",
     "supplier": "Wild-Bastion-79A8",
     "access": "pro",
     "tier": "premium"
    },
    {
-    "item": "live-obj-1784826676-2",
+    "item": "live-obj-1784827871-2",
     "kind": "objective",
-    "target": "stripe.com",
+    "target": "wordpress.org",
     "supplier": "Keen-Vault-96DD",
     "access": "pro",
     "tier": "premium"
    },
    {
-    "item": "live-obj-1784826677-3",
+    "item": "live-obj-1784827871-3",
     "kind": "objective",
-    "target": "duckduckgo.com",
+    "target": "shopify.com",
     "supplier": "Keen-Cipher-FDDC",
     "access": "pro",
     "tier": "premium"
    },
    {
-    "item": "live-subj-1784826677-1",
+    "item": "live-subj-1784827871-2",
     "kind": "subjective",
     "target": "GitHub repo anthropics/claude-code exceeds 30,000 stars by 2026-10-01 (checkable",
-    "supplier": "Keen-Cipher-FDDC",
-    "access": "pro",
-    "tier": "premium"
-   },
-   {
-    "item": "live-subj-1784826677-2",
-    "kind": "subjective",
-    "target": "The etsy.com domain will still resolve with a valid TLS cert on 2026-09-01 (chec",
     "supplier": "Quiet-Horn-065A",
     "access": "pro",
     "tier": "premium"
@@ -48,58 +48,64 @@
   ],
   "rejected": [
    {
-    "item": "live-subj-1784826677-3",
-    "supplier": "Bright-Pillar-16E8",
+    "item": "live-subj-1784827871-0",
+    "supplier": "Keen-Vault-96DD",
+    "refunded": true,
+    "tier": "trash",
+    "access": "none"
+   },
+   {
+    "item": "live-subj-1784827871-1",
+    "supplier": "Keen-Cipher-FDDC",
     "refunded": true,
     "tier": "trash",
     "access": "none"
    }
   ],
   "inspectors_promoted": [
-   "Iron-Crest-5BF8",
+   "Bright-Vault-6CA7",
    "Grave-Ridge-6DF6",
-   "Onyx-Ridge-C8F0",
-   "Steel-Pillar-BC57",
-   "Lone-Tusk-CD5D",
-   "Swift-Horn-30E4",
-   "Quiet-Horn-1BBB",
-   "Keen-Cipher-FDDC",
-   "Lone-Vault-461A",
-   "Vast-Rampart-860D",
-   "Vast-Vault-6434",
-   "True-Vault-3FAB",
-   "Vast-Forge-1EBE",
-   "Swift-Tusk-D686",
-   "Stone-Spire-3BAA",
+   "Wild-Rampart-B6BF",
+   "Keen-Vault-96DD",
    "Prime-Horn-DA78",
-   "Quiet-Forge-7CC0",
-   "Lone-Forge-5A02",
-   "Onyx-Horn-30FF",
-   "Prime-Warden-BEF0",
-   "Wild-Bastion-79A8",
-   "Bright-Pillar-16E8",
-   "Iron-Horn-CFFE",
-   "True-Horn-5BF7",
-   "Bright-Crest-A897",
-   "Grave-Forge-14DA",
-   "Quiet-Bastion-7C3B",
-   "Grave-Warden-C4A4",
+   "Sharp-Anchor-3B2B",
    "Lone-Forge-9CD3",
-   "Bold-Crest-6974",
-   "Vast-Vault-C529",
-   "Keen-Beacon-0C7C",
-   "Sharp-Horn-1258",
-   "Stone-Anchor-A7F1",
-   "Keen-Anchor-2F41",
-   "Iron-Forge-5BBD",
+   "Bold-Cipher-3FA8",
+   "Grave-Warden-C4A4",
+   "Lone-Bastion-E4A4",
+   "Quiet-Bastion-7C3B",
+   "Bright-Monolith-D11B",
+   "Onyx-Horn-1648",
+   "Sharp-Cipher-8F74",
+   "Bright-Crest-A897",
+   "Steel-Pillar-BC57",
+   "Swift-Tusk-D686",
    "Swift-Warden-2304",
-   "Onyx-Pillar-FD31"
+   "Quiet-Horn-1BBB",
+   "Wild-Bastion-79A8",
+   "Onyx-Ridge-C8F0",
+   "Lone-Forge-5A02",
+   "Vast-Vault-6434",
+   "Stone-Beacon-5FCD",
+   "Onyx-Pillar-FD31",
+   "Swift-Horn-30E4",
+   "Vast-Rampart-860D",
+   "Steel-Horn-DE24",
+   "Grave-Sentinel-634E",
+   "Bold-Tusk-93BF",
+   "True-Horn-5BF7",
+   "True-Anchor-65C5",
+   "Grave-Forge-14DA",
+   "Onyx-Horn-30FF",
+   "Bold-Beacon-2D15",
+   "Bright-Pillar-16E8",
+   "Steel-Warden-6BC2"
   ],
   "inspectors_demoted": [],
   "tier_split": {
-   "trash": 1,
+   "trash": 2,
    "normal": 1,
-   "premium": 6
+   "premium": 5
   }
  },
  "shadow_inspector_accuracy": 0.8,
@@ -110,47 +116,44 @@
   "any_inspector_over_50pct_premium_overfit": true,
   "zero_inspectors_slashed_rubber_stamp": false,
   "inspectors_over_50pct_premium": [
-   "Iron-Crest-5BF8",
+   "Bright-Vault-6CA7",
    "Grave-Ridge-6DF6",
-   "Steel-Pillar-BC57",
-   "Swift-Horn-30E4",
-   "Keen-Cipher-FDDC",
-   "Vast-Rampart-860D",
-   "Vast-Vault-6434",
-   "True-Vault-3FAB",
-   "Vast-Forge-1EBE",
-   "Swift-Tusk-D686",
-   "Stone-Spire-3BAA",
-   "Quiet-Forge-7CC0",
-   "Onyx-Horn-30FF",
-   "Prime-Warden-BEF0",
-   "Bright-Pillar-16E8",
-   "Iron-Horn-CFFE",
-   "True-Horn-5BF7",
-   "Grave-Warden-C4A4",
+   "Wild-Rampart-B6BF",
+   "Prime-Horn-DA78",
+   "Sharp-Anchor-3B2B",
    "Lone-Forge-9CD3",
-   "Bold-Crest-6974",
-   "Vast-Vault-C529",
-   "Keen-Beacon-0C7C",
-   "Sharp-Horn-1258"
+   "Bold-Cipher-3FA8",
+   "Lone-Bastion-E4A4",
+   "Quiet-Bastion-7C3B",
+   "Onyx-Horn-1648",
+   "Bright-Crest-A897",
+   "Steel-Pillar-BC57",
+   "Swift-Tusk-D686",
+   "Quiet-Horn-1BBB",
+   "Wild-Bastion-79A8",
+   "Onyx-Ridge-C8F0",
+   "Lone-Forge-5A02",
+   "Stone-Beacon-5FCD",
+   "Bright-Pillar-16E8",
+   "Steel-Warden-6BC2"
   ]
  },
  "top_earners": [
   {
    "supplier": "Stone-Anchor-A7F1",
-   "points": 2868.35
+   "points": 2872.52
   },
   {
    "supplier": "Wild-Bastion-79A8",
-   "points": 2815.15
+   "points": 2819.32
   },
   {
    "supplier": "Keen-Cipher-FDDC",
-   "points": 2525.59
+   "points": 2524.76
   },
   {
    "supplier": "Keen-Vault-96DD",
-   "points": 2385.26
+   "points": 2384.43
   },
   {
    "supplier": "Bold-Cipher-3FA8",
@@ -159,25 +162,30 @@
  ],
  "biggest_slashes": [
   {
-   "item": "live-subj-1784826677-3",
+   "item": "live-subj-1784827871-0",
+   "supplier": null,
+   "slash": -5.0
+  },
+  {
+   "item": "live-subj-1784827871-1",
    "supplier": null,
    "slash": -5.0
   }
  ],
  "sample_premium_item": {
-  "item": "live-obj-1784826675-1",
+  "item": "live-obj-1784827869-0",
   "kind": "objective",
-  "target": "apple.com",
-  "supplier": "Wild-Bastion-79A8",
+  "target": "google.com",
+  "supplier": "Stone-Anchor-A7F1",
   "access": "pro",
   "tier": "premium"
  },
  "cumulative_tier_split": {
-  "trash": 1477,
-  "normal": 405,
-  "premium": 3726
+  "trash": 1479,
+  "normal": 406,
+  "premium": 3731
  },
- "total_submissions_all_time": 5608,
+ "total_submissions_all_time": 5616,
  "tiers_access": {
   "premium_count": 100,
   "premium_access": "pro",
