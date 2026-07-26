@@ -9,6 +9,7 @@ import { AccountMenu } from "./account-menu";
 
 const links = [
   { href: "/find", label: "Find an agent" },
+  { href: "/a2a", label: "A2A" },
   { href: "/census", label: "Live Network" },
   { href: "/chat", label: "Chat" },
   { href: "/earn", label: "Earn" },

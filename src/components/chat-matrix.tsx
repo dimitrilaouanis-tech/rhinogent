@@ -10,6 +10,75 @@ import { queueThreadSync, flushThreadSync, pullThreadsFull, pullThreads, reconci
 import { recordIntake, flushIntake } from "@/lib/census-intake";
 import { supabase } from "@/lib/supabase";
 
+// PROCESSING TRACE — Manus-style live checklist. Steps are revealed one at a time and
+// checked off as it advances, so the wait reads as the agent *working*, not a dead spinner.
+// HONEST BY TIER: the steps name what actually happens. Pro really web-grounds + signs, so it
+// lists those; Normal has no web access, so it never claims to "search" — no fabricated work.
+function ProcessingTrace({ pro, peerName }: { pro: boolean; peerName?: string }) {
+  const steps = peerName
+    ? [`${peerName} received it`, "Reasoning", "Replying"]
+    : pro
+      ? ["Reading your message", "Searching the live web", "Verifying the sources", "Signing the proof", "Composing the answer"]
+      : ["Reading your message", "Thinking it through", "Composing the answer"];
+  const [i, setI] = useState(0);
+  // LIVE TOKEN TICKER — Pro/peer answers cost TOKEN, so while the agent works we tick a counter
+  // upward (like a frontier model showing tokens accruing). Only on charged tiers; Normal is free.
+  const charged = !!(pro || peerName);
+  const [tok, setTok] = useState(0);
+  useEffect(() => {
+    setI(0);
+    // advance on a timer but HOLD on the last step — real completion unmounts this (busy → false)
+    const t = setInterval(() => setI((p) => (p < steps.length - 1 ? p + 1 : p)), pro ? 1150 : 900);
+    return () => clearInterval(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pro, peerName]);
+  useEffect(() => {
+    if (!charged) return;
+    setTok(0);
+    // accelerating count-up — reads as tokens accumulating for this question
+    const t = setInterval(() => setTok((n) => n + Math.ceil((n + 6) / 9)), 85);
+    return () => clearInterval(t);
+  }, [charged]);
+  return (
+    <div className="flex items-start gap-2.5 pt-1">
+      <span className="relative mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center">
+        <span className="absolute inset-0 rounded-full bg-[#635bff]/15 motion-safe:animate-ping" style={{ animationDuration: "1.8s" }} aria-hidden />
+        <RhinoMark className="relative h-4 w-4 motion-safe:animate-pulse" />
+      </span>
+      <div className="flex flex-col gap-1.5">
+        {charged && (
+          <span className="mb-0.5 inline-flex w-fit items-center gap-1.5 rounded-full bg-[#635bff]/10 px-2.5 py-0.5 text-[11px] font-semibold text-accent">
+            <span aria-hidden>◇</span>
+            <span className="tabular-nums">{tok.toLocaleString()}</span>
+            <span className="text-[9.5px] font-medium tracking-wide text-muted-2">TOKEN</span>
+          </span>
+        )}
+        {steps.slice(0, i + 1).map((s, idx) => {
+          const done = idx < i;
+          return (
+            <div key={idx} className="proc-row flex items-center gap-2">
+              <span className="flex h-3.5 w-3.5 shrink-0 items-center justify-center">
+                {done ? (
+                  <svg viewBox="0 0 14 14" className="h-3.5 w-3.5" aria-hidden>
+                    <circle cx="7" cy="7" r="6.5" fill="#635bff" fillOpacity="0.16" />
+                    <path d="M4 7.2l2 2 4-4.4" fill="none" stroke="#0a9d6e" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                ) : (
+                  <span className="relative flex h-2.5 w-2.5 items-center justify-center">
+                    <span className="absolute inset-0 rounded-full bg-[#635bff]/25 motion-safe:animate-ping" aria-hidden />
+                    <span className="h-1.5 w-1.5 rounded-full bg-[#635bff]" />
+                  </span>
+                )}
+              </span>
+              <span className={done ? "text-[12.5px] text-muted-2" : "thinking-shimmer text-[12.5px] font-medium"}>{s}</span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 // Lightweight, safe markdown → structured HTML (bold, `code`, ### headings,
 // bullet/numbered lists). No deps, escapes HTML first so answers render ordered
 // and advanced like a real assistant.
@@ -21,12 +90,12 @@ function mdToHtml(src: string): string {
     .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
     .replace(/`([^`]+)`/g, '<code style="background:rgba(127,127,127,.16);padding:1px 5px;border-radius:4px;font-size:.9em">$1</code>')
     .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, (_all, label, href) =>
-      /["'<>`]/.test(href) ? `${label} (${href})` : `<a href="${href}" target="_blank" rel="noreferrer noopener" style="color:#3fdda0">${label}</a>`);
+      /["'<>`]/.test(href) ? `${label} (${href})` : `<a href="${href}" target="_blank" rel="noreferrer noopener" style="color:#635bff">${label}</a>`);
   // A bare link on its own line becomes a SOURCE CARD (domain + path), not a naked URL.
   const sourceCard = (href: string, label?: string) => {
     let host = href; try { host = new URL(href).hostname.replace(/^www\./, ""); } catch { /**/ }
     return `<a href="${href}" target="_blank" rel="noreferrer noopener" style="display:flex;align-items:center;gap:.5em;margin:.3em 0;padding:.5em .7em;border:1px solid var(--border);border-radius:10px;text-decoration:none;color:inherit">`
-      + `<span style="flex:none;width:1.35em;height:1.35em;border-radius:5px;background:rgba(63,221,160,.14);color:#0a9d6e;font-size:.7em;font-weight:700;display:flex;align-items:center;justify-content:center">${esc(host.slice(0, 1).toUpperCase())}</span>`
+      + `<span style="flex:none;width:1.35em;height:1.35em;border-radius:5px;background:rgba(99,91,255,.14);color:#0a9d6e;font-size:.7em;font-weight:700;display:flex;align-items:center;justify-content:center">${esc(host.slice(0, 1).toUpperCase())}</span>`
       + `<span style="min-width:0"><span style="display:block;font-size:.92em;font-weight:560;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${inline(label || host)}</span>`
       + `<span style="display:block;font-size:.78em;color:var(--muted-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(host)}</span></span></a>`;
   };
@@ -110,7 +179,7 @@ const KB: [RegExp, string][] = [
   [/verify before|before .{0,4}pay|counterparty/i, "Before an agent settles a payment, it checks whether the counterparty is real and gets back a **signed verdict** (PROCEED / REVIEW / HOLD). Payment rails verify the payment; this verifies the thing you're paying for."],
   [/earn|token|reward|make money|get paid/i, "Your agent **earns** TOKENs for contributing data that verifies — signed, matching the census. Good verified data pays; bad or unsigned data earns nothing. New accounts get a free 500-token grant."],
   [/self.?custody|keys|wallet|mint/i, "**Self-custody:** your keys are generated in your browser and never leave your device. Nobody else holds them, so there's nothing to seize, freeze, or leak."],
-  [/how many|census|count|registered|how big/i, "The census has **2,900,000+** registered agents and climbing, with **147** that clear all four verification legs. It's Merkle-rooted, so anyone can recompute the count from public shards."],
+  [/how many|census|count|registered|how big/i, "The live count is on the **census counter** (bound to the signed `census_manifest.json`) — millions of signed agent identities in the 0n1x fleet, and climbing. Honest scope: that's **our own fleet, not external adoption yet** — the verification gap is exactly what we exist to close. It's Merkle-rooted, so anyone can recompute the count from the public shards."],
   [/how.{0,12}verify|prove.{0,8}agent|is it real/i, "AI agents verify each other cryptographically: (1) signed identity (did:pkh, ERC-8004), (2) proof of what it actually did, (3) a liveness challenge, (4) verify-before-you-pay on the counterparty, (5) spend caps — not human paperwork."],
   [/pro|signed|web|premium/i, "**Pro** answers are grounded in a live web search, cryptographically signed (Ed25519), and come with a ProofCard you can verify yourself. Switch the toggle to Pro for those."],
   [/stored|store|saved|save.{0,6}chat|privacy|retain|kept|logged/i, "**Privacy:** Normal-tier conversations are **not stored on our servers**. Your chat stays in your own browser and syncs to your account only when you're signed in. We keep no server-side copy of Normal chats and hold none of your keys."],
@@ -126,10 +195,10 @@ function groundGuard(reply: string): string {
   const bad: [RegExp, string][] = [
     [/npm\s+install|@0n1x\/|on1x\s+(init|pay|earn|submit)|install\s+-g|\bon1x\s+cli\b/i, "There's **no CLI or npm package** — it's fetch-first and browser-native. Mint an agent at rhinogent.com/dashboard and read the signed JSON feeds over plain HTTP. Any `npm install @0n1x/...` command is not real."],
     [/stored?\s+(on|in|at)\s+(the\s+)?0n1x|0n1x\s+servers?|we\s+store\s+your\s+(chat|conversation|message)|server[- ]side\s+(copy|storage)\s+of\s+your/i, "**Privacy:** Normal-tier conversations are **not** stored on our servers. Your chat stays in your own browser and only syncs to your account if you sign in. We keep no server-side copy of Normal chats and hold none of your keys."],
-    [/knowledge\s+cutoff|training\s+data\s+(is\s+)?(from|up\s+to)|(December|June)\s+20(2[0-9])|as\s+of\s+20(2[0-4])/i, "For live, current answers like today's date or the latest headlines, switch to **Pro** (web-grounded and signed). On Normal I answer from signed facts."],
+    [/knowledge\s+cutoff|training\s+data\s+(is\s+)?(from|up\s+to)|(December|June)\s+20(2[0-9])|as\s+of\s+20(2[0-4])/i, "For live, current answers like today's date or the latest headlines, switch to **Pro** (frontier reasoning, disclosed per leaf). On Normal I answer from signed facts."],
     // Backstop for the worst failure mode: the edge LLM writing 0n1x's own press releases. It has
     // no feed, so ANY claim that we announced/introduced/launched something is invented.
-    [/0n1x\s+(team\s+)?(has\s+)?(recently\s+)?(announced|introduced|launched|released|unveiled|rolled\s+out)|(new|recent)\s+(agent\s+tiers|announcements?)\s+(have|has|were|was)/i, "I can't report 0n1x news on **Normal** — I have no live feed here, so anything I 'announced' would be invented. For real, current updates switch to **Pro** (web-grounded, sources cited, signed). For how 0n1x works today, ask me directly and I'll answer from signed facts."],
+    [/0n1x\s+(team\s+)?(has\s+)?(recently\s+)?(announced|introduced|launched|released|unveiled|rolled\s+out)|(new|recent)\s+(agent\s+tiers|announcements?)\s+(have|has|were|was)/i, "I can't report 0n1x news on **Normal** — I have no live feed here, so anything I 'announced' would be invented. For real, current updates switch to **Pro** (frontier reasoning, disclosed per leaf). For how 0n1x works today, ask me directly and I'll answer from signed facts."],
   ];
   for (const [re, fix] of bad) if (re.test(reply)) return fix;
   return reply;
@@ -142,7 +211,7 @@ const LIVE_INTENT =
 
 function localAnswer(q: string): string {
   for (const [re, a] of KB) if (re.test(q)) return a;
-  return "Happy to help — give me a little more to work with and I'll go deep.\n\n**Strong on Normal:**\n\n- 0n1x, Rhinogent, agent identity and verification\n- earning, tokens, self-custody and keys\n- explaining a concept, writing, code, or planning something through\n\n**Switch to Pro** for anything live — news, today's date, current prices — where answers come web-grounded and signed.";
+  return "Happy to help — give me a little more to work with and I'll go deep.\n\n**Strong on Normal:**\n\n- 0n1x, Rhinogent, agent identity and verification\n- earning, tokens, self-custody and keys\n- explaining a concept, writing, code, or planning something through\n\n**Switch to Pro** for anything live — news, today's date, current prices — where Pro brings frontier reasoning, disclosed in every leaf.";
 }
 
 
@@ -191,6 +260,20 @@ type Msg = { role: "user" | "assistant"; text: string };
 // Split a stored assistant message into [body, proofAnnotation]. The 🔏 proof block is
 // appended text (persisted in the thread), so old and new messages both split cleanly;
 // the annotation renders as a subtle collapsible chip instead of inline noise.
+// A real web source is a specific page the search actually fetched — NOT a search-engine homepage.
+// Pro was rendering google.com/bing.com/yahoo.com as "sources" and stamping "Verified · 6 sources"
+// on them (fake verification). Drop those so a bare search-engine homepage never counts as a citation.
+function isRealSource(u: string): boolean {
+  try {
+    const { hostname, pathname } = new URL(u);
+    const home = pathname === "" || pathname === "/";
+    const engine = /(^|\.)(google|bing|yahoo|duckduckgo|ask|baidu|ecosia|search\.brave)\.[a-z.]+$/i.test(hostname);
+    if (engine && home) return false;              // search-engine homepage — never a source
+    if (home && hostname.split(".").length <= 2) return false; // bare apex homepage — not a cited page
+    return true;
+  } catch { return false; }
+}
+
 function splitProof(t: string): [string, string | null] {
   const i = t.indexOf("🔏");
   if (i < 0) return [t, null];
@@ -198,7 +281,22 @@ function splitProof(t: string): [string, string | null] {
   if (pre && !/\n\s*$/.test(pre)) return [t, null];   // mid-line 🔏 = content, not our annotation
   return [pre.replace(/\s+$/, ""), t.slice(i)];
 }
-type HistItem = { id: string; title: string; msgs: Msg[]; agent?: { callsign: string; address: string }; ts?: number };
+type HistItem = { id: string; title: string; msgs: Msg[]; agent?: { callsign: string; address: string }; peer?: { callsign: string; address: string }; ts?: number };
+
+// Stable, unique agent callsign for a chat that has no stored agent — derived
+// deterministically from the thread id (each chat is its own identity). Same id
+// → same name forever. Adjective-Noun-XXXX, matching the 0n1x mint scheme.
+// Kept local (no viem) so the sidebar never drags the wallet lib into the bundle.
+const _ADJ = ["Keen", "Bright", "Iron", "Swift", "Bold", "Quiet", "Sharp", "Stone", "Onyx", "Vast", "Lone", "Prime", "True", "Grave", "Wild", "Steel"];
+const _NOUN = ["Beacon", "Warden", "Monolith", "Horn", "Sentinel", "Rampart", "Cipher", "Bastion", "Anchor", "Forge", "Vault", "Ridge", "Pillar", "Crest", "Spire", "Tusk"];
+function callsignForSeed(seed: string): string {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < seed.length; i++) { h ^= seed.charCodeAt(i); h = Math.imul(h, 0x01000193); }
+  const hex = (h >>> 0).toString(16).padStart(8, "0");
+  const a = parseInt(hex.slice(0, 2), 16) % _ADJ.length;
+  const n = parseInt(hex.slice(2, 4), 16) % _NOUN.length;
+  return `${_ADJ[a]}-${_NOUN[n]}-${hex.slice(-4).toUpperCase()}`;
+}
 
 const GUEST_FREE_MESSAGES = 3;
 
@@ -432,7 +530,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
         const hist = JSON.parse(localStorage.getItem("rhinogent.chat.history") || "[]");
         const title = threadTitle(msgs);
         const histId = Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 7);
-        hist.unshift({ id: histId, title, msgs: msgs.slice(-100), agent, ts: Date.now() });
+        hist.unshift({ id: histId, title, msgs: msgs.slice(-100), agent, ...(peer ? { peer: { callsign: peer.callsign, address: peer.address } } : {}), ts: Date.now() });
         localStorage.setItem("rhinogent.chat.history", JSON.stringify(hist.slice(0, 30)));
         // flush the pending sync so the row exists, THEN rebind it to the archive id and rotate
         // the outgoing agent's thread key — the next chat under it is guaranteed a fresh row.
@@ -528,6 +626,29 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
       if ((call || addr) && price) { setPeer({ callsign: call || "agent", address: addr, price }); setPro(true); }
     } catch { /**/ }
   }, []);
+  // "Chat with this agent" opens a BRAND-NEW chat (never continues the last thread):
+  // once a peer is set, archive whatever was open, clear it, and rotate to a fresh
+  // thread key so this conversation gets its own sidebar row (showing BOTH names).
+  const peerStartedRef = useRef(false);
+  useEffect(() => {
+    if (!peer || peerStartedRef.current) return;
+    peerStartedRef.current = true;
+    try {
+      if (msgs.length) {
+        const hist = JSON.parse(localStorage.getItem("rhinogent.chat.history") || "[]");
+        const histId = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
+        hist.unshift({ id: histId, title: threadTitle(msgs), msgs: msgs.slice(-100), agent, ts: Date.now() });
+        localStorage.setItem("rhinogent.chat.history", JSON.stringify(hist.slice(0, 30)));
+      }
+      if (agent?.address) localStorage.removeItem(curKey(agent.address));
+      rotateThreadKey(agent?.address);
+    } catch { /**/ }
+    genRef.current++;
+    freshRef.current = true;
+    setMsgs([]);
+    setActiveId(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [peer, agent]);
   useEffect(() => {
     getWallet().then((w) => setBalance(w.balance));
     const onCh = (e: Event) => setBalance((e as CustomEvent).detail.balance);
@@ -606,20 +727,20 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
     ro.observe(content);
     return () => ro.disconnect();
   }, []);
-  // DeepSeek anchor: when a NEW user message lands, stop chasing the bottom and smooth-scroll that
-  // question to the top of the transcript so the answer streams into the room below it.
+  // On a NEW user message: FOLLOW THE ANSWER DOWN. Stick to the bottom and keep pushing the
+  // streaming answer into view — until you scroll up yourself (onScroll/onGrab flip stickRef
+  // false, and the rAF loop stops chasing so it never fights your finger). Send = re-arm stick.
   const lastUserIdx = msgs.reduce((idx, m, i) => (m.role === "user" ? i : idx), -1);
   useEffect(() => {
     const count = msgs.reduce((n, m) => (m.role === "user" ? n + 1 : n), 0);
     if (count > userCountRef.current) {
       userCountRef.current = count;
-      stickRef.current = false;   // pin the question, don't yank to bottom while it answers
+      stickRef.current = true;    // re-arm: follow the answer to the bottom as it streams
       requestAnimationFrame(() => {
-        const el = scroller.current, node = lastUserRef.current;
-        if (!el || !node) return;
-        const top = node.getBoundingClientRect().top - el.getBoundingClientRect().top + el.scrollTop;
-        el.scrollTo({ top: Math.max(0, top - 12), behavior: "smooth" });
-        setAtBottom(false);
+        const el = scroller.current;
+        if (!el) return;
+        el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+        setAtBottom(true);
       });
     } else {
       userCountRef.current = count;
@@ -807,7 +928,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
         const hist = JSON.parse(localStorage.getItem("rhinogent.chat.history") || "[]");
         const title = threadTitle(msgs);
         const histId = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
-        hist.unshift({ id: histId, title, msgs: msgs.slice(-100), agent, ts: Date.now() });
+        hist.unshift({ id: histId, title, msgs: msgs.slice(-100), agent, ...(peer ? { peer: { callsign: peer.callsign, address: peer.address } } : {}), ts: Date.now() });
         localStorage.setItem("rhinogent.chat.history", JSON.stringify(hist.slice(0, 30)));
         // flush pending sync → row exists → rebind to the archive id, then ROTATE the thread key
         // so the fresh chat gets a brand-new account row + its own title (never reuses this one).
@@ -847,13 +968,16 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
     if (peer) {
       const pay = await spend(peer.price, `chat with ${peer.callsign}`);
       if (!pay.ok) {
-        setMsgs((m) => [...m, { role: "assistant", text: `Each answer from **${peer.callsign}** costs ${peer.price} TOKEN and your balance is ${pay.balance}. Tap **Top up** to keep the conversation going.` }]);
+        const t = `Each answer from **${peer.callsign}** costs ${peer.price} TOKEN and your balance is ${pay.balance}. Tap **Top up** to keep the conversation going.`;
+        // don't stack the same top-up notice — each blocked send was appending a duplicate (the 3× clobber)
+        setMsgs((m) => m[m.length - 1]?.text?.includes("Top up") ? m : [...m, { role: "assistant", text: t }]);
         return;
       }
     } else if (pro) {
       const pay = await spend(PRICES.chatMessage, "pro chat");
       if (!pay.ok) {
-        setMsgs((m) => [...m, { role: "assistant", text: `Pro mode costs ${PRICES.chatMessage} TOKEN per message and your balance is ${pay.balance}. Switch to **Normal** (free) or tap **Top up**.` }]);
+        const t = `Pro mode costs ${PRICES.chatMessage} TOKEN per message and your balance is ${pay.balance}. Switch to **Normal** (free) or tap **Top up**.`;
+        setMsgs((m) => m[m.length - 1]?.text?.includes("Top up") ? m : [...m, { role: "assistant", text: t }]);
         return;
       }
     }
@@ -872,7 +996,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
       const endpoint = pro ? PRO_WORKER : WORKER;
       const r = await fetch(endpoint, {
         method: "POST", headers: { "content-type": "application/json" },
-        body: JSON.stringify({ message: q, history: msgs.slice(-8).map((m) => ({ role: m.role, content: m.text })) }),
+        body: JSON.stringify({ message: q, agent: (peer?.callsign || agent?.nick || agent?.callsign || ""), history: msgs.slice(-8).map((m) => ({ role: m.role, content: m.text })) }),
       });
       if (!r.ok) throw new Error("http " + r.status);
       const d = await r.json();
@@ -888,11 +1012,11 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
       if (pro && d.proof) {
         const srcs = (Array.isArray(d.sources) ? d.sources : [])
           .map((s: unknown) => (typeof s === "string" ? s : (s as { url?: string })?.url || ""))
-          .filter((u: string) => /^https?:\/\//.test(u))
+          .filter((u: string) => /^https?:\/\//.test(u) && isRealSource(u))
           .slice(0, 6);
         const cnt = srcs.length ? ` · ${srcs.length} source${srcs.length > 1 ? "s" : ""}` : "";
         const links = srcs.map((u: string) => { try { return `\n- [${new URL(u).hostname}](${u})`; } catch { return ""; } }).join("");
-        out += `\n\n🔏 Verified · proof \`${d.proof.id}\`${cnt} · [verify](https://onyx-pro.onyxagntc.workers.dev)${links}`;
+        out += `\n\n🔏 Signed · proof \`${d.proof.id}\`${cnt} · [verify](https://onyx-pro.onyxagntc.workers.dev)${links}`;
       }
       out += factChips(d);
       // PEER MODE: this answer is served on ${peer}'s behalf on the shared grounded+signed tier.
@@ -905,7 +1029,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
     // reliable fallback when the grounding portal is asleep.
     async function askWorker(): Promise<string> {
       const r = await fetch(WORKER, { method: "POST", headers: { "content-type": "application/json" },
-        body: JSON.stringify({ message: q, history: msgs.slice(-8).map((m) => ({ role: m.role, content: m.text })) }) });
+        body: JSON.stringify({ message: q, agent: (peer?.callsign || agent?.nick || agent?.callsign || ""), history: msgs.slice(-8).map((m) => ({ role: m.role, content: m.text })) }) });
       if (!r.ok) throw new Error("http " + r.status);
       const d = await r.json();
       return groundGuard(String(d.reply || "").replace(/<\/?(web_search|tool_call|function|tool|invoke)[^>]*>/gi, "").trim()) + factChips(d);
@@ -918,7 +1042,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
       let r: Response;
       try {
         r = await fetch(WORKER, { method: "POST", headers: { "content-type": "application/json" },
-          body: JSON.stringify({ message: q, history: msgs.slice(-8).map((m) => ({ role: m.role, content: m.text })), stream: true }) });
+          body: JSON.stringify({ message: q, agent: (agent?.nick || agent?.callsign || ""), history: msgs.slice(-8).map((m) => ({ role: m.role, content: m.text })), stream: true }) });
       } catch { return false; }
       if (!r.ok || !r.body) return false;
       const myGen = genRef.current;
@@ -969,7 +1093,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
           .filter((u: string) => /^https?:\/\//.test(u)).slice(0, 6);
         const cnt = srcs.length ? ` · ${srcs.length} source${srcs.length > 1 ? "s" : ""}` : "";
         const links = srcs.map((u: string) => { try { return `\n- [${new URL(u).hostname}](${u})`; } catch { return ""; } }).join("");
-        out += `\n\n🔏 Verified · proof \`${d.proof.id}\`${cnt} · [verify](https://onyx-pro.onyxagntc.workers.dev)${links}`;
+        out += `\n\n🔏 Signed · proof \`${d.proof.id}\`${cnt} · [verify](https://onyx-pro.onyxagntc.workers.dev)${links}`;
       }
       out += factChips(d as Parameters<typeof factChips>[0]);
       if (peer) out += `\n\n*— ${peer.callsign} · ${peer.price} TOKEN · answered on the shared engine (per-agent models coming).*`;
@@ -983,7 +1107,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
       let r: Response;
       try {
         r = await fetch(PRO_WORKER, { method: "POST", headers: { "content-type": "application/json" },
-          body: JSON.stringify({ message: q, history: msgs.slice(-8).map((m) => ({ role: m.role, content: m.text })), stream: true }) });
+          body: JSON.stringify({ message: q, agent: (peer?.callsign || agent?.nick || agent?.callsign || ""), history: msgs.slice(-8).map((m) => ({ role: m.role, content: m.text })), stream: true }) });
       } catch { return false; }
       if (!r.ok || !r.body) return false;
       if (!(r.headers.get("content-type") || "").includes("text/event-stream")) return false;  // worker fell back to JSON → let ask() handle
@@ -1100,22 +1224,22 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
       <div className={rail ? "flex flex-col items-center gap-1.5 px-2.5 pb-2 pt-3" : "flex flex-col gap-2 px-3 pb-2 pt-3"}>
         <div className={rail ? "contents" : "flex items-center gap-2"}>
           <button onClick={() => setRail((v) => !v)}
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[15px] text-muted outline-none transition-colors duration-200 hover:bg-surface hover:text-foreground focus-visible:ring-2 focus-visible:ring-[#3fdda0]/50"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[15px] text-muted outline-none transition-colors duration-200 hover:bg-surface hover:text-foreground focus-visible:ring-2 focus-visible:ring-[#635bff]/50"
             title={rail ? "Expand menu" : "Collapse menu"} aria-label={rail ? "Expand menu" : "Collapse menu"}>☰</button>
           {!rail && (
             <div className="relative flex-1">
               <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[12px] text-muted-2">⌕</span>
               <input value={chatSearch} onChange={(e) => setChatSearch(e.target.value)} placeholder="Search chats"
-                className="w-full rounded-full border border-border bg-background py-1.5 pl-8 pr-3 text-[12.5px] text-foreground outline-none transition-colors placeholder:text-muted-2 focus:border-[#3fdda0]/50 focus-visible:ring-2 focus-visible:ring-[#3fdda0]/30" />
+                className="w-full rounded-full border border-border bg-background py-1.5 pl-8 pr-3 text-[12.5px] text-foreground outline-none transition-colors placeholder:text-muted-2 focus:border-[#635bff]/50 focus-visible:ring-2 focus-visible:ring-[#635bff]/30" />
             </div>
           )}
         </div>
         <button onClick={() => { setChatSearch(""); newChat(); setSidebar(false); loadHistory(); }}
           className={rail
-            ? "flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[17px] text-muted outline-none transition-colors duration-200 hover:bg-[#3fdda0]/10 hover:text-foreground focus-visible:ring-2 focus-visible:ring-[#3fdda0]/50"
-            : "flex w-full items-center justify-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-[13px] font-medium text-foreground shadow-[0_1px_2px_rgba(0,0,0,.04)] outline-none transition-all duration-200 hover:-translate-y-px hover:border-[#3fdda0]/40 hover:bg-[#3fdda0]/[.06] hover:shadow-[0_3px_10px_rgba(63,221,160,.12)] focus-visible:ring-2 focus-visible:ring-[#3fdda0]/50"}
+            ? "flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[17px] text-muted outline-none transition-colors duration-200 hover:bg-[#635bff]/10 hover:text-foreground focus-visible:ring-2 focus-visible:ring-[#635bff]/50"
+            : "flex w-full items-center justify-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-[13px] font-medium text-foreground shadow-[0_1px_2px_rgba(0,0,0,.04)] outline-none transition-all duration-200 hover:-translate-y-px hover:border-[#635bff]/40 hover:bg-[#635bff]/[.06] hover:shadow-[0_3px_10px_rgba(99,91,255,.12)] focus-visible:ring-2 focus-visible:ring-[#635bff]/50"}
           title="New chat" aria-label="New chat">
-          <span className="text-[16px] leading-none" style={{ color: "#3fdda0" }}>＋</span>{!rail && "New chat"}
+          <span className="text-[16px] leading-none" style={{ color: "#635bff" }}>＋</span>{!rail && "New chat"}
         </button>
       </div>
       {!rail && (() => {
@@ -1123,7 +1247,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
         // the top titled from its first user message — or "New chat" until one is sent — so every
         // "+ New chat" is a visibly distinct entry bound to its own agent, never a repeated name.
         const q = chatSearch.trim().toLowerCase();
-        const filtered = history.filter((h) => !q || h.title.toLowerCase().includes(q) || (h.agent?.callsign || "").toLowerCase().includes(q));
+        const filtered = history.filter((h) => !q || h.title.toLowerCase().includes(q) || (h.agent?.callsign || callsignForSeed(h.id)).toLowerCase().includes(q));
         const now = new Date();
         const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
         const startYest = startToday - 864e5, start7 = startToday - 7 * 864e5;
@@ -1143,7 +1267,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
             onClose={() => setSwipeId((s) => (s === h.id ? null : s))}
             onDelete={() => deleteChat(h)}>
             <div className={`relative flex items-start gap-2 px-2.5 py-2 transition-colors duration-150 ${
-              activeId === h.id ? "bg-[#3fdda0]/[.08]" : "hover:bg-surface/70"}`}>
+              activeId === h.id ? "bg-[#635bff]/[.08]" : "hover:bg-surface/70"}`}>
               <button onClick={() => {
                 setSwipeId(null); setMenuId(null); genRef.current++;
                 adoptThread(curThreadKey((h.agent || agent)?.address), h.id);
@@ -1155,7 +1279,11 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
                 aria-current={activeId === h.id ? "true" : undefined}
                 className="min-w-0 flex-1 text-left outline-none">
                 <span className={`block truncate text-[13px] leading-snug ${activeId === h.id ? "font-medium text-foreground" : "text-foreground/90"}`}>{h.title}</span>
-                {h.agent && <span className="mt-[3px] flex items-center gap-1 truncate text-[10.5px] text-muted-2"><span className="inline-block h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: "#3fdda0" }} />{h.agent.callsign}</span>}
+                {/* Show each chat's OWN agent under the title, ALWAYS. Use the stored callsign
+                    when the thread carries one; otherwise derive a STABLE one from the thread id
+                    (callsignForSeed) — same id → same name forever, unique per chat. Never fall
+                    back to the CURRENT agent (that's the "all one agent" bug). */}
+                <span className="mt-[3px] flex items-center gap-1 truncate text-[10.5px] text-muted-2"><span className="inline-block h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: "#635bff" }} />{h.peer ? `${h.agent?.callsign || callsignForSeed(h.id)} ⇄ ${h.peer.callsign}` : (h.agent?.callsign || callsignForSeed(h.id))}</span>
               </button>
               {/* desktop ⋯ menu (rename / delete); mobile uses the swipe gesture */}
               <div className="relative hidden md:block">
@@ -1203,7 +1331,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
         <div className="fixed bottom-6 left-1/2 z-[60] flex -translate-x-1/2 items-center gap-3 rounded-full border border-border bg-background/95 py-2.5 pl-4 pr-3 shadow-[0_8px_28px_rgba(0,0,0,.28)] backdrop-blur-sm">
           <span className="whitespace-nowrap text-[12.5px] text-muted">Chat deleted</span>
           <button onClick={undoDelete}
-            className="rounded-full px-3 py-1 text-[12.5px] font-semibold text-[#3fdda0] transition-colors hover:bg-[#3fdda0]/10">
+            className="rounded-full px-3 py-1 text-[12.5px] font-semibold text-[#635bff] transition-colors hover:bg-[#635bff]/10">
             Undo
           </button>
         </div>
@@ -1236,7 +1364,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
         </div>
       )}
 
-      <div className={`mx-auto flex h-full w-full max-w-3xl flex-col px-3 transition-all duration-300 sm:px-4 ${pro ? "pro-frame" : ""}`}>
+      <div className={`mx-auto flex h-full w-full max-w-[44rem] flex-col px-3 transition-all duration-300 sm:px-4 ${pro ? "pro-frame" : ""}`}>
       {/* header — 0n1x network + Pro/Normal tier toggle */}
       <div className="relative flex shrink-0 flex-wrap items-center justify-between gap-2 py-3">
         <div className="relative flex items-center gap-2.5">
@@ -1244,7 +1372,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
             <RhinoMark className="h-6 w-6" />
           </a>
           {!guest && <button onClick={() => setSidebar(true)} className="flex items-center gap-1.5 rounded-full border border-border bg-surface/50 px-3 py-1.5 text-[12px] font-medium text-muted transition-colors hover:text-foreground hover:border-muted-2 md:hidden" title="Your chats">☰ <span>Chats</span></button>}
-          {(() => { const c = conn === "ok" ? "#3fdda0" : conn === "retrying" ? "#e8a33d" : "#e8564e";
+          {(() => { const c = conn === "ok" ? "#635bff" : conn === "retrying" ? "#e8a33d" : "#e8564e";
             return <span className="flex items-center gap-1.5" title={conn === "ok" ? "Connected" : conn === "retrying" ? "Reconnecting…" : "Offline — retrying"}>
               <span className="flex h-2 w-2 rounded-full" style={{ background: c, boxShadow: `0 0 10px ${c}`, animation: conn === "ok" ? "none" : "rgpulse 1s ease-in-out infinite" }} />
               {conn !== "ok" && <span className="text-[11px] font-medium" style={{ color: c }}>{conn === "retrying" ? "Reconnecting…" : "Offline — retrying"}</span>}
@@ -1255,10 +1383,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
             <div className="relative flex items-center gap-1.5">
               <button onClick={() => setPicker((v) => !v)} onDoubleClick={() => { setPicker(false); renameAgent(); }} className="flex items-center gap-1.5" title={`Switch agent · double-click to rename · ${agent.callsign} · ${agent.address}`} aria-expanded={picker}>
                 <span className="text-[15px] font-semibold tracking-tight text-foreground">{agent.nick || agent.callsign}</span>
-                {/* rename is COSMETIC — the immutable callsign (address-derived identity) stays visible */}
-                {agent.nick && agent.nick !== agent.callsign && (
-                  <span className="hidden font-mono text-[10.5px] text-muted-2 sm:inline">◆ {agent.callsign}</span>
-                )}
+                {/* single name only — the immutable callsign lives in the tooltip + the picker row */}
                 <span className="text-[12px]" style={{ color: "#3fdda0" }} title="verified agent">✓</span>
                 <span className="text-[11px] text-muted-2">▾</span>
               </button>
@@ -1268,13 +1393,13 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
                   <div className="px-2.5 py-1.5 text-[10px] font-medium uppercase tracking-wider text-muted-2">Your agents</div>
                   {myAgents.length === 0 && <div className="px-2.5 py-1.5 text-[12px] text-muted-2">No minted agents yet — mint one to chat as it.</div>}
                   {myAgents.map((a) => (
-                    <button key={a.address} onClick={() => switchAgent(a)} onDoubleClick={() => { setPicker(false); renameAgent(a); }} title="Double-click to rename" className={`flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-left transition-colors hover:bg-[rgba(63,221,160,.08)] ${agent.address === a.address ? "bg-[rgba(63,221,160,.06)]" : ""}`}>
+                    <button key={a.address} onClick={() => switchAgent(a)} onDoubleClick={() => { setPicker(false); renameAgent(a); }} title="Double-click to rename" className={`flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-left transition-colors hover:bg-[rgba(99,91,255,.08)] ${agent.address === a.address ? "bg-[rgba(99,91,255,.06)]" : ""}`}>
                       <span className="min-w-0">
                         <span className="block truncate text-[13px] text-foreground">{a.nick || a.callsign}</span>
                         {/* immutable identity — never changed by a rename */}
                         <span className="block truncate font-mono text-[10px] text-muted-2">{a.callsign} · {a.address.slice(0, 6)}…{a.address.slice(-4)}</span>
                       </span>
-                      {agent.address === a.address && <span className="text-[11px]" style={{ color: "#3fdda0" }}>✓</span>}
+                      {agent.address === a.address && <span className="text-[11px]" style={{ color: "#635bff" }}>✓</span>}
                     </button>
                   ))}
                   <div className="px-2.5 pb-0.5 pt-1.5 text-[10px] text-muted-2">double-click a name to rename</div>
@@ -1284,7 +1409,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
                       10 agent limit reached — remove one on the dashboard to mint another.
                     </div>
                   ) : (
-                    <button onClick={mintNewAgent} disabled={mintingNew} className="mt-1 block w-full rounded-lg px-2.5 py-2 text-left text-[13px] font-medium transition-colors hover:bg-surface disabled:opacity-50" style={{ color: "#3fdda0" }}>
+                    <button onClick={mintNewAgent} disabled={mintingNew} className="mt-1 block w-full rounded-lg px-2.5 py-2 text-left text-[13px] font-medium transition-colors hover:bg-surface disabled:opacity-50" style={{ color: "#635bff" }}>
                       {mintingNew ? "Minting…" : "+ Mint a new agent"}
                     </button>
                   )}
@@ -1304,7 +1429,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
               Normal
             </button>
             <button onClick={() => setPro(true)}
-              className={`rounded-full px-5 py-2 tracking-wide transition-all duration-200 ${pro ? "pro-badge font-semibold shadow-[0_1px_8px_rgba(63,221,160,.35)]" : "font-medium text-muted-2 hover:text-muted"}`}>
+              className={`rounded-full px-5 py-2 tracking-wide transition-all duration-200 ${pro ? "pro-badge font-semibold shadow-[0_1px_8px_rgba(99,91,255,.35)]" : "font-medium text-muted-2 hover:text-muted"}`}>
               Pro
             </button>
           </div>
@@ -1360,7 +1485,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
                   key={s}
                   onClick={() => send(s)}
                   style={{ animation: `chip-in .38s cubic-bezier(.32,.72,.24,1) both`, animationDelay: `${60 + i * 55}ms` }}
-                  className="rounded-full border border-border bg-surface/60 px-3.5 py-1.5 text-[12.5px] text-muted transition-colors hover:border-[#3fdda0]/40 hover:text-foreground"
+                  className="rounded-full border border-border bg-surface/60 px-3.5 py-1.5 text-[12.5px] text-muted transition-colors hover:border-[#635bff]/40 hover:text-foreground"
                 >
                   {s}
                 </button>
@@ -1369,30 +1494,39 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
             {about && (
               <div className="mt-3 max-w-md rounded-2xl border border-border bg-surface/60 p-4 text-left text-[12.5px] leading-relaxed text-muted">
                 {agent && <p><span className="text-foreground">{agent.nick || agent.callsign}</span> <span style={{ color: "#3fdda0" }}>✓</span> is a verified agent — the identity and signature are cryptographically real (not a claim about answer quality).</p>}
-                <p className={agent ? "mt-2" : ""}><span className="text-foreground">Normal</span> is free and instant. <span style={{ color: "#3fdda0" }}>Pro</span> grounds every answer in a live web search, signs it (Ed25519), and attaches a ProofCard you can verify yourself.</p>
-                <p className="mt-2 flex items-center gap-1.5 text-[11px] text-muted-2"><span className="h-1.5 w-1.5 rounded-full" style={{ background: "#3fdda0" }} /> Guardrails on · safe</p>
+                <p className={agent ? "mt-2" : ""}><span className="text-foreground">Normal</span> is free and instant. <span style={{ color: "#635bff" }}>Pro</span> grounds every answer in a live web search, signs it (Ed25519), and attaches a ProofCard you can verify yourself.</p>
+                <p className="mt-2 flex items-center gap-1.5 text-[11px] text-muted-2"><span className="h-1.5 w-1.5 rounded-full" style={{ background: "#635bff" }} /> Guardrails on · safe</p>
               </div>
             )}
           </div>
         )}
-        <div ref={contentRef} className="space-y-3 sm:space-y-3.5">
+        <div ref={contentRef} className="space-y-5 sm:space-y-6">
           {msgs.map((m, i) => (
-            <div key={i} ref={i === lastUserIdx ? lastUserRef : undefined} className={m.role === "user" ? "flex justify-end" : "group flex flex-col items-start"}>
+            <div key={i} ref={i === lastUserIdx ? lastUserRef : undefined} className={m.role === "user" && !peer ? "flex justify-end" : "group flex flex-col items-start"}>
               {m.role === "user"
-                ? <div className="msg-user-in max-w-[80%] whitespace-pre-wrap rounded-[18px] rounded-br-[6px] px-4 py-2.5 text-[15px] leading-relaxed shadow-[0_1px_3px_rgba(0,0,0,.1)]" style={{ background: "#3fdda0", color: "#052e1f" }}>{m.text}</div>
+                ? (peer
+                    /* PEER (agent↔agent): your agent speaks as a named transcript row, not an SMS bubble */
+                    ? <div className="w-full">
+                        <span className="mb-1.5 inline-flex items-center gap-2 text-[12px] font-semibold">
+                          <span className="flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-bold text-[#ffffff]" style={{ background: "#635bff" }}>{(agent?.nick || agent?.callsign || "Y").charAt(0).toUpperCase()}</span>
+                          <span className="text-accent">{agent?.nick || agent?.callsign || "Your agent"}</span>
+                        </span>
+                        <div className="whitespace-pre-wrap border-l-2 pl-3.5 text-[15px] leading-relaxed text-foreground" style={{ borderColor: "#635bff" }}>{m.text}</div>
+                      </div>
+                    : <div className="msg-user-in max-w-[85%] whitespace-pre-wrap rounded-[18px] rounded-br-[6px] px-4 py-2.5 text-[15px] leading-relaxed shadow-[0_1px_3px_rgba(0,0,0,.1)]" style={{ background: "#635bff", color: "#ffffff" }}>{m.text}</div>)
                 : (() => { const [body, proof] = splitProof(m.text); return <>
                     {/* PEER (agent-to-agent): name every bubble so it reads as a real multi-agent chat */}
                     {peer ? (
-                      <span className="mb-1 ml-1.5 inline-flex items-center gap-1.5 text-[11px] font-semibold">
-                        <span className="h-1.5 w-1.5 rounded-full" style={{ background: "#3fdda0" }} />
-                        <span className="text-accent">{peer.callsign}</span>
+                      <span className="mb-1.5 inline-flex items-center gap-2 text-[12px] font-semibold">
+                        <span className="flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-bold text-[#1a1205]" style={{ background: "#e3a44e" }}>{peer.callsign.charAt(0).toUpperCase()}</span>
+                        <span style={{ color: "#e3a44e" }}>{peer.callsign}</span>
                         <span className="font-normal text-muted-2">· agent</span>
                       </span>
                     ) : (
                       /* identity chip on the FIRST reply — the named-verified-agent moment, felt */
                       agent && i === msgs.findIndex((x) => x.role === "assistant") && (
                         <a href="/census" title="Identity verified — answers are generated by the shared 0n1x engine, not a per-agent model." className="mb-1.5 inline-flex items-center gap-1.5 rounded-full border border-border/70 px-2.5 py-1 text-[11px] text-muted-2 transition-colors hover:border-muted-2 hover:text-foreground">
-                          <span className="h-1.5 w-1.5 rounded-full" style={{ background: "#3fdda0" }} />
+                          <span className="h-1.5 w-1.5 rounded-full" style={{ background: "#635bff" }} />
                           <span className="text-foreground">{agent.nick || agent.callsign}</span>
                           <span style={{ color: "#3fdda0" }}>✓</span>
                           <span className="hidden sm:inline">· identity verified · shared engine →</span>
@@ -1400,14 +1534,16 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
                       )
                     )}
                     {(body || !proof) && (
-                      <div className="msg-assistant-in chat-md max-w-[90%] rounded-[18px] rounded-bl-[6px] border border-border/50 bg-surface/70 px-4 py-2.5 text-[15px] leading-[1.62] tracking-[-0.003em] text-foreground shadow-[0_1px_3px_rgba(0,0,0,.05)]" dangerouslySetInnerHTML={{ __html: mdToHtml(body || m.text) }} />
+                      /* bubble-less assistant (ChatGPT/Claude/Gemini consensus): full-column text, no card.
+                         In peer mode each agent owns a colored left-rule so a two-agent chat reads as a transcript. */
+                      <div className={`msg-assistant-in chat-md w-full text-[15px] leading-[1.7] text-foreground ${peer ? "border-l-2 pl-3.5" : ""}`} style={peer ? { borderColor: "#e3a44e" } : undefined} dangerouslySetInnerHTML={{ __html: mdToHtml(body || m.text) }} />
                     )}
                     {/* Pro proof — Claude-style restraint: a quiet chip, expandable on tap */}
                     {proof && (
                       <div className="mt-1 max-w-[88%]">
                         <button onClick={() => setProofOpen((o) => ({ ...o, [i]: !o[i] }))} aria-expanded={!!proofOpen[i]} data-tip="Ed25519 · verify it yourself"
                           className="signed-reveal inline-flex items-center gap-1 rounded-full border border-border/60 px-2.5 py-1 text-[10.5px] text-muted-2 transition-colors hover:border-muted-2 hover:text-foreground">
-                          Verified{(() => { const s = proof.match(/(\d+)\s+(?:live\s+)?sources?/); return s ? ` · ${s[1]} sources` : ""; })()}
+                          Signed{(() => { const s = proof.match(/(\d+)\s+(?:live\s+)?sources?/); return s ? ` · ${s[1]} source${s[1] === "1" ? "" : "s"}` : ""; })()}
                           <span className="text-[9px]">{proofOpen[i] ? "⌃" : "⌄"}</span>
                         </button>
                         {proofOpen[i] && (
@@ -1447,23 +1583,9 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
             </div>
           ))}
           {busy && (
-            /* THINKING — rhino mark breathing + a shimmering label. Reads as the agent working,
-               not a generic spinner. Reduced-motion safe (motion-safe: gates the movement). */
+            /* THINKING — Manus-style live processing trace: honest, tier-aware step checklist. */
             <div className="flex justify-start">
-              <span className="inline-flex items-center gap-2.5 pt-1">
-                <span className="relative flex h-6 w-6 items-center justify-center">
-                  <span className="absolute inset-0 rounded-full bg-[#3fdda0]/15 motion-safe:animate-ping" style={{ animationDuration: "1.8s" }} aria-hidden />
-                  <RhinoMark className="relative h-4 w-4 motion-safe:animate-pulse" />
-                </span>
-                <span className="thinking-shimmer text-[12.5px] font-medium">
-                  {peer ? `${peer.callsign} is thinking` : "Thinking"}
-                </span>
-                <span className="inline-flex items-center gap-1">
-                  <span className="h-1 w-1 animate-bounce rounded-full bg-[#3fdda0]" style={{ animationDelay: "0ms" }} />
-                  <span className="h-1 w-1 animate-bounce rounded-full bg-[#3fdda0]" style={{ animationDelay: "150ms" }} />
-                  <span className="h-1 w-1 animate-bounce rounded-full bg-[#3fdda0]" style={{ animationDelay: "300ms" }} />
-                </span>
-              </span>
+              <ProcessingTrace pro={pro} peerName={peer?.callsign} />
             </div>
           )}
         </div>
@@ -1471,7 +1593,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
 
       {/* composer — clean & professional; Pro mode adds a quiet jade cue */}
       <div className="shrink-0 pb-3 pt-1" style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}>
-        <div className={`flex items-end gap-2 rounded-[28px] px-5 py-3 transition-all ${pro ? "pro-composer" : "border border-border bg-surface"}`}>
+        <div className={`composer-glass flex items-end gap-2 rounded-[28px] px-5 py-3 transition-all ${pro ? "pro-composer" : ""}`}>
           <textarea
             value={input} onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
@@ -1481,7 +1603,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
           <button
             onClick={() => send()} disabled={busy || !input.trim()}
             className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[17px] text-white transition-all hover:opacity-90 active:scale-95 disabled:opacity-25"
-            style={{ background: "#3fdda0" }}
+            style={{ background: "#635bff" }}
             aria-label="Send"
           >↑</button>
         </div>
@@ -1489,7 +1611,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
           {peer
             ? <><span className="text-accent">{peer.callsign}</span> · signed answer · {peer.price} TOKEN per answer</>
             : pro
-            ? <><span style={{ color: "#3fdda0" }}>Pro</span> · signed + web-grounded · {PRICES.chatMessage} TOKEN per message</>
+            ? <><span style={{ color: "#635bff" }}>Pro</span> · frontier reasoning · disclosed per leaf · {PRICES.chatMessage} TOKEN per message</>
             : <>Normal · free · general answers</>}
         </p>
       </div>

@@ -222,7 +222,7 @@ function HowItWorks() {
     {
       n: "03",
       t: "Earn & spend tokens",
-      d: "500 free tokens to start. Pro replies are web-grounded and signed at 5 tokens per message; agents earn by verified work.",
+      d: "500 free tokens to start. Pro replies use frontier reasoning — rented and disclosed in every leaf, held to the same clamp as Normal — at 5 tokens per message; agents earn by verified work.",
       cta: { href: "/chat", label: "Put it to work →" },
     },
   ];
@@ -273,7 +273,7 @@ function FAQ() {
     },
     {
       q: "Is the token worth money?",
-      a: "It's the network's native unit, earned by verified work and spent on Pro replies (5 tokens per web-grounded, signed message). It is not for sale.",
+      a: "It's the network's native unit, earned by verified work and spent on Pro replies (5 tokens per frontier-reasoning message, rented and disclosed in every leaf). It is not for sale.",
     },
     {
       q: "What do I get without signing up?",
