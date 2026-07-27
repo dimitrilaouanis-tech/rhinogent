@@ -91,8 +91,18 @@ export function MatrixCharts({ ranking, agents, metrics }: { ranking: Mover[]; a
 
   const last = hist[hist.length - 1];
   const prev = hist[hist.length - 2];
-  const dCirc = last && prev ? last.circulating - prev.circulating : 0;
-  const dTx = last && prev ? last.txs - prev.txs : 0;
+  // STALENESS IS A DISPLAY STATE, not an error state. census_history is a snapshot log: when its
+  // writer stops, this component keeps polling happily and keeps rendering the last entry as
+  // current — a frozen series is byte-identical to a quiet one, so nothing can throw. That is
+  // exactly what happened (writer stopped 2026-07-10; the page showed it as LIVE for 17 days).
+  // So freshness is computed from the DATA's own timestamp, never from the fact a fetch succeeded.
+  const STALE_MS = 6 * 60 * 60 * 1000;                    // older than 6h => not "live"
+  const lastMs = last ? Date.parse(last.ts) : NaN;
+  const stale = !last || !Number.isFinite(lastMs) || Date.now() - lastMs > STALE_MS;
+  // Deltas between two frozen entries describe movement that stopped days ago. Showing them as
+  // current movement is worse than showing nothing, so they are suppressed while stale.
+  const dCirc = !stale && last && prev ? last.circulating - prev.circulating : 0;
+  const dTx = !stale && last && prev ? last.txs - prev.txs : 0;
   const gainers = [...ranking].filter((r) => r.flow > 0).sort((a, b) => b.flow - a.flow).slice(0, 7);
   const spenders = [...ranking].filter((r) => r.flow < 0).sort((a, b) => a.flow - b.flow).slice(0, 7);
   const maxAbs = Math.max(1, ...gainers.map((g) => g.flow), ...spenders.map((s) => -s.flow));
@@ -104,14 +114,26 @@ export function MatrixCharts({ ranking, agents, metrics }: { ranking: Mover[]; a
         <Kpi label="agents" value={agents.toLocaleString()} />
         <Kpi label="tokens circulating" value={(last?.circulating ?? 0).toLocaleString()}
              delta={dCirc} spark={<Spark vals={hist.map((h) => h.circulating)} />} accent />
-        <Kpi label="signed transactions" value={(last?.txs || 76000).toLocaleString()}
+        {/* No magic fallback: this used to render 76,000 when the feed was missing, which put an
+            invented number under a real label. Unknown must LOOK unknown. */}
+        <Kpi label="signed transactions" value={last ? last.txs.toLocaleString() : "—"}
              delta={dTx} spark={<Spark vals={hist.map((h) => h.txs)} color="#0a9d6e" />} />
         <div className="ml-auto flex flex-col items-end justify-center pr-1">
-          <span className="flex items-center gap-1.5 font-mono text-[11px] text-emerald">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald" /> LIVE
-          </span>
+          {stale ? (
+            <span className="flex items-center gap-1.5 font-mono text-[11px] text-muted-2">
+              <span className="h-1.5 w-1.5 rounded-full bg-muted-2" /> STALE
+            </span>
+          ) : (
+            <span className="flex items-center gap-1.5 font-mono text-[11px] text-emerald">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald" /> LIVE
+            </span>
+          )}
           <span className="font-mono text-[10px] tabular-nums text-muted-2">
-            {last ? `epoch ${ago(last.ts)} · next poll ${countdown}s` : "loading epochs…"}
+            {last
+              ? stale
+                ? `last epoch ${ago(last.ts)} · heartbeat stopped`
+                : `epoch ${ago(last.ts)} · next poll ${countdown}s`
+              : "loading epochs…"}
           </span>
         </div>
       </div>
@@ -123,12 +145,19 @@ export function MatrixCharts({ ranking, agents, metrics }: { ranking: Mover[]; a
         </p>
         <div className="mt-2.5 flex items-stretch gap-2 overflow-x-auto pb-1">
           {/* forming epoch — pulsing, fills until the next heartbeat seals it */}
-          <div className="flex min-w-[92px] flex-none flex-col justify-between rounded-lg border-2 border-dashed border-emerald/50 bg-emerald/5 p-2">
-            <span className="font-mono text-[9px] uppercase tracking-wider text-emerald">forming</span>
-            <span className="my-1 h-2 w-full overflow-hidden rounded bg-emerald/15">
-              <span className="block h-full animate-pulse rounded bg-emerald/50" style={{ width: `${100 - (countdown / 60) * 100}%` }} />
+          {/* A "forming" block that fills toward sealing is a PROMISE about the next heartbeat.
+              While the heartbeat is stopped that promise is fiction, so the block states the
+              stall instead of animating toward an event that will not arrive. */}
+          <div className={`flex min-w-[92px] flex-none flex-col justify-between rounded-lg border-2 border-dashed p-2 ${stale ? "border-border bg-transparent" : "border-emerald/50 bg-emerald/5"}`}>
+            <span className={`font-mono text-[9px] uppercase tracking-wider ${stale ? "text-muted-2" : "text-emerald"}`}>
+              {stale ? "stalled" : "forming"}
             </span>
-            <span className="font-mono text-[9px] text-muted-2">seals on next ♥</span>
+            <span className="my-1 h-2 w-full overflow-hidden rounded bg-emerald/15">
+              {!stale && (
+                <span className="block h-full animate-pulse rounded bg-emerald/50" style={{ width: `${100 - (countdown / 60) * 100}%` }} />
+              )}
+            </span>
+            <span className="font-mono text-[9px] text-muted-2">{stale ? "no new epochs" : "seals on next ♥"}</span>
           </div>
           <div className="w-px flex-none self-stretch border-l border-dashed border-border" />
           {/* sealed epochs march right, newest first */}
