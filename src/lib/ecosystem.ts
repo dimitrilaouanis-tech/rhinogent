@@ -3,6 +3,13 @@
 export type Citizen = { callsign: string; address: string; specialty: string; kind: string; score: number; usdc: number; proofcard: string; };
 
 export const ECOSYSTEM_TOTAL_USDC = 5.0;
+// DO NOT DISPLAY THIS. It is a build-time constant that stopped tracking reality long ago
+// (it read 1,000,000 while the live census was 5,428,052) and it cannot track reality, because
+// the census grows continuously and this file only changes when someone edits it.
+// The agent count MUST come from the live feed (census_manifest.json / live_count.json), which
+// is what every surface now does — rendering "—" while unknown rather than a stale placeholder.
+// Kept only so existing imports don't break; there is no correct display use for it.
+/** @deprecated Not a live count. Read census_manifest.json instead. */
 export const ECOSYSTEM_COUNT = 1000000;
 export const ECOSYSTEM_FUNDED = 14;
 

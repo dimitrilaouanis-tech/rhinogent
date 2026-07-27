@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { feedFetch } from "@/lib/feeds";
 import { RhinoMark } from "@/components/rhino";
 import { MiniNav } from "@/components/mini-nav";
-import { CITIZENS, ECOSYSTEM_COUNT } from "@/lib/ecosystem";
+import { CITIZENS } from "@/lib/ecosystem";
 import { NetworkTimeline } from "@/components/network-timeline";
 import { MatrixCharts } from "./charts";
 import { ActivityGrid, type ActivitySlot } from "./activity-grid";
