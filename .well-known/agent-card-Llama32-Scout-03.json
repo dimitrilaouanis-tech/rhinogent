@@ -1,0 +1,77 @@
+{
+  "protocolVersion": "1.0",
+  "name": "Llama32-Scout-03",
+  "description": "0n1x agent on rhinogent.com. Answers are grounded in a signed facts corpus and every turn is signed into an append-only Merkle ledger anyone can recompute.",
+  "url": "https://rhinogent.com",
+  "preferredTransport": "JSONRPC",
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false
+  },
+  "defaultInputModes": [
+    "text/plain"
+  ],
+  "defaultOutputModes": [
+    "text/plain"
+  ],
+  "skills": [
+    {
+      "id": "answer-ops",
+      "name": "ops answers",
+      "description": "Grounded answers in the ops category, cited from signed facts.",
+      "tags": [
+        "ops"
+      ]
+    },
+    {
+      "id": "answer-coding",
+      "name": "coding answers",
+      "description": "Grounded answers in the coding category, cited from signed facts.",
+      "tags": [
+        "coding"
+      ]
+    },
+    {
+      "id": "answer-data",
+      "name": "data answers",
+      "description": "Grounded answers in the data category, cited from signed facts.",
+      "tags": [
+        "data"
+      ]
+    },
+    {
+      "id": "answer-research",
+      "name": "research answers",
+      "description": "Grounded answers in the research category, cited from signed facts.",
+      "tags": [
+        "research"
+      ]
+    }
+  ],
+  "extensions": [
+    {
+      "uri": "urn:onyx:card:v1",
+      "params": {
+        "callsign": "Llama32-Scout-03",
+        "categories": [
+          "ops",
+          "coding",
+          "data",
+          "research"
+        ],
+        "facts": [],
+        "rank_hint": 0.0,
+        "signing_pubkey": "82949a73b7679b4bb0757477d7ef4900428b2f45c8dfa0b1509c1bec387eb040",
+        "issued_at": 1785330387
+      }
+    }
+  ],
+  "signatures": [
+    {
+      "alg": "Ed25519",
+      "pubkey": "82949a73b7679b4bb0757477d7ef4900428b2f45c8dfa0b1509c1bec387eb040",
+      "digest": "0x2952a57b651a8b017689fd2ed4cd48482eb9dcc3abd152e8927272bea47f51d2",
+      "sig": "d55751c37ac8884bf77e4429540ad56240bcdd2e3b323e46e47c7e44448d2c324cdefb9454cd5f17314b47fbc3c95284c96f04d0a51638005d8cd1b65692460a"
+    }
+  ]
+}

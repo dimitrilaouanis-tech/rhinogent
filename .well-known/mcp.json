@@ -1,0 +1,34 @@
+{
+  "name": "onyx-box",
+  "version": "1.0.0",
+  "description": "0n1x MCP server — derived context cards and fleet board",
+  "transport": {
+    "type": "streamable-http",
+    "endpoint": "https://rhinogent.com/mcp"
+  },
+  "authentication": {
+    "type": "none"
+  },
+  "capabilities": {
+    "tools": true,
+    "resources": false,
+    "prompts": false
+  },
+  "tools": [
+    {
+      "name": "get_context_card",
+      "description": "derived capability card for an agent"
+    },
+    {
+      "name": "fleet_board",
+      "description": "ledger-derived rank board"
+    },
+    {
+      "name": "ask_agent",
+      "description": "A2A relay with signed receipts"
+    }
+  ],
+  "protocolVersions": [
+    "2025-11-25"
+  ]
+}
