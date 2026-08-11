@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "./design-motion.css";
+@import "./chat-solid.css";
 
 /* ─────────────────────────────────────────────
    Rhinogent — design tokens
@@ -270,6 +271,9 @@ body { font-feature-settings: "cv11", "ss01"; text-rendering: optimizeLegibility
   50%     { box-shadow: 0 0 0 1px rgba(124,154,255,.6), 0 0 30px rgba(124,154,255,.24); }
 }
 @keyframes proSheen { 0% { background-position: 0% 50%; } 100% { background-position: 300% 50%; } }
+/* SEAMLESS badge sheen: travel exactly one gradient tile (200%, matching the badge's
+   background-size) so the jade end meets the jade start with no snap — fixes the loop "lag". */
+@keyframes proSheenBadge { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
 .pro-composer {
   animation: proGlow 3.2s ease-in-out infinite, proSheen 5.5s linear infinite;
   border-color: transparent !important;
@@ -285,7 +289,7 @@ body { font-feature-settings: "cv11", "ss01"; text-rendering: optimizeLegibility
 .pro-badge {
   background: linear-gradient(110deg,#3fdda0,#7c9aff,#3fdda0);
   background-size: 200% 100%;
-  animation: proSheen 3s linear infinite;
+  animation: proSheenBadge 3s linear infinite;   /* matched-tile travel → seamless, no snap */
   color: #04120b; font-weight: 700;
 }
 
@@ -435,7 +439,100 @@ h2.display { letter-spacing: -0.03em; }
 }
 @media (prefers-reduced-motion: no-preference) {
   .thinking-shimmer { animation: thinkingShimmer 2.2s linear infinite; }
+  /* each processing step slides in as it's revealed — the "it's working" tell */
+  .proc-row { animation: procRow .34s cubic-bezier(.2,.8,.2,1) both; }
+}
+@keyframes procRow { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── 7-CORE LATTICE ──────────────────────────────────────────────────────────
+   The chat's working-state mark: seven cores (one hub + a ring of six) that
+   charge in sequence while the lattice slowly rotates. Replaces the dead
+   spinner — a spinner says "waiting", a lattice says "seven things are
+   running". Pure SVG + CSS, no assets, no deps, reduced-motion safe.
+   Each core is staggered by --d so the charge travels the ring instead of
+   all seven blinking together. */
+@keyframes latSpin  { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes latCore  { 0%, 100% { opacity: .22; r: 1.7; } 45% { opacity: 1; r: 2.9; } }
+@keyframes latEdge  { 0%, 100% { opacity: .10; } 45% { opacity: .55; } }
+.lattice-core { opacity: .22; animation-delay: var(--d, 0s); transform-box: fill-box; }
+.lattice-edge { opacity: .10; animation-delay: var(--d, 0s); }
+@media (prefers-reduced-motion: no-preference) {
+  .lattice-spin { animation: latSpin 9s linear infinite; transform-origin: 50% 50%; }
+  .lattice-core { animation: latCore 1.9s ease-in-out infinite; }
+  .lattice-edge { animation: latEdge 1.9s ease-in-out infinite; }
+}
+/* reduced motion: hold the lattice lit and still — legible, never strobing */
+@media (prefers-reduced-motion: reduce) {
+  .lattice-core { opacity: .8; }
+  .lattice-edge { opacity: .35; }
+}
+
+/* PHASE SWAP — the seven phases share ONE slot in a square instead of stacking
+   into a wall of text. Each phase slides up and out as the next slides in, so
+   the box stays the same size and the eye stays on one line. */
+@keyframes phaseSwap {
+  0%   { opacity: 0; transform: translateY(7px); }
+  18%  { opacity: 1; transform: translateY(0); }
+  82%  { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-7px); }
+}
+.phase-swap { animation: phaseSwap var(--dur, .62s) ease-in-out both; }
+@media (prefers-reduced-motion: reduce) { .phase-swap { animation: none; opacity: 1; } }
+
+/* COMPOSER GLASS — premium floating input. Glass belongs on chrome (composer/topbar),
+   never behind body text. Blur 8–20px + saturate = the "liquid glass" pop; a translucent
+   top hairline reads as a real glass edge. Focus deepens the shadow instead of a harsh ring. */
+.composer-glass {
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-top-color: rgba(255, 255, 255, 0.6);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  backdrop-filter: blur(18px) saturate(180%);
+  box-shadow: 0 4px 16px -8px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+.composer-glass:focus-within {
+  border-color: rgba(99, 91, 255, 0.35);
+  box-shadow: 0 6px 24px -8px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+/* dark variant is gated to an explicit data-theme only — the site has no OS-dark
+   mode yet, so a bare prefers-color-scheme block would flip ONLY the composer to
+   navy on a dark-OS laptop while the page stays white (reads as a bug in a demo). */
+:root[data-theme="dark"] .composer-glass {
+  background: rgba(17, 25, 40, 0.65);
+  border-color: rgba(255, 255, 255, 0.10);
+  border-top-color: rgba(255, 255, 255, 0.16);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.30);
+}
+:root[data-theme="light"] .composer-glass {
+  background: rgba(255, 255, 255, 0.72);
+  border-color: rgba(0, 0, 0, 0.08);
+  border-top-color: rgba(255, 255, 255, 0.6);
 }
 
 @media (prefers-reduced-motion: no-preference) {
+}
+
+
+/* CLI MODE -- the whole transcript is the terminal, not just the input.
+   A mode that only skins the composer still reads as a chat window with a
+   green box at the bottom; the point is that the surface looks like what it
+   is. Overrides bubble chrome so replies render as output, not as speech. */
+/* The container paints black; CHILDREN go transparent so it shows through.
+   Merged into one selector, the wildcard cleared the container's own
+   background too -- the page showed through everything and "black" never
+   appeared. Two rules, not one. */
+.cli-terminal {
+  background: #000 !important;
+}
+.cli-terminal * {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace !important;
+  color: #6ee7b7 !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+.cli-terminal a { color: #34d399 !important; text-decoration: underline; }
+.cli-terminal strong, .cli-terminal b { color: #a7f3d0 !important; }
+.cli-terminal code, .cli-terminal pre {
+  background: #052e1a !important; color: #6ee7b7 !important;
 }

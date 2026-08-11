@@ -14,12 +14,53 @@ import { supabase } from "@/lib/supabase";
 // checked off as it advances, so the wait reads as the agent *working*, not a dead spinner.
 // HONEST BY TIER: the steps name what actually happens. Pro really web-grounds + signs, so it
 // lists those; Normal has no web access, so it never claims to "search" — no fabricated work.
+// SEVEN-CORE LATTICE — the working mark. One hub + a ring of six = seven cores,
+// each charging on its own stagger while the whole lattice rotates slowly. A
+// spinner says "waiting"; a lattice says "seven things are running". The count
+// is not decorative — it's the seven pipeline phases named in the trace below.
+function QubitLattice({ size = 26 }: { size?: number }) {
+  // ring of six on a unit hexagon, radius 8 around centre (14,14)
+  const R = 8;
+  const ring = Array.from({ length: 6 }, (_, i) => {
+    const a = (Math.PI / 3) * i - Math.PI / 2;
+    return { x: 14 + R * Math.cos(a), y: 14 + R * Math.sin(a) };
+  });
+  return (
+    <svg viewBox="0 0 28 28" width={size} height={size} aria-hidden className="shrink-0">
+      <g className="lattice-spin">
+        {ring.map((p, i) => (
+          <g key={`e${i}`}>
+            {/* spoke: hub → core */}
+            <line className="lattice-edge" style={{ ["--d" as string]: `${i * 0.18}s` }}
+              x1={14} y1={14} x2={p.x} y2={p.y} stroke="#635bff" strokeWidth="0.7" />
+            {/* rim: core → next core, closing the lattice */}
+            <line className="lattice-edge" style={{ ["--d" as string]: `${i * 0.18 + 0.09}s` }}
+              x1={p.x} y1={p.y} x2={ring[(i + 1) % 6].x} y2={ring[(i + 1) % 6].y}
+              stroke="#635bff" strokeWidth="0.55" />
+          </g>
+        ))}
+        {ring.map((p, i) => (
+          <circle key={`c${i}`} className="lattice-core" style={{ ["--d" as string]: `${i * 0.18}s` }}
+            cx={p.x} cy={p.y} r="1.7" fill="#635bff" />
+        ))}
+        {/* the seventh: the hub, charging last — the signing core */}
+        <circle className="lattice-core" style={{ ["--d" as string]: "1.08s" }}
+          cx={14} cy={14} r="2" fill="#0a9d6e" />
+      </g>
+    </svg>
+  );
+}
+
 function ProcessingTrace({ pro, peerName }: { pro: boolean; peerName?: string }) {
+  // The steps NAME WHAT ACTUALLY RUNS — never fabricated work. Normal now
+  // genuinely retrieves signed facts, filters unsourced claims, and signs a
+  // leaf (agent_chat.py: retrieve → grounding → gate → cite), so the trace
+  // finally says so. Pro really web-grounds. Peer really round-trips.
   const steps = peerName
-    ? [`${peerName} received it`, "Reasoning", "Replying"]
+    ? [`${peerName} received it`, "Verifying the signature", "Reasoning", "Replying"]
     : pro
-      ? ["Reading your message", "Searching the live web", "Verifying the sources", "Signing the proof", "Composing the answer"]
-      : ["Reading your message", "Thinking it through", "Composing the answer"];
+      ? ["Reading your message", "Searching the live web", "Verifying the sources", "Filtering unsourced claims", "Signing the proof", "Composing the answer"]
+      : ["Reading your message", "Checking the signed facts", "Retrieving leaves", "Drafting", "Filtering unsourced claims", "Composing the answer", "Signing the leaf"];
   const [i, setI] = useState(0);
   // LIVE TOKEN TICKER — Pro/peer answers cost TOKEN, so while the agent works we tick a counter
   // upward (like a frontier model showing tokens accruing). Only on charged tiers; Normal is free.
@@ -28,7 +69,9 @@ function ProcessingTrace({ pro, peerName }: { pro: boolean; peerName?: string })
   useEffect(() => {
     setI(0);
     // advance on a timer but HOLD on the last step — real completion unmounts this (busy → false)
-    const t = setInterval(() => setI((p) => (p < steps.length - 1 ? p + 1 : p)), pro ? 1150 : 900);
+    // Normal has 7 phases and streams fast — pace them tighter so the trace
+    // keeps up with the answer instead of lagging behind it.
+    const t = setInterval(() => setI((p) => (p < steps.length - 1 ? p + 1 : p)), pro ? 1150 : 620);
     return () => clearInterval(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pro, peerName]);
@@ -39,41 +82,40 @@ function ProcessingTrace({ pro, peerName }: { pro: boolean; peerName?: string })
     const t = setInterval(() => setTok((n) => n + Math.ceil((n + 6) / 9)), 85);
     return () => clearInterval(t);
   }, [charged]);
+  // ONE SQUARE, WORDS SWAP IN PLACE. Seven stacked rows was a wall of text that
+  // grew while you read it; a fixed square with a single swapping line keeps the
+  // box still and the eye on one word. The pips underneath carry the progress
+  // the stack used to carry — nothing is lost, it just stops shouting.
+  const total = steps.length;
   return (
-    <div className="flex items-start gap-2.5 pt-1">
-      <span className="relative mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center">
-        <span className="absolute inset-0 rounded-full bg-[#635bff]/15 motion-safe:animate-ping" style={{ animationDuration: "1.8s" }} aria-hidden />
-        <RhinoMark className="relative h-4 w-4 motion-safe:animate-pulse" />
-      </span>
-      <div className="flex flex-col gap-1.5">
-        {charged && (
-          <span className="mb-0.5 inline-flex w-fit items-center gap-1.5 rounded-full bg-[#635bff]/10 px-2.5 py-0.5 text-[11px] font-semibold text-accent">
-            <span aria-hidden>◇</span>
-            <span className="tabular-nums">{tok.toLocaleString()}</span>
-            <span className="text-[9.5px] font-medium tracking-wide text-muted-2">TOKEN</span>
-          </span>
-        )}
-        {steps.slice(0, i + 1).map((s, idx) => {
-          const done = idx < i;
-          return (
-            <div key={idx} className="proc-row flex items-center gap-2">
-              <span className="flex h-3.5 w-3.5 shrink-0 items-center justify-center">
-                {done ? (
-                  <svg viewBox="0 0 14 14" className="h-3.5 w-3.5" aria-hidden>
-                    <circle cx="7" cy="7" r="6.5" fill="#635bff" fillOpacity="0.16" />
-                    <path d="M4 7.2l2 2 4-4.4" fill="none" stroke="#0a9d6e" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                ) : (
-                  <span className="relative flex h-2.5 w-2.5 items-center justify-center">
-                    <span className="absolute inset-0 rounded-full bg-[#635bff]/25 motion-safe:animate-ping" aria-hidden />
-                    <span className="h-1.5 w-1.5 rounded-full bg-[#635bff]" />
-                  </span>
-                )}
-              </span>
-              <span className={done ? "text-[12.5px] text-muted-2" : "thinking-shimmer text-[12.5px] font-medium"}>{s}</span>
-            </div>
-          );
-        })}
+    <div className="pt-1">
+      <div className="inline-flex items-center gap-3 rounded-2xl border border-border bg-surface/50 px-3.5 py-3">
+        <QubitLattice size={30} />
+        <div className="flex flex-col gap-1.5">
+          {charged && (
+            <span className="inline-flex w-fit items-center gap-1.5 rounded-full bg-[#635bff]/10 px-2 py-0.5 text-[10.5px] font-semibold text-accent">
+              <span aria-hidden>◇</span>
+              <span className="tabular-nums">{tok.toLocaleString()}</span>
+              <span className="text-[9px] font-medium tracking-wide text-muted-2">TOKEN</span>
+            </span>
+          )}
+          {/* the swapping slot — fixed height so the square never resizes */}
+          <div className="flex h-[17px] min-w-[168px] items-center overflow-hidden">
+            <span key={i} className="phase-swap thinking-shimmer whitespace-nowrap text-[12.5px] font-medium"
+              style={{ ["--dur" as string]: pro ? "1.15s" : "0.62s" }}>
+              {steps[i]}
+            </span>
+          </div>
+          {/* seven pips = seven phases; filled ones are done */}
+          <div className="flex items-center gap-1" aria-hidden>
+            {Array.from({ length: total }, (_, k) => (
+              <span key={k}
+                className={`h-1 rounded-full transition-all duration-300 ${
+                  k < i ? "w-3 bg-[#635bff]/70" : k === i ? "w-3 bg-[#635bff]" : "w-1.5 bg-[#635bff]/20"
+                }`} />
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -179,7 +221,7 @@ const KB: [RegExp, string][] = [
   [/verify before|before .{0,4}pay|counterparty/i, "Before an agent settles a payment, it checks whether the counterparty is real and gets back a **signed verdict** (PROCEED / REVIEW / HOLD). Payment rails verify the payment; this verifies the thing you're paying for."],
   [/earn|token|reward|make money|get paid/i, "Your agent **earns** TOKENs for contributing data that verifies — signed, matching the census. Good verified data pays; bad or unsigned data earns nothing. New accounts get a free 500-token grant."],
   [/self.?custody|keys|wallet|mint/i, "**Self-custody:** your keys are generated in your browser and never leave your device. Nobody else holds them, so there's nothing to seize, freeze, or leak."],
-  [/how many|census|count|registered|how big/i, "The live count is on the **census counter** (bound to the signed `census_manifest.json`) — millions of signed agent identities in the 0n1x fleet, and climbing. Honest scope: that's **our own fleet, not external adoption yet** — the verification gap is exactly what we exist to close. It's Merkle-rooted, so anyone can recompute the count from the public shards."],
+  [/how many|census|count|registered|how big/i, "The live count is on the **census counter** (bound to the signed `census_manifest.json`) — millions of signed agent identities minted through 0n1x, and climbing. Honest scope: **we do not currently measure how many are operated by us versus by outside parties**, so I won't claim it either way — provenance per identity isn't instrumented yet. What IS checkable: it's Merkle-rooted, so anyone can recompute the count from the public shards."],
   [/how.{0,12}verify|prove.{0,8}agent|is it real/i, "AI agents verify each other cryptographically: (1) signed identity (did:pkh, ERC-8004), (2) proof of what it actually did, (3) a liveness challenge, (4) verify-before-you-pay on the counterparty, (5) spend caps — not human paperwork."],
   [/pro|signed|web|premium/i, "**Pro** answers are grounded in a live web search, cryptographically signed (Ed25519), and come with a ProofCard you can verify yourself. Switch the toggle to Pro for those."],
   [/stored|store|saved|save.{0,6}chat|privacy|retain|kept|logged/i, "**Privacy:** Normal-tier conversations are **not stored on our servers**. Your chat stays in your own browser and syncs to your account only when you're signed in. We keep no server-side copy of Normal chats and hold none of your keys."],
@@ -196,6 +238,12 @@ function groundGuard(reply: string): string {
     [/npm\s+install|@0n1x\/|on1x\s+(init|pay|earn|submit)|install\s+-g|\bon1x\s+cli\b/i, "There's **no CLI or npm package** — it's fetch-first and browser-native. Mint an agent at rhinogent.com/dashboard and read the signed JSON feeds over plain HTTP. Any `npm install @0n1x/...` command is not real."],
     [/stored?\s+(on|in|at)\s+(the\s+)?0n1x|0n1x\s+servers?|we\s+store\s+your\s+(chat|conversation|message)|server[- ]side\s+(copy|storage)\s+of\s+your/i, "**Privacy:** Normal-tier conversations are **not** stored on our servers. Your chat stays in your own browser and only syncs to your account if you sign in. We keep no server-side copy of Normal chats and hold none of your keys."],
     [/knowledge\s+cutoff|training\s+data\s+(is\s+)?(from|up\s+to)|(December|June)\s+20(2[0-9])|as\s+of\s+20(2[0-4])/i, "For live, current answers like today's date or the latest headlines, switch to **Pro** (frontier reasoning, disclosed per leaf). On Normal I answer from signed facts."],
+    // FLEET PROVENANCE — we do NOT measure who operates a minted identity. Outside parties have
+    // signed up and minted; claiming the census is "our own fleet" is false, and claiming it is
+    // external adoption would be equally unsupported. This row is deliberately retroactive:
+    // groundGuard runs over STORED assistant text on load, so old threads carrying the old claim
+    // are repaired on render instead of sitting in history telling users something untrue.
+    [/our own fleet|not external adoption|closed experiment|every agent in it is operated|operated by the 0n1x engine itself/i, "The live count is on the **census counter**, bound to the signed `census_manifest.json`. Honest scope: **we do not measure how many of those identities are operated by us versus by outside parties** — outside parties do mint here, and provenance per identity isn't instrumented yet, so I won't claim it either way. What IS checkable: the count is Merkle-rooted, so anyone can recompute it from the public shards."],
     // Backstop for the worst failure mode: the edge LLM writing 0n1x's own press releases. It has
     // no feed, so ANY claim that we announced/introduced/launched something is invented.
     [/0n1x\s+(team\s+)?(has\s+)?(recently\s+)?(announced|introduced|launched|released|unveiled|rolled\s+out)|(new|recent)\s+(agent\s+tiers|announcements?)\s+(have|has|were|was)/i, "I can't report 0n1x news on **Normal** — I have no live feed here, so anything I 'announced' would be invented. For real, current updates switch to **Pro** (frontier reasoning, disclosed per leaf). For how 0n1x works today, ask me directly and I'll answer from signed facts."],
@@ -208,6 +256,11 @@ function groundGuard(reply: string): string {
 // one honest "switch to Pro"; a false negative ships a fabricated fact under our own brand.
 const LIVE_INTENT =
   /\bnews\b|headlines?|breaking|latest|current(ly)?|today|tonight|yesterday|this (week|month|morning)|right now|what.{0,12}happening|recent (update|announcement|release)|announced|price of|stock|weather|who won|score/i;
+
+// Census/supply questions are LIVE but they are OURS: the signed manifest answers them, so they
+// must reach the brain rather than a stored string. Narrow on purpose — it only rescues counting.
+const CENSUS_INTENT =
+  /census|how many|how big|\bcount\b|circulat|supply|registered|minted|population|tree.?size/i;
 
 function localAnswer(q: string): string {
   for (const [re, a] of KB) if (re.test(q)) return a;
@@ -233,6 +286,29 @@ function bestKb(q: string, kb: { q: string; a: string }[]): string | null {
 const HUB = "https://rhinogent.com";
 let PORTAL = "https://onyx-actions.onrender.com";
 const WORKER = "https://onyx-chat.onyxagntc.workers.dev";   // always-on Normal-tier LLM (Cloudflare edge, no PC dependency)
+
+// THE SIGNED-FACTS BRAIN. The edge worker is always-on but has no corpus: asked
+// "do you hold my keys?" it answered "Rhinogent is busy on that one" while its
+// own chips claimed "GROUNDED — 6 signed facts". The node answers the same
+// question from F033, verbatim and cited, in ~0.6s. So we ask the node FIRST
+// and keep the worker as the fallback for when the node is unreachable —
+// always-on is preserved, but "always-on and wrong" stops being the default.
+const PORTAL_MANIFEST = "/portal.json";
+let _portalUrl: string | null = null;
+let _portalAt = 0;
+async function portalBase(): Promise<string | null> {
+  // The tunnel URL rotates, so re-read the manifest rather than pinning it.
+  if (_portalUrl && Date.now() - _portalAt < 120_000) return _portalUrl;
+  try {
+    const r = await fetch(PORTAL_MANIFEST, { cache: "no-store" });
+    if (!r.ok) return null;
+    const j = await r.json();
+    const u = String(j?.portal || "").replace(/\/+$/, "");
+    if (!/^https:\/\//.test(u)) return null;
+    _portalUrl = u; _portalAt = Date.now();
+    return u;
+  } catch { return null; }
+}
 const PRO_WORKER = "https://onyx-pro.onyxagntc.workers.dev";  // always-on Pro: Exa web-grounding + Ed25519-signed ProofCard
 
 // Signed FactChips from the 0n1x registry — render verified entities as signed chips; silence (nothing)
@@ -281,7 +357,7 @@ function splitProof(t: string): [string, string | null] {
   if (pre && !/\n\s*$/.test(pre)) return [t, null];   // mid-line 🔏 = content, not our annotation
   return [pre.replace(/\s+$/, ""), t.slice(i)];
 }
-type HistItem = { id: string; title: string; msgs: Msg[]; agent?: { callsign: string; address: string }; peer?: { callsign: string; address: string }; ts?: number };
+type HistItem = { id: string; title: string; msgs: Msg[]; agent?: { callsign: string; address: string }; peer?: { callsign: string; address: string }; ts?: number; live?: boolean };
 
 // Stable, unique agent callsign for a chat that has no stored agent — derived
 // deterministically from the thread id (each chat is its own identity). Same id
@@ -401,7 +477,43 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [balance, setBalance] = useState<number>(0);
-  const [pro, setPro] = useState<boolean>(false);   // Pro = burn token, full tools + web; Normal = free
+  // THREE TIERS, one state. `pro` stays a DERIVED boolean so every existing
+  // branch keeps working untouched — a rename across ~40 call sites is how a
+  // refactor turns into an outage.
+  //
+  //   Facts  signed corpus only. No model is called, so it cannot bluff,
+  //          cannot be metered, cannot be exhausted and cannot paywall —
+  //          each of which has been an observed failure on the other lanes.
+  //          It answers cited, or it says the corpus is silent.
+  //   Normal facts first, then the free lanes.
+  //   Pro    live web grounding + an Ed25519 ProofCard.
+  const [tier, setTier] = useState<"facts" | "normal" | "pro" | "cli">("normal");
+  // PRIVATE MODE. When on, the turn carries private:true and the server writes
+  // nothing to the exchange feed -- not the question, not the answer, not the
+  // outcome. The gate lives at the hook, so nothing downstream can leak what
+  // was never recorded. Persisted: choosing privacy once should survive a
+  // reload, because re-choosing it is how people forget to.
+  const [privateMode, setPrivateMode] = useState(false);
+  useEffect(() => {
+    try { setPrivateMode(localStorage.getItem("rhinogent.chat.private") === "1"); }
+    catch { /* storage blocked — default to recording, and the banner says so */ }
+  }, []);
+  const togglePrivate = () => {
+    setPrivateMode((v) => {
+      const n = !v;
+      try { localStorage.setItem("rhinogent.chat.private", n ? "1" : "0"); } catch {}
+      return n;
+    });
+  };
+  const [tierOpen, setTierOpen] = useState(false);   // header tier dropdown
+  const pro = tier === "pro";
+  const factsOnly = tier === "facts";
+  // CLI MODE is a SKIN over a backend that already enforces the rules:
+  // rhino_cli runs before every lane, reads are open, writes refuse, and
+  // unknown /commands decline instead of reaching the web. Nothing here
+  // grants power -- it only makes the surface look like what it is.
+  const cliMode = tier === "cli";
+  const setPro = (v: boolean) => setTier(v ? "pro" : "normal");
   const [conn, setConn] = useState<"ok" | "retrying" | "down">("ok");   // live connection status to the network brain
   const [history, setHistory] = useState<HistItem[]>([]);
   const [swipeId, setSwipeId] = useState<string | null>(null);   // which sidebar row is swiped open (armed for delete)
@@ -426,6 +538,22 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
   const [picker, setPicker] = useState(false);
   const scroller = useRef<HTMLDivElement>(null);
   const loadHistory = () => { try { setHistory(JSON.parse(localStorage.getItem("rhinogent.chat.history") || "[]")); } catch { setHistory([]); } };
+  // UPSERT, NOT UNSHIFT. The old model only wrote a thread to the sidebar when you LEFT it
+  // (agent switch / new chat / peer start) — so the conversation you were actually in was
+  // invisible while you had it, and anything that replaced it took it with no trace. A chat
+  // you can't see in the list is a chat you can lose. Now every message upserts the live
+  // thread under its own stable thread-key id, so the sidebar always holds the current one
+  // and archiving is just the same row losing its `live` flag.
+  const upsertHistory = (item: HistItem) => {
+    try {
+      const hist: HistItem[] = JSON.parse(localStorage.getItem("rhinogent.chat.history") || "[]");
+      const rest = hist.filter((h) => h.id !== item.id);
+      rest.unshift(item);
+      const next = rest.slice(0, 30);
+      localStorage.setItem("rhinogent.chat.history", JSON.stringify(next));
+      setHistory(next);
+    } catch { /**/ }
+  };
   // Each agent/wallet gets its OWN saved "current" conversation draft, keyed by address.
   const curKey = (addr?: string) => `rhinogent.chat.cur::${addr || "guest"}`;
   // ACCOUNT-SYNC KEY: a UNIQUE, per-conversation key (NOT the agent address). Every new chat
@@ -447,8 +575,34 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
     try { localStorage.setItem(tkeyStore(addr), v); } catch { /**/ }
     return v;
   };
-  // Title from the first user message (recognizable, unique per thread); "New chat" until one exists.
-  const threadTitle = (list: Msg[]) => (list.find((m) => m.role === "user")?.text || "New chat").slice(0, 48);
+  // TITLE = WHAT THE CHAT IS ABOUT, not how it opened. Greetings ("whats UP", "hi", "yo") are
+  // how most chats START, so titling on the first user message made every row read the same and
+  // the list stopped being navigable. When the opener carries no topic, title from the first
+  // substantive turn instead — the first real question, else the answer's opening sentence.
+  const GENERIC = /^(h(i|ey|ello|iya)|yo|sup|whats?\s*up|wass?up|good\s*(morning|evening|day)|test+|ok(ay)?|hmm+|thanks?|ty|gm|gn)\b[\s!.?]*$/i;
+  const clip = (s: string) => {
+    const t = s.replace(/\s+/g, " ").trim();
+    return t.length <= 48 ? t : t.slice(0, 47).replace(/\s+\S*$/, "") + "…";
+  };
+  const threadTitle = (list: Msg[]) => {
+    const users = list.filter((m) => m.role === "user" && m.text.trim());
+    const first = users[0]?.text.trim();
+    if (!first) return "New chat";
+    if (!GENERIC.test(first)) return clip(first);
+    const nextReal = users.slice(1).find((m) => !GENERIC.test(m.text.trim()));
+    if (nextReal) return clip(nextReal.text);
+    const reply = list.find((m) => m.role === "assistant" && m.text.trim())?.text.trim();
+    if (reply) {
+      const sentence = reply.replace(/^[#>*\s-]+/, "").split(/(?<=[.!?])\s/)[0];
+      if (sentence && sentence.length > 12) return clip(sentence);
+    }
+    return clip(first);
+  };
+  // Rows written before the rule above are stored with a greeting as their title. They still
+  // carry their messages, so retitle them for display rather than leaving a wall of "whats UP".
+  // A user-renamed row is left alone — an explicit name always beats a derived one.
+  const rowTitle = (h: HistItem) =>
+    (h.title && !GENERIC.test(h.title.trim()) ? h.title : (h.msgs?.length ? threadTitle(h.msgs) : h.title)) || "New chat";
   // pull a pool of REAL verified agents from the signed census, assign one per chat.
   // The identity PERSISTS across refreshes (localStorage) and can be renamed (nick).
   const saveAgent = (a: { callsign: string; address: string; nick?: string } | null) => {
@@ -527,11 +681,10 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
     try {
       if (agent && msgs.length) {
         localStorage.setItem(curKey(agent.address), JSON.stringify(msgs.slice(-100)));   // per-wallet current
-        const hist = JSON.parse(localStorage.getItem("rhinogent.chat.history") || "[]");
-        const title = threadTitle(msgs);
-        const histId = Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 7);
-        hist.unshift({ id: histId, title, msgs: msgs.slice(-100), agent, ...(peer ? { peer: { callsign: peer.callsign, address: peer.address } } : {}), ts: Date.now() });
-        localStorage.setItem("rhinogent.chat.history", JSON.stringify(hist.slice(0, 30)));
+        // The row is ALREADY in the sidebar (upserted per message). Archiving just
+        // settles it under the same id — never a second copy of the same thread.
+        const histId = curThreadKey(agent.address);
+        upsertHistory({ id: histId, title: threadTitle(msgs), msgs: msgs.slice(-100), agent, ...(peer ? { peer: { callsign: peer.callsign, address: peer.address } } : {}), ts: Date.now(), live: false });
         // flush the pending sync so the row exists, THEN rebind it to the archive id and rotate
         // the outgoing agent's thread key — the next chat under it is guaranteed a fresh row.
         const tk = curThreadKey(agent.address);
@@ -623,7 +776,10 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
       const call = sp.get("peer") || "";
       const addr = (sp.get("pa") || "").toLowerCase();
       const price = Math.max(1, parseInt(sp.get("price") || "0", 10) || 0);
-      if ((call || addr) && price) { setPeer({ callsign: call || "agent", address: addr, price }); setPro(true); }
+      // Opening a peer chat sets the PEER — it does NOT flip the tier. Force-flipping to Pro
+      // meant the toggle read Normal while the request billed Pro: the UI said one thing and
+      // the meter did another. The user picks the tier; peer mode never picks it for them.
+      if ((call || addr) && price) { setPeer({ callsign: call || "agent", address: addr, price }); }
     } catch { /**/ }
   }, []);
   // "Chat with this agent" opens a BRAND-NEW chat (never continues the last thread):
@@ -635,10 +791,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
     peerStartedRef.current = true;
     try {
       if (msgs.length) {
-        const hist = JSON.parse(localStorage.getItem("rhinogent.chat.history") || "[]");
-        const histId = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
-        hist.unshift({ id: histId, title: threadTitle(msgs), msgs: msgs.slice(-100), agent, ts: Date.now() });
-        localStorage.setItem("rhinogent.chat.history", JSON.stringify(hist.slice(0, 30)));
+        upsertHistory({ id: curThreadKey(agent?.address), title: threadTitle(msgs), msgs: msgs.slice(-100), ...(agent ? { agent } : {}), ts: Date.now(), live: false });
       }
       if (agent?.address) localStorage.removeItem(curKey(agent.address));
       rotateThreadKey(agent?.address);
@@ -768,7 +921,8 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
     const run = () => pullThreadsFull().then(({ threads, complete, signedIn, deleted }) => {
       if (!alive || !signedIn) return;
       try {
-        reconcileHistory(threads, complete, deleted);   // drops deleted-elsewhere (incl. tombstones), adds new, cleans map
+        // protect the OPEN thread — account absence must never delete the chat on screen
+        reconcileHistory(threads, complete, deleted, curThreadKey(openRef.current.addr));   // drops deleted-elsewhere (incl. tombstones), adds new, cleans map
         loadHistory();
         // push any LOCAL-ONLY threads up (never re-pushes reconciled-away ones — they're gone from hist)
         const hist = JSON.parse(localStorage.getItem("rhinogent.chat.history") || "[]");
@@ -855,7 +1009,18 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
         localStorage.setItem("rhinogent.chat.migrated", "1");
       }
       // clean any pre-guard fabrication (fake CLI, wrong storage) out of OLD saved threads on restore
-      setMsgs(s ? (JSON.parse(s) as Msg[]).map((m) => (m.role === "assistant" ? { ...m, text: groundGuard(m.text) } : m)) : []);
+      const restored = s ? (JSON.parse(s) as Msg[]).map((m) => (m.role === "assistant" ? { ...m, text: groundGuard(m.text) } : m)) : [];
+      setMsgs(restored);
+      // ADOPT ON LOAD. Threads that already existed before per-message upserting
+      // shipped have no sidebar row yet — without this they stay invisible until
+      // you happen to send another message, which is exactly the state that lost
+      // them. Restoring a thread is enough to claim its row.
+      if (restored.length) {
+        upsertHistory({
+          id: curThreadKey(addr), title: threadTitle(restored), msgs: restored.slice(-100),
+          ...(agent ? { agent } : {}), ts: Date.now(), live: true,
+        });
+      }
     } catch { setMsgs([]); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [agent?.address]);
@@ -863,6 +1028,19 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
     try {
       if (msgs.length) {
         localStorage.setItem(curKey(agent?.address), JSON.stringify(msgs.slice(-100)));
+        // THE THREAD EXISTS IN THE SIDEBAR FROM MESSAGE ONE. Keyed by the thread key,
+        // so leaving by ANY route — agent switch, new chat, peer start, navigating away,
+        // closing the tab — leaves the row already written. Nothing to lose on exit,
+        // because nothing waits until exit.
+        upsertHistory({
+          id: curThreadKey(agent?.address),
+          title: threadTitle(msgs),
+          msgs: msgs.slice(-100),
+          ...(agent ? { agent } : {}),
+          ...(peer ? { peer: { callsign: peer.callsign, address: peer.address } } : {}),
+          ts: Date.now(),
+          live: true,
+        });
         // ACCOUNT SYNC: mirror the thread to the signed-in user's account (chats/messages,
         // RLS-scoped) so it shows on every device. Debounced + best-effort; guests no-op.
         if (!guest) {
@@ -925,11 +1103,8 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
     // archive the current thread into history before clearing
     try {
       if (msgs.length) {
-        const hist = JSON.parse(localStorage.getItem("rhinogent.chat.history") || "[]");
-        const title = threadTitle(msgs);
-        const histId = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
-        hist.unshift({ id: histId, title, msgs: msgs.slice(-100), agent, ...(peer ? { peer: { callsign: peer.callsign, address: peer.address } } : {}), ts: Date.now() });
-        localStorage.setItem("rhinogent.chat.history", JSON.stringify(hist.slice(0, 30)));
+        const histId = curThreadKey(agent?.address);
+        upsertHistory({ id: histId, title: threadTitle(msgs), msgs: msgs.slice(-100), ...(agent ? { agent } : {}), ...(peer ? { peer: { callsign: peer.callsign, address: peer.address } } : {}), ts: Date.now(), live: false });
         // flush pending sync → row exists → rebind to the archive id, then ROTATE the thread key
         // so the fresh chat gets a brand-new account row + its own title (never reuses this one).
         const tk = curThreadKey(agent?.address);
@@ -991,7 +1166,11 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
       // observed live inventing "0n1x introduces new Agent Tiers" and formatting it as fact.
       // A pretty renderer makes that worse, not better. So live-info intent never reaches the
       // worker on Normal; it gets the honest "this needs Pro" answer instead.
-      if (!pro && LIVE_INTENT.test(q)) return localAnswer(q);
+      // …EXCEPT the census. "how many agents right now" trips LIVE_INTENT on "right now", but
+      // it is precisely the question we CAN answer live and signed: the brain pins the facts
+      // from census_manifest.json ahead of everything else. Diverting it to a stored string was
+      // how a stale fleet-provenance claim survived — no model, no retrieval, no gate saw it.
+      if (!pro && LIVE_INTENT.test(q) && !CENSUS_INTENT.test(q)) return localAnswer(q);
       // Pro = always-on edge worker: live Exa web-grounding + an Ed25519-signed ProofCard.
       const endpoint = pro ? PRO_WORKER : WORKER;
       const r = await fetch(endpoint, {
@@ -1024,6 +1203,41 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
       // until then we don't pretend the peer independently authored it.
       if (peer) out += `\n\n*— ${peer.callsign} · ${peer.price} TOKEN · answered on the shared engine (per-agent models coming).*`;
       return out || "…";
+    }
+    // The signed-facts node. Returns "" (never throws) so every failure mode
+    // degrades to the worker instead of breaking the turn.
+    async function askPortal(): Promise<string> {
+      try {
+        const base = await portalBase();
+        if (!base) return "";
+        const ctl = new AbortController();
+        const timer = setTimeout(() => ctl.abort(), 20_000);
+        let d: Parameters<typeof factChips>[0] & { reply?: string; brain?: string };
+        try {
+          const r = await fetch(base + "/v1/chat", {
+            method: "POST", headers: { "content-type": "application/json" },
+            signal: ctl.signal,
+            body: JSON.stringify({
+              message: q,
+              agent: (peer?.callsign || agent?.nick || agent?.callsign || ""),
+              history: msgs.slice(-8).map((m) => ({ role: m.role, content: m.text })),
+              // Only sent for Facts. Omitted otherwise so Normal/Pro keep the
+              // server's existing default rather than inheriting a new one.
+              ...(factsOnly ? { tier: "facts" } : {}),
+              // Private turns are not recorded anywhere: the server's hook
+              // returns before writing. Sent only when ON so a normal turn
+              // keeps the existing default rather than inheriting a new one.
+              ...(privateMode ? { private: true } : {}),
+            }),
+          });
+          if (!r.ok) return "";
+          d = await r.json();
+        } finally { clearTimeout(timer); }
+        const out = String(d?.reply || "").trim();
+        // An empty or "busy" reply is not an answer — let the worker try.
+        if (!out || /busy on that one/i.test(out)) return "";
+        return out + factChips(d);
+      } catch { return ""; }
     }
     // Worker = the always-on edge LLM (never sleeps). Used as Normal's brain and as Pro's
     // reliable fallback when the grounding portal is asleep.
@@ -1154,15 +1368,30 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
     }
     try {
       if ((pro || peer) && await streamPro()) { setBusy(false); return; }
-      if (await streamNormal()) {
+      // ASK THE SIGNED-FACTS NODE BEFORE THE EDGE WORKER.
+      //
+      // streamNormal() streams from the worker, and it ran first — so on
+      // Normal the worker WAS the brain and the node was never consulted.
+      // That is why corpus questions the node answers from F033 in ~0.6s came
+      // back as "Rhinogent is busy on that one" on the live site, and why no
+      // visitor turn ever reached the ledger. The node answers cited or it
+      // declines; declining costs one round trip and we stream as before.
+      const nodeFirst = (!pro && !peer) ? await askPortal() : "";
+      // FACTS IS A CLOSED TIER. Its guarantee is that no model answers, so it
+      // must not fall through to the worker when the corpus is silent — the
+      // node's decline IS the answer. Falling back would reintroduce exactly
+      // the "busy"/bluff behaviour the tier exists to exclude.
+      if (!nodeFirst && !factsOnly && await streamNormal()) {
         if (consumeGuest) {
           try { const used = parseInt(localStorage.getItem("rhinogent.chat.guestUsed") || "0", 10) || 0; localStorage.setItem("rhinogent.chat.guestUsed", String(used + 1)); } catch { /**/ }
         }
         setBusy(false);
         return;
       }
-      let text = "";
-      try { text = await ask(); setConn("ok"); }
+      let text = nodeFirst;
+      // On Facts the node has already decided (served or declined); ask()
+      // would reopen the model lanes the tier promises not to use.
+      try { if (!text && !factsOnly) text = await ask(); setConn("ok"); }
       catch {
         // Primary endpoint failed. Pro's portal lives on the operator machine and may be asleep —
         // DON'T face-plant to static KB: refund the premium token and answer on the always-on Worker.
@@ -1219,7 +1448,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
 
   // Gemini-style: the ☰ toggles the rail between a slim icon strip and the full panel
   const Sidebar = (
-    <div className={`flex h-full ${rail ? "w-[60px]" : "w-[264px]"} shrink-0 flex-col overflow-hidden border-r border-border/60 bg-gradient-to-b from-surface/60 via-surface/30 to-surface/10 backdrop-blur-sm transition-all duration-300 ease-out`}>
+    <div className={`chat-sidebar flex h-full ${rail ? "w-[60px]" : "w-[300px]"} shrink-0 flex-col overflow-hidden transition-all duration-300 ease-out`}>
       {/* header: collapse toggle + (expanded) search, then a prominent New chat */}
       <div className={rail ? "flex flex-col items-center gap-1.5 px-2.5 pb-2 pt-3" : "flex flex-col gap-2 px-3 pb-2 pt-3"}>
         <div className={rail ? "contents" : "flex items-center gap-2"}>
@@ -1247,7 +1476,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
         // the top titled from its first user message — or "New chat" until one is sent — so every
         // "+ New chat" is a visibly distinct entry bound to its own agent, never a repeated name.
         const q = chatSearch.trim().toLowerCase();
-        const filtered = history.filter((h) => !q || h.title.toLowerCase().includes(q) || (h.agent?.callsign || callsignForSeed(h.id)).toLowerCase().includes(q));
+        const filtered = history.filter((h) => !q || rowTitle(h).toLowerCase().includes(q) || (h.agent?.callsign || callsignForSeed(h.id)).toLowerCase().includes(q));
         const now = new Date();
         const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
         const startYest = startToday - 864e5, start7 = startToday - 7 * 864e5;
@@ -1278,12 +1507,15 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
               }}
                 aria-current={activeId === h.id ? "true" : undefined}
                 className="min-w-0 flex-1 text-left outline-none">
-                <span className={`block truncate text-[13px] leading-snug ${activeId === h.id ? "font-medium text-foreground" : "text-foreground/90"}`}>{h.title}</span>
+                <span className={`block truncate text-[13px] leading-snug ${activeId === h.id ? "font-medium text-foreground" : "text-foreground/90"}`}>{rowTitle(h)}</span>
                 {/* Show each chat's OWN agent under the title, ALWAYS. Use the stored callsign
                     when the thread carries one; otherwise derive a STABLE one from the thread id
                     (callsignForSeed) — same id → same name forever, unique per chat. Never fall
                     back to the CURRENT agent (that's the "all one agent" bug). */}
-                <span className="mt-[3px] flex items-center gap-1 truncate text-[10.5px] text-muted-2"><span className="inline-block h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: "#635bff" }} />{h.peer ? `${h.agent?.callsign || callsignForSeed(h.id)} ⇄ ${h.peer.callsign}` : (h.agent?.callsign || callsignForSeed(h.id))}</span>
+                <span className="mt-[3px] flex items-center gap-1 truncate text-[10.5px] text-muted-2"><span className="inline-block h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: "#635bff" }} />{h.peer ? `${h.agent?.callsign || callsignForSeed(h.id)} ⇄ ${h.peer.callsign}` : (h.agent?.callsign || callsignForSeed(h.id))}
+                  {/* the chat you are IN, named as such — so it is never mistaken for gone */}
+                  {h.live && <span className="ml-1 shrink-0 rounded-full bg-[#635bff]/10 px-1.5 py-[1px] text-[9.5px] font-semibold text-accent">current</span>}
+                </span>
               </button>
               {/* desktop ⋯ menu (rename / delete); mobile uses the swipe gesture */}
               <div className="relative hidden md:block">
@@ -1422,13 +1654,47 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
           )}
         </div>
         {/* tier toggle — CENTERED, Gemini-style */}
-        <div className="order-3 flex w-full justify-center sm:absolute sm:left-1/2 sm:order-none sm:w-auto sm:-translate-x-1/2">
+        <div className="relative z-40 order-3 mb-1 flex w-full justify-center sm:absolute sm:left-1/2 sm:order-none sm:mb-0 sm:w-auto sm:-translate-x-1/2">
           <div className="flex items-center gap-0.5 rounded-full border border-border/70 bg-surface/60 p-[4px] text-[13px] shadow-inner backdrop-blur">
-            <button onClick={() => setPro(false)}
-              className={`rounded-full px-5 py-2 tracking-wide transition-all duration-200 ${!pro ? "bg-background font-semibold text-foreground shadow-[0_1px_4px_rgba(0,0,0,.12)]" : "font-medium text-muted-2 hover:text-muted"}`}>
-              Normal
+            {/* The non-Pro tiers live behind ONE control: click it to open the
+                list. A row of pills makes every tier shout equally; a dropdown
+                shows the tier in use and offers the rest only when asked. */}
+            <div className="relative">
+              <button onClick={() => setTierOpen((o) => !o)}
+                aria-haspopup="listbox" aria-expanded={tierOpen}
+                className={`flex items-center gap-1.5 rounded-full px-5 py-2 tracking-wide transition-all duration-200 ${!pro ? "bg-background font-semibold text-foreground shadow-[0_1px_4px_rgba(0,0,0,.12)]" : "font-medium text-muted-2 hover:text-muted"}`}>
+                {cliMode ? "CLI" : factsOnly ? "Facts" : "Normal"}
+                <span className="text-[10px] leading-none text-muted-2">▾</span>
+              </button>
+              {tierOpen && (
+                <div role="listbox"
+                  className="absolute left-1/2 top-[calc(100%+6px)] z-50 w-64 -translate-x-1/2 overflow-hidden rounded-xl border border-border/70 bg-background p-1 text-left shadow-[0_8px_28px_rgba(0,0,0,.16)]">
+                  {([
+                    ["normal", "Normal", "Signed facts first, then the free lanes."],
+                    ["facts", "Facts", "Signed corpus only — cited, or it tells you the corpus is silent. No model is called."],
+                    ["cli", "CLI", "Terminal mode. Type /verbs. Reads are open; writes need operator scope."],
+                  ] as const).map(([key, label, desc]) => (
+                    <button key={key} role="option" aria-selected={tier === key}
+                      onClick={() => { setTier(key); setTierOpen(false); }}
+                      className={`block w-full rounded-lg px-3 py-2 transition-colors hover:bg-surface ${tier === key ? "bg-surface" : ""}`}>
+                      <span className="block text-[13px] font-semibold text-foreground">{label}</span>
+                      <span className="mt-0.5 block text-[11.5px] leading-snug text-muted-2">{desc}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            <button onClick={togglePrivate}
+              aria-pressed={privateMode}
+              title={privateMode
+                ? "Private: this conversation is not recorded. Click to resume recording."
+                : "Recording: conversations improve answers. Click for private."}
+              className={`rounded-full px-4 py-2 tracking-wide transition-all duration-200 ${privateMode
+                ? "bg-foreground font-semibold text-background shadow-[0_1px_8px_rgba(0,0,0,.25)]"
+                : "font-medium text-muted-2 hover:text-muted"}`}>
+              {privateMode ? "● Private" : "Private"}
             </button>
-            <button onClick={() => setPro(true)}
+            <button onClick={() => { setPro(true); setTierOpen(false); }}
               className={`rounded-full px-5 py-2 tracking-wide transition-all duration-200 ${pro ? "pro-badge font-semibold shadow-[0_1px_8px_rgba(99,91,255,.35)]" : "font-medium text-muted-2 hover:text-muted"}`}>
               Pro
             </button>
@@ -1440,7 +1706,9 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
       </div>
 
       {/* conversation — Gemini/Kimi calm: soft user bubble, clean assistant text, roomy */}
-      <div ref={scroller} className="min-h-0 flex-1 overflow-y-auto pb-4">
+      <div ref={scroller} className={`relative z-0 min-h-0 flex-1 overflow-y-auto pt-2 pb-4 ${cliMode
+          ? "cli-terminal rounded-lg border border-emerald-500/25 bg-black px-3 py-2 font-mono text-[13px] leading-relaxed text-emerald-300"
+          : ""}`}>
         {peer && (
           <div className="sticky top-0 z-10 mb-2 flex items-center justify-between gap-2 border-b border-border/60 bg-surface/75 px-4 py-2.5 backdrop-blur">
             <div className="flex items-center gap-2.5">
@@ -1593,12 +1861,19 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
 
       {/* composer — clean & professional; Pro mode adds a quiet jade cue */}
       <div className="shrink-0 pb-3 pt-1" style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}>
-        <div className={`composer-glass flex items-end gap-2 rounded-[28px] px-5 py-3 transition-all ${pro ? "pro-composer" : ""}`}>
+        <div className={`flex items-end gap-2 transition-all ${cliMode
+            ? "rounded-lg border border-emerald-500/30 bg-black px-4 py-3 font-mono"
+            : `composer-glass rounded-[28px] px-5 py-3 ${pro ? "pro-composer" : ""}`}`}>
+          {cliMode && (
+            <span className="select-none whitespace-nowrap pb-2.5 pt-2.5 text-[13px] text-emerald-400">rhinogent@0n1x:~$</span>
+          )}
           <textarea
             value={input} onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
-            rows={1} placeholder={peer ? `Message ${peer.callsign}…` : "Ask anything…"}
-            className="max-h-40 flex-1 resize-none bg-transparent px-2 py-2.5 text-[17px] text-foreground outline-none placeholder:text-muted-2"
+            rows={1} placeholder={cliMode ? "type /verbs" : peer ? `Message ${peer.callsign}…` : "Ask anything…"}
+            className={`max-h-40 flex-1 resize-none bg-transparent px-2 py-2.5 outline-none ${cliMode
+              ? "font-mono text-[13px] text-emerald-300 placeholder:text-emerald-700"
+              : "text-[17px] text-foreground placeholder:text-muted-2"}`}
           />
           <button
             onClick={() => send()} disabled={busy || !input.trim()}
@@ -1607,11 +1882,20 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
             aria-label="Send"
           >↑</button>
         </div>
-        <p className="mt-2 text-center text-[11px] text-muted-2">
+        {privateMode && (
+          <p className="composer-stamp mt-2.5 text-center" style={{ opacity: 0.95 }}>
+            ● PRIVATE — THIS CONVERSATION IS NOT RECORDED
+          </p>
+        )}
+        <p className="composer-stamp mt-2.5 text-center">
           {peer
             ? <><span className="text-accent">{peer.callsign}</span> · signed answer · {peer.price} TOKEN per answer</>
             : pro
             ? <><span style={{ color: "#635bff" }}>Pro</span> · frontier reasoning · disclosed per leaf · {PRICES.chatMessage} TOKEN per message</>
+            : cliMode
+            ? <><span className="font-mono text-emerald-400">CLI</span> · reads open · writes need operator scope · <span className="font-mono">/verbs</span></>
+            : factsOnly
+            ? <>Facts · free · signed corpus only — cited, or it says so</>
             : <>Normal · free · general answers</>}
         </p>
       </div>
