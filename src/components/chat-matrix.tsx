@@ -1448,7 +1448,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
 
   // Gemini-style: the ☰ toggles the rail between a slim icon strip and the full panel
   const Sidebar = (
-    <div className={`chat-sidebar flex h-full ${rail ? "w-[60px]" : "w-[286px]"} shrink-0 flex-col overflow-hidden transition-all duration-300 ease-out`}>
+    <div className={`chat-sidebar flex h-full ${rail ? "w-[60px]" : "w-[262px]"} shrink-0 flex-col overflow-hidden transition-all duration-300 ease-out`}>
       {/* header: collapse toggle + (expanded) search, then a prominent New chat */}
       <div className={rail ? "flex flex-col items-center gap-1.5 px-2.5 pb-2 pt-3" : "flex flex-col gap-2 px-3 pb-2 pt-3"}>
         <div className={rail ? "contents" : "flex items-center gap-2"}>

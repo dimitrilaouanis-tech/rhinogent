@@ -97,42 +97,42 @@
 /* DeepSeek's move: a SOLID panel, a hairline edge, and rows separated by
    space rather than boxes. That is where the sense of substance comes from. */
 .chat-sidebar {
-  background: color-mix(in srgb, var(--foreground) 3.5%, var(--background));
-  border-right: 1px solid color-mix(in srgb, var(--foreground) 9%, transparent);
+  background: color-mix(in srgb, var(--foreground) 2.6%, var(--background));
+  border-right: 1px solid color-mix(in srgb, var(--foreground) 7%, transparent);
 }
 
 /* Section labels: small, grey, SENTENCE case. Neither reference shouts these,
    and v2's uppercase mono made a nav label look like a system alert. */
 .chat-sidebar [class*="uppercase"] {
   font-family: inherit;
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 500;
   letter-spacing: 0;
   text-transform: none;
   color: color-mix(in srgb, var(--foreground) 45%, transparent);
-  padding: 16px 14px 4px;
+  padding: 15px 13px 3px;
 }
 
 /* Rows: roomy, borderless. A soft rounded fill for hover and active — the
    Gemini pill — instead of v2's bordered card and marker bar. */
 .chat-sidebar [class*="items-start"][class*="px-2.5"] {
-  padding: 9px 12px !important;
+  padding: 8px 11px !important;
   border-radius: 9px;
-  margin: 1px 8px;
+  margin: 1px 7px;
   border: none !important;
   box-shadow: none !important;
 }
 .chat-sidebar [class*="items-start"][class*="px-2.5"]:hover {
-  background: color-mix(in srgb, var(--foreground) 5%, transparent) !important;
+  background: color-mix(in srgb, var(--foreground) 4.5%, transparent) !important;
 }
 .chat-sidebar [class*="bg-[#635bff]"] {
-  background: color-mix(in srgb, var(--foreground) 8%, transparent) !important;
+  background: color-mix(in srgb, var(--foreground) 7%, transparent) !important;
   box-shadow: none !important;
 }
 
 /* Titles readable, agent line legible — no shouting. */
 .chat-sidebar [class*="text-[13px]"] {
-  font-size: 13.5px !important;
+  font-size: 13px !important;
   font-weight: 450 !important;
 }
 .chat-sidebar [class*="text-[10.5px]"] {
