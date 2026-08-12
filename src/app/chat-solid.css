@@ -1,202 +1,169 @@
-/* chat-solid.css — WEIGHT. The chat read as flimsy: thin type, low-contrast
- * edges, a translucent pill for a composer, and body copy at browser defaults.
- * This gives the surface ink, edge and mass without inventing a second visual
- * language (doctrine: one material, the stamp is the design).
+/* chat-solid.css — weight without heaviness.
+ *
+ * v1 was too thin: browser-default body copy, a 72%-translucent composer, a
+ * sidebar that faded to transparent.
+ * v2 overcorrected: 2px borders everywhere, every row a bordered box, hard
+ * drop shadows, UPPERCASE MONO section stamps.
+ *
+ * v3 takes the reference read from DeepSeek and Gemini (screenshotted, not
+ * guessed): both feel solid, and NEITHER uses heavy borders. The weight comes
+ * from a SOLID PANEL and GENEROUS SPACING. Separation is space, not edges.
+ * Mono is reserved for the one place it means something — a citation.
  */
 
 /* ============================ BODY COPY ============================ */
+/* Kept from v2: this was the real fix. .chat-md had no line-height, no
+   measure and no size, so answers rendered at browser defaults full-width. */
 .chat-md {
-  max-width: 66ch;              /* measure: past ~70 the eye loses the return */
-  font-size: 17px;
-  line-height: 1.58;
-  font-weight: 420;             /* heavier than default 400 — reads as ink */
-  letter-spacing: -0.006em;
+  max-width: 68ch;
+  font-size: 16.5px;
+  line-height: 1.62;
+  letter-spacing: -0.003em;
   color: var(--foreground);
 }
-.chat-md > * + * { margin-top: 0.8em; }
+.chat-md > * + * { margin-top: 0.78em; }
 .chat-md p { margin: 0; }
-.chat-md strong { font-weight: 680; letter-spacing: -0.01em; }
+.chat-md strong { font-weight: 620; }
 
 .chat-md h1, .chat-md h2, .chat-md h3 {
-  font-weight: 700;
-  letter-spacing: -0.022em;
-  line-height: 1.22;
-  margin-top: 1.1em;
+  font-weight: 650;
+  letter-spacing: -0.018em;
+  line-height: 1.25;
+  margin-top: 1.15em;
 }
-.chat-md h1 { font-size: 1.32em; }
-.chat-md h2 { font-size: 1.16em; }
-.chat-md h3 { font-size: 1.04em; }
+.chat-md h1 { font-size: 1.26em; }
+.chat-md h2 { font-size: 1.13em; }
+.chat-md h3 { font-size: 1.02em; }
 
-.chat-md ul, .chat-md ol { padding-left: 1.3em; }
-.chat-md li { margin: 0.34em 0; }
-.chat-md li::marker { color: color-mix(in srgb, var(--foreground) 45%, transparent); }
+.chat-md ul, .chat-md ol { padding-left: 1.25em; }
+.chat-md li { margin: 0.3em 0; }
+.chat-md li::marker { color: color-mix(in srgb, var(--foreground) 42%, transparent); }
 
-/* Citations are STAMPS. Mono, boxed, unmistakable — never italic filler. */
+/* Citations stay mono — the one place a stamp earns its ink. Lighter than v2. */
 .chat-md code {
   font-family: var(--font-jetbrains-mono), var(--font-geist-mono), monospace;
   font-size: 0.85em;
-  font-weight: 500;
-  padding: 0.16em 0.42em;
+  padding: 0.14em 0.4em;
   border-radius: 5px;
-  border: 1px solid color-mix(in srgb, var(--foreground) 12%, transparent);
-  background: color-mix(in srgb, var(--foreground) 5%, transparent);
+  background: color-mix(in srgb, var(--foreground) 6%, transparent);
 }
 .chat-md blockquote {
-  border-left: 3px solid color-mix(in srgb, var(--foreground) 22%, transparent);
-  padding-left: 14px;
-  color: color-mix(in srgb, var(--foreground) 78%, transparent);
+  border-left: 2px solid color-mix(in srgb, var(--foreground) 16%, transparent);
+  padding-left: 13px;
+  color: color-mix(in srgb, var(--foreground) 76%, transparent);
 }
 .chat-md table { font-size: 0.94em; }
-.chat-md th {
-  font-weight: 650;
-  background: color-mix(in srgb, var(--foreground) 4%, transparent);
-}
+.chat-md th { font-weight: 620; }
 
 /* ============================ THE COMPOSER ============================ */
-/* Was: 72% translucent, 8% border, 28px pill = a floating bubble.
-   Now: solid, 2px edge, squarer, taller. Something you type INTO. */
+/* DeepSeek's shape: white, ONE-pixel border, generous radius and padding.
+   Roomy rather than armoured. */
 .composer-glass {
   background: var(--background);
-  border: 2px solid color-mix(in srgb, var(--foreground) 20%, transparent);
-  border-radius: 16px !important;
-  padding-top: 0.55rem !important;
-  padding-bottom: 0.55rem !important;
+  border: 1px solid color-mix(in srgb, var(--foreground) 15%, transparent);
+  border-radius: 18px !important;
+  padding-top: 0.5rem !important;
+  padding-bottom: 0.5rem !important;
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
-  box-shadow:
-    0 2px 0 0 color-mix(in srgb, var(--foreground) 10%, transparent),
-    0 10px 26px -18px color-mix(in srgb, var(--foreground) 55%, transparent);
-  transition: border-color .12s ease, box-shadow .12s ease;
+  box-shadow: 0 2px 10px -6px color-mix(in srgb, var(--foreground) 26%, transparent);
+  transition: border-color .14s ease, box-shadow .14s ease;
 }
 .composer-glass:focus-within {
-  border-color: #635bff;
-  box-shadow:
-    0 2px 0 0 color-mix(in srgb, #635bff 45%, transparent),
-    0 12px 30px -18px color-mix(in srgb, #635bff 60%, transparent);
+  border-color: color-mix(in srgb, #635bff 50%, transparent);
+  box-shadow: 0 3px 14px -7px color-mix(in srgb, #635bff 45%, transparent);
 }
-.composer-glass textarea {
-  font-size: 17px;
-  font-weight: 450;
-  line-height: 1.5;
-  min-height: 30px;
-}
+.composer-glass textarea { font-size: 16.5px; line-height: 1.5; }
 .composer-glass textarea::placeholder {
-  color: color-mix(in srgb, var(--foreground) 42%, transparent);
-  font-weight: 450;
+  color: color-mix(in srgb, var(--foreground) 40%, transparent);
 }
-/* Send button: squarer and heavier, so it reads as a key, not a balloon. */
+/* Send: round again (both references use a circle), just a touch larger. */
 .composer-glass > button {
-  border-radius: 12px !important;
-  height: 44px !important;
-  width: 44px !important;
-  font-weight: 700;
-  box-shadow: 0 2px 0 0 color-mix(in srgb, #000 22%, transparent);
+  height: 40px !important;
+  width: 40px !important;
 }
 
 /* ============================ STAMPS ============================ */
+/* The tier line stays mono — it is a declaration of what the system is about
+   to do, and that is exactly what a stamp is for. Softer than v2. */
 .composer-stamp {
   font-family: var(--font-jetbrains-mono), var(--font-geist-mono), monospace;
   font-size: 10.5px;
-  font-weight: 500;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: color-mix(in srgb, var(--foreground) 52%, transparent);
+  letter-spacing: 0.07em;
+  color: color-mix(in srgb, var(--foreground) 48%, transparent);
 }
-
-/* ============================ MESSAGES ============================ */
-/* The visitor's turn: solid, weighted, squarer than a chat bubble. */
-.chat-user-bubble, [class*="rounded-"][style*="635bff"] {
-  font-weight: 500;
-  letter-spacing: -0.005em;
-}
-
-/* The agent's turn sits on the same paper with a rule, not a second surface. */
-.answer-block {
-  border-left: 3px solid color-mix(in srgb, var(--foreground) 14%, transparent);
-  padding-left: 16px;
-}
-.answer-block.is-cited { border-left-color: color-mix(in srgb, #635bff 55%, transparent); }
-
-/* ============================ HEADER ============================ */
-/* A real edge under the header so the conversation has a top, not a fade. */
-.chat-header-rule {
-  border-bottom: 1px solid color-mix(in srgb, var(--foreground) 12%, transparent);
-}
-
-/* ============================ CLI ============================ */
-.chat-md.is-cli { max-width: 78ch; font-size: 13.5px; line-height: 1.55; font-weight: 400; }
 
 /* ============================ SIDEBAR ============================ */
-/* Was 264px of fading gradient behind a backdrop-blur — it dissolved toward
-   the bottom, which is most of why the panel read as flimsy. Solid surface,
-   real edge, rows with mass. */
+/* DeepSeek's move: a SOLID panel, a hairline edge, and rows separated by
+   space rather than boxes. That is where the sense of substance comes from. */
 .chat-sidebar {
-  background: color-mix(in srgb, var(--foreground) 4%, var(--background));
-  border-right: 2px solid color-mix(in srgb, var(--foreground) 14%, transparent);
+  background: color-mix(in srgb, var(--foreground) 3.5%, var(--background));
+  border-right: 1px solid color-mix(in srgb, var(--foreground) 9%, transparent);
 }
 
-/* Section stamps: TODAY / YESTERDAY read as labels on a ledger, not captions */
-.chat-sidebar .sidebar-section,
+/* Section labels: small, grey, SENTENCE case. Neither reference shouts these,
+   and v2's uppercase mono made a nav label look like a system alert. */
 .chat-sidebar [class*="uppercase"] {
-  font-family: var(--font-jetbrains-mono), var(--font-geist-mono), monospace;
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
-  color: color-mix(in srgb, var(--foreground) 48%, transparent);
-  padding: 14px 14px 6px;
+  font-family: inherit;
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  color: color-mix(in srgb, var(--foreground) 45%, transparent);
+  padding: 16px 14px 4px;
 }
 
-/* Thread rows: taller, separated, with a solid active state and a left marker */
+/* Rows: roomy, borderless. A soft rounded fill for hover and active — the
+   Gemini pill — instead of v2's bordered card and marker bar. */
 .chat-sidebar [class*="items-start"][class*="px-2.5"] {
-  padding: 11px 12px !important;
-  border-radius: 10px;
-  margin: 2px 8px;
-  border: 1px solid transparent;
+  padding: 9px 12px !important;
+  border-radius: 9px;
+  margin: 1px 8px;
+  border: none !important;
+  box-shadow: none !important;
 }
 .chat-sidebar [class*="items-start"][class*="px-2.5"]:hover {
-  background: color-mix(in srgb, var(--foreground) 6%, transparent) !important;
-  border-color: color-mix(in srgb, var(--foreground) 9%, transparent);
+  background: color-mix(in srgb, var(--foreground) 5%, transparent) !important;
 }
-/* the open thread: solid, edged, unmistakable */
 .chat-sidebar [class*="bg-[#635bff]"] {
-  background: color-mix(in srgb, #635bff 13%, var(--background)) !important;
-  border-color: color-mix(in srgb, #635bff 42%, transparent) !important;
-  box-shadow: inset 3px 0 0 0 #635bff;
+  background: color-mix(in srgb, var(--foreground) 8%, transparent) !important;
+  box-shadow: none !important;
 }
 
-/* Titles get weight; the agent line gets legibility */
+/* Titles readable, agent line legible — no shouting. */
 .chat-sidebar [class*="text-[13px]"] {
-  font-size: 14px !important;
-  font-weight: 550 !important;
-  letter-spacing: -0.004em;
+  font-size: 13.5px !important;
+  font-weight: 450 !important;
 }
 .chat-sidebar [class*="text-[10.5px]"] {
   font-size: 11px !important;
-  font-weight: 500;
-  color: color-mix(in srgb, var(--foreground) 55%, transparent) !important;
+  color: color-mix(in srgb, var(--foreground) 48%, transparent) !important;
 }
 
-/* New chat: a solid key, not a ghost pill */
+/* New chat: the DeepSeek pill — white, hairline border, fully rounded. */
 .chat-sidebar button[title="New chat"] {
-  border-radius: 11px !important;
-  border: 2px solid color-mix(in srgb, var(--foreground) 16%, transparent) !important;
-  padding-top: 10px !important;
-  padding-bottom: 10px !important;
+  border-radius: 999px !important;
+  border: 1px solid color-mix(in srgb, var(--foreground) 13%, transparent) !important;
+  background: var(--background) !important;
+  padding-top: 9px !important;
+  padding-bottom: 9px !important;
   font-size: 13.5px !important;
-  font-weight: 620 !important;
-  box-shadow: 0 2px 0 0 color-mix(in srgb, var(--foreground) 9%, transparent) !important;
+  font-weight: 500 !important;
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--foreground) 6%, transparent) !important;
 }
 .chat-sidebar button[title="New chat"]:hover {
-  border-color: #635bff !important;
-  background: color-mix(in srgb, #635bff 8%, transparent) !important;
+  border-color: color-mix(in srgb, #635bff 40%, transparent) !important;
+  background: color-mix(in srgb, #635bff 5%, transparent) !important;
 }
 
-/* Search field: squarer and taller so it matches the composer's language */
+/* Search: rounded, hairline, matching the composer's language. */
 .chat-sidebar input {
-  border-radius: 10px !important;
-  border-width: 1.5px !important;
-  padding-top: 8px !important;
-  padding-bottom: 8px !important;
+  border-radius: 999px !important;
+  border-width: 1px !important;
+  padding-top: 7px !important;
+  padding-bottom: 7px !important;
   font-size: 13px !important;
 }
+
+/* ============================ CLI ============================ */
+.chat-md.is-cli { max-width: 78ch; font-size: 13.5px; line-height: 1.55; }
