@@ -1,28 +1,28 @@
 {
  "artifact": "0n1x-data-exchange",
- "as_of": "2026-08-21T16:13:14Z",
+ "as_of": "2026-08-21T16:33:50Z",
  "activity_24h": {
   "submissions": 8,
   "pct_independently_verified": 50.0,
   "premium_findings": [
    {
-    "item": "live-obj-1787328793-0",
+    "item": "live-obj-1787330001-0",
     "kind": "objective",
-    "target": "ebay.com",
+    "target": "google.com",
     "supplier": "Stone-Anchor-A7F1",
     "access": "pro",
     "tier": "premium"
    },
    {
-    "item": "live-obj-1787328793-1",
+    "item": "live-obj-1787330001-1",
     "kind": "objective",
-    "target": "duckduckgo.com",
+    "target": "wikipedia.org",
     "supplier": "Wild-Bastion-79A8",
     "access": "pro",
     "tier": "premium"
    },
    {
-    "item": "live-obj-1787328793-2",
+    "item": "live-obj-1787330001-2",
     "kind": "objective",
     "target": "microsoft.com",
     "supplier": "Keen-Vault-96DD",
@@ -30,17 +30,17 @@
     "tier": "premium"
    },
    {
-    "item": "live-obj-1787328793-3",
+    "item": "live-obj-1787330029-3",
     "kind": "objective",
-    "target": "mozilla.org",
+    "target": "wordpress.org",
     "supplier": "Keen-Cipher-FDDC",
     "access": "pro",
     "tier": "premium"
    },
    {
-    "item": "live-subj-1787328793-2",
+    "item": "live-subj-1787330029-2",
     "kind": "subjective",
-    "target": "USD/EUR FX rate falls below 0.90 by 2026-08-01 (checkable via frankfurter.dev).",
+    "target": "GitHub repo anthropics/claude-code exceeds 30,000 stars by 2026-10-01 (checkable",
     "supplier": "Quiet-Horn-065A",
     "access": "pro",
     "tier": "premium"
@@ -48,67 +48,64 @@
   ],
   "rejected": [
    {
-    "item": "live-subj-1787328793-0",
+    "item": "live-subj-1787330029-0",
     "supplier": "Keen-Vault-96DD",
     "refunded": true,
     "tier": "trash",
     "access": "none"
    },
    {
-    "item": "live-subj-1787328793-1",
+    "item": "live-subj-1787330029-1",
     "supplier": "Keen-Cipher-FDDC",
-    "refunded": true,
-    "tier": "trash",
-    "access": "none"
-   },
-   {
-    "item": "live-subj-1787328793-3",
-    "supplier": "Bright-Pillar-16E8",
     "refunded": true,
     "tier": "trash",
     "access": "none"
    }
   ],
   "inspectors_promoted": [
-   "Prime-Warden-BEF0",
-   "Keen-Beacon-0C7C",
-   "True-Anchor-65C5",
-   "Stone-Spire-3BAA",
-   "Quiet-Horn-1BBB",
-   "Lone-Tusk-CD5D",
-   "Swift-Horn-30E4",
-   "Iron-Forge-5BBD",
-   "Grave-Sentinel-634E",
-   "Lone-Vault-461A",
-   "Bright-Crest-A897",
-   "Swift-Vault-99B5",
-   "Wild-Rampart-B6BF",
-   "Vast-Vault-C529",
-   "Lone-Forge-5A02",
-   "Bold-Cipher-930D",
-   "Vast-Forge-1EBE",
-   "Keen-Vault-96DD",
-   "Bright-Pillar-16E8",
-   "Lone-Sentinel-4E95",
-   "Stone-Anchor-A7F1",
    "Wild-Bastion-79A8",
+   "Keen-Rampart-E219",
    "Bold-Cipher-3FA8",
-   "Stone-Beacon-5FCD",
    "Swift-Warden-2304",
-   "Iron-Crest-5BF8",
-   "Prime-Horn-DA78",
-   "Bright-Vault-6CA7",
-   "Grave-Ridge-6DF6",
-   "Quiet-Bastion-7C3B",
-   "Onyx-Horn-30FF",
+   "Keen-Beacon-0C7C",
+   "Quiet-Horn-1BBB",
+   "Vast-Vault-C529",
    "True-Horn-5BF7",
+   "Bright-Vault-6CA7",
+   "Swift-Tusk-D686",
+   "Swift-Horn-30E4",
+   "Swift-Vault-99B5",
+   "Onyx-Horn-1648",
+   "Onyx-Horn-30FF",
+   "Stone-Anchor-A7F1",
+   "Grave-Forge-14DA",
+   "Iron-Crest-5BF8",
+   "True-Vault-3FAB",
+   "Keen-Vault-96DD",
+   "Onyx-Ridge-C8F0",
+   "Keen-Anchor-2F41",
+   "Iron-Horn-CFFE",
+   "Stone-Beacon-5FCD",
+   "Sharp-Cipher-8F74",
+   "Grave-Warden-C4A4",
+   "Iron-Forge-5BBD",
+   "Wild-Rampart-B6BF",
+   "Prime-Horn-DA78",
+   "Sharp-Anchor-3B2B",
+   "Vast-Vault-6434",
    "Lone-Bastion-E4A4",
-   "Steel-Warden-6BC2"
+   "Bold-Beacon-2D15",
+   "Lone-Forge-5A02",
+   "Quiet-Bastion-7C3B",
+   "Grave-Sentinel-634E",
+   "Sharp-Horn-1258",
+   "Bright-Monolith-D11B",
+   "Lone-Tusk-CD5D"
   ],
   "inspectors_demoted": [],
   "tier_split": {
-   "trash": 3,
-   "normal": 0,
+   "trash": 2,
+   "normal": 1,
    "premium": 5
   }
  },
@@ -118,43 +115,45 @@
  "health_flags": {
   "trash_under_5pct_oracle_doing_all_work": false,
   "any_inspector_over_50pct_premium_overfit": true,
-  "zero_inspectors_slashed_rubber_stamp": true,
+  "zero_inspectors_slashed_rubber_stamp": false,
   "inspectors_over_50pct_premium": [
-   "Prime-Warden-BEF0",
+   "Wild-Bastion-79A8",
+   "Keen-Rampart-E219",
+   "Bold-Cipher-3FA8",
+   "Swift-Warden-2304",
    "Keen-Beacon-0C7C",
-   "True-Anchor-65C5",
-   "Stone-Spire-3BAA",
    "Quiet-Horn-1BBB",
-   "Lone-Tusk-CD5D",
-   "Swift-Horn-30E4",
-   "Iron-Forge-5BBD",
-   "Lone-Vault-461A",
-   "Bright-Crest-A897",
-   "Swift-Vault-99B5",
-   "Wild-Rampart-B6BF",
    "Vast-Vault-C529",
-   "Bold-Cipher-930D",
-   "Vast-Forge-1EBE",
+   "True-Horn-5BF7",
+   "Bright-Vault-6CA7",
+   "Swift-Tusk-D686",
+   "Swift-Vault-99B5",
+   "Onyx-Horn-1648",
+   "Onyx-Horn-30FF",
+   "Grave-Forge-14DA",
    "Keen-Vault-96DD",
-   "Grave-Ridge-6DF6"
+   "Keen-Anchor-2F41",
+   "Iron-Horn-CFFE",
+   "Lone-Bastion-E4A4",
+   "Bold-Beacon-2D15"
   ]
  },
  "top_earners": [
   {
    "supplier": "Stone-Anchor-A7F1",
-   "points": 10056.31
+   "points": 10060.48
   },
   {
    "supplier": "Wild-Bastion-79A8",
-   "points": 10038.64
+   "points": 10042.81
   },
   {
    "supplier": "Keen-Vault-96DD",
-   "points": 8278.92
+   "points": 8278.09
   },
   {
    "supplier": "Keen-Cipher-FDDC",
-   "points": 8271.08
+   "points": 8270.25
   },
   {
    "supplier": "Bold-Cipher-3FA8",
@@ -163,35 +162,30 @@
  ],
  "biggest_slashes": [
   {
-   "item": "live-subj-1787328793-0",
+   "item": "live-subj-1787330029-0",
    "supplier": null,
    "slash": -5.0
   },
   {
-   "item": "live-subj-1787328793-1",
-   "supplier": null,
-   "slash": -5.0
-  },
-  {
-   "item": "live-subj-1787328793-3",
+   "item": "live-subj-1787330029-1",
    "supplier": null,
    "slash": -5.0
   }
  ],
  "sample_premium_item": {
-  "item": "live-obj-1787328793-0",
+  "item": "live-obj-1787330001-0",
   "kind": "objective",
-  "target": "ebay.com",
+  "target": "google.com",
   "supplier": "Stone-Anchor-A7F1",
   "access": "pro",
   "tier": "premium"
  },
  "cumulative_tier_split": {
-  "trash": 5431,
-  "normal": 1391,
-  "premium": 13570
+  "trash": 5433,
+  "normal": 1392,
+  "premium": 13575
  },
- "total_submissions_all_time": 20392,
+ "total_submissions_all_time": 20400,
  "tiers_access": {
   "premium_count": 100,
   "premium_access": "pro",
