@@ -111,13 +111,6 @@ function LiveAsk() {
     "is paypal.com safe to pay",
   ];
 
-  // On load, run one real verified query so a ✓ verified & signed answer is visible immediately —
-  // proper-verified a2a at a glance, not hidden behind a click.
-  useEffect(() => {
-    ask("how old is the domain stripe.com");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   async function ask(question?: string) {
     const text = (question ?? q).trim();
     if (!text) return;
