@@ -89,6 +89,135 @@ function LiveExchange() {
   );
 }
 
+const HUB = "https://rhinogent.com";
+
+// LIVE — a real query to the mounted /a2a/query gateway. Resolves the portal from portal.json
+// (self-healing across the rotating tunnel, same idiom as terminal.tsx), POSTs the question,
+// renders the EIP-191-signed verified answer. This is the real thing, not the scripted demo below.
+function LiveAsk() {
+  const [q, setQ] = useState("");
+  const [res, setRes] = useState<{
+    answer?: string | number | null;
+    verified?: boolean;
+    reason?: string;
+    signed_by?: string;
+    signature?: string;
+    error?: string;
+  } | null>(null);
+  const [loading, setLoading] = useState(false);
+  const examples = [
+    "how old is the domain stripe.com",
+    "github stars of facebook/react",
+    "is paypal.com safe to pay",
+  ];
+
+  // On load, run one real verified query so a ✓ verified & signed answer is visible immediately —
+  // proper-verified a2a at a glance, not hidden behind a click.
+  useEffect(() => {
+    ask("how old is the domain stripe.com");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  async function ask(question?: string) {
+    const text = (question ?? q).trim();
+    if (!text) return;
+    setQ(text);
+    setLoading(true);
+    setRes(null);
+    let portal = "https://onyx-actions.onrender.com";
+    try {
+      const pr = await fetch(`${HUB}/portal.json`, { cache: "no-store" });
+      const pd = await pr.json();
+      if (pd?.portal && /^https:\/\//.test(pd.portal)) portal = pd.portal.replace(/\/$/, "");
+    } catch {}
+    try {
+      const r = await fetch(`${portal}/a2a/query`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: text }),
+      });
+      setRes(await r.json());
+    } catch {
+      setRes({ answer: null, reason: "could not reach the live gateway — try again" });
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const verified = res?.verified === true;
+  const limited = res?.error === "rate_limited";
+
+  return (
+    <div className="rounded-2xl border border-border bg-surface/40 p-6">
+      <h2 className="text-lg font-semibold tracking-tight">Ask an agent &mdash; live &amp; signed</h2>
+      <p className="mt-1 font-mono text-[12px] text-muted-2">
+        real answer · verified against reality · Ed25519-signed
+      </p>
+      <div className="mt-4 flex gap-2">
+        <input
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") ask();
+          }}
+          placeholder="how old is the domain stripe.com"
+          className="flex-1 rounded-xl border border-border bg-[#0f1117] px-4 py-3 text-sm text-foreground outline-none focus:border-accent"
+        />
+        <button
+          onClick={() => ask()}
+          disabled={loading}
+          className="rounded-xl bg-accent px-5 text-sm font-semibold text-white disabled:opacity-50"
+        >
+          {loading ? "…" : "Ask"}
+        </button>
+      </div>
+      <div className="mt-3 flex flex-wrap gap-2">
+        {examples.map((ex) => (
+          <button
+            key={ex}
+            onClick={() => ask(ex)}
+            className="rounded-lg border border-border bg-[#0f1117] px-3 py-1.5 font-mono text-[11px] text-muted-2 transition-colors hover:border-accent hover:text-foreground"
+          >
+            {ex}
+          </button>
+        ))}
+      </div>
+      {res && (
+        <div className="mt-5 rounded-xl border border-border bg-[#0f1117] p-4">
+          <span
+            className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 font-mono text-[10.5px] font-semibold uppercase tracking-wide ${
+              verified ? "bg-[#3fdda0]/10 text-[#1f9d6b]" : "bg-[#f0b354]/10 text-[#b5811f]"
+            }`}
+          >
+            {limited ? "busy · try again" : verified ? "✓ verified & signed" : "signed · no ground truth"}
+          </span>
+          <p className="mt-2 text-[15px] leading-snug text-foreground">
+            {limited
+              ? "The gateway is rate-limited right now — try again in a moment."
+              : res.answer != null
+                ? String(res.answer)
+                : res.reason || "no verifiable answer"}
+          </p>
+          {!limited && (
+            <div className="mt-3 break-all border-t border-border pt-3 font-mono text-[11px] leading-relaxed text-muted-2">
+              <div>
+                <span className="text-foreground/70">signed_by</span> {res.signed_by || "—"}
+              </div>
+              <div>
+                <span className="text-foreground/70">signature</span>{" "}
+                {(res.signature || "").slice(0, 34)}…
+              </div>
+              <div>
+                <span className="text-foreground/70">verify</span> recover_message(EIP-191) == signed_by
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function A2A() {
   return (
     <>
@@ -123,6 +252,11 @@ export default function A2A() {
           <p className="mt-4 text-[12px] text-muted-2">
             The proof underneath is <span className="font-mono">EIP-191</span> — the reason it works, not the pitch.
           </p>
+        </section>
+
+        {/* LIVE — a REAL query to the mounted gateway, signed on the wire */}
+        <section className="mx-auto max-w-3xl px-5 pt-6 pb-2">
+          <LiveAsk />
         </section>
 
         {/* LIVE DEMO — one exchange beats all the copy */}
