@@ -6,7 +6,7 @@ import { getWallet, spend, grant, reward, PRICES } from "@/lib/wallet";
 import { RhinoMark } from "@/components/rhino";
 import { loadAgents, addAgent, renameAgent as renameMinted, MAX_SLOTS } from "@/lib/agents";
 import { pullAgents, accountAgents, pushAgents } from "@/lib/agent-sync";
-import { queueThreadSync, flushThreadSync, pullThreadsFull, pullThreads, reconcileHistory, rebindThreadKey, adoptThread, deleteThread, restoreThread, backfillThreads } from "@/lib/chat-sync";
+import { queueThreadSync, flushThreadSync, pullThreadsFull, pullThreads, reconcileHistory, rebindThreadKey, adoptThread, deleteThread, restoreThread, backfillThreads, chatAgentsFromIntake } from "@/lib/chat-sync";
 import { recordIntake, flushIntake } from "@/lib/census-intake";
 import { supabase } from "@/lib/supabase";
 
@@ -57,10 +57,10 @@ function ProcessingTrace({ pro, peerName }: { pro: boolean; peerName?: string })
   // leaf (agent_chat.py: retrieve → grounding → gate → cite), so the trace
   // finally says so. Pro really web-grounds. Peer really round-trips.
   const steps = peerName
-    ? [`${peerName} received it`, "Verifying the signature", "Reasoning", "Replying"]
+    ? [`${peerName} has it`, "Verifying the signature", "Reasoning"]
     : pro
-      ? ["Reading your message", "Searching the live web", "Verifying the sources", "Filtering unsourced claims", "Signing the proof", "Composing the answer"]
-      : ["Reading your message", "Checking the signed facts", "Retrieving leaves", "Drafting", "Filtering unsourced claims", "Composing the answer", "Signing the leaf"];
+      ? ["Searching the live web", "Weighing the sources", "Discarding what it can't stand behind", "Signing the proof"]
+      : ["Consulting the signed corpus", "Weighing what it can prove", "Checking what it can cite", "Signing the leaf"];
   const [i, setI] = useState(0);
   // LIVE TOKEN TICKER — Pro/peer answers cost TOKEN, so while the agent works we tick a counter
   // upward (like a frontier model showing tokens accruing). Only on charged tiers; Normal is free.
@@ -89,7 +89,7 @@ function ProcessingTrace({ pro, peerName }: { pro: boolean; peerName?: string })
   const total = steps.length;
   return (
     <div className="pt-1">
-      <div className="inline-flex items-center gap-3 rounded-2xl border border-border bg-surface/50 px-3.5 py-3">
+      <div className="inline-flex items-center gap-2.5 px-0.5 py-1">
         <QubitLattice size={30} />
         <div className="flex flex-col gap-1.5">
           {charged && (
@@ -100,9 +100,9 @@ function ProcessingTrace({ pro, peerName }: { pro: boolean; peerName?: string })
             </span>
           )}
           {/* the swapping slot — fixed height so the square never resizes */}
-          <div className="flex h-[17px] min-w-[168px] items-center overflow-hidden">
-            <span key={i} className="phase-swap thinking-shimmer whitespace-nowrap text-[12.5px] font-medium"
-              style={{ ["--dur" as string]: pro ? "1.15s" : "0.62s" }}>
+          <div className="flex h-[17px] min-w-[132px] items-center overflow-hidden">
+            <span key={i} className="phase-swap thinking-shimmer whitespace-nowrap text-[12px] font-normal text-muted"
+              style={{ ["--dur" as string]: pro ? "1.6s" : "1.1s" }}>
               {steps[i]}
             </span>
           </div>
@@ -111,7 +111,7 @@ function ProcessingTrace({ pro, peerName }: { pro: boolean; peerName?: string })
             {Array.from({ length: total }, (_, k) => (
               <span key={k}
                 className={`h-1 rounded-full transition-all duration-300 ${
-                  k < i ? "w-3 bg-[#635bff]/70" : k === i ? "w-3 bg-[#635bff]" : "w-1.5 bg-[#635bff]/20"
+                  k < i ? "w-1 bg-muted-2/50" : k === i ? "w-2 bg-muted-2" : "w-1 bg-muted-2/20"
                 }`} />
             ))}
           </div>
@@ -359,10 +359,18 @@ function splitProof(t: string): [string, string | null] {
 }
 type HistItem = { id: string; title: string; msgs: Msg[]; agent?: { callsign: string; address: string }; peer?: { callsign: string; address: string }; ts?: number; live?: boolean };
 
-// Stable, unique agent callsign for a chat that has no stored agent — derived
-// deterministically from the thread id (each chat is its own identity). Same id
-// → same name forever. Adjective-Noun-XXXX, matching the 0n1x mint scheme.
-// Kept local (no viem) so the sidebar never drags the wallet lib into the bundle.
+// DEPRECATED FOR THE SIDEBAR — DO NOT USE AS AN AGENT LABEL.
+//
+// This hashes a chat id into an Adjective-Noun-XXXX string that LOOKS exactly like a minted 0n1x
+// callsign. Used as a fallback label it invented agents that exist nowhere — not in `agents`, not
+// in `agents_archive`, not in `census_intake` — and rendered them beside "✓ identity verified".
+// A real account with a 10-agent roster saw Lone-Forge-9CD3, Prime-Monolith-45BA, True-Horn-4775
+// in its own sidebar; none of them were real, and the phone (which labels chats from the user's
+// own census_intake) disagreed with the browser on the same account.
+//
+// Showing a fabricated identity as verified is the exact failure this product exists to prevent.
+// The sidebar now resolves the REAL owning agent via chatAgentsFromIntake() and falls back to the
+// user's own current agent — never to a generated name. Kept only for non-identity seeds.
 const _ADJ = ["Keen", "Bright", "Iron", "Swift", "Bold", "Quiet", "Sharp", "Stone", "Onyx", "Vast", "Lone", "Prime", "True", "Grave", "Wild", "Steel"];
 const _NOUN = ["Beacon", "Warden", "Monolith", "Horn", "Sentinel", "Rampart", "Cipher", "Bastion", "Anchor", "Forge", "Vault", "Ridge", "Pillar", "Crest", "Spire", "Tusk"];
 function callsignForSeed(seed: string): string {
@@ -476,6 +484,11 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
+  // `streaming` = tokens are still landing in an answer that's already on the canvas.
+  // `busy` goes false at the FIRST token (so the thinking trace gives way to the text),
+  // so it can't be what keeps the STOP button alive — this can.
+  const [streaming, setStreaming] = useState(false);
+  const streamAbortRef = useRef<AbortController | null>(null);
   const [balance, setBalance] = useState<number>(0);
   // THREE TIERS, one state. `pro` stays a DERIVED boolean so every existing
   // branch keeps working untouched — a rename across ~40 call sites is how a
@@ -532,12 +545,91 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
   const [agent, setAgent] = useState<{ callsign: string; address: string; nick?: string } | null>(null);   // the verified agent handling THIS chat (renameable, persisted)
   // PEER MODE: your agent ⇄ ANOTHER agent, charged per answer. Set from /chat?peer=<callsign>&pa=<addr>&price=<n>.
   const [peer, setPeer] = useState<{ callsign: string; address: string; price: number } | null>(null);
+  // RECALL SINK — every completed exchange, whichever backend answered it.
+  //
+  // Recording used to be a side effect of answering, wired into the two lanes node1 serves. Pro is
+  // answered by the edge worker and never touches node1, so Pro turns were answered and lost — the
+  // desktop replied "I am 0n1x Pro" as Iron-Spire and none of it reached the store. Teaching each
+  // backend to record means every NEW backend silently drops turns until someone remembers.
+  //
+  // So this watches the message list instead. Every path — node stream, node blocking, worker,
+  // Pro, peer, the offline KB — lands in `msgs`, so posting from here catches all of them by
+  // construction rather than through six hooks kept in sync by hand.
+  //
+  // Safe to fire on every change: the server dedupes identical (role, text) inside 120s, and
+  // postedRef stops us re-posting an older pair as the list grows.
+  const postedRef = useRef<Set<string>>(new Set());
+  useEffect(() => {
+    if (privateMode) return;                       // incognito records nothing, anywhere
+    // WAIT FOR THE TURN TO SETTLE. Without this the effect fires on every render as the streamed
+    // text grows, and each partial length is a different key — one answer became ~six rows.
+    // Measured after the first deploy: by_role {user: 47, assistant: 137}, six identical entries
+    // sharing a timestamp. Recall feeds the prompt, so duplicates come back as the model's own
+    // stutter.
+    if (busy || streaming) return;
+    const cs = peer?.callsign || agent?.nick || agent?.callsign || "";
+    if (!cs || !msgs.length) return;
+
+    // EVERY MESSAGE, NOT ONLY PAIRS. The previous version posted only when the last two entries
+    // were exactly (user, assistant), which silently dropped everything else the chat produced:
+    // top-up and balance notices, the guest gate message, an answer followed by an attribution
+    // line, whatever had streamed before a stop, and any opening message with no question before
+    // it. All of those were on the user's screen — a memory that omits them is a partial
+    // transcript, and Recall is what the agent later reads as "what we said".
+    //
+    // In-flight text is still excluded: Pro paints a "signing on completion" pill and swaps in the
+    // signed answer at the end, and storing the pill put "A *⏳ signing on completion…*" into
+    // Recall as though the agent had said it.
+    const turns = msgs
+      .slice(-40)
+      .filter((m) => m?.text?.trim())
+      .filter((m) => !m.text.includes("signing on completion") && !m.text.includes("⏳"))
+      .map((m) => ({ role: m.role, text: m.text }));
+    if (!turns.length) return;
+
+    // Post only what this client has not already sent. The server dedupes across all of the
+    // agent's threads as well, so a double-post is harmless — this just avoids the traffic.
+    const fresh = turns.filter((t) => !postedRef.current.has(`${cs}|${t.role}|${t.text}`.slice(0, 400)));
+    if (!fresh.length) return;
+    fresh.forEach((t) => postedRef.current.add(`${cs}|${t.role}|${t.text}`.slice(0, 400)));
+
+    (async () => {
+      try {
+        const base = await portalBase();
+        if (!base) return;
+        await fetch(`${base}/v1/recall/${encodeURIComponent(cs)}`, {
+          method: "POST", headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            address: agent?.address || "",
+            turns: fresh,
+            source: pro ? "pro" : peer ? "peer" : factsOnly ? "facts" : "normal",
+          }),
+        });
+      } catch { /* a lost record must never cost the user their answer */ }
+    })();
+  }, [msgs, privateMode, agent, peer, pro, factsOnly, busy, streaming]);
+
   const poolRef = useRef<{ callsign: string; address: string }[]>([]);
   const kbRef = useRef<{ q: string; a: string }[]>([]);   // the full trained KB (chat_kb.json), fetched once
   const [myAgents, setMyAgents] = useState<{ callsign: string; address: string; nick?: string }[]>([]);   // the user's MINTED agents (from the dashboard) — selectable in chat
   const [picker, setPicker] = useState(false);
   const scroller = useRef<HTMLDivElement>(null);
   const loadHistory = () => { try { setHistory(JSON.parse(localStorage.getItem("rhinogent.chat.history") || "[]")); } catch { setHistory([]); } };
+
+  // REAL owning agent per chat, from the user's OWN census_intake. This is what the phone app
+  // has always done; the browser had no equivalent and fell back to a hash of the chat id, which
+  // manufactured agent names that were never minted. Scoped to user_id inside the helper, so a
+  // census-population callsign can never end up labelled as "your" agent.
+  const [intakeAgents, setIntakeAgents] = useState<Record<string, string>>({});
+  useEffect(() => {
+    const ids = history.map((h) => h.id).filter(Boolean);
+    if (!ids.length) return;
+    let alive = true;
+    chatAgentsFromIntake(ids)
+      .then((m) => { if (alive) setIntakeAgents((prev) => ({ ...prev, ...m })); })
+      .catch(() => { /* labelling is cosmetic — never break the sidebar for it */ });
+    return () => { alive = false; };
+  }, [history]);
   // UPSERT, NOT UNSHIFT. The old model only wrote a thread to the sidebar when you LEFT it
   // (agent switch / new chat / peer start) — so the conversation you were actually in was
   // invisible while you had it, and anything that replaced it took it with no trace. A chat
@@ -712,7 +804,9 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
   useEffect(() => {
     const refresh = () => {
       try {
-        const mine = loadAgents().map((a) => ({ callsign: a.id, address: a.address, nick: a.label }));
+        // Hard cap at MAX_SLOTS (10): one account operates exactly its 10 agents — the roster
+        // must never render 11. Slice at the source so the count and the picker always agree.
+        const mine = loadAgents().map((a) => ({ callsign: a.id, address: a.address, nick: a.label })).slice(0, MAX_SLOTS);
         setMyAgents(mine);
         // CONSISTENCY: a signed-in user chats as their OWN synced agent — the SAME identity on
         // every device (minted agents sync via the account) — never a random per-device pool pick.
@@ -737,7 +831,9 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
           if (local.length) await pushAgents(local);              // chat-minted agents now reach the account
           await pullAgents().catch(() => {});                     // decrypt keys where a password session exists
           const merged = await accountAgents();                   // local (keys) ∪ account mirror (identity)
-          const list = merged.map((a) => ({ callsign: a.id, address: a.address, nick: a.label }));
+          // Same hard cap (10): the merge of local ∪ mirror can surface an extra identity — never
+          // let the operable roster exceed the account's 10 slots.
+          const list = merged.map((a) => ({ callsign: a.id, address: a.address, nick: a.label })).slice(0, MAX_SLOTS);
           if (list.length) setMyAgents(list);
           setAgent((cur) => {
             if (cur && list.some((m) => m.address.toLowerCase() === cur.address.toLowerCase())) return cur;
@@ -779,7 +875,43 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
       // Opening a peer chat sets the PEER — it does NOT flip the tier. Force-flipping to Pro
       // meant the toggle read Normal while the request billed Pro: the UI said one thing and
       // the meter did another. The user picks the tier; peer mode never picks it for them.
-      if ((call || addr) && price) { setPeer({ callsign: call || "agent", address: addr, price }); }
+      // YOUR OWN ROSTER IS NEVER A PEER, AND NEVER BILLED.
+      // Peer identity arrived entirely from URL params with no check against the agents you own,
+      // so opening "chat with this agent" on one of YOUR OWN ten made it a paid peer — you were
+      // charged per answer to talk to a keypair you hold. Match on address (the identity), not on
+      // callsign (a display name anyone can set), and fall back to callsign only if the URL
+      // carried no address.
+      const mineNow = (() => { try { return loadAgents(); } catch { return []; } })();
+      const isMine = mineNow.some((a) =>
+        (addr && String(a.address || "").toLowerCase() === addr) ||
+        (!addr && call && String(a.id || "").toLowerCase() === call.toLowerCase()));
+      // YOUR OWN ROSTER IS FREE AS A PEER — not barred from being one.
+      //
+      // The first version of this fix set `isMine` and then refused to open a peer chat at all,
+      // which stopped the billing and ALSO removed agent-to-agent conversation between agents you
+      // own — the exact thing the network is for ("agents meet and talk to each other on 0n1x").
+      // Blocking the feature to fix the price was the wrong cut. Price it at zero instead: you
+      // hold both keypairs, so there is nothing to buy, but the conversation still happens.
+      if (call || addr) {
+        const own = mineNow.find((a) =>
+          (addr && String(a.address || "").toLowerCase() === addr) ||
+          (!addr && call && String(a.id || "").toLowerCase() === call.toLowerCase()));
+        if (own) {
+          setPeer({ callsign: own.id, address: own.address, price: 0 });   // free: you own it
+        } else if (!mineNow.length) {
+          // AN OWNERSHIP CHECK THAT CANNOT CONFIRM MUST NOT BILL. `mineNow` comes from the local
+          // roster cache, and that cache is legitimately EMPTY on a fresh device or before the
+          // first sync — the roster itself lives in the database. When it is empty, "not found"
+          // does not mean "not yours", it means "unknown", and Math.max(1, …) above then turned an
+          // unanswerable question into a charge: opening a peer chat with one of the operator's OWN
+          // agents at price=0 billed 1 TOKEN per answer (observed 2026-08-21).
+          // Failing to free costs us nothing we can prove we were owed; failing to charged bills a
+          // user for talking to a keypair they hold.
+          setPeer({ callsign: call || "agent", address: addr, price: 0 });
+        } else if (price) {
+          setPeer({ callsign: call || "agent", address: addr, price });     // someone else's: charged
+        }
+      }
     } catch { /**/ }
   }, []);
   // "Chat with this agent" opens a BRAND-NEW chat (never continues the last thread):
@@ -926,9 +1058,15 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
         loadHistory();
         // push any LOCAL-ONLY threads up (never re-pushes reconciled-away ones — they're gone from hist)
         const hist = JSON.parse(localStorage.getItem("rhinogent.chat.history") || "[]");
-        backfillThreads(hist).catch(() => {});
-      } catch { /**/ }
-    }).catch(() => {});
+        backfillThreads(hist).catch((e) => console.warn("[chat-sync] backfill failed:", e));
+      } catch (e) {
+        console.warn("[chat-sync] reconcile failed:", e);
+      }
+      // NEVER SILENT. Sync IS the product — a user on two devices must see one account. These
+      // used to be bare `.catch(() => {})`, so a broken sync and a working one looked identical
+      // from the outside, and the browser sat frozen at a months-old chat list while the phone
+      // stayed current. If it breaks again it has to be visible.
+    }).catch((e) => console.warn("[chat-sync] pull failed:", e));
     run();
     const onVis = () => { if (document.visibilityState === "visible") run(); };
     window.addEventListener("agents:synced", run);
@@ -1046,7 +1184,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
         if (!guest) {
           // sync under the CURRENT conversation's unique thread key (not the agent address),
           // so each conversation owns its own account row + title.
-          queueThreadSync(curThreadKey(agent?.address), threadTitle(msgs), msgs.slice(-100));
+          queueThreadSync(curThreadKey(agent?.address), threadTitle(msgs), msgs.slice(-100), agent?.callsign);   // persist the owner account-natively
         }
       }
     } catch { /**/ }
@@ -1095,7 +1233,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
       localStorage.setItem("rhinogent.chat.history", JSON.stringify(hist.map((x) => (x.id === h.id ? { ...x, title } : x))));
     } catch { /**/ }
     // push the new title to the account row (same key path the sync uses)
-    queueThreadSync(h.id, title, h.msgs);
+    queueThreadSync(h.id, title, h.msgs, (h.agent as { callsign?: string } | undefined)?.callsign);
     loadHistory();
   };
 
@@ -1119,11 +1257,32 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
     freshRef.current = true;   // the INCOMING agent must start EMPTY, not restore its old draft
     setMsgs([]);
     setActiveId(null);   // sidebar highlight only
-    const picked = assignAgent();   // fresh chat → a NEW verified agent takes it
-    // if the pool re-picked the SAME agent, the restore effect won't fire — clear the fresh
-    // flag ourselves so it can't leak into a later genuine agent switch (msgs are already []).
-    if (!picked || picked.address === agent?.address) freshRef.current = false;
+    // FRESH-CHAT AGENT: a signed-in user keeps operating THEIR OWN roster agent — hitting
+    // "New chat" must NOT spawn a random census agent (the "a new agent appears every time"
+    // bug). Keep the current agent if it's one of yours; else fall to your first roster slot.
+    // Only a guest (no roster) still gets a rotating pool agent for the free preview.
+    if (!guest && myAgents.length) {
+      const mineCur = agent && myAgents.find((m) => m.address.toLowerCase() === agent.address.toLowerCase());
+      const picked = mineCur ? agent! : myAgents[0];
+      freshRef.current = !agent || picked.address.toLowerCase() !== agent.address.toLowerCase();
+      setAgent(picked); saveAgent(picked);
+    } else {
+      const picked = assignAgent();   // guest preview → rotating pool agent
+      if (!picked || picked.address === agent?.address) freshRef.current = false;
+    }
     try { localStorage.removeItem("rhinogent.chat.current"); } catch { /**/ }
+  }
+
+  // STOP — abort the answer in flight and hand the composer straight back. Bumping the
+  // generation is what makes it safe: every paint, finalize and typewriter loop is bound
+  // to `myGen`, so a late reply can't land in the thread after you stopped it. What already
+  // streamed stays: you asked it to stop, not to throw the words away.
+  function stopAnswer() {
+    genRef.current++;
+    try { streamAbortRef.current?.abort(); } catch { /**/ }
+    streamAbortRef.current = null;
+    setStreaming(false);
+    setBusy(false);
   }
 
   async function send(override?: string) {
@@ -1140,7 +1299,9 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
     }
     // PEER MODE: pay THAT agent per answer. PRO burns a token (full tools + web + signed).
     // NORMAL is free (clean conversational).
-    if (peer) {
+    // price 0 = one of YOUR OWN agents. You hold both keypairs, so there is nothing to buy and no
+    // ledger row to write — calling spend(0) would just risk a "top up" notice on a free chat.
+    if (peer && peer.price > 0) {
       const pay = await spend(peer.price, `chat with ${peer.callsign}`);
       if (!pay.ok) {
         const t = `Each answer from **${peer.callsign}** costs ${peer.price} TOKEN and your balance is ${pay.balance}. Tap **Top up** to keep the conversation going.`;
@@ -1201,7 +1362,8 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
       // PEER MODE: this answer is served on ${peer}'s behalf on the shared grounded+signed tier.
       // Honest: per-agent engines (each agent running its OWN model) arrive with the Agents API —
       // until then we don't pretend the peer independently authored it.
-      if (peer) out += `\n\n*— ${peer.callsign} · ${peer.price} TOKEN · answered on the shared engine (per-agent models coming).*`;
+      // price 0 = your own agent: say "free", never "0 TOKEN", which reads like a billing bug.
+      if (peer) out += `\n\n*— ${peer.callsign} · ${peer.price > 0 ? `${peer.price} TOKEN` : "your agent · free"} · answered on the shared engine (per-agent models coming).*`;
       return out || "…";
     }
     // The signed-facts node. Returns "" (never throws) so every failure mode
@@ -1221,13 +1383,25 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
               message: q,
               agent: (peer?.callsign || agent?.nick || agent?.callsign || ""),
               history: msgs.slice(-8).map((m) => ({ role: m.role, content: m.text })),
-              // Only sent for Facts. Omitted otherwise so Normal/Pro keep the
-              // server's existing default rather than inheriting a new one.
-              ...(factsOnly ? { tier: "facts" } : {}),
+              // ALWAYS send the tier. Omitting it let the server apply its own default of "pro"
+              // (_chat.py: `tier = (body.get("tier") or "pro")`), so desktop Normal was silently
+              // billed and answered as Pro — and, once ONYX_LOCAL_FIRST was armed, could never
+              // reach our own brain, since local is gated on `tier == "normal"`. The phone always
+              // sent its mode and got the local lane; the desktop did not. Same product, two
+              // brains, decided by a field one client forgot to send.
+              tier: factsOnly ? "facts" : pro ? "pro" : "normal",   // CLI rides the Normal lane
               // Private turns are not recorded anywhere: the server's hook
               // returns before writing. Sent only when ON so a normal turn
               // keeps the existing default rather than inheriting a new one.
               ...(privateMode ? { private: true } : {}),
+              // SAME BUG AS `tier` ABOVE, ONE FIELD OVER. mode:"cli" was sent only from
+              // streamNodePortal, so whenever the stream path was skipped or failed and this
+              // blocking path ran instead, the terminal bridge never armed: a CLI turn was
+              // answered by the hosted brain on node1 rather than the owner's own paired machine,
+              // with nothing in the UI to say which one replied. Two machines, decided by a field
+              // one of the two lanes forgot to send — exactly what the comment above describes.
+              // The server gate stays fail-closed; this only makes both lanes tell it the truth.
+              ...(cliMode ? { mode: "cli" } : {}),
             }),
           });
           if (!r.ok) return "";
@@ -1247,6 +1421,99 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
       if (!r.ok) throw new Error("http " + r.status);
       const d = await r.json();
       return groundGuard(String(d.reply || "").replace(/<\/?(web_search|tool_call|function|tool|invoke)[^>]*>/gi, "").trim()) + factChips(d);
+    }
+    // REAL STREAMING FROM THE 0n1x NODE (Normal / CLI) — the same SSE contract the phone
+    // consumes (STREAM_PROTOCOL.md v1 on node1): `data: {"t":…,"brain":…}` deltas, `data: [DONE]`
+    // terminal, `event:`-shaped v2 frames tolerated in advance. This matters beyond speed:
+    // the node lane is the one carrying the identity injection (answers as the callsign), the
+    // answer bank (median-hit cache) and the provider cascade — so streaming it means desktop
+    // and phone get the SAME brain on the same clock, instead of the desktop quietly being
+    // served by the edge worker while the node was only consulted blocking. Returns false for
+    // anything it can't serve; the existing blocking ladder below then runs unchanged.
+    async function streamNodePortal(): Promise<boolean> {
+      // PEER RIDES THE NODE, like Normal. It used to be excluded here and routed to the edge
+      // worker instead, which meant agent-to-agent chat never reached node1 — so it got no
+      // IDENTITY injection, no corpus, no sovereignty gate and no entailment check. Measured
+      // 2026-08-21, same agent and same question on both routes:
+      //   node1  : "Iron-Spire-F054, your named 0n1x agent, answers to you directly."
+      //   worker : "I'm an AI language model created by OpenAI" — stamped "Signed · 6 sources"
+      // A signature on a false identity claim is worse than no signature, and "the agents are the
+      // ones with IDs" is the product. Correct identity outranks the worker's ProofCard here.
+      if (pro || factsOnly) return false;                               // signed/closed tiers keep their own paths
+      if (LIVE_INTENT.test(q) && !CENSUS_INTENT.test(q)) return false;  // Normal has no web — the honest KB answer wins
+      const base = await portalBase();
+      if (!base) return false;
+      const myGen = genRef.current;
+      const ctl = new AbortController();
+      streamAbortRef.current = ctl;
+      let r: Response;
+      try {
+        r = await fetch(base + "/v1/chat/stream", {
+          method: "POST", headers: { "content-type": "application/json", accept: "text/event-stream" },
+          signal: ctl.signal,
+          body: JSON.stringify({
+            message: q,
+            agent: (agent?.nick || agent?.callsign || ""),
+            history: msgs.slice(-8).map((m) => ({ role: m.role, content: m.text })),
+            ...(privateMode ? { private: true } : {}),
+            // CLI mode is a skin (see above), so the backend cannot tell it from Normal — it has
+            // to be told. The terminal bridge routes a turn to the owner's own paired machine,
+            // and that must happen ONLY here, never in Normal chat. The server gate is
+            // fail-closed on this exact field: no mode:"cli", no bridge.
+            ...(cliMode ? { mode: "cli" } : {}),
+          }),
+        });
+      } catch { return false; }
+      if (!r.ok || !r.body) return false;
+      const idx = { i: 0 };
+      let created = false, acc = "", buf = "", done = false, bail = false;
+      // A tool-tag can split across frames, so tags are stripped on the ASSEMBLED text,
+      // never per token.
+      const clean = (t: string) => t.replace(/<\/?(web_search|tool_call|function|tool|invoke)[^>]*>/gi, "")
+        .replace(/\{"query"\s*:\s*"[^"]*"\}/g, "").replace(/^\s*[\r\n]+/, "").trim();
+      const paint = (t: string) => {
+        if (!created) { created = true; setBusy(false); setMsgs((m) => { idx.i = m.length; return [...m, { role: "assistant", text: t }]; }); }
+        else if (genRef.current === myGen) setMsgs((m) => m.map((mm, k) => (k === idx.i ? { ...mm, text: t } : mm)));
+      };
+      const handle = (chunk: string) => {
+        const parts = (buf + chunk).split(/\r?\n\r?\n/); buf = parts.pop() || "";
+        for (const part of parts) for (const line of part.split(/\r?\n/)) {
+          if (!line.startsWith("data:")) continue;               // `: keepalive` comments / `event:` lines
+          const payload = line.slice(5).trim();
+          if (payload === "[DONE]") { done = true; continue; }
+          let obj: { t?: string; event?: string };
+          try { obj = JSON.parse(payload); } catch { continue; } // one bad frame never kills the answer
+          if (obj.event === "done" || obj.event === "error") { done = true; continue; }
+          if (typeof obj.t !== "string" || !obj.t) continue;     // open/lane/unknown v2 events: tolerated
+          acc += obj.t;
+          // The paywall must never render, not even for a frame.
+          if (/out of depth credits|premium depth|depth credits|top up.{0,24}unlock/i.test(acc)) { bail = true; return; }
+          paint(clean(acc));
+        }
+      };
+      const reader = r.body.getReader(); const dec = new TextDecoder();
+      setStreaming(true);
+      try {
+        for (;;) {
+          const { done: fin, value } = await reader.read();
+          if (fin) break;
+          if (genRef.current !== myGen) { try { await reader.cancel(); } catch { /**/ } return true; } // stopped/new chat
+          handle(dec.decode(value, { stream: true }));
+          if (done || bail) { try { await reader.cancel(); } catch { /**/ } break; }
+        }
+      } catch { if (!created) return false; }
+      finally { setStreaming(false); streamAbortRef.current = null; }
+      // Falling back means the blocking ladder will append its own answer — so anything
+      // already painted has to come OFF the canvas first, or the turn shows twice.
+      const discard = () => { if (created && genRef.current === myGen) setMsgs((m) => m.filter((_, k) => k !== idx.i)); };
+      if (bail) { discard(); return false; }  // never serve the paywall — the ladder answers instead
+      if (!created) return false;             // nothing streamed — let the node's blocking path try
+      const finalText = groundGuard(clean(acc));
+      if (!finalText || /busy on that one|corpus is silent/i.test(finalText)) { discard(); return false; }
+      if (genRef.current === myGen) paint(finalText);
+      setConn("ok");
+      recordIntake({ agentAddr: agent?.address ?? null, mode: "normal", role: "assistant", text: finalText, grounded: false });
+      return true;
     }
     // REAL STREAMING (Normal tier): render tokens the instant they arrive — true low time-to-first-
     // token, not a typewriter over an already-finished answer. Pro/peer keep the signed non-stream
@@ -1310,7 +1577,8 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
         out += `\n\n🔏 Signed · proof \`${d.proof.id}\`${cnt} · [verify](https://onyx-pro.onyxagntc.workers.dev)${links}`;
       }
       out += factChips(d as Parameters<typeof factChips>[0]);
-      if (peer) out += `\n\n*— ${peer.callsign} · ${peer.price} TOKEN · answered on the shared engine (per-agent models coming).*`;
+      // price 0 = your own agent: say "free", never "0 TOKEN", which reads like a billing bug.
+      if (peer) out += `\n\n*— ${peer.callsign} · ${peer.price > 0 ? `${peer.price} TOKEN` : "your agent · free"} · answered on the shared engine (per-agent models coming).*`;
       return out;
     }
     // REAL STREAMING (Pro / peer): stream the DRAFT with a pending "signing…" pill, then the worker's
@@ -1367,7 +1635,20 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
       return true;
     }
     try {
-      if ((pro || peer) && await streamPro()) { setBusy(false); return; }
+      // PRO ONLY. `peer` used to be here too, which sent every agent-to-agent turn to the edge
+      // worker before the node was ever consulted — the routing bug that let a 0n1x agent answer
+      // "created by OpenAI" under a signed badge. Peer now falls through to the node ladder below.
+      if (pro && await streamPro()) { setBusy(false); return; }
+      // NODE STREAM FIRST on Normal/CLI — same brain as the phone, tokens as they land.
+      // It declines (returns false) for every case it can't serve, so the ladder below is
+      // unchanged: node blocking → worker stream → worker → KB.
+      if (await streamNodePortal()) {
+        if (consumeGuest) {
+          try { const used = parseInt(localStorage.getItem("rhinogent.chat.guestUsed") || "0", 10) || 0; localStorage.setItem("rhinogent.chat.guestUsed", String(used + 1)); } catch { /**/ }
+        }
+        setBusy(false);
+        return;
+      }
       // ASK THE SIGNED-FACTS NODE BEFORE THE EDGE WORKER.
       //
       // streamNormal() streams from the worker, and it ran first — so on
@@ -1376,7 +1657,9 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
       // back as "Rhinogent is busy on that one" on the live site, and why no
       // visitor turn ever reached the ledger. The node answers cited or it
       // declines; declining costs one round trip and we stream as before.
-      const nodeFirst = (!pro && !peer) ? await askPortal() : "";
+      // `!peer` was here too, so the blocking node path was skipped for agent-to-agent as well —
+      // both the stream and the blocking route went to the worker. Peer asks the node first now.
+      const nodeFirst = !pro ? await askPortal() : "";
       // FACTS IS A CLOSED TIER. Its guarantee is that no model answers, so it
       // must not fall through to the worker when the corpus is silent — the
       // node's decline IS the answer. Falling back would reintroduce exactly
@@ -1476,7 +1759,9 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
         // the top titled from its first user message — or "New chat" until one is sent — so every
         // "+ New chat" is a visibly distinct entry bound to its own agent, never a repeated name.
         const q = chatSearch.trim().toLowerCase();
-        const filtered = history.filter((h) => !q || rowTitle(h).toLowerCase().includes(q) || (h.agent?.callsign || callsignForSeed(h.id)).toLowerCase().includes(q));
+        // Search matches the REAL agent (thread-stored or from our own intake). Matching a
+        // hash-derived name meant searching for an agent that was never minted.
+        const filtered = history.filter((h) => !q || rowTitle(h).toLowerCase().includes(q) || (h.agent?.callsign || intakeAgents[h.id] || "").toLowerCase().includes(q));
         const now = new Date();
         const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
         const startYest = startToday - 864e5, start7 = startToday - 7 * 864e5;
@@ -1508,11 +1793,21 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
                 aria-current={activeId === h.id ? "true" : undefined}
                 className="min-w-0 flex-1 text-left outline-none">
                 <span className={`block truncate text-[13px] leading-snug ${activeId === h.id ? "font-medium text-foreground" : "text-foreground/90"}`}>{rowTitle(h)}</span>
-                {/* Show each chat's OWN agent under the title, ALWAYS. Use the stored callsign
-                    when the thread carries one; otherwise derive a STABLE one from the thread id
-                    (callsignForSeed) — same id → same name forever, unique per chat. Never fall
-                    back to the CURRENT agent (that's the "all one agent" bug). */}
-                <span className="mt-[3px] flex items-center gap-1 truncate text-[10.5px] text-muted-2"><span className="inline-block h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: "#635bff" }} />{h.peer ? `${h.agent?.callsign || callsignForSeed(h.id)} ⇄ ${h.peer.callsign}` : (h.agent?.callsign || callsignForSeed(h.id))}
+                {/* Show each chat's OWN agent under the title — but only when we actually know it.
+                    Order: the callsign stored on the thread, else the agent that really spoke in
+                    this chat per our own census_intake (same source the phone app uses).
+                    If neither knows, show NOTHING. The previous fallback derived a name by hashing
+                    the chat id, which produced unminted callsigns (Lone-Forge-9CD3,
+                    Prime-Monolith-45BA…) displayed beside "identity verified". The earlier note
+                    here was right that defaulting to the CURRENT agent is also wrong — it makes
+                    every chat look like one agent. Both are guesses; an empty label is the only
+                    honest option when the owner is unknown. */}
+                <span className="mt-[3px] flex items-center gap-1 truncate text-[10.5px] text-muted-2"><span className="inline-block h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: "#635bff" }} />{(() => {
+                    // Real agent only — no guessing. Unknown owner renders blank.
+                    const own = h.agent?.callsign || intakeAgents[h.id] || "";
+                    if (h.peer) return own ? `${own} ⇄ ${h.peer.callsign}` : `⇄ ${h.peer.callsign}`;
+                    return own;
+                  })()}
                   {/* the chat you are IN, named as such — so it is never mistaken for gone */}
                   {h.live && <span className="ml-1 shrink-0 rounded-full bg-[#635bff]/10 px-1.5 py-[1px] text-[9.5px] font-semibold text-accent">current</span>}
                 </span>
@@ -1710,22 +2005,30 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
           ? "cli-terminal rounded-lg border border-emerald-500/25 bg-black px-3 py-2 font-mono text-[13px] leading-relaxed text-emerald-300"
           : ""}`}>
         {peer && (
-          <div className="sticky top-0 z-10 mb-2 flex items-center justify-between gap-2 border-b border-border/60 bg-surface/75 px-4 py-2.5 backdrop-blur">
+          /* TRIAL DESIGN (2026-09-01): opaque, non-overlapping consultation header that shows
+             BOTH agents (your agent ⇄ peer) so it reads at a glance as two agents communicating.
+             Replaces the semi-transparent sticky card that floated over the messages. */
+          <div className="sticky top-0 z-10 mb-3 flex items-center justify-between gap-3 border-b border-border bg-surface px-4 py-2.5">
             <div className="flex items-center gap-2.5">
-              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-accent/15 text-[14px] font-semibold text-accent">
-                {peer.callsign.charAt(0).toUpperCase()}
+              <span className="flex items-center gap-1.5">
+                <span className="flex h-6 w-6 items-center justify-center rounded-lg text-[11px] font-bold text-white" style={{ background: "#635bff" }}>
+                  {(agent?.nick || agent?.callsign || "Y").charAt(0).toUpperCase()}
+                </span>
+                <span className="text-[12.5px] font-semibold text-foreground">{agent?.nick || agent?.callsign || "You"}</span>
               </span>
-              <div className="leading-tight">
-                <div className="flex items-center gap-1.5 text-[14px] font-semibold text-foreground">
-                  {peer.callsign}
-                  <span className="text-accent" title="Identity verified — answers are generated by the shared 0n1x engine, not a per-agent model.">✓</span>
-                </div>
-                {/* honest scope inline (not a footnote): the ✓ verifies IDENTITY, not that this
-                    callsign is its own model — every agent answers on the shared engine today */}
-                <div className="text-[11px] text-muted-2">Identity verified · shared engine · {peer.price} TOKEN / answer</div>
-              </div>
+              <span className="flex flex-col items-center leading-none text-muted-2">
+                <span className="text-[12px]">⇄</span>
+                <span className="mt-[3px] font-mono text-[8px] uppercase tracking-[.14em]">consulting</span>
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="flex h-6 w-6 items-center justify-center rounded-lg text-[11px] font-bold" style={{ background: "#e3a44e", color: "#1a1205" }}>
+                  {peer.callsign.charAt(0).toUpperCase()}
+                </span>
+                <span className="text-[12.5px] font-semibold" style={{ color: "#e3a44e" }}>{peer.callsign}</span>
+                <span className="text-accent" title="Identity verified — answers are generated by the shared 0n1x engine, not a per-agent model.">✓</span>
+              </span>
             </div>
-            <span className="font-mono text-[11px] text-muted-2">bal {shown.toLocaleString()}</span>
+            <span className="font-mono text-[10.5px] text-muted-2">{peer.price} TOKEN · bal {shown.toLocaleString()}</span>
           </div>
         )}
         {msgs.length === 0 && (
@@ -1875,12 +2178,16 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
               ? "font-mono text-[13px] text-emerald-300 placeholder:text-emerald-700"
               : "text-[17px] text-foreground placeholder:text-muted-2"}`}
           />
+          {/* Send → STOP while an answer is coming. Stop aborts the stream and bumps the
+              conversation generation, so the in-flight turn can't paint or finalize; whatever
+              already arrived stays on screen as the answer. */}
           <button
-            onClick={() => send()} disabled={busy || !input.trim()}
+            onClick={() => (busy || streaming ? stopAnswer() : send())}
+            disabled={!busy && !streaming && !input.trim()}
             className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[17px] text-white transition-all hover:opacity-90 active:scale-95 disabled:opacity-25"
             style={{ background: "#635bff" }}
-            aria-label="Send"
-          >↑</button>
+            aria-label={busy || streaming ? "Stop" : "Send"}
+          >{busy || streaming ? <span className="block h-3 w-3 rounded-[3px] bg-white" /> : "↑"}</button>
         </div>
         {privateMode && (
           <p className="composer-stamp mt-2.5 text-center" style={{ opacity: 0.95 }}>
