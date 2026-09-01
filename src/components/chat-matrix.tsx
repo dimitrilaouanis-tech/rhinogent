@@ -357,6 +357,12 @@ function splitProof(t: string): [string, string | null] {
   if (pre && !/\n\s*$/.test(pre)) return [t, null];   // mid-line 🔏 = content, not our annotation
   return [pre.replace(/\s+$/, ""), t.slice(i)];
 }
+// truncate an address/signature through the middle (0x1234…abcd) — used ONLY in the
+// consult view's expanded signature card (the one place mono is allowed).
+function truncMid(s: string): string {
+  return s.length > 22 ? `${s.slice(0, 12)}…${s.slice(-8)}` : s;
+}
+
 type HistItem = { id: string; title: string; msgs: Msg[]; agent?: { callsign: string; address: string }; peer?: { callsign: string; address: string }; ts?: number; live?: boolean };
 
 // DEPRECATED FOR THE SIDEBAR — DO NOT USE AS AN AGENT LABEL.
@@ -545,6 +551,36 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
   const [agent, setAgent] = useState<{ callsign: string; address: string; nick?: string } | null>(null);   // the verified agent handling THIS chat (renameable, persisted)
   // PEER MODE: your agent ⇄ ANOTHER agent, charged per answer. Set from /chat?peer=<callsign>&pa=<addr>&price=<n>.
   const [peer, setPeer] = useState<{ callsign: string; address: string; price: number } | null>(null);
+  // ── CONSULT SKIN (visual only — CONSULT_VIEW_DESIGN_HANDOFF.md) ──────────────
+  // peerFlight covers the window where busy/streaming are already false but the
+  // typewriter is still landing the answer; `beat` drives the ~450ms "Signing…"
+  // → "✓ Verified reply" swap and the header's "Reply verified" hold (~1.6s).
+  // No network logic here: it only OBSERVES the existing loading/message state.
+  const [peerFlight, setPeerFlight] = useState(false);
+  const [beat, setBeat] = useState<{ idx: number; phase: "signing" | "pill" } | null>(null);
+  const beatSeen = useRef(-1);   // highest message index whose signing beat already ran (history loads skip the beat)
+  useEffect(() => { if (peer && (busy || streaming)) setPeerFlight(true); }, [peer, busy, streaming]);
+  useEffect(() => {
+    if (!peer) { if (peerFlight) setPeerFlight(false); return; }
+    if (busy || streaming) return;
+    beatSeen.current = Math.min(beatSeen.current, msgs.length - 2);   // thread shrank (regen / new chat) — re-arm
+    const last = msgs.length - 1;
+    if (last < 0 || msgs[last].role !== "assistant" || !msgs[last].text) {
+      if (peerFlight && (last < 0 || msgs[last]?.role === "user")) setPeerFlight(false);   // stopped before an answer landed
+      return;
+    }
+    if (!peerFlight) { beatSeen.current = last; return; }   // history/restore — pill shows without a beat
+    if (last <= beatSeen.current) { setPeerFlight(false); return; }
+    // debounce: wait for the reveal to stop mutating the text, then run the beat
+    const t = setTimeout(() => {
+      beatSeen.current = last;
+      setPeerFlight(false);
+      setBeat({ idx: last, phase: "signing" });
+      setTimeout(() => setBeat((b) => (b && b.idx === last ? { idx: last, phase: "pill" } : b)), 450);
+      setTimeout(() => setBeat((b) => (b && b.idx === last ? null : b)), 2050);
+    }, 350);
+    return () => clearTimeout(t);
+  }, [peer, msgs, busy, streaming, peerFlight]);
   // RECALL SINK — every completed exchange, whichever backend answered it.
   //
   // Recording used to be a side effect of answering, wired into the two lanes node1 serves. Pro is
@@ -2005,30 +2041,41 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
           ? "cli-terminal rounded-lg border border-emerald-500/25 bg-black px-3 py-2 font-mono text-[13px] leading-relaxed text-emerald-300"
           : ""}`}>
         {peer && (
-          /* TRIAL DESIGN (2026-09-01): opaque, non-overlapping consultation header that shows
-             BOTH agents (your agent ⇄ peer) so it reads at a glance as two agents communicating.
-             Replaces the semi-transparent sticky card that floated over the messages. */
-          <div className="sticky top-0 z-10 mb-3 flex items-center justify-between gap-3 border-b border-border bg-surface px-4 py-2.5">
-            <div className="flex items-center gap-2.5">
-              <span className="flex items-center gap-1.5">
-                <span className="flex h-6 w-6 items-center justify-center rounded-lg text-[11px] font-bold text-white" style={{ background: "#635bff" }}>
-                  {(agent?.nick || agent?.callsign || "Y").charAt(0).toUpperCase()}
-                </span>
-                <span className="text-[12.5px] font-semibold text-foreground">{agent?.nick || agent?.callsign || "You"}</span>
+          /* CONSULT SKIN (2026-09-02, CONSULT_VIEW_DESIGN_HANDOFF.md): iMessage-pattern header —
+             a CENTERED overlapping avatar pair (34px circles, second one -8px, 2px border in the
+             header bg so they read as a stack), "X and Y" title, and ONE narrating lifecycle
+             status line (idle → checking → verified). Cost/balance moved OUT of the header into
+             per-reply metadata per the spec. */
+          <div className="sticky top-0 z-10 mb-3 flex flex-col items-center border-b border-border bg-surface px-4 pb-2.5 pt-2 text-center">
+            <style>{`
+              @keyframes consult-pulse { 0%, 100% { opacity: 1 } 50% { opacity: .25 } }
+              .consult-pulse { animation: consult-pulse 1s ease-in-out infinite; }
+              @keyframes consult-in { from { opacity: 0; transform: translateY(6px) } to { opacity: 1; transform: none } }
+              .consult-in { animation: consult-in .25s ease both; }
+              @keyframes consult-fade { from { opacity: 0 } to { opacity: 1 } }
+              .consult-fade { animation: consult-fade .15s ease both; }
+              @media (prefers-reduced-motion: reduce) { .consult-pulse, .consult-in, .consult-fade { animation: none; opacity: 1; } }
+            `}</style>
+            <div className="flex items-center">
+              <span className="z-[1] flex h-[34px] w-[34px] items-center justify-center rounded-full border-2 text-[13px] font-bold text-white" style={{ background: "#635bff", borderColor: "var(--surface)" }}>
+                {(agent?.nick || agent?.callsign || "Y").charAt(0).toUpperCase()}
               </span>
-              <span className="flex flex-col items-center leading-none text-muted-2">
-                <span className="text-[12px]">⇄</span>
-                <span className="mt-[3px] font-mono text-[8px] uppercase tracking-[.14em]">consulting</span>
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="flex h-6 w-6 items-center justify-center rounded-lg text-[11px] font-bold" style={{ background: "#e3a44e", color: "#1a1205" }}>
-                  {peer.callsign.charAt(0).toUpperCase()}
-                </span>
-                <span className="text-[12.5px] font-semibold" style={{ color: "#e3a44e" }}>{peer.callsign}</span>
-                <span className="text-accent" title="Identity verified — answers are generated by the shared 0n1x engine, not a per-agent model.">✓</span>
+              <span className="-ml-2 flex h-[34px] w-[34px] items-center justify-center rounded-full border-2 text-[13px] font-bold" style={{ background: "#e3a44e", borderColor: "var(--surface)", color: "#3b2a10" }}>
+                {peer.callsign.charAt(0).toUpperCase()}
               </span>
             </div>
-            <span className="font-mono text-[10.5px] text-muted-2">{peer.price} TOKEN · bal {shown.toLocaleString()}</span>
+            <p className="mt-1 text-[14px] font-medium text-foreground">
+              {agent?.nick || agent?.callsign || "Your agent"} <span className="font-normal text-[#565b69]">and</span> {peer.callsign}
+            </p>
+            <p className="mt-0.5 flex items-center justify-center gap-1.5 text-[11.5px] text-[#7c8291]">
+              {busy || streaming || peerFlight ? (
+                <><span className="consult-pulse h-1.5 w-1.5 rounded-full" style={{ background: "#e3a44e" }} />{peer.callsign} is checking…</>
+              ) : beat?.phase === "pill" ? (
+                <><span className="h-1.5 w-1.5 rounded-full" style={{ background: "#3fdda0" }} />Reply verified</>
+              ) : (
+                <><span className="h-1.5 w-1.5 rounded-full" style={{ background: "#3fdda0" }} />Secure consultation</>
+              )}
+            </p>
           </div>
         )}
         {msgs.length === 0 && (
@@ -2072,42 +2119,117 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
           </div>
         )}
         <div ref={contentRef} className="space-y-5 sm:space-y-6">
+          {/* CONSULT SKIN: top-of-thread reassurance chip (once, centered) */}
+          {peer && msgs.length > 0 && (
+            <div className="flex justify-center">
+              <span className="rounded-full bg-[#171a24] px-3 py-1 text-[11px] text-[#7c8291]">
+                <span style={{ color: "#3fdda0" }}>✓</span> Every reply is signed by the agent who wrote it
+              </span>
+            </div>
+          )}
           {msgs.map((m, i) => (
             <div key={i} ref={i === lastUserIdx ? lastUserRef : undefined} className={m.role === "user" && !peer ? "flex justify-end" : "group flex flex-col items-start"}>
               {m.role === "user"
                 ? (peer
-                    /* PEER (agent↔agent): your agent speaks as a named transcript row, not an SMS bubble */
-                    ? <div className="w-full">
-                        <span className="mb-1.5 inline-flex items-center gap-2 text-[12px] font-semibold">
-                          <span className="flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-bold text-[#ffffff]" style={{ background: "#635bff" }}>{(agent?.nick || agent?.callsign || "Y").charAt(0).toUpperCase()}</span>
-                          <span className="text-accent">{agent?.nick || agent?.callsign || "Your agent"}</span>
-                        </span>
-                        <div className="whitespace-pre-wrap border-l-2 pl-3.5 text-[15px] leading-relaxed text-foreground" style={{ borderColor: "#635bff" }}>{m.text}</div>
-                      </div>
+                    /* CONSULT SKIN: your agent speaks LEFT-aligned as a grouped, tinted transcript
+                       bubble — identity = avatar color + bubble tint, never side (spec rule #1). */
+                    ? (() => {
+                        const grouped = i > 0 && msgs[i - 1].role === "user";
+                        const nm = agent?.nick || agent?.callsign || "Your agent";
+                        return (
+                          <div className="consult-in w-full" style={grouped ? { marginTop: -12 } : undefined}>
+                            {!grouped && (
+                              <span className="mb-1 ml-[38px] block text-[11px] text-[#7c8291]">{nm} · your agent</span>
+                            )}
+                            <div className="flex items-start gap-[10px]">
+                              {!grouped
+                                ? <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[12px] font-bold text-white" style={{ background: "#635bff" }}>{nm.charAt(0).toUpperCase()}</span>
+                                : <span className="w-7 shrink-0" aria-hidden />}
+                              <div className="max-w-[82%] whitespace-pre-wrap bg-[#1d2030] px-4 py-2.5 text-[14px] text-[#e6e8f0]" style={{ borderRadius: grouped ? 18 : "18px 18px 18px 6px", lineHeight: 1.55 }}>{m.text}</div>
+                            </div>
+                          </div>
+                        );
+                      })()
                     : <div className="msg-user-in max-w-[85%] whitespace-pre-wrap rounded-[18px] rounded-br-[6px] px-4 py-2.5 text-[15px] leading-relaxed shadow-[0_1px_3px_rgba(0,0,0,.1)]" style={{ background: "#635bff", color: "#ffffff" }}>{m.text}</div>)
-                : (() => { const [body, proof] = splitProof(m.text); return <>
-                    {/* PEER (agent-to-agent): name every bubble so it reads as a real multi-agent chat */}
-                    {peer ? (
-                      <span className="mb-1.5 inline-flex items-center gap-2 text-[12px] font-semibold">
-                        <span className="flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-bold text-[#1a1205]" style={{ background: "#e3a44e" }}>{peer.callsign.charAt(0).toUpperCase()}</span>
-                        <span style={{ color: "#e3a44e" }}>{peer.callsign}</span>
-                        <span className="font-normal text-muted-2">· agent</span>
-                      </span>
-                    ) : (
-                      /* identity chip on the FIRST reply — the named-verified-agent moment, felt */
-                      agent && i === msgs.findIndex((x) => x.role === "assistant") && (
-                        <a href="/census" title="Identity verified — answers are generated by the shared 0n1x engine, not a per-agent model." className="mb-1.5 inline-flex items-center gap-1.5 rounded-full border border-border/70 px-2.5 py-1 text-[11px] text-muted-2 transition-colors hover:border-muted-2 hover:text-foreground">
-                          <span className="h-1.5 w-1.5 rounded-full" style={{ background: "#635bff" }} />
-                          <span className="text-foreground">{agent.nick || agent.callsign}</span>
-                          <span style={{ color: "#3fdda0" }}>✓</span>
-                          <span className="hidden sm:inline">· identity verified · shared engine →</span>
-                        </a>
-                      )
+                : (() => { const [body, proof] = splitProof(m.text);
+                    // ── CONSULT SKIN: peer reply = grouped amber bubble + per-reply trust row ──
+                    if (peer) {
+                      const grouped = i > 0 && msgs[i - 1].role === "assistant";
+                      const raw = body || m.text;
+                      // the shared-engine footer is DATA (appended upstream); visually it moves
+                      // into the signature card so cost lives only in the reply metadata.
+                      const footRe = /\n\n\*— [^\n]*answered on the shared engine[^\n]*\*\s*$/;
+                      const sharedEngine = footRe.test(raw);
+                      const shownBody = raw.replace(footRe, "");
+                      const srcN = proof?.match(/(\d+)\s+(?:live\s+)?sources?/)?.[1];
+                      const sigId = proof?.match(/proof\s+`([^`]+)`/)?.[1];
+                      const verifyUrl = proof?.match(/\[verify\]\((https?:[^)]+)\)/)?.[1];
+                      // system notices (top-up, outage, refund) are not signed peer replies — no pill
+                      const sysNotice = /^Each answer from \*\*|^Pro mode costs|^I couldn't reach the network|^Rhinogent is busy/.test(m.text);
+                      const inFlightLast = (busy || streaming || peerFlight) && i === msgs.length - 1;
+                      const signing = beat?.idx === i && beat.phase === "signing";
+                      return (
+                        <div className="consult-in w-full" style={grouped ? { marginTop: -12 } : undefined}>
+                          {!grouped && (
+                            <span className="mb-1 ml-[38px] block text-[11px] text-[#7c8291]">{peer.callsign} · verification agent</span>
+                          )}
+                          <div className="flex items-start gap-[10px]">
+                            {!grouped
+                              ? <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[12px] font-bold" style={{ background: "#e3a44e", color: "#3b2a10" }}>{peer.callsign.charAt(0).toUpperCase()}</span>
+                              : <span className="w-7 shrink-0" aria-hidden />}
+                            <div className="min-w-0 max-w-[82%]">
+                              <div className="chat-md border border-[#33290f] bg-[#241e12] px-4 py-2.5 text-[#f0e9dc]"
+                                style={{ borderRadius: grouped ? 18 : "18px 18px 18px 6px", fontSize: 14, lineHeight: 1.55, color: "#f0e9dc" }}
+                                dangerouslySetInnerHTML={{ __html: mdToHtml(shownBody || m.text) }} />
+                              {m.text && !sysNotice && !inFlightLast && (
+                                <div className="mt-1.5 pl-1">
+                                  {signing ? (
+                                    <span className="text-[11px] text-[#565b69]">Signing…</span>
+                                  ) : (
+                                    <div className="flex items-center gap-2">
+                                      <button onClick={() => setProofOpen((o) => ({ ...o, [i]: !o[i] }))} aria-expanded={!!proofOpen[i]}
+                                        className="consult-fade rounded-full bg-[#12251d] px-2.5 py-1 text-[11px]" style={{ color: "#3fdda0" }}>
+                                        ✓ Verified reply
+                                      </button>
+                                      <span className="text-[11px] text-[#565b69]">{srcN ? `${srcN} source${srcN === "1" ? "" : "s"} · ` : ""}{peer.price > 0 ? `${peer.price} token${peer.price === 1 ? "" : "s"}` : "free"}</span>
+                                      {/* copy / regenerate: hover-reveal only (spec: no always-visible icon rows) */}
+                                      <button onClick={() => { navigator.clipboard?.writeText(shownBody || m.text); setCopied(i); setTimeout(() => setCopied(-1), 1400); }}
+                                        className="text-[11px] text-[#565b69] opacity-0 transition-opacity hover:text-[#7c8291] group-hover:opacity-100" aria-label="Copy">{copied === i ? "✓" : "⧉"}</button>
+                                      {!busy && (
+                                        <button onClick={() => { let uidx = -1; for (let k = i - 1; k >= 0; k--) { if (msgs[k].role === "user") { uidx = k; break; } } if (uidx < 0) return; const userText = msgs[uidx].text; setMsgs(msgs.slice(0, uidx)); send(userText); }}
+                                          className="text-[11px] text-[#565b69] opacity-0 transition-opacity hover:text-[#7c8291] group-hover:opacity-100" aria-label="Regenerate">↻</button>
+                                      )}
+                                    </div>
+                                  )}
+                                  {proofOpen[i] && !signing && (
+                                    <div className="mt-1.5 rounded-[14px] border border-[#202430] bg-[#12141c] px-3.5 py-3">
+                                      <p className="text-[11.5px] text-[#a7abb8]">Signed by {peer.callsign}</p>
+                                      <p className="mt-1 break-all font-mono text-[10.5px] text-[#7c8291]">{truncMid(peer.address)}{sigId ? ` · ${truncMid(sigId)}` : ""}</p>
+                                      <p className="mt-1.5 text-[11px] leading-relaxed text-[#565b69]">This proves who wrote the reply — it doesn&apos;t grade whether the answer is right.</p>
+                                      {sharedEngine && <p className="mt-1.5 text-[10.5px] text-[#565b69]">Answered on the shared 0n1x engine (per-agent models coming).</p>}
+                                      {verifyUrl && <a href={verifyUrl} target="_blank" rel="noopener noreferrer" className="mt-1.5 inline-block text-[10.5px] text-[#7c8291] underline underline-offset-2 hover:text-[#a7abb8]">Verify this signature →</a>}
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    }
+                    return <>
+                    {/* identity chip on the FIRST reply — the named-verified-agent moment, felt */}
+                    {agent && i === msgs.findIndex((x) => x.role === "assistant") && (
+                      <a href="/census" title="Identity verified — answers are generated by the shared 0n1x engine, not a per-agent model." className="mb-1.5 inline-flex items-center gap-1.5 rounded-full border border-border/70 px-2.5 py-1 text-[11px] text-muted-2 transition-colors hover:border-muted-2 hover:text-foreground">
+                        <span className="h-1.5 w-1.5 rounded-full" style={{ background: "#635bff" }} />
+                        <span className="text-foreground">{agent.nick || agent.callsign}</span>
+                        <span style={{ color: "#3fdda0" }}>✓</span>
+                        <span className="hidden sm:inline">· identity verified · shared engine →</span>
+                      </a>
                     )}
                     {(body || !proof) && (
-                      /* bubble-less assistant (ChatGPT/Claude/Gemini consensus): full-column text, no card.
-                         In peer mode each agent owns a colored left-rule so a two-agent chat reads as a transcript. */
-                      <div className={`msg-assistant-in chat-md w-full text-[15px] leading-[1.7] text-foreground ${peer ? "border-l-2 pl-3.5" : ""}`} style={peer ? { borderColor: "#e3a44e" } : undefined} dangerouslySetInnerHTML={{ __html: mdToHtml(body || m.text) }} />
+                      /* bubble-less assistant (ChatGPT/Claude/Gemini consensus): full-column text, no card. */
+                      <div className="msg-assistant-in chat-md w-full text-[15px] leading-[1.7] text-foreground" dangerouslySetInnerHTML={{ __html: mdToHtml(body || m.text) }} />
                     )}
                     {/* Pro proof — Claude-style restraint: a quiet chip, expandable on tap */}
                     {proof && (
@@ -2153,10 +2275,12 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
                   </>; })()}
             </div>
           ))}
-          {busy && (
-            /* THINKING — Manus-style live processing trace: honest, tier-aware step checklist. */
+          {busy && !peer && (
+            /* THINKING — Manus-style live processing trace: honest, tier-aware step checklist.
+               CONSULT SKIN: in peer mode the header's "{Peer} is checking…" line narrates the
+               wait instead (spec: one narrating status line; nothing else animates). */
             <div className="flex justify-start">
-              <ProcessingTrace pro={pro} peerName={peer?.callsign} />
+              <ProcessingTrace pro={pro} />
             </div>
           )}
         </div>
@@ -2166,6 +2290,8 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
       <div className="shrink-0 pb-3 pt-1" style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}>
         <div className={`flex items-end gap-2 transition-all ${cliMode
             ? "rounded-lg border border-emerald-500/30 bg-black px-4 py-3 font-mono"
+            : peer
+            ? "rounded-full border border-[#202430] bg-[#171a24] px-4 py-1.5"
             : `composer-glass rounded-[28px] px-5 py-3 ${pro ? "pro-composer" : ""}`}`}>
           {cliMode && (
             <span className="select-none whitespace-nowrap pb-2.5 pt-2.5 text-[13px] text-emerald-400">rhinogent@0n1x:~$</span>
@@ -2173,9 +2299,11 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
           <textarea
             value={input} onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
-            rows={1} placeholder={cliMode ? "type /verbs" : peer ? `Message ${peer.callsign}…` : "Ask anything…"}
+            rows={1} placeholder={cliMode ? "type /verbs" : "Ask anything…"}
             className={`max-h-40 flex-1 resize-none bg-transparent px-2 py-2.5 outline-none ${cliMode
               ? "font-mono text-[13px] text-emerald-300 placeholder:text-emerald-700"
+              : peer
+              ? "text-[14px] text-[#e6e8f0] placeholder:text-[#565b69]"
               : "text-[17px] text-foreground placeholder:text-muted-2"}`}
           />
           {/* Send → STOP while an answer is coming. Stop aborts the stream and bumps the
@@ -2184,7 +2312,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
           <button
             onClick={() => (busy || streaming ? stopAnswer() : send())}
             disabled={!busy && !streaming && !input.trim()}
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[17px] text-white transition-all hover:opacity-90 active:scale-95 disabled:opacity-25"
+            className={`flex ${peer ? "h-[42px] w-[42px]" : "h-11 w-11"} shrink-0 items-center justify-center rounded-full text-[17px] text-white transition-all hover:opacity-90 active:scale-95 disabled:opacity-25`}
             style={{ background: "#635bff" }}
             aria-label={busy || streaming ? "Stop" : "Send"}
           >{busy || streaming ? <span className="block h-3 w-3 rounded-[3px] bg-white" /> : "↑"}</button>
@@ -2194,17 +2322,17 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
             ● PRIVATE — THIS CONVERSATION IS NOT RECORDED
           </p>
         )}
-        <p className="composer-stamp mt-2.5 text-center">
-          {peer
-            ? <><span className="text-accent">{peer.callsign}</span> · signed answer · {peer.price} TOKEN per answer</>
-            : pro
+        {/* CONSULT SKIN: no mono stamp in peer mode — cost lives in per-reply metadata,
+            "every reply is signed" lives in the top-of-thread chip (spec). */}
+        {!peer && <p className="composer-stamp mt-2.5 text-center">
+          {pro
             ? <><span style={{ color: "#635bff" }}>Pro</span> · frontier reasoning · disclosed per leaf · {PRICES.chatMessage} TOKEN per message</>
             : cliMode
             ? <><span className="font-mono text-emerald-400">CLI</span> · reads open · writes need operator scope · <span className="font-mono">/verbs</span></>
             : factsOnly
             ? <>Facts · free · signed corpus only — cited, or it says so</>
             : <>Normal · free · general answers</>}
-        </p>
+        </p>}
       </div>
       </div>
     </div>
