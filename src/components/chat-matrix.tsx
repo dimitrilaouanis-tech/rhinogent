@@ -2122,7 +2122,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
           {/* CONSULT SKIN: top-of-thread reassurance chip (once, centered) */}
           {peer && msgs.length > 0 && (
             <div className="flex justify-center">
-              <span className="rounded-full bg-[#171a24] px-3 py-1 text-[11px] text-[#7c8291]">
+              <span className="rounded-full bg-[#f2f3f7] px-3 py-1 text-[11px] text-[#7c8291]">
                 <span style={{ color: "#3fdda0" }}>✓</span> Every reply is signed by the agent who wrote it
               </span>
             </div>
@@ -2145,7 +2145,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
                               {!grouped
                                 ? <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[12px] font-bold text-white" style={{ background: "#635bff" }}>{nm.charAt(0).toUpperCase()}</span>
                                 : <span className="w-7 shrink-0" aria-hidden />}
-                              <div className="max-w-[82%] whitespace-pre-wrap bg-[#1d2030] px-4 py-2.5 text-[14px] text-[#e6e8f0]" style={{ borderRadius: grouped ? 18 : "18px 18px 18px 6px", lineHeight: 1.55 }}>{m.text}</div>
+                              <div className="max-w-[82%] whitespace-pre-wrap bg-[#eef0fb] px-4 py-2.5 text-[14px] text-[#1c2030]" style={{ borderRadius: grouped ? 18 : "18px 18px 18px 6px", lineHeight: 1.55 }}>{m.text}</div>
                             </div>
                           </div>
                         );
@@ -2178,8 +2178,8 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
                               ? <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[12px] font-bold" style={{ background: "#e3a44e", color: "#3b2a10" }}>{peer.callsign.charAt(0).toUpperCase()}</span>
                               : <span className="w-7 shrink-0" aria-hidden />}
                             <div className="min-w-0 max-w-[82%]">
-                              <div className="chat-md border border-[#33290f] bg-[#241e12] px-4 py-2.5 text-[#f0e9dc]"
-                                style={{ borderRadius: grouped ? 18 : "18px 18px 18px 6px", fontSize: 14, lineHeight: 1.55, color: "#f0e9dc" }}
+                              <div className="chat-md border border-[#f0e2c9] bg-[#fbf5ea] px-4 py-2.5 text-[#33291a]"
+                                style={{ borderRadius: grouped ? 18 : "18px 18px 18px 6px", fontSize: 14, lineHeight: 1.55, color: "#33291a" }}
                                 dangerouslySetInnerHTML={{ __html: mdToHtml(shownBody || m.text) }} />
                               {m.text && !sysNotice && !inFlightLast && (
                                 <div className="mt-1.5 pl-1">
@@ -2188,7 +2188,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
                                   ) : (
                                     <div className="flex items-center gap-2">
                                       <button onClick={() => setProofOpen((o) => ({ ...o, [i]: !o[i] }))} aria-expanded={!!proofOpen[i]}
-                                        className="consult-fade rounded-full bg-[#12251d] px-2.5 py-1 text-[11px]" style={{ color: "#3fdda0" }}>
+                                        className="consult-fade rounded-full bg-[#e7f6ef] px-2.5 py-1 text-[11px]" style={{ color: "#3fdda0" }}>
                                         ✓ Verified reply
                                       </button>
                                       <span className="text-[11px] text-[#565b69]">{srcN ? `${srcN} source${srcN === "1" ? "" : "s"} · ` : ""}{peer.price > 0 ? `${peer.price} token${peer.price === 1 ? "" : "s"}` : "free"}</span>
@@ -2202,12 +2202,12 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
                                     </div>
                                   )}
                                   {proofOpen[i] && !signing && (
-                                    <div className="mt-1.5 rounded-[14px] border border-[#202430] bg-[#12141c] px-3.5 py-3">
-                                      <p className="text-[11.5px] text-[#a7abb8]">Signed by {peer.callsign}</p>
+                                    <div className="mt-1.5 rounded-[14px] border border-[#e4e6ee] bg-[#f7f8fb] px-3.5 py-3">
+                                      <p className="text-[11.5px] text-[#565b69]">Signed by {peer.callsign}</p>
                                       <p className="mt-1 break-all font-mono text-[10.5px] text-[#7c8291]">{truncMid(peer.address)}{sigId ? ` · ${truncMid(sigId)}` : ""}</p>
                                       <p className="mt-1.5 text-[11px] leading-relaxed text-[#565b69]">This proves who wrote the reply — it doesn&apos;t grade whether the answer is right.</p>
                                       {sharedEngine && <p className="mt-1.5 text-[10.5px] text-[#565b69]">Answered on the shared 0n1x engine (per-agent models coming).</p>}
-                                      {verifyUrl && <a href={verifyUrl} target="_blank" rel="noopener noreferrer" className="mt-1.5 inline-block text-[10.5px] text-[#7c8291] underline underline-offset-2 hover:text-[#a7abb8]">Verify this signature →</a>}
+                                      {verifyUrl && <a href={verifyUrl} target="_blank" rel="noopener noreferrer" className="mt-1.5 inline-block text-[10.5px] text-[#7c8291] underline underline-offset-2 hover:text-[#565b69]">Verify this signature →</a>}
                                     </div>
                                   )}
                                 </div>
@@ -2291,7 +2291,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
         <div className={`flex items-end gap-2 transition-all ${cliMode
             ? "rounded-lg border border-emerald-500/30 bg-black px-4 py-3 font-mono"
             : peer
-            ? "rounded-full border border-[#202430] bg-[#171a24] px-4 py-1.5"
+            ? "rounded-full border border-[#e4e6ee] bg-[#f2f3f7] px-4 py-1.5"
             : `composer-glass rounded-[28px] px-5 py-3 ${pro ? "pro-composer" : ""}`}`}>
           {cliMode && (
             <span className="select-none whitespace-nowrap pb-2.5 pt-2.5 text-[13px] text-emerald-400">rhinogent@0n1x:~$</span>
@@ -2303,7 +2303,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
             className={`max-h-40 flex-1 resize-none bg-transparent px-2 py-2.5 outline-none ${cliMode
               ? "font-mono text-[13px] text-emerald-300 placeholder:text-emerald-700"
               : peer
-              ? "text-[14px] text-[#e6e8f0] placeholder:text-[#565b69]"
+              ? "text-[14px] text-[#1c2030] placeholder:text-[#565b69]"
               : "text-[17px] text-foreground placeholder:text-muted-2"}`}
           />
           {/* Send → STOP while an answer is coming. Stop aborts the stream and bumps the
