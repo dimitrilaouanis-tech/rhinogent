@@ -2046,7 +2046,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
              header bg so they read as a stack), "X and Y" title, and ONE narrating lifecycle
              status line (idle → checking → verified). Cost/balance moved OUT of the header into
              per-reply metadata per the spec. */
-          <div className="sticky top-0 z-10 mb-3 flex flex-col items-center border-b border-border bg-surface px-4 pb-2.5 pt-2 text-center">
+          <div className="sticky top-0 z-10 mb-3 flex flex-col items-center border-b border-border bg-white px-4 pb-2 pt-2 text-center">
             <style>{`
               @keyframes consult-pulse { 0%, 100% { opacity: 1 } 50% { opacity: .25 } }
               .consult-pulse { animation: consult-pulse 1s ease-in-out infinite; }
@@ -2145,7 +2145,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
                               {!grouped
                                 ? <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[12px] font-bold text-white" style={{ background: "#635bff" }}>{nm.charAt(0).toUpperCase()}</span>
                                 : <span className="w-7 shrink-0" aria-hidden />}
-                              <div className="max-w-[82%] whitespace-pre-wrap bg-[#eef0fb] px-4 py-2.5 text-[14px] text-[#1c2030]" style={{ borderRadius: grouped ? 18 : "18px 18px 18px 6px", lineHeight: 1.55 }}>{m.text}</div>
+                              <div className="max-w-[80%] whitespace-pre-wrap border border-[#e5e7f6] bg-white px-4 py-2 text-[14px] text-[#1c2030]" style={{ borderRadius: grouped ? 18 : "18px 18px 18px 6px", lineHeight: 1.55 }}>{m.text}</div>
                             </div>
                           </div>
                         );
@@ -2178,7 +2178,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
                               ? <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[12px] font-bold" style={{ background: "#e3a44e", color: "#3b2a10" }}>{peer.callsign.charAt(0).toUpperCase()}</span>
                               : <span className="w-7 shrink-0" aria-hidden />}
                             <div className="min-w-0 max-w-[82%]">
-                              <div className="chat-md border border-[#f0e2c9] bg-[#fbf5ea] px-4 py-2.5 text-[#33291a]"
+                              <div className="chat-md border border-[#f0e2c9] bg-white px-4 py-2 text-[#33291a]"
                                 style={{ borderRadius: grouped ? 18 : "18px 18px 18px 6px", fontSize: 14, lineHeight: 1.55, color: "#33291a" }}
                                 dangerouslySetInnerHTML={{ __html: mdToHtml(shownBody || m.text) }} />
                               {m.text && !sysNotice && !inFlightLast && (
@@ -2188,7 +2188,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
                                   ) : (
                                     <div className="flex items-center gap-2">
                                       <button onClick={() => setProofOpen((o) => ({ ...o, [i]: !o[i] }))} aria-expanded={!!proofOpen[i]}
-                                        className="consult-fade rounded-full bg-[#e7f6ef] px-2.5 py-1 text-[11px]" style={{ color: "#3fdda0" }}>
+                                        className="consult-fade rounded-full bg-[#e7f6ef] px-2.5 py-1 text-[11px]" style={{ color: "#1f9d5f" }}>
                                         ✓ Verified reply
                                       </button>
                                       <span className="text-[11px] text-[#565b69]">{srcN ? `${srcN} source${srcN === "1" ? "" : "s"} · ` : ""}{peer.price > 0 ? `${peer.price} token${peer.price === 1 ? "" : "s"}` : "free"}</span>
