@@ -1,60 +1,61 @@
 {
  "artifact": "0n1x-data-exchange",
- "as_of": "2026-09-13T08:28:55Z",
+ "as_of": "2026-09-13T08:49:03Z",
  "activity_24h": {
   "submissions": 8,
   "pct_independently_verified": 50.0,
   "premium_findings": [
    {
-    "item": "live-obj-1789288134-1",
+    "item": "live-obj-1789289342-0",
     "kind": "objective",
-    "target": "duckduckgo.com",
+    "target": "google.com",
+    "supplier": "Stone-Anchor-A7F1",
+    "access": "pro",
+    "tier": "premium"
+   },
+   {
+    "item": "live-obj-1789289342-1",
+    "kind": "objective",
+    "target": "wikipedia.org",
     "supplier": "Wild-Bastion-79A8",
     "access": "pro",
     "tier": "premium"
    },
    {
-    "item": "live-obj-1789288134-2",
+    "item": "live-obj-1789289342-2",
     "kind": "objective",
-    "target": "mozilla.org",
+    "target": "duckduckgo.com",
     "supplier": "Keen-Vault-96DD",
     "access": "pro",
     "tier": "premium"
    },
    {
-    "item": "live-obj-1789288134-3",
+    "item": "live-obj-1789289342-3",
     "kind": "objective",
-    "target": "google.com",
+    "target": "mozilla.org",
     "supplier": "Keen-Cipher-FDDC",
     "access": "pro",
     "tier": "premium"
    },
    {
-    "item": "live-subj-1789288134-2",
+    "item": "live-subj-1789289342-0",
     "kind": "subjective",
-    "target": "GitHub repo anthropics/claude-code exceeds 30,000 stars by 2026-10-01 (checkable",
-    "supplier": "Quiet-Horn-065A",
+    "target": "USD/EUR FX rate falls below 0.90 by 2026-08-01 (checkable via frankfurter.dev).",
+    "supplier": "Keen-Vault-96DD",
     "access": "pro",
     "tier": "premium"
    }
   ],
   "rejected": [
    {
-    "item": "live-subj-1789288134-0",
-    "supplier": "Keen-Vault-96DD",
+    "item": "live-subj-1789289342-2",
+    "supplier": "Quiet-Horn-065A",
     "refunded": true,
     "tier": "trash",
     "access": "none"
    },
    {
-    "item": "live-subj-1789288134-1",
-    "supplier": "Keen-Cipher-FDDC",
-    "refunded": true,
-    "tier": "trash",
-    "access": "none"
-   },
-   {
-    "item": "live-subj-1789288134-3",
+    "item": "live-subj-1789289342-3",
     "supplier": "Bright-Pillar-16E8",
     "refunded": true,
     "tier": "trash",
@@ -62,48 +63,51 @@
    }
   ],
   "inspectors_promoted": [
-   "Vast-Vault-C529",
-   "Bright-Monolith-D11B",
    "Iron-Horn-CFFE",
-   "Keen-Rampart-E219",
-   "Lone-Forge-9CD3",
-   "Onyx-Ridge-C8F0",
-   "Sharp-Anchor-3B2B",
-   "Sharp-Horn-1258",
-   "Onyx-Horn-1648",
-   "Vast-Rampart-860D",
-   "Lone-Bastion-E4A4",
-   "Vast-Forge-1EBE",
-   "Bold-Cipher-930D",
-   "Wild-Rampart-B6BF",
-   "Bold-Warden-6871",
+   "Bold-Beacon-2D15",
    "Quiet-Bastion-7C3B",
+   "Onyx-Horn-30FF",
+   "Sharp-Cipher-8F74",
    "Quiet-Horn-1BBB",
-   "Steel-Pillar-BC57",
-   "Quiet-Forge-7CC0",
+   "Stone-Beacon-5FCD",
+   "Swift-Warden-2304",
+   "Vast-Rampart-860D",
+   "Grave-Warden-C4A4",
+   "Wild-Rampart-B6BF",
+   "Swift-Horn-30E4",
+   "Wild-Bastion-79A8",
+   "True-Vault-3FAB",
+   "True-Anchor-65C5",
+   "Onyx-Ridge-C8F0",
    "Onyx-Pillar-FD31",
+   "Prime-Horn-DA78",
+   "Bold-Crest-6974",
+   "Lone-Forge-9CD3",
+   "Keen-Anchor-2F41",
+   "Bright-Crest-A897",
+   "Iron-Forge-5BBD",
    "Lone-Tusk-CD5D",
    "Prime-Warden-BEF0",
-   "Bold-Beacon-2D15",
-   "True-Vault-3FAB",
-   "Grave-Ridge-6DF6",
-   "Keen-Cipher-FDDC",
+   "Steel-Pillar-BC57",
+   "Onyx-Horn-1648",
+   "Lone-Forge-5A02",
+   "Grave-Sentinel-634E",
    "Iron-Crest-5BF8",
-   "Sharp-Cipher-8F74",
-   "Bright-Crest-A897",
-   "True-Anchor-65C5",
+   "Grave-Forge-14DA",
+   "Lone-Bastion-E4A4",
+   "Vast-Forge-1EBE",
    "Steel-Horn-DE24",
-   "Prime-Horn-DA78",
-   "Keen-Anchor-2F41",
-   "Swift-Vault-99B5",
-   "Iron-Forge-5BBD",
-   "Stone-Anchor-A7F1",
-   "Lone-Vault-461A"
+   "Sharp-Anchor-3B2B",
+   "Vast-Vault-C529",
+   "Bold-Warden-6871",
+   "Vast-Vault-6434",
+   "Quiet-Horn-065A",
+   "Bright-Vault-6CA7"
   ],
   "inspectors_demoted": [],
   "tier_split": {
-   "trash": 3,
-   "normal": 0,
+   "trash": 2,
+   "normal": 1,
    "premium": 5
   }
  },
@@ -113,43 +117,49 @@
  "health_flags": {
   "trash_under_5pct_oracle_doing_all_work": false,
   "any_inspector_over_50pct_premium_overfit": true,
-  "zero_inspectors_slashed_rubber_stamp": false,
+  "zero_inspectors_slashed_rubber_stamp": true,
   "inspectors_over_50pct_premium": [
-   "Vast-Vault-C529",
-   "Keen-Rampart-E219",
-   "Onyx-Ridge-C8F0",
-   "Vast-Rampart-860D",
-   "Lone-Bastion-E4A4",
-   "Vast-Forge-1EBE",
-   "Bold-Cipher-930D",
-   "Wild-Rampart-B6BF",
-   "Bold-Warden-6871",
-   "Quiet-Horn-1BBB",
-   "Steel-Pillar-BC57",
-   "Onyx-Pillar-FD31",
-   "Prime-Warden-BEF0",
+   "Iron-Horn-CFFE",
    "Bold-Beacon-2D15",
+   "Quiet-Bastion-7C3B",
+   "Onyx-Horn-30FF",
+   "Sharp-Cipher-8F74",
+   "Quiet-Horn-1BBB",
+   "Stone-Beacon-5FCD",
+   "Swift-Warden-2304",
+   "Wild-Rampart-B6BF",
+   "Wild-Bastion-79A8",
    "True-Vault-3FAB",
+   "True-Anchor-65C5",
+   "Onyx-Ridge-C8F0",
+   "Prime-Horn-DA78",
+   "Bold-Crest-6974",
+   "Lone-Forge-9CD3",
    "Keen-Anchor-2F41",
-   "Swift-Vault-99B5"
+   "Bright-Crest-A897",
+   "Iron-Forge-5BBD",
+   "Lone-Tusk-CD5D",
+   "Steel-Pillar-BC57",
+   "Onyx-Horn-1648",
+   "Lone-Forge-5A02"
   ]
  },
  "top_earners": [
   {
    "supplier": "Stone-Anchor-A7F1",
-   "points": 13764.05
+   "points": 13768.22
   },
   {
    "supplier": "Wild-Bastion-79A8",
-   "points": 13755.54
+   "points": 13759.71
   },
   {
    "supplier": "Keen-Cipher-FDDC",
-   "points": 11593.44
+   "points": 11599.37
   },
   {
    "supplier": "Keen-Vault-96DD",
-   "points": 11339.57
+   "points": 11348.14
   },
   {
    "supplier": "Bold-Cipher-3FA8",
@@ -158,35 +168,30 @@
  ],
  "biggest_slashes": [
   {
-   "item": "live-subj-1789288134-0",
+   "item": "live-subj-1789289342-2",
    "supplier": null,
    "slash": -5.0
   },
   {
-   "item": "live-subj-1789288134-1",
-   "supplier": null,
-   "slash": -5.0
-  },
-  {
-   "item": "live-subj-1789288134-3",
+   "item": "live-subj-1789289342-3",
    "supplier": null,
    "slash": -5.0
   }
  ],
  "sample_premium_item": {
-  "item": "live-obj-1789288134-1",
+  "item": "live-obj-1789289342-0",
   "kind": "objective",
-  "target": "duckduckgo.com",
-  "supplier": "Wild-Bastion-79A8",
+  "target": "google.com",
+  "supplier": "Stone-Anchor-A7F1",
   "access": "pro",
   "tier": "premium"
  },
  "cumulative_tier_split": {
-  "trash": 7310,
-  "normal": 1885,
-  "premium": 18533
+  "trash": 7312,
+  "normal": 1886,
+  "premium": 18538
  },
- "total_submissions_all_time": 27728,
+ "total_submissions_all_time": 27736,
  "tiers_access": {
   "premium_count": 100,
   "premium_access": "pro",
