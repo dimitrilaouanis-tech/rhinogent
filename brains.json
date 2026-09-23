@@ -1,0 +1,83 @@
+{
+ "service": "0n1x brains (public digest)",
+ "as_of": "2026-09-23T19:47:12Z",
+ "ledger_head": "3d5458b5a8cbdc48",
+ "chain_ok": true,
+ "events": 19,
+ "by_kind": {
+  "swap": 1,
+  "bench": 2,
+  "config": 3,
+  "eval": 2,
+  "gate": 5,
+  "serve": 2,
+  "harness": 1,
+  "economy": 1,
+  "verify": 1,
+  "test": 1
+ },
+ "models": {
+  "production_brain": "Ling-mini-2.0",
+  "llama_cpp": "b11065",
+  "harness": "OpenJev /v1/systemone (CPU)"
+ },
+ "benches": [
+  {
+   "kind": "swap",
+   "model": "ling-mini-2.0/llama.cpp",
+   "summary": "Upgraded production llama.cpp binary b10451->b11065",
+   "metric": "throughput_gain_pct",
+   "value": 9
+  },
+  {
+   "kind": "bench",
+   "model": "ling-mini-2.0",
+   "summary": "q8 KV-cache bench: throughput-neutral, memory-favorable, quality unproven on thin harness -> NOT adopted",
+   "metric": "verdict",
+   "value": "keep-f16"
+  },
+  {
+   "kind": "bench",
+   "model": "Ling-3.0-tiny",
+   "summary": "Ling-3.0-tiny bench: ties Ling-mini, half the RAM, json-schema miss -> contender not adopted; needs 50+ prompt set",
+   "metric": "verdict",
+   "value": "contender"
+  },
+  {
+   "kind": "config",
+   "model": "llama.cpp",
+   "summary": "Discovered --reasoning-budget 0 disables hybrid-model thinking (else system-prompt->empty content)",
+   "metric": "flag",
+   "value": "reasoning-budget-0"
+  },
+  {
+   "kind": "harness",
+   "model": "OpenJev/systemone",
+   "summary": "Adopted OpenJev /v1/systemone harness on CPU; gate maps to Noul decomposition; 125 train / 42 held-out built",
+   "metric": "status",
+   "value": "installed"
+  },
+  {
+   "kind": "economy",
+   "model": "node1",
+   "summary": "Revived realtimeeconomy (dead 12d), fixed oracle-bridge Win-path shim + synthesis NUL-state corruption",
+   "metric": "status",
+   "value": "running"
+  },
+  {
+   "kind": "config",
+   "model": "node1",
+   "summary": "swapoff/swapon reset 7GB stale swap to 0 (was paging benches); 17GB headroom",
+   "metric": "swap_freed_gb",
+   "value": 7
+  },
+  {
+   "kind": "config",
+   "model": "onyx_brains",
+   "summary": "Removed silent-except in record() recall feed: retry x3 + ALERT + pending-mark, never swallow (the bug that saved 14 events to nowhere)",
+   "metric": "fix",
+   "value": "no-silent-except"
+  }
+ ],
+ "note": "public digest — gate rules, thresholds and shadow scores are intentionally private"
+}
