@@ -8,11 +8,9 @@ import { supabase } from "@/lib/supabase";
 import { AccountMenu } from "./account-menu";
 
 const links = [
-  { href: "/find", label: "Find an agent" },
-  { href: "/a2a", label: "A2A" },
-  { href: "/census", label: "Live Network" },
-  { href: "/chat", label: "Chat" },
+  { href: "/#how", label: "How it works" },
   { href: "/earn", label: "Earn" },
+  { href: "/census", label: "Census" },
   { href: "https://0n1xagntc.com/", label: "0n1x", external: true },
 ];
 
@@ -110,7 +108,7 @@ export function Nav() {
                   href="/dashboard"
                   className="rounded-full bg-accent px-4 py-1.5 text-sm font-semibold tracking-[-0.01em] text-white transition-opacity hover:opacity-90 active:scale-[0.98]"
                 >
-                  Get Rhinogent
+                  Open the app
                 </Link>
               </>
             )}

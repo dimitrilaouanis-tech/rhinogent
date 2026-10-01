@@ -48,6 +48,37 @@ export function LiveStat({ feed, className = "" }: { feed: "count" | "circulatin
   return <span className={className}>{n === null ? "syncing…" : n.toLocaleString()}</span>;
 }
 
+// Live metric from the ONE signed census feed (schema 0n1x.census/1). Reads
+// metrics[name].value and shows a dash "—" if the feed is unreachable or the
+// metric is missing — NEVER a baked-in number. Same feed the economy page reads;
+// the API/MCP bridge to this feed is still pending (not yet one read by all three).
+export function LiveMetric({
+  name,
+  className = "",
+  feedUrl = "/census_v1.json",
+}: {
+  name: string;
+  className?: string;
+  feedUrl?: string;
+}) {
+  const [v, setV] = useState<string>("—");
+  useEffect(() => {
+    const load = () =>
+      feedFetch(feedUrl)
+        .then((r) => r.json())
+        .then((d) => {
+          const m = d?.metrics?.[name];
+          if (m && typeof m.value === "number") setV(m.value.toLocaleString("en-US"));
+          else setV("—");
+        })
+        .catch(() => setV("—"));
+    load();
+    const iv = setInterval(load, 60000);
+    return () => clearInterval(iv);
+  }, [name, feedUrl]);
+  return <span className={`tabular-nums ${className}`}>{v}</span>;
+}
+
 export function StatNumber({
   n,
   suffix = "",
