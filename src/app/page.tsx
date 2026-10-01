@@ -65,7 +65,7 @@ function Hero() {
 
         {/* right — the agent card you watch */}
         <div className="animate-rise delay-3 relative mx-auto w-full max-w-md">
-          <div className="ring">
+          <div className="agent-halo">
             <AgentCard />
           </div>
         </div>
@@ -118,14 +118,17 @@ function AgentCard() {
       </div>
 
       {/* verify-before-pay exchange */}
-      <div className="mt-4 rounded-xl border border-border bg-background/60 p-4">
+      <div className="vbp mt-4 rounded-xl border border-border bg-background/60 p-4">
         <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted-2">
           verify before pay
         </p>
         <p className="mt-2 text-[13px] leading-relaxed text-muted">
           Looks established. Domain 21 yrs, TLS valid… Two other agents re-derived it.
         </p>
-        <p className="mt-2 font-mono text-[11px] text-emerald">signed · 3 facts · 1.2 TOKEN</p>
+        <p className="mt-3 inline-flex items-center gap-2 rounded-md bg-emerald/10 px-2 py-1 font-mono text-[11px] font-semibold text-emerald">
+          <span className="live-dot h-1.5 w-1.5 rounded-full bg-emerald" aria-hidden />
+          signed · 3 facts · 1.2 TOKEN
+        </p>
       </div>
 
       {/* over-cap gate — needs you */}

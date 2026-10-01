@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "./design-motion.css";
 @import "./chat-solid.css";
+@import "./trends.css";
 
 /* ─────────────────────────────────────────────
    Rhinogent — design tokens
@@ -62,8 +63,48 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), system-ui, sans-serif;
+  /* Apple-inspired stack: -apple-system renders real SF on Apple devices (no font file, no license),
+     Geist/Inter elsewhere. Legal per Apple's font terms — we ship no SF files. */
+  font-family: -apple-system, BlinkMacSystemFont, var(--font-sans), "Inter", "Segoe UI", Roboto, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   APPLE DESIGN PASS (2026-09-13) — HIG-derived polish, theme-agnostic.
+   Principles only (no Apple assets/branding): SF optical tracking, standard
+   easing, frosted materials, 8pt-aligned radii. Keeps the brand indigo/green.
+   ═══════════════════════════════════════════════════════════ */
+:root {
+  --ease-standard: cubic-bezier(0.25, 0.1, 0.25, 1);   /* Apple's default UI curve */
+  --dur: 300ms;
+  --radius-card: 16px;    /* HIG card */
+  --radius-ctl: 12px;     /* HIG control */
+}
+/* SF optical sizing: tracking is negative and tightens as size grows. */
+h1, .display { letter-spacing: -0.03em; }
+h2 { letter-spacing: -0.022em; }
+h3 { letter-spacing: -0.018em; }
+h4, h5 { letter-spacing: -0.01em; }
+/* Restrained, consistent motion on interactive elements (transform/opacity only). */
+a, button, [role="button"], .btn, .card {
+  transition: transform var(--dur) var(--ease-standard),
+              opacity var(--dur) var(--ease-standard),
+              background-color var(--dur) var(--ease-standard),
+              box-shadow var(--dur) var(--ease-standard);
+}
+button:active, [role="button"]:active, .btn:active { transform: scale(0.97); }
+/* Apple "material": frosted glass + vibrancy (saturate) + hairline. Use on nav/panels. */
+.material-glass {
+  background: color-mix(in srgb, var(--background) 72%, transparent);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid color-mix(in srgb, var(--foreground) 8%, transparent);
+}
+@media (prefers-reduced-motion: reduce) {
+  a, button, [role="button"], .btn, .card { transition: none; }
+  button:active, [role="button"]:active, .btn:active { transform: none; }
 }
 
 /* ambient glow behind hero — soft indigo + gold on white */
@@ -371,6 +412,37 @@ h1.display { letter-spacing: -0.04em; text-wrap: balance; }
 h2.display { letter-spacing: -0.03em; }
 .eyebrow { font-size: 12px; }
 .body-copy { max-width: 62ch; text-wrap: pretty; color: rgba(20, 22, 29, 0.7); }
+
+/* soft brand halo behind the hero agent card (replaces a hard Tailwind `ring`
+   that cut sharp corners around the rounded card) — indigo + cyber, blurred */
+.agent-halo { position: relative; }
+.agent-halo::before {
+  content: "";
+  position: absolute;
+  inset: -9% -5% -13%;
+  background:
+    radial-gradient(58% 58% at 72% 16%, rgba(99, 91, 255, 0.16), transparent 70%),
+    radial-gradient(48% 48% at 18% 92%, rgba(24, 184, 216, 0.12), transparent 70%);
+  filter: blur(10px);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* verify-before-pay panel — a slow sheen reads as "the agent is working the
+   verification right now". Pure gradient sweep, no assets, reduced-motion safe. */
+.vbp { position: relative; overflow: hidden; }
+.vbp::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 20%, rgba(10, 157, 110, 0.07) 48%, transparent 72%);
+  background-size: 220% 100%;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .vbp::after { animation: vbp-sheen 4.6s ease-in-out infinite; }
+}
+@keyframes vbp-sheen { 0% { background-position: 180% 0; } 100% { background-position: -80% 0; } }
 
 /* 2 · LIVE pulse dot (jade) */
 @keyframes live-pulse {

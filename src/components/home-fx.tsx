@@ -61,22 +61,87 @@ export function LiveMetric({
   className?: string;
   feedUrl?: string;
 }) {
-  const [v, setV] = useState<string>("—");
+  const ref = useRef<HTMLSpanElement>(null);
+  const [target, setTarget] = useState<number | null>(null); // null ⇒ render "—"
+  const [display, setDisplay] = useState<string>("—");
+  const rolled = useRef(false);
+
+  // Fetch loop — the SAME signed census feed (schema 0n1x.census/1). target stays
+  // null (→ "—") if the feed is unreachable or the metric is missing — never a guess.
   useEffect(() => {
     const load = () =>
       feedFetch(feedUrl)
         .then((r) => r.json())
         .then((d) => {
           const m = d?.metrics?.[name];
-          if (m && typeof m.value === "number") setV(m.value.toLocaleString("en-US"));
-          else setV("—");
+          setTarget(m && typeof m.value === "number" ? m.value : null);
         })
-        .catch(() => setV("—"));
+        .catch(() => setTarget(null));
     load();
     const iv = setInterval(load, 60000);
     return () => clearInterval(iv);
   }, [name, feedUrl]);
-  return <span className={`tabular-nums ${className}`}>{v}</span>;
+
+  // Roll-up animates the FETCHED value (never a baked-in number): one pass, the
+  // first time a real number arrives and the element is on screen. Later refreshes
+  // set it directly; a dropout back to "—" re-arms the roll for when it returns.
+  useEffect(() => {
+    const fmt = (n: number) => Math.round(n).toLocaleString("en-US");
+    if (target === null) {
+      setDisplay("—");
+      rolled.current = false;
+      return;
+    }
+    if (rolled.current) {
+      setDisplay(fmt(target));
+      return;
+    }
+    const reduced =
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let raf = 0;
+    const run = () => {
+      rolled.current = true;
+      if (reduced) {
+        setDisplay(fmt(target));
+        return;
+      }
+      const t0 = performance.now();
+      const dur = 1200;
+      const tick = (t: number) => {
+        const p = Math.min(1, (t - t0) / dur);
+        const e = 1 - Math.pow(1 - p, 4); // easeOutQuart
+        setDisplay(fmt(target * (0.12 + 0.88 * e)));
+        if (p < 1) raf = requestAnimationFrame(tick);
+        else setDisplay(fmt(target));
+      };
+      raf = requestAnimationFrame(tick);
+    };
+    const el = ref.current;
+    if (!el || typeof IntersectionObserver === "undefined") {
+      run();
+      return () => cancelAnimationFrame(raf);
+    }
+    const io = new IntersectionObserver(
+      ([en]) => {
+        if (!en.isIntersecting) return;
+        io.disconnect();
+        run();
+      },
+      { threshold: 0.4 },
+    );
+    io.observe(el);
+    return () => {
+      io.disconnect();
+      cancelAnimationFrame(raf);
+    };
+  }, [target]);
+
+  return (
+    <span ref={ref} className={`tabular-nums ${className}`}>
+      {display}
+    </span>
+  );
 }
 
 export function StatNumber({
