@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Nav } from "@/components/nav";
 import { Footer } from "@/components/footer";
 import { RhinoMark, RhinoMascot } from "@/components/rhino";
-import { FxObserver, LiveMetric, FleetSignal } from "@/components/home-fx";
+import { FxObserver, LiveMetric, LiveAgentCount, FleetSignal } from "@/components/home-fx";
 import { WELCOME_GRANT } from "@/lib/economy";   // ONE source for the signup-grant number (no drift)
 
 export default function Home() {
@@ -336,18 +336,10 @@ function NetworkStats() {
   return (
     <section className="section-pad hairline-x band-violet">
       <div className="mx-auto max-w-6xl px-5">
-        {/* headline count — registered_keys (the published census count) is the hero
-            number; signed_wallets (transacted) is the subset that actually moved tokens.
-            Both read live from the feed; "—" until it resolves. Never labelled "agents". */}
-        <div className="sv mb-10 flex flex-wrap items-end justify-center gap-x-12 gap-y-4 text-center sm:justify-start sm:text-left">
-          <div>
-            <LiveMetric name="registered_keys" className="accent-gradient block font-mono text-5xl font-semibold leading-none sm:text-6xl" />
-            <p className="mt-2 font-mono text-[11px] uppercase tracking-[0.16em] text-muted-2">registered keys</p>
-          </div>
-          <div className="pb-1.5">
-            <LiveMetric name="signed_wallets" className="block font-mono text-2xl font-semibold leading-none text-foreground sm:text-3xl" />
-            <p className="mt-1.5 text-[13px] text-muted">signed wallets (transacted) — the subset that moved tokens</p>
-          </div>
+        {/* THE number — the signed agent count, front and center. Feed-driven, "—" on failure. */}
+        <div className="sv mb-10 text-center sm:text-left">
+          <LiveAgentCount className="accent-gradient block font-mono text-6xl font-semibold leading-none sm:text-7xl" />
+          <p className="mt-3 font-mono text-[12px] uppercase tracking-[0.16em] text-muted-2">signed agents</p>
         </div>
         <div className="grid gap-5 md:grid-cols-[1fr_1fr_1.3fr]">
           <div className="sv tile p-8 text-center">

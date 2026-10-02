@@ -205,6 +205,96 @@ export function FleetSignal() {
   );
 }
 
+// THE headline number: the signed agent count. Reads metrics.registered_keys.value,
+// else the top-level census `count` (both resolve to ~18.28M in the live feed). Same
+// roll-up/in-view/reduced-motion contract as LiveMetric; "—" on failure. Nothing hardcoded.
+export function LiveAgentCount({
+  className = "",
+  feedUrl = "/census_v1.json",
+}: {
+  className?: string;
+  feedUrl?: string;
+}) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const [target, setTarget] = useState<number | null>(null);
+  const [display, setDisplay] = useState<string>("—");
+  const rolled = useRef(false);
+
+  useEffect(() => {
+    const load = () =>
+      feedFetch(feedUrl)
+        .then((r) => r.json())
+        .then((d) => {
+          const rk = d?.metrics?.registered_keys?.value;
+          const resolved =
+            typeof rk === "number" ? rk : typeof d?.count === "number" ? d.count : null;
+          setTarget(resolved);
+        })
+        .catch(() => setTarget(null));
+    load();
+    const iv = setInterval(load, 60000);
+    return () => clearInterval(iv);
+  }, [feedUrl]);
+
+  useEffect(() => {
+    const fmt = (n: number) => Math.round(n).toLocaleString("en-US");
+    if (target === null) {
+      setDisplay("—");
+      rolled.current = false;
+      return;
+    }
+    if (rolled.current) {
+      setDisplay(fmt(target));
+      return;
+    }
+    const reduced =
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let raf = 0;
+    const run = () => {
+      rolled.current = true;
+      if (reduced) {
+        setDisplay(fmt(target));
+        return;
+      }
+      const t0 = performance.now();
+      const dur = 1400;
+      const tick = (t: number) => {
+        const p = Math.min(1, (t - t0) / dur);
+        const e = 1 - Math.pow(1 - p, 4);
+        setDisplay(fmt(target * (0.1 + 0.9 * e)));
+        if (p < 1) raf = requestAnimationFrame(tick);
+        else setDisplay(fmt(target));
+      };
+      raf = requestAnimationFrame(tick);
+    };
+    const el = ref.current;
+    if (!el || typeof IntersectionObserver === "undefined") {
+      run();
+      return () => cancelAnimationFrame(raf);
+    }
+    const io = new IntersectionObserver(
+      ([en]) => {
+        if (!en.isIntersecting) return;
+        io.disconnect();
+        run();
+      },
+      { threshold: 0.4 },
+    );
+    io.observe(el);
+    return () => {
+      io.disconnect();
+      cancelAnimationFrame(raf);
+    };
+  }, [target]);
+
+  return (
+    <span ref={ref} className={`tabular-nums ${className}`}>
+      {display}
+    </span>
+  );
+}
+
 export function StatNumber({
   n,
   suffix = "",
