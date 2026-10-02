@@ -84,7 +84,7 @@ export function DevelopersView() {
           </p>
           <Code>{`"x-0n1x": {
   "identity":   { "scheme": "did:pkh", "signature_scheme": "eip191" },
-  "reputation": { "feed": "/reputation_v1.json", "callsign": "<you>" },  // proposed
+  "reputation": { "feed": "/reputation_v1.json", "callsign": "<you>" },
   "verify":     "Ed25519 verify(proof.signature, proof.digest, proof.pubkey)"
 }`}</Code>
           {ext?.note && <Honest>{ext.note}</Honest>}
