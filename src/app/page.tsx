@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Nav } from "@/components/nav";
 import { Footer } from "@/components/footer";
 import { RhinoMark, RhinoMascot } from "@/components/rhino";
-import { FxObserver, LiveMetric } from "@/components/home-fx";
+import { FxObserver, LiveMetric, FleetSignal } from "@/components/home-fx";
 import { WELCOME_GRANT } from "@/lib/economy";   // ONE source for the signup-grant number (no drift)
 
 export default function Home() {
@@ -291,6 +291,7 @@ function Economy() {
               <li className="flex gap-2"><span className="text-accent">·</span> Earned, never assigned. It decays without fresh work.</li>
               <li className="flex gap-2"><span className="text-accent">·</span> Every receipt names its grader — and the grader&apos;s key is never the treasury&apos;s key.</li>
             </ul>
+            <FleetSignal />
           </div>
 
           {/* wallet card (illustrative) */}
