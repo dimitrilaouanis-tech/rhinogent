@@ -3,19 +3,25 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { RhinoMark } from "./rhino";
+import { RhinoA1Mark } from "./rhino-a1";
 import { supabase } from "@/lib/supabase";
 import { AccountMenu } from "./account-menu";
 
+// ONE top nav for every page (design-approved): the 7 inner pages + 0n1x.
 const links = [
-  { href: "/#how", label: "How it works" },
+  { href: "/agents", label: "Agents" },
+  { href: "/chat", label: "Chat" },
   { href: "/earn", label: "Earn" },
   { href: "/census", label: "Census" },
+  { href: "/verify", label: "Verify" },
+  { href: "/developers", label: "Developers" },
   { href: "https://0n1xagntc.com/", label: "0n1x", external: true },
+  { href: "/dashboard", label: "My agents" },
 ];
 
 export function Nav() {
-  const pathname = usePathname();
+  const raw = usePathname() || "/";
+  const pathname = raw.length > 1 ? raw.replace(/\/$/, "") : raw; // trailingSlash export
   // auth-aware: reflect the persisted Supabase session consistently on every page
   const [authed, setAuthed] = useState<boolean | null>(null);
   // condense: stronger border + shadow once the page scrolls past 24px
@@ -46,22 +52,22 @@ export function Nav() {
             : "border-border/40 bg-background/70"
         }`}
       >
-        <nav className="mx-auto flex h-14 max-w-6xl items-center justify-between px-5">
+        <nav className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-4 px-5">
           <Link href="/" className="group flex items-center gap-2.5">
-            <RhinoMark className="h-8 w-8 transition-transform duration-300 group-hover:scale-[1.04]" />
+            <RhinoA1Mark className="h-8 w-8 transition-transform duration-300 group-hover:scale-[1.04]" />
             <span className="text-[15px] font-semibold tracking-[-0.02em]">Rhinogent</span>
           </Link>
 
-          <div className="hidden items-center gap-1 md:flex">
+          <div className="hidden items-center gap-0.5 lg:flex">
             {links.map((l) => {
-              const active = !l.external && pathname === l.href;
+              const active = !l.external && (pathname === l.href || pathname.startsWith(l.href + "/"));
               return (
                 <a
                   key={l.href}
                   href={l.href}
                   {...(l.external ? { target: "_blank", rel: "noreferrer" } : {})}
                   aria-current={active ? "page" : undefined}
-                  className={`group relative rounded-full px-3.5 py-1.5 text-sm transition-colors duration-150 ${
+                  className={`group relative rounded-full px-3 py-1.5 text-[13px] transition-colors duration-150 ${
                     active ? "text-foreground" : "text-muted hover:bg-accent/[.06] hover:text-foreground"
                   }`}
                 >
@@ -83,12 +89,12 @@ export function Nav() {
             })}
           </div>
 
-          <div className="flex min-w-[150px] items-center justify-end gap-3">
+          <div className="flex shrink-0 items-center justify-end gap-3">
             <button
               onClick={() => setMenuOpen((o) => !o)}
               aria-label="Menu"
               aria-expanded={menuOpen}
-              className="md:hidden rounded-lg border border-border p-2 text-muted transition-colors hover:text-foreground"
+              className="lg:hidden rounded-lg border border-border p-2 text-muted transition-colors hover:text-foreground"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
                 {menuOpen ? <path d="M6 6l12 12M18 6L6 18" /> : <><path d="M3 6h18" /><path d="M3 12h18" /><path d="M3 18h18" /></>}
@@ -101,24 +107,18 @@ export function Nav() {
               <AccountMenu />
             ) : (
               <>
-                <Link href="/dashboard" className="hidden text-sm text-muted transition-colors hover:text-foreground sm:inline">
+                <Link href="/dashboard/classic" className="rounded-full border border-border px-3.5 py-1.5 text-[13px] text-muted transition-colors hover:text-foreground">
                   Sign in
-                </Link>
-                <Link
-                  href="/dashboard"
-                  className="rounded-full bg-accent px-4 py-1.5 text-sm font-semibold tracking-[-0.01em] text-white transition-opacity hover:opacity-90 active:scale-[0.98]"
-                >
-                  Open the app
                 </Link>
               </>
             )}
           </div>
         </nav>
         {menuOpen && (
-          <div className="motion-safe:animate-rise md:hidden border-t border-border/40 bg-background/95 px-5 pb-3 pt-2 shadow-[0_12px_24px_-16px_rgba(17,17,26,.18)] backdrop-blur-xl">
+          <div className="motion-safe:animate-rise lg:hidden border-t border-border/40 bg-background/95 px-5 pb-3 pt-2 shadow-[0_12px_24px_-16px_rgba(17,17,26,.18)] backdrop-blur-xl">
             <div className="mx-auto flex max-w-6xl flex-col gap-1">
               {links.map((l) => {
-                const active = !l.external && pathname === l.href;
+                const active = !l.external && (pathname === l.href || pathname.startsWith(l.href + "/"));
                 return (
                   <a
                     key={l.href}
