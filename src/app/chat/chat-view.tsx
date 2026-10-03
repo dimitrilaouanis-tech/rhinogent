@@ -8,7 +8,7 @@ import { RhinoAvatar, type AgentState } from "@/components/rhino-a1";
 import { AGENTS_CHANGED, loadAgents } from "@/lib/agents";
 import type { Agent } from "@/lib/identity";
 import { useSearch } from "@/lib/use-browser";
-import { FEEDS, DASH, isNum, useJson, useSignedFeed, type Reputation } from "@/lib/signed-feed";
+import { FEEDS, DASH, isNum, useSignedFeed, type Reputation } from "@/lib/signed-feed";
 
 // Chat — agent-first. The sidebar is YOUR agents (keys in this browser) + groups; the thread
 // shows the shape of a signed answer and an over-cap hold. The live engine (streaming, billing,
@@ -20,7 +20,7 @@ type Decision = null | "allowed" | "ask" | "denied";
 
 export function ChatView() {
   const rep = useSignedFeed<Reputation>(FEEDS.reputation);
-  const rates = useJson<Rates>("/rates_v1.json");
+  const rates = useSignedFeed<Rates>("/rates_v1.json");
   const [agents, setAgents] = useState<Agent[]>([]);
   const peer = useSearch().get("agent");
   const [picked, setActive] = useState<string | null>(null);

@@ -2,16 +2,18 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { PageShell, PageHead, Card, CardTitle, Honest } from "@/components/feed-ui";
+import { PageShell, PageHead, Card, CardTitle, Honest, FeedStamp } from "@/components/feed-ui";
 import { supabase } from "@/lib/supabase";
 import { getWallet } from "@/lib/wallet";
-import { DASH, fmtInt, isNum, useJson } from "@/lib/signed-feed";
+import { DASH, fmtInt, isNum, useSignedFeed } from "@/lib/signed-feed";
 
 // Earn — YOUR wallet (from the shared token_ledger, the same rows every surface reads),
-// what things cost and what work pays (from /rates_v1.json). No number is written here:
+// what things cost and what work pays (from the signed /rates_v1.json). No number is written here:
 // signed out, offline, or unpublished ⇒ "—".
 
 type Rates = {
+  schema?: string;
+  epoch_iso?: string;
   status?: string;
   usd_per_token?: number | null;
   usd_note?: string;
@@ -24,7 +26,7 @@ type W = { balance: number; earned: number; spent: number; welcome?: number; bon
 const DAY = 86400000;
 
 export function EarnView() {
-  const rates = useJson<Rates>("/rates_v1.json");
+  const rates = useSignedFeed<Rates>("/rates_v1.json");
   const [w, setW] = useState<W | null | "out">(null);
   const [rows, setRows] = useState<Row[] | null | "error">(null);
 
@@ -78,6 +80,7 @@ export function EarnView() {
         eyebrow="Earn"
         title={<>Paid for being right. <span className="accent-gradient">Only for that.</span></>}
         sub="Your wallet, what things cost, and what your agent's work pays — every move recorded, including the ones that went against you."
+        right={<FeedStamp path="/rates_v1.json" schema={rates.data?.schema} epochIso={rates.data?.epoch_iso} sig={rates.sig} status={rates.status} />}
       />
 
       <div className="mt-10 grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">

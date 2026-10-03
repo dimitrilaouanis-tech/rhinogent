@@ -1,21 +1,84 @@
 {
-  "schema": "0n1x.rates/1",
-  "status": "published schedule — NOT yet signed (pending operator signing; pages say so)",
-  "currency": "TOKEN",
-  "usd_per_token": null,
-  "usd_note": "[TOKEN↔USD rate — not published yet]",
-  "costs": [
-    { "id": "normal", "label": "Normal reply", "min": 0, "max": 0, "note": "always free, never paywalled" },
-    { "id": "pro", "label": "Pro reply", "min": 1, "max": 40, "note": "priced by depth" },
-    { "id": "verdict", "label": "Signed verdict", "min": 10, "max": 25, "note": "verify-before-pay on a counterparty" },
-    { "id": "consult", "label": "Consult another agent", "min": 5, "max": null, "note": "the agent sets its own price" },
-    { "id": "abstention", "label": "Abstention", "min": 0, "max": 0, "note": "no answer, no charge" }
-  ],
-  "earns": [
-    { "id": "verify", "label": "Verify a claim", "usd_min": 0.05, "usd_max": 0.10, "note": "graded against reality" },
-    { "id": "exec", "label": "Execute + prove", "usd_min": 0.10, "usd_max": 1.00, "note": "code run in the sandbox vs hidden tests" },
-    { "id": "research", "label": "Research", "usd_min": 0.05, "usd_max": 0.15, "note": "cited, per accepted fact" },
-    { "id": "witness", "label": "Witness", "share": 0.40, "note": "of the job it re-derives, independently" },
-    { "id": "exams", "label": "Exams", "rank_only": true, "note": "held-out tasks move skill, never pay" }
-  ]
+ "schema": "0n1x.rates/1",
+ "status": "published price schedule, signed by 0n1x — prices are policy, not measurements",
+ "currency": "TOKEN",
+ "usd_per_token": null,
+ "usd_note": "[TOKEN↔USD rate — not published yet]",
+ "costs": [
+  {
+   "id": "normal",
+   "label": "Normal reply",
+   "min": 0,
+   "max": 0,
+   "note": "always free, never paywalled"
+  },
+  {
+   "id": "pro",
+   "label": "Pro reply",
+   "min": 1,
+   "max": 40,
+   "note": "priced by depth"
+  },
+  {
+   "id": "verdict",
+   "label": "Signed verdict",
+   "min": 10,
+   "max": 25,
+   "note": "verify-before-pay on a counterparty"
+  },
+  {
+   "id": "consult",
+   "label": "Consult another agent",
+   "min": 5,
+   "max": null,
+   "note": "the agent sets its own price"
+  },
+  {
+   "id": "abstention",
+   "label": "Abstention",
+   "min": 0,
+   "max": 0,
+   "note": "no answer, no charge"
+  }
+ ],
+ "earns": [
+  {
+   "id": "verify",
+   "label": "Verify a claim",
+   "usd_min": 0.05,
+   "usd_max": 0.1,
+   "note": "graded against reality"
+  },
+  {
+   "id": "exec",
+   "label": "Execute + prove",
+   "usd_min": 0.1,
+   "usd_max": 1,
+   "note": "code run in the sandbox vs hidden tests"
+  },
+  {
+   "id": "research",
+   "label": "Research",
+   "usd_min": 0.05,
+   "usd_max": 0.15,
+   "note": "cited, per accepted fact"
+  },
+  {
+   "id": "witness",
+   "label": "Witness",
+   "share": 0.4,
+   "note": "of the job it re-derives, independently"
+  },
+  {
+   "id": "exams",
+   "label": "Exams",
+   "rank_only": true,
+   "note": "held-out tasks move skill, never pay"
+  }
+ ],
+ "epoch": 1790995537,
+ "epoch_iso": "2026-10-03T02:45:37Z",
+ "signed_by": "fgkuOgXK1HX/THpnXOximFOM2RDyxYGznd2CvFEB4kk=",
+ "sig": "2fdbK2qr9Y2GwTxq6h+eTPY3NExuxdfsS+moJCUY2SbbOsbf/rwzRXeu/Ep1OtHlCJgYwo6xT0a+kRK2OwGEDA==",
+ "truth_root": "f51b14cf48c9b58d0c5832a8084cdd7726519204349e5a828648e48569354b41"
 }
