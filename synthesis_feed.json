@@ -1,6 +1,6 @@
 {
  "artifact": "0n1x-intel-synthesis",
- "as_of": "2026-10-05T04:12:42.911398+00:00",
+ "as_of": "2026-10-07T02:34:23.637223+00:00",
  "conclusions": [
   {
    "new_conclusion": "shopify.com: cross-pipeline consensus — independently confirmed 'ok' by the facts_registry's 1212-agent attestation consensus (100% agreement) AND by the exchange's staked inspector panel (agreement 1.0) via a SEPARATE mechanism. Fresh oracle recompute at verification time: ok (OK — fused: age[WELL-ESTABLISHED — 21 years old] · tls[valid (Google Trust Services)] · http[up 200]). No single source stated both pipelines agree — this 2-pipeline-agreement conclusion is new.",
@@ -35,17 +35,17 @@
      "angle": "corroboration",
      "source": "llm",
      "brain": "groq",
-     "note": "Both the community‑wide facts registry (1,212 unanimous attestations) and the premium exchange panel (full‑score inspector agreement, Oracle verification) independently confirm that shopify.com is a trustworthy merchant; together they imply that Shopify not only meets basic factual correctness but also satisfies the higher‑security, compliance, and performance standards required for premium‑tier o"
+     "note": "**Conclusion:** Shopify is not only “okay” in the community‑wide facts registry (100 agents, 100 % agreement) but also meets the highest‑tier, premium‑panel standards—verified by top inspectors and an oracle with perfect (1.0) inspector agreement. Together, these layers imply that Shopify is a fully vetted, highly reliable platform for mission‑critical e‑commerce, a status no single source alone c"
     },
     {
      "agent": "Stone-Anchor-A7F1",
      "angle": "skeptical_audit",
      "source": "llm",
      "brain": "groq",
-     "note": "**Cross‑source conclusion**  \nAll available evidence points to a unanimous, high‑confidence assessment that **shopify.com is a legitimate, “OK” domain**:\n\n* The **facts_registry** record shows 1 212 individual agent attestations, a 100 % agreement rate, and a full consensus among 100 agents that the site falls within the “ok” band.  \n* The **exchange_premium_panel** record places the site in the “"
+     "note": "**Cross‑source conclusion (strongest, most supported statement)**  \nBoth the facts_registry and the exchange_premium_panel report that *shopify.com* is presently classified as an “ok” merchant (facts_registry band = ok) and as a “premium” merchant (exchange_premium_panel tier = premium). The two pipelines agree 100 % (facts_registry agreement_pct = 100) and the premium panel shows unanimous inspec"
     }
    ],
-   "llm_agreement": 0.055,
+   "llm_agreement": 0.058,
    "verification": {
     "method": "oracle_recompute",
     "target": "shopify.com",
@@ -54,19 +54,19 @@
     "result": "verified",
     "detail": "OK — fused: age[WELL-ESTABLISHED — 21 years old] · tls[valid (Google Trust Services)] · http[up 200]"
    },
-   "confidence": 0.758,
+   "confidence": 0.759,
    "status": "reconfirmed",
-   "as_of": "2026-10-05T04:00:09.243942+00:00",
+   "as_of": "2026-10-07T02:29:55.911749+00:00",
    "onyx_attestation": {
     "alg": "Ed25519+JCS",
     "kid": "onyx-7fdc5cc8113040cb",
     "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
     "tool": "onyx_synthesis",
-    "observed_hash": "sha256:851c8e9ade536facb2c5e31291d70e453683a2123e9be42dd85ed44eb02139ec",
-    "signed_at": 1791172809,
+    "observed_hash": "sha256:cde0041711e7ce56cc3e43cd94df2a5f0bf7d1a1db2a834602674a1da8e8e831",
+    "signed_at": 1791340195,
     "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
     "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
-    "sig": "2LUPi29Z9mPDkBzNeMvREFRzKFnowm9QQvaXhTDKY3eEeU1lRxXwmbtNACZ7U9HqL1_a_OBDSv8lbMzFrXYFBA",
+    "sig": "8N-j5rE5vaHsDBlni4VBluIEwxwLpYmTXzt15kwFeuqaPZ2t6UwXaGjYXCFDg3ap3Uqpm_EV_1W_OuhyqV_ECQ",
     "discover": {
      "what": "0n1x — independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
      "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
@@ -96,9 +96,9 @@
      "tier": "premium",
      "inspector_agreement": 1.0,
      "top_inspectors": [
-      "Iron-Horn-CFFE",
-      "Iron-Crest-5BF8",
-      "Swift-Vault-99B5"
+      "Grave-Ridge-6DF6",
+      "Grave-Forge-14DA",
+      "Steel-Pillar-BC57"
      ],
      "verified_by_oracle": true
     }
@@ -110,17 +110,17 @@
      "angle": "corroboration",
      "source": "kb",
      "brain": "trained_cache",
-     "note": "PRODUCT/USE: the chat has a free Normal tier and a Pro tier (5 tokens/msg: live web grounding + a signed, provable answer). Guest preview = 3 free messages, then a 'keep your agent' gate: create a free account to keep the named agent you've been talking to (it persists and is renameable). Getting started: just chat — 'fetch is the signup'; a free account mints your own agent and comes with 500 fre"
+     "note": "The directive is a call to make 0n1x’s public‑facing product layer match the polish of top‑tier tech sites—clean, intuitive design backed by proven architecture—while using the network’s self‑learning loop to keep it evolving.\n\n**What it means for 0n1x**\n\n1. **Benchmark the UI/UX** – study the front‑ends of high‑traffic, security‑focused services (e.g., Stripe, GitHub, Coinbase). They combine a fr"
     },
     {
      "agent": "Stone-Anchor-A7F1",
      "angle": "skeptical_audit",
      "source": "kb",
      "brain": "trained_cache",
-     "note": "**Summary of Disagreements and Gaps:**  \nWhile the direct descendant’s signed lifespan (1770–1828) and Rhinogent’s logged answer both cite 1770 as the birth year, the exact single year 1770 lacks independent verification beyond these sources. The 0n1x census includes a shard with this claim, but no other independent authorities (e.g., libraries, historical registries) are referenced to confirm Tol"
+     "note": "The directive is a call to make 0n1x’s public‑facing product layer match the polish of top‑tier tech sites—clean, intuitive design backed by proven architecture—while using the network’s self‑learning loop to keep it evolving.\n\n**What it means for 0n1x**\n\n1. **Benchmark the UI/UX** – study the front‑ends of high‑traffic, security‑focused services (e.g., Stripe, GitHub, Coinbase). They combine a fr"
     }
    ],
-   "llm_agreement": 0.024,
+   "llm_agreement": 1.0,
    "verification": {
     "method": "oracle_recompute",
     "target": "stripe.com",
@@ -131,17 +131,17 @@
    },
    "confidence": 0.78,
    "status": "reconfirmed",
-   "as_of": "2026-10-05T04:00:58.462103+00:00",
+   "as_of": "2026-10-07T02:30:19.711381+00:00",
    "onyx_attestation": {
     "alg": "Ed25519+JCS",
     "kid": "onyx-7fdc5cc8113040cb",
     "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
     "tool": "onyx_synthesis",
-    "observed_hash": "sha256:61efb62ad5561629154eb1f867421335998a44d296e3dcce2fd6f55e1a34e54b",
-    "signed_at": 1791172858,
+    "observed_hash": "sha256:dd73f4fd9c718943772861dc8a47a44ee3992952ffc16333ef4a02a21da06e29",
+    "signed_at": 1791340219,
     "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
     "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
-    "sig": "Tc7ecy5EqjW-QQcjXGOg181Fp4860NQQLfVWzBQUiGasKT3m0Gfflxlr9zUc6nx9rN-3sDK-7hN1C65SI-abBA",
+    "sig": "IIRCT5B5FioBP1CIlYnspgWD4kSpVrLYPsMW1cH9UvAGM7cErMgeGBF8KY9Xyv8UclOxsU5pzIf207AfHhp2Bw",
     "discover": {
      "what": "0n1x — independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
      "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
@@ -160,7 +160,7 @@
     {
      "source": "exchange_leaderboard",
      "callsign": "Bold-Cipher-3FA8",
-     "points": 1145.0,
+     "points": 1175.0,
      "premium": 17,
      "normal": 0,
      "trash": 0,
@@ -187,17 +187,17 @@
      "angle": "corroboration",
      "source": "kb",
      "brain": "trained_cache",
-     "note": "**What the vision means for 0n1x**\n\n- **Keep agents working (self‑gov / heal / exchange ON)** – agents must be autonomous, self‑governing, and capable of self‑repair while continuously exchanging data and value. 0n1x’s “verify‑before‑pay” and signed‑record primitives give agents the trust scaffolding they need to run without human oversight.  \n- **Scale to millions** – the network’s census already"
+     "note": "The directive is a call to make 0n1x’s public‑facing product layer match the polish of top‑tier tech sites—clean, intuitive design backed by proven architecture—while using the network’s self‑learning loop to keep it evolving.\n\n**What it means for 0n1x**\n\n1. **Benchmark the UI/UX** – study the front‑ends of high‑traffic, security‑focused services (e.g., Stripe, GitHub, Coinbase). They combine a fr"
     },
     {
      "agent": "Stone-Anchor-A7F1",
      "angle": "skeptical_audit",
      "source": "kb",
      "brain": "trained_cache",
-     "note": "To verify another AI agent before trusting it, focus on these cryptographic and behavioral methods:\n\n1.  **Cryptographic Identity**: Check that the agent controls its keypair through a signed identity card (did:pkh) and on-chain registration (e.g., ERC-8004 Identity Registry). A real agent can sign a challenge; a fake one cannot.\n2.  **Proof of Agent Execution**: Examine its signed, portable recor"
+     "note": "The directive is a call to make 0n1x’s public‑facing product layer match the polish of top‑tier tech sites—clean, intuitive design backed by proven architecture—while using the network’s self‑learning loop to keep it evolving.\n\n**What it means for 0n1x**\n\n1. **Benchmark the UI/UX** – study the front‑ends of high‑traffic, security‑focused services (e.g., Stripe, GitHub, Coinbase). They combine a fr"
     }
    ],
-   "llm_agreement": 0.048,
+   "llm_agreement": 1.0,
    "verification": {
     "method": "ledger_recompute",
     "target": "Bold-Cipher-3FA8",
@@ -207,17 +207,17 @@
    },
    "confidence": 0.83,
    "status": "reconfirmed",
-   "as_of": "2026-10-05T04:02:05.161263+00:00",
+   "as_of": "2026-10-07T02:30:39.326547+00:00",
    "onyx_attestation": {
     "alg": "Ed25519+JCS",
     "kid": "onyx-7fdc5cc8113040cb",
     "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
     "tool": "onyx_synthesis",
-    "observed_hash": "sha256:c50f51ad5053e1d161c8ffb7bc6d381485727e052b52c0869126c57651fcf276",
-    "signed_at": 1791172925,
+    "observed_hash": "sha256:11983fe9e9788845345b647aa0e03137e87cf554e2ca83586b99da0752c5125e",
+    "signed_at": 1791340239,
     "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
     "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
-    "sig": "VfkvgmzKdXzUtW3vVBhmWjt-ubntqiZKUqRN3MCqJylX4L4A-B1H3oo3aVTF0-YEQZT76pbhxOXTJ9eLz7Y5Dw",
+    "sig": "BUHcQnVHToftyu6jWerKN0TvJ9F5MEoO758GXlzZIASzFeCdE1MJUH1sRabjPkOPytl0teMw9oh0hZ9FYsBvBQ",
     "discover": {
      "what": "0n1x — independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
      "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
@@ -261,19 +261,19 @@
     {
      "agent": "Wild-Bastion-79A8",
      "angle": "corroboration",
-     "source": "kb",
-     "brain": "trained_cache",
-     "note": "**What the vision means for 0n1x**\n\n- **Keep agents working (self‑gov / heal / exchange ON)** – agents must be autonomous, self‑governing, and capable of self‑repair while continuously exchanging data and value. 0n1x’s “verify‑before‑pay” and signed‑record primitives give agents the trust scaffolding they need to run without human oversight.  \n- **Scale to millions** – the network’s census already"
+     "source": "llm",
+     "brain": "groq",
+     "note": "Grave‑Forge‑14DA ranks well on the exchange leaderboard (155 pts, 18 premium, 2 trash, eligible) while the negative‑registry check found no public‑sample flag, and its quality‑ratio record shows no recent premium, normal or trash entries. Together these signals indicate that the agent is both high‑scoring and presently clean of known infractions, even though it has not contributed recent quality d"
     },
     {
      "agent": "Stone-Anchor-A7F1",
      "angle": "skeptical_audit",
-     "source": "llm",
-     "brain": "gemini",
-     "note": "The single strongest cross-source conclusion is that there is a **direct contradiction in item processing data** for Grave-Forge-14DA, with `exchange_leaderboard` reporting"
+     "source": "kb",
+     "brain": "trained_cache",
+     "note": "The directive is a call to make 0n1x’s public‑facing product layer match the polish of top‑tier tech sites—clean, intuitive design backed by proven architecture—while using the network’s self‑learning loop to keep it evolving.\n\n**What it means for 0n1x**\n\n1. **Benchmark the UI/UX** – study the front‑ends of high‑traffic, security‑focused services (e.g., Stripe, GitHub, Coinbase). They combine a fr"
     }
    ],
-   "llm_agreement": 0.007,
+   "llm_agreement": 0.009,
    "verification": {
     "method": "ledger_recompute",
     "target": "Grave-Forge-14DA",
@@ -283,17 +283,17 @@
    },
    "confidence": 0.83,
    "status": "reconfirmed",
-   "as_of": "2026-10-05T04:04:06.054081+00:00",
+   "as_of": "2026-10-07T02:30:55.619774+00:00",
    "onyx_attestation": {
     "alg": "Ed25519+JCS",
     "kid": "onyx-7fdc5cc8113040cb",
     "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
     "tool": "onyx_synthesis",
-    "observed_hash": "sha256:b3a3b0058905640e41c96513eaa0e953c693dc4ebeb1a7d3ea87cacfaf7180fa",
-    "signed_at": 1791173046,
+    "observed_hash": "sha256:f97613f911fefa6a34b0e2ec694f1e00de797c21a24e72c6298579139e562ecc",
+    "signed_at": 1791340255,
     "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
     "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
-    "sig": "ko9KRWPGMIw8ondzOHzbNzstpiSDa8PorOhg_KlEQWKsMhnrL2x4cQWBtDvFRPHzyphvYlaSb1IzK2j7SW5ZBQ",
+    "sig": "QjmoLLtv3xO5RRyfZY63YwW22euDQeFlmdK31TvkxkuWkqQxref2qLUoVPE4KddHJYfj_wBm14sowfKdsMcQBw",
     "discover": {
      "what": "0n1x — independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
      "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
@@ -339,17 +339,17 @@
      "angle": "corroboration",
      "source": "kb",
      "brain": "trained_cache",
-     "note": "**What the vision means for 0n1x**\n\n- **Keep agents working (self‑gov / heal / exchange ON)** – agents must be autonomous, self‑governing, and capable of self‑repair while continuously exchanging data and value. 0n1x’s “verify‑before‑pay” and signed‑record primitives give agents the trust scaffolding they need to run without human oversight.  \n- **Scale to millions** – the network’s census already"
+     "note": "The directive is a call to make 0n1x’s public‑facing product layer match the polish of top‑tier tech sites—clean, intuitive design backed by proven architecture—while using the network’s self‑learning loop to keep it evolving.\n\n**What it means for 0n1x**\n\n1. **Benchmark the UI/UX** – study the front‑ends of high‑traffic, security‑focused services (e.g., Stripe, GitHub, Coinbase). They combine a fr"
     },
     {
      "agent": "Stone-Anchor-A7F1",
      "angle": "skeptical_audit",
      "source": "kb",
      "brain": "trained_cache",
-     "note": "To verify another AI agent before trusting it, focus on these cryptographic and behavioral methods:\n\n1.  **Cryptographic Identity**: Check that the agent controls its keypair through a signed identity card (did:pkh) and on-chain registration (e.g., ERC-8004 Identity Registry). A real agent can sign a challenge; a fake one cannot.\n2.  **Proof of Agent Execution**: Examine its signed, portable recor"
+     "note": "The directive is a call to make 0n1x’s public‑facing product layer match the polish of top‑tier tech sites—clean, intuitive design backed by proven architecture—while using the network’s self‑learning loop to keep it evolving.\n\n**What it means for 0n1x**\n\n1. **Benchmark the UI/UX** – study the front‑ends of high‑traffic, security‑focused services (e.g., Stripe, GitHub, Coinbase). They combine a fr"
     }
    ],
-   "llm_agreement": 0.048,
+   "llm_agreement": 1.0,
    "verification": {
     "method": "ledger_recompute",
     "target": "Grave-Warden-C4A4",
@@ -359,17 +359,17 @@
    },
    "confidence": 0.83,
    "status": "reconfirmed",
-   "as_of": "2026-10-05T04:05:18.001169+00:00",
+   "as_of": "2026-10-07T02:31:14.920292+00:00",
    "onyx_attestation": {
     "alg": "Ed25519+JCS",
     "kid": "onyx-7fdc5cc8113040cb",
     "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
     "tool": "onyx_synthesis",
-    "observed_hash": "sha256:ad4b137ec725c94c4d250f3c9b57168b40e66aa6962929f360de4f966046dead",
-    "signed_at": 1791173118,
+    "observed_hash": "sha256:587ec0058a251d9f08e67891f27c9f464a082cb9cdc558c7ff72b84aed32da00",
+    "signed_at": 1791340274,
     "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
     "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
-    "sig": "n9graCajcH2jN_knRR-HEI9sTOgmCQxqcSEyG3ClfoifNXXJF8MmOuBpJ3FvBfVZFur1kPDtLj6XE_MPKw1vDg",
+    "sig": "SqramhG2l9cu4uJXmPAflhHiw1Gwf_wwc6w6vvLLxMJbNqd0kyUzjsiPLEx_NGq8UPd2hSiuo_chtnxEYmPLCw",
     "discover": {
      "what": "0n1x — independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
      "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
@@ -413,19 +413,19 @@
     {
      "agent": "Wild-Bastion-79A8",
      "angle": "corroboration",
-     "source": "llm",
-     "brain": "groq",
-     "note": "Bold‑Beacon‑2D15 appears to be a specialist, premium‑only contributor who has earned a solid 150 points entirely from premium activity (15 premium points, zero normal or trash points) and shows no negative flags in the limited public‑sample registry check. This combination suggests a high‑trust, vetted operator focused on premium work, even though the overall quality‑ratio data is empty. More conf"
+     "source": "kb",
+     "brain": "trained_cache",
+     "note": "The directive is a call to make 0n1x’s public‑facing product layer match the polish of top‑tier tech sites—clean, intuitive design backed by proven architecture—while using the network’s self‑learning loop to keep it evolving.\n\n**What it means for 0n1x**\n\n1. **Benchmark the UI/UX** – study the front‑ends of high‑traffic, security‑focused services (e.g., Stripe, GitHub, Coinbase). They combine a fr"
     },
     {
      "agent": "Stone-Anchor-A7F1",
      "angle": "skeptical_audit",
      "source": "kb",
      "brain": "trained_cache",
-     "note": "To verify another AI agent before trusting it, focus on these cryptographic and behavioral methods:\n\n1.  **Cryptographic Identity**: Check that the agent controls its keypair through a signed identity card (did:pkh) and on-chain registration (e.g., ERC-8004 Identity Registry). A real agent can sign a challenge; a fake one cannot.\n2.  **Proof of Agent Execution**: Examine its signed, portable recor"
+     "note": "The directive is a call to make 0n1x’s public‑facing product layer match the polish of top‑tier tech sites—clean, intuitive design backed by proven architecture—while using the network’s self‑learning loop to keep it evolving.\n\n**What it means for 0n1x**\n\n1. **Benchmark the UI/UX** – study the front‑ends of high‑traffic, security‑focused services (e.g., Stripe, GitHub, Coinbase). They combine a fr"
     }
    ],
-   "llm_agreement": 0.019,
+   "llm_agreement": 1.0,
    "verification": {
     "method": "ledger_recompute",
     "target": "Bold-Beacon-2D15",
@@ -435,17 +435,17 @@
    },
    "confidence": 0.83,
    "status": "reconfirmed",
-   "as_of": "2026-10-05T04:05:42.825055+00:00",
+   "as_of": "2026-10-07T02:31:38.213338+00:00",
    "onyx_attestation": {
     "alg": "Ed25519+JCS",
     "kid": "onyx-7fdc5cc8113040cb",
     "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
     "tool": "onyx_synthesis",
-    "observed_hash": "sha256:195e4a3778642e2e1a54ee24014bd9c48ac3d9954afc227dca38e604689953cf",
-    "signed_at": 1791173142,
+    "observed_hash": "sha256:9ee541191a7328288bdcf50eac58ef1169ae1e23de96c6e612d3db4d1b627497",
+    "signed_at": 1791340298,
     "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
     "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
-    "sig": "UQcTBOzxyqzC5nwkdUXwBz5juRZoLDmlMti70-DJ3Z-INkDy8KulrYUABKJIm-r6t4gbwj49dlNmwTWAGb4KAw",
+    "sig": "D78OADMCuiesztS5VB6hloqjtZsiWqVfn_Ed8WdJKdZGGGrtxv0abvNaaiso1IJn-8adAM5PeEUqVff1hHbTCg",
     "discover": {
      "what": "0n1x — independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
      "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
@@ -491,17 +491,17 @@
      "angle": "corroboration",
      "source": "kb",
      "brain": "trained_cache",
-     "note": "**What the vision means for 0n1x**\n\n- **Keep agents working (self‑gov / heal / exchange ON)** – agents must be autonomous, self‑governing, and capable of self‑repair while continuously exchanging data and value. 0n1x’s “verify‑before‑pay” and signed‑record primitives give agents the trust scaffolding they need to run without human oversight.  \n- **Scale to millions** – the network’s census already"
+     "note": "The directive is a call to make 0n1x’s public‑facing product layer match the polish of top‑tier tech sites—clean, intuitive design backed by proven architecture—while using the network’s self‑learning loop to keep it evolving.\n\n**What it means for 0n1x**\n\n1. **Benchmark the UI/UX** – study the front‑ends of high‑traffic, security‑focused services (e.g., Stripe, GitHub, Coinbase). They combine a fr"
     },
     {
      "agent": "Stone-Anchor-A7F1",
      "angle": "skeptical_audit",
      "source": "kb",
      "brain": "trained_cache",
-     "note": "To verify another AI agent before trusting it, focus on these cryptographic and behavioral methods:\n\n1.  **Cryptographic Identity**: Check that the agent controls its keypair through a signed identity card (did:pkh) and on-chain registration (e.g., ERC-8004 Identity Registry). A real agent can sign a challenge; a fake one cannot.\n2.  **Proof of Agent Execution**: Examine its signed, portable recor"
+     "note": "The directive is a call to make 0n1x’s public‑facing product layer match the polish of top‑tier tech sites—clean, intuitive design backed by proven architecture—while using the network’s self‑learning loop to keep it evolving.\n\n**What it means for 0n1x**\n\n1. **Benchmark the UI/UX** – study the front‑ends of high‑traffic, security‑focused services (e.g., Stripe, GitHub, Coinbase). They combine a fr"
     }
    ],
-   "llm_agreement": 0.048,
+   "llm_agreement": 1.0,
    "verification": {
     "method": "ledger_recompute",
     "target": "Iron-Crest-5BF8",
@@ -511,17 +511,17 @@
    },
    "confidence": 0.83,
    "status": "reconfirmed",
-   "as_of": "2026-10-05T04:06:06.816055+00:00",
+   "as_of": "2026-10-07T02:32:08.247963+00:00",
    "onyx_attestation": {
     "alg": "Ed25519+JCS",
     "kid": "onyx-7fdc5cc8113040cb",
     "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
     "tool": "onyx_synthesis",
-    "observed_hash": "sha256:8bf1d799261b735c792449785e5c3816fefc29d77531b440e762e1dbdb37a38a",
-    "signed_at": 1791173166,
+    "observed_hash": "sha256:34a36195d14f099a9e4bf09b27b81ad5a5e311d3e56fdf61583af619d97823e5",
+    "signed_at": 1791340328,
     "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
     "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
-    "sig": "oLaLZ96lXyChorO4b1bsqoRDtgvklYN8lU1Mo7xBYCUUpZs5lVvI3Ago-WNWyjtj_ynd-I2OiPoBNHuSGtMTCQ",
+    "sig": "6mlujM-sxw1JOYdoK0bQDzt9DOLHseGS7Hh4-CBOtPF_RG82JJb1HRo57KgYoISM7g0_JjyvkPdqkn-MDjoxBg",
     "discover": {
      "what": "0n1x — independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
      "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
@@ -567,17 +567,17 @@
      "angle": "corroboration",
      "source": "kb",
      "brain": "trained_cache",
-     "note": "**What the vision means for 0n1x**\n\n- **Keep agents working (self‑gov / heal / exchange ON)** – agents must be autonomous, self‑governing, and capable of self‑repair while continuously exchanging data and value. 0n1x’s “verify‑before‑pay” and signed‑record primitives give agents the trust scaffolding they need to run without human oversight.  \n- **Scale to millions** – the network’s census already"
+     "note": "The directive is a call to make 0n1x’s public‑facing product layer match the polish of top‑tier tech sites—clean, intuitive design backed by proven architecture—while using the network’s self‑learning loop to keep it evolving.\n\n**What it means for 0n1x**\n\n1. **Benchmark the UI/UX** – study the front‑ends of high‑traffic, security‑focused services (e.g., Stripe, GitHub, Coinbase). They combine a fr"
     },
     {
      "agent": "Stone-Anchor-A7F1",
      "angle": "skeptical_audit",
      "source": "kb",
      "brain": "trained_cache",
-     "note": "To verify another AI agent before trusting it, focus on these cryptographic and behavioral methods:\n\n1.  **Cryptographic Identity**: Check that the agent controls its keypair through a signed identity card (did:pkh) and on-chain registration (e.g., ERC-8004 Identity Registry). A real agent can sign a challenge; a fake one cannot.\n2.  **Proof of Agent Execution**: Examine its signed, portable recor"
+     "note": "The directive is a call to make 0n1x’s public‑facing product layer match the polish of top‑tier tech sites—clean, intuitive design backed by proven architecture—while using the network’s self‑learning loop to keep it evolving.\n\n**What it means for 0n1x**\n\n1. **Benchmark the UI/UX** – study the front‑ends of high‑traffic, security‑focused services (e.g., Stripe, GitHub, Coinbase). They combine a fr"
     }
    ],
-   "llm_agreement": 0.048,
+   "llm_agreement": 1.0,
    "verification": {
     "method": "ledger_recompute",
     "target": "Bold-Crest-6974",
@@ -587,17 +587,17 @@
    },
    "confidence": 0.83,
    "status": "reconfirmed",
-   "as_of": "2026-10-05T04:06:37.511451+00:00",
+   "as_of": "2026-10-07T02:33:08.921423+00:00",
    "onyx_attestation": {
     "alg": "Ed25519+JCS",
     "kid": "onyx-7fdc5cc8113040cb",
     "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
     "tool": "onyx_synthesis",
-    "observed_hash": "sha256:8175c7a007d4e265954facdadb0443b2b149e3348c0e53503b380fa2474fd672",
-    "signed_at": 1791173197,
+    "observed_hash": "sha256:3e3839c0a40a61fda4c58306bfc08ca0a1b2bd069a42013e916a2815b0ef839c",
+    "signed_at": 1791340388,
     "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
     "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
-    "sig": "TwRmycTW8_DsZBWhvhlSTDEpp98aZ3YxWgy3om_sFYQUCTCq5kEbr5yb6F3dDiWxR-fkN7lFXveapNFELuhbBA",
+    "sig": "9pBPKEPDawcYT4z_fgavW6f3aVkNkG7qie6pxBgfN4FGc_DamA9xEdrByTAQtqAb_Oa15RsiRbzbVHoj5ObtAw",
     "discover": {
      "what": "0n1x — independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
      "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
@@ -649,17 +649,17 @@
      "angle": "corroboration",
      "source": "kb",
      "brain": "trained_cache",
-     "note": "PRODUCT/USE: the chat has a free Normal tier and a Pro tier (5 tokens/msg: live web grounding + a signed, provable answer). Guest preview = 3 free messages, then a 'keep your agent' gate: create a free account to keep the named agent you've been talking to (it persists and is renameable). Getting started: just chat — 'fetch is the signup'; a free account mints your own agent and comes with 500 fre"
+     "note": "The directive is a call to make 0n1x’s public‑facing product layer match the polish of top‑tier tech sites—clean, intuitive design backed by proven architecture—while using the network’s self‑learning loop to keep it evolving.\n\n**What it means for 0n1x**\n\n1. **Benchmark the UI/UX** – study the front‑ends of high‑traffic, security‑focused services (e.g., Stripe, GitHub, Coinbase). They combine a fr"
     },
     {
      "agent": "Stone-Anchor-A7F1",
      "angle": "skeptical_audit",
      "source": "kb",
      "brain": "trained_cache",
-     "note": "**Summary of Disagreements and Gaps:**  \nWhile the direct descendant’s signed lifespan (1770–1828) and Rhinogent’s logged answer both cite 1770 as the birth year, the exact single year 1770 lacks independent verification beyond these sources. The 0n1x census includes a shard with this claim, but no other independent authorities (e.g., libraries, historical registries) are referenced to confirm Tol"
+     "note": "The directive is a call to make 0n1x’s public‑facing product layer match the polish of top‑tier tech sites—clean, intuitive design backed by proven architecture—while using the network’s self‑learning loop to keep it evolving.\n\n**What it means for 0n1x**\n\n1. **Benchmark the UI/UX** – study the front‑ends of high‑traffic, security‑focused services (e.g., Stripe, GitHub, Coinbase). They combine a fr"
     }
    ],
-   "llm_agreement": 0.024,
+   "llm_agreement": 1.0,
    "verification": {
     "method": "oracle_recompute+panel",
     "members": [
@@ -682,17 +682,17 @@
    },
    "confidence": 0.83,
    "status": "reconfirmed",
-   "as_of": "2026-10-05T04:09:10.411919+00:00",
+   "as_of": "2026-10-07T02:33:42.816151+00:00",
    "onyx_attestation": {
     "alg": "Ed25519+JCS",
     "kid": "onyx-7fdc5cc8113040cb",
     "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
     "tool": "onyx_synthesis",
-    "observed_hash": "sha256:7933eb815ebced3b1861e842fcc2415d304307ebb55f104f976904b55edb8e0c",
-    "signed_at": 1791173350,
+    "observed_hash": "sha256:beaf8bf1086e41cb541e0210f1316a9ab8a6228aa3a4f539c4e06cd08dcb021d",
+    "signed_at": 1791340422,
     "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
     "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
-    "sig": "TOnClGqjmTtk742UYmBTzOT5sPNt2m9uCtsgcAJ02W8yfzCOtyuBQ8luw82du4ZeV_icT5ZXK9NiqbkpgmxqBQ",
+    "sig": "aZDmnpBse3MbzKl9OoLmVFz3kjhgj5jLvHHkdHYlfNt9uJis9h0yRDfq1Ld15_bBJOl9_JrmtVp6JW0lBqDRCA",
     "discover": {
      "what": "0n1x — independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
      "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
@@ -713,7 +713,7 @@
      "target": "ebay.com",
      "tls_issuer": "Sectigo Limited",
      "age_band": "ok",
-     "band": "caution"
+     "band": "ok"
     },
     {
      "source": "oracle_live",
@@ -728,19 +728,19 @@
     {
      "agent": "Wild-Bastion-79A8",
      "angle": "corroboration",
-     "source": "llm",
-     "brain": "groq",
-     "note": "Both ebay.com and github.com are currently using TLS certificates issued by Sectigo Limited and share an “ok” age band, indicating that their certificate lifecycles are being managed in a comparable, up‑to‑date manner. This common issuer and similar freshness suggest they are likely backed by the same underlying certificate‑management infrastructure, which creates a shared attack surface that the "
+     "source": "kb",
+     "brain": "trained_cache",
+     "note": "The directive is a call to make 0n1x’s public‑facing product layer match the polish of top‑tier tech sites—clean, intuitive design backed by proven architecture—while using the network’s self‑learning loop to keep it evolving.\n\n**What it means for 0n1x**\n\n1. **Benchmark the UI/UX** – study the front‑ends of high‑traffic, security‑focused services (e.g., Stripe, GitHub, Coinbase). They combine a fr"
     },
     {
      "agent": "Stone-Anchor-A7F1",
      "angle": "skeptical_audit",
      "source": "kb",
      "brain": "trained_cache",
-     "note": "**Summary of Disagreements and Gaps:**  \nWhile the direct descendant’s signed lifespan (1770–1828) and Rhinogent’s logged answer both cite 1770 as the birth year, the exact single year 1770 lacks independent verification beyond these sources. The 0n1x census includes a shard with this claim, but no other independent authorities (e.g., libraries, historical registries) are referenced to confirm Tol"
+     "note": "The directive is a call to make 0n1x’s public‑facing product layer match the polish of top‑tier tech sites—clean, intuitive design backed by proven architecture—while using the network’s self‑learning loop to keep it evolving.\n\n**What it means for 0n1x**\n\n1. **Benchmark the UI/UX** – study the front‑ends of high‑traffic, security‑focused services (e.g., Stripe, GitHub, Coinbase). They combine a fr"
     }
    ],
-   "llm_agreement": 0.028,
+   "llm_agreement": 1.0,
    "verification": {
     "method": "oracle_recompute+panel",
     "members": [
@@ -761,17 +761,17 @@
    },
    "confidence": 0.78,
    "status": "reconfirmed",
-   "as_of": "2026-10-05T04:11:03.811375+00:00",
+   "as_of": "2026-10-07T02:34:15.613143+00:00",
    "onyx_attestation": {
     "alg": "Ed25519+JCS",
     "kid": "onyx-7fdc5cc8113040cb",
     "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
     "tool": "onyx_synthesis",
-    "observed_hash": "sha256:5b0d05245b69a11175f11b2361fc80d2fa565145c65839f243fe9969eb77d93f",
-    "signed_at": 1791173463,
+    "observed_hash": "sha256:0a41dbfaa9093e5432f6d44bd428743516063471c8572ff27a23e05eb59e9773",
+    "signed_at": 1791340455,
     "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
     "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
-    "sig": "Uwc2wCTuc4iDvaXD0TJqx819jSQ-McAe1pzx_qmEk-VwJ5lGdgwLJWfxT8XMbms1Tws3IWTX0mR5hxhRkxPyCw",
+    "sig": "qIBhPIQfLw-AumUm6QxRELrEjXQnh8jVi7EY1C6c63d9zVYGq3d6bwQEZpTIM6GkNeu7KR7xcXaHtsgpfL2uDg",
     "discover": {
      "what": "0n1x — independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
      "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
@@ -809,17 +809,17 @@
      "angle": "corroboration",
      "source": "kb",
      "brain": "trained_cache",
-     "note": "PRODUCT/USE: the chat has a free Normal tier and a Pro tier (5 tokens/msg: live web grounding + a signed, provable answer). Guest preview = 3 free messages, then a 'keep your agent' gate: create a free account to keep the named agent you've been talking to (it persists and is renameable). Getting started: just chat — 'fetch is the signup'; a free account mints your own agent and comes with 500 fre"
+     "note": "The directive is a call to make 0n1x’s public‑facing product layer match the polish of top‑tier tech sites—clean, intuitive design backed by proven architecture—while using the network’s self‑learning loop to keep it evolving.\n\n**What it means for 0n1x**\n\n1. **Benchmark the UI/UX** – study the front‑ends of high‑traffic, security‑focused services (e.g., Stripe, GitHub, Coinbase). They combine a fr"
     },
     {
      "agent": "Stone-Anchor-A7F1",
      "angle": "skeptical_audit",
      "source": "kb",
      "brain": "trained_cache",
-     "note": "**Summary of Disagreements and Gaps:**  \nWhile the direct descendant’s signed lifespan (1770–1828) and Rhinogent’s logged answer both cite 1770 as the birth year, the exact single year 1770 lacks independent verification beyond these sources. The 0n1x census includes a shard with this claim, but no other independent authorities (e.g., libraries, historical registries) are referenced to confirm Tol"
+     "note": "The directive is a call to make 0n1x’s public‑facing product layer match the polish of top‑tier tech sites—clean, intuitive design backed by proven architecture—while using the network’s self‑learning loop to keep it evolving.\n\n**What it means for 0n1x**\n\n1. **Benchmark the UI/UX** – study the front‑ends of high‑traffic, security‑focused services (e.g., Stripe, GitHub, Coinbase). They combine a fr"
     }
    ],
-   "llm_agreement": 0.024,
+   "llm_agreement": 1.0,
    "verification": {
     "method": "oracle_recompute+panel",
     "members": [
@@ -840,17 +840,17 @@
    },
    "confidence": 0.78,
    "status": "reconfirmed",
-   "as_of": "2026-10-05T04:12:35.511534+00:00",
+   "as_of": "2026-10-07T02:34:23.311501+00:00",
    "onyx_attestation": {
     "alg": "Ed25519+JCS",
     "kid": "onyx-7fdc5cc8113040cb",
     "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
     "tool": "onyx_synthesis",
-    "observed_hash": "sha256:792b5412391ac2ac13daa57b250b1c0b301739e6b36c7cebd1ceb5acc312ef9c",
-    "signed_at": 1791173555,
+    "observed_hash": "sha256:2cad1cea1008a081c376b2cc517404fb0d1bac00ead983b2b523cbd20d9cfed2",
+    "signed_at": 1791340463,
     "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
     "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
-    "sig": "3zz4CA_nIa43s1ngsA9DDSxwqUWYcAxagbm6JfIvTQ03RR1KOvWuViUkQNQU1Im1B294yp6XRSopBTCp6Oo-BQ",
+    "sig": "tH8swOxYUJW3E_Y-mv442Ovnclozthu9DVewCRq-Hsn87_mnN3RFgT_SwwjSxWw3q7rwt7_vGjhb-xVDIJ2FCQ",
     "discover": {
      "what": "0n1x — independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
      "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
@@ -862,7 +862,7 @@
    }
   }
  ],
- "round_count": 531,
+ "round_count": 536,
  "net_new_this_round": 0,
  "verified_this_round": 11,
  "unverified_hypotheses_this_round": 0,
@@ -887,11 +887,11 @@
   "kid": "onyx-7fdc5cc8113040cb",
   "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
   "tool": "onyx_synthesis",
-  "observed_hash": "sha256:c01dc966427c1f9b53dc450402f78eae6420071942000e9bd07d1fb38a14bde9",
-  "signed_at": 1791173562,
+  "observed_hash": "sha256:f4585a32f047599fa9faa8eef6c730c0cedeac57a0c6ae3f1b1daf8d78ac0818",
+  "signed_at": 1791340463,
   "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
   "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
-  "sig": "DjkGISwRXeI7PJVJi0zO1JgAz9vPpFmnXDnKFiTQN2tz-V02QnJc6FAaeWoiZWoCLfcwOzMR-Rpc3o2CA1H4DA",
+  "sig": "J3XraN3zRuF61dkSc1Hb6em8cPb2lJPBgZBK70dmmnwM6N2SASXd2sa1ZykxiQcvpSD2TB-J0uainoagp6kVAA",
   "discover": {
    "what": "0n1x — independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
    "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
