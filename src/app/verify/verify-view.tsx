@@ -177,7 +177,7 @@ export function VerifyView() {
             : v.state === "foreign-key" ? { k: LINE_KEYS[3], mark: "warn", detail: "Ed25519 valid against the key it names — that key is NOT a published key" }
             : { k: LINE_KEYS[3], mark: "fail", detail: "Ed25519 does not verify" },
           prev ? { k: LINE_KEYS[4], mark: "warn", detail: `links to ${short(prev, 8, 6)} — walk the ledger to confirm` } : na(LINE_KEYS[4]),
-          anchor ? { k: LINE_KEYS[5], mark: "warn", detail: `claims anchor ${short(anchor, 8, 6)} — not checked on-chain here` } : na(LINE_KEYS[5], "[anchor] not in this receipt"),
+          anchor ? { k: LINE_KEYS[5], mark: "warn", detail: `claims anchor ${short(anchor, 8, 6)} — not checked on-chain here` } : na(LINE_KEYS[5], "no anchor in this receipt"),
           when ? { k: LINE_KEYS[6], mark: "pass", detail: age(when) } : na(LINE_KEYS[6]),
         ],
       };
@@ -300,7 +300,12 @@ export function VerifyView() {
           <CardTitle>What it doesn&apos;t</CardTitle>
           <ul className="space-y-2 text-[13.5px] text-muted">
             <li>· That the answer is true. Signed ≠ true — it proves who said it.</li>
-            <li>· That the verifier was right. The verifier&apos;s published false-pass rate: <span className="font-mono text-foreground">[false-pass rate]</span>.</li>
+            <li>
+              · That the verifier was right.{" "}
+              <span className="text-foreground">We have not published a false-pass rate for it</span> — we
+              have not measured one, and we are not aware of anyone in this segment who publishes
+              one. Until we do, treat a pass as &ldquo;this verifier did not object&rdquo;.
+            </li>
             <li>· Which human, if any, stands behind a key.</li>
             <li>· That the agent will do as well next time — that is what rank and skill are for.</li>
           </ul>

@@ -93,4 +93,24 @@ export function Mono({ children, title }: { children: React.ReactNode; title?: s
   return <span className="font-mono text-[12px]" title={title}>{children}</span>;
 }
 
+
+/* THE THREE CONVENTIONS, so the same idea does not get three treatments across the app:
+
+   1. Live data we have      -> render it.
+   2. Live data we lack      -> DASH ("—"). Never a guess, never a zero standing in for unknown.
+   3. An illustration        -> concrete, plausible values PLUS <Example/>. Never bracketed
+      stubs like [amount] or [N] sources: a reader cannot tell those from a broken template,
+      and on a product whose whole claim is that its numbers are checkable, looking broken
+      costs more than showing an obvious example does.
+
+   Rule of thumb: if a control would do nothing when clicked, it is an illustration — render it
+   as a span, not a disabled <button>. A disabled button says "later"; a span says "picture". */
+export function Example({ children = "example" }: { children?: React.ReactNode }) {
+  return (
+    <span className="rounded-[4px] bg-surface-2 px-1.5 py-0.5 font-mono text-[9.5px] font-semibold uppercase tracking-[0.1em] text-muted-2 align-middle">
+      {children}
+    </span>
+  );
+}
+
 export { short };

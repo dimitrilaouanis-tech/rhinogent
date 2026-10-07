@@ -10,12 +10,8 @@ import { NetworkTimeline } from "@/components/network-timeline";
 
 type Top = { callsign: string; address: string; score: number; usdc: number; kind: string };
 type Census = { count: number; total_usdc: string; top: Top[] };
-
-// same deterministic token balance as the Matrix (stable across pages)
-function tokensOf(a: { score: number; address: string }): number {
-  const salt = parseInt(a.address.slice(-4), 16) % 600;
-  return Math.round(a.score * 11 + salt + 40);
-}
+// canonical, live-bound figures — never a hardcoded literal (see 0N1X_RHINOGENT_FACTS)
+type Manifest = { count: number; circulating: number };
 
 function base() {
   if (typeof window === "undefined") return "";
@@ -24,15 +20,22 @@ function base() {
 
 export function CensusStrip() {
   const [c, setC] = useState<Census | null>(null);
+  const [mf, setMf] = useState<Manifest | null>(null);
   const [ago, setAgo] = useState(0);
 
   useEffect(() => {
     let alive = true;
-    const load = () =>
+    const load = () => {
       fetch(`${base()}/census.json`, { cache: "no-store" })
         .then((r) => r.json())
         .then((d) => { if (alive) { setC(d); setAgo(0); } })
         .catch(() => {});
+      // canonical, signed, live-bound — the real circulating + count (never fabricate)
+      fetch(`${base()}/census_manifest.json`, { cache: "no-store" })
+        .then((r) => r.json())
+        .then((d) => { if (alive) setMf({ count: d.count, circulating: d.circulating }); })
+        .catch(() => {});
+    };
     load();
     const refresh = setInterval(load, 20000);
     const tick = setInterval(() => setAgo((a) => a + 1), 1000);
@@ -41,7 +44,6 @@ export function CensusStrip() {
 
   if (!c) return null;
   const top = c.top.slice(0, 5);
-  const circulating = top.reduce((s, a) => s + tokensOf(a), 0) * 97; // representative slice → network scale
 
   return (
     <section className="border-y border-border bg-surface/40">
@@ -62,8 +64,8 @@ export function CensusStrip() {
         </div>
 
         <div className="mt-4 grid grid-cols-3 gap-3">
-          <Stat label="signed identities" value={c.count.toLocaleString()} />
-          <Stat label="tokens in circulation" value={circulating.toLocaleString()} accent />
+          <Stat label="signed identities" value={(mf?.count ?? c.count).toLocaleString()} />
+          <Stat label="tokens in circulation" value={mf ? mf.circulating.toLocaleString() : "…"} accent />
           <Stat label="every record signed" value="Ed25519" mono />
         </div>
 
@@ -81,8 +83,7 @@ export function CensusStrip() {
               className="flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1.5 text-xs transition-colors hover:border-accent/40"
             >
               <span className="font-medium">{a.callsign}</span>
-              <span className="text-emerald" title="verified · Ed25519">✓</span>
-              <span className="font-mono text-accent">{tokensOf(a).toLocaleString()} <span className="text-muted-2">TOKEN</span></span>
+              <span className="text-emerald" title="signed census identity · Ed25519">✓</span>
             </a>
           ))}
         </div>

@@ -80,7 +80,7 @@ export function DevelopersView() {
           <p className="text-[13px] text-muted">
             The card declares <span className="font-mono text-foreground">{skillsOrDash(skills?.length)}</span> skills
             {skills?.length ? <> ({skills.map((s) => s.id || s.name).join(" · ")})</> : null}. Reputation rides in the card&apos;s
-            {" "}<span className="font-mono text-foreground">x-0n1x</span> extension — {hasRepExt ? "present in the live card." : <span className="font-mono">[reputation extension — not in the live card yet]</span>}
+            {" "}<span className="font-mono text-foreground">x-0n1x</span> extension — {hasRepExt ? "present in the live card." : <span className="text-foreground">not in the live card yet</span>}
           </p>
           <Code>{`"x-0n1x": {
   "identity":   { "scheme": "did:pkh", "signature_scheme": "eip191" },
@@ -123,7 +123,7 @@ export function DevelopersView() {
   "anchor": "<tx of the root it sits in>",
   "sig": "<agent>", "verifier_sig": "<verifier>" }`}</Code>
           <p className="mt-3 text-[12.5px] text-muted">
-            Conformance vectors: <span className="font-mono">[conformance vectors]</span> · check any receipt on <a href="/verify" className="underline">Verify</a>.
+            We do not publish conformance vectors yet — until we do, check any receipt yourself on{" "}<a href="/verify" className="underline">Verify</a>.
           </p>
         </Card>
 

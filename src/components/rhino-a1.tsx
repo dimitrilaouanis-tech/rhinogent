@@ -1,18 +1,13 @@
 /**
- * A1 SHARP — the angular rhino head. Logo mark AND every agent avatar.
- * One closed polygon of straight cuts (no curves): horn, brow, jaw, ear, plus a faceted eye.
- * Rules (design-approved):
- *  - colour is HASHED from the DID — same agent, same colour, on every surface;
- *  - two-letter initials sit on the face;
- *  - STATE IS A RING around the head (green=working, grey=idle, black=needs-you, arc=progress),
+ * Agent avatars.
+ *
+ * The shape is the agent symbol (components/agent-mark.tsx) — one source for the nav, the
+ * footer, the favicon and every avatar. What this file adds on top of the bare symbol:
+ *  - colour is HASHED from the DID, so the same agent is the same colour on every surface;
+ *  - STATE IS A RING around it (green=working, grey=idle, black=needs-you, arc=progress),
  *    never baked into the shape.
  */
-
-// Right-facing head in a 64×64 box. Six straight cuts on the face plane + horn + brow + jaw.
-const HEAD = "M9 47 L13 27 L20 19 L23 9 L28 18 L37 18 L44 22 L50 12 L52 25 L58 30 L56 38 L45 41 L33 44 L20 51 Z";
-// facet cuts (brow line, cheek plane, jaw hinge) — drawn as hairlines over the fill
-const CUTS = ["M20 19 L29 27 L44 22", "M29 27 L33 44", "M29 27 L52 25", "M13 27 L29 27"];
-const EYE = "M38 26 L42 25 L41 28 Z";
+import { AgentMark, AGENT_TINTS } from "./agent-mark";
 
 function hash(s: string): number {
   let h = 2166136261;
@@ -20,21 +15,11 @@ function hash(s: string): number {
   return h >>> 0;
 }
 
-/** Deterministic fill from a DID (or callsign/address when no DID is known). */
+/** Deterministic fill from a DID (or callsign/address when no DID is known), drawn from the
+    twelve tints the design actually uses rather than an open hue wheel. */
 export function didColor(did: string): { fill: string; ink: string } {
   const h = hash(did.toLowerCase());
-  const hue = h % 360;
-  const sat = 48 + ((h >>> 9) % 22);
-  const light = 38 + ((h >>> 17) % 14);
-  return { fill: `hsl(${hue} ${sat}% ${light}%)`, ink: "#ffffff" };
-}
-
-/** "Iron-Spire-F054" → "IS"; "did:pkh:…:0xAB12" → "AB". */
-export function initialsFor(name: string): string {
-  const parts = name.split(/[-\s_]+/).filter((p) => /^[A-Za-z]/.test(p));
-  if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
-  const tail = name.replace(/^.*0x/i, "");
-  return (tail.slice(0, 2) || "??").toUpperCase();
+  return { fill: AGENT_TINTS[h % AGENT_TINTS.length], ink: "#ffffff" };
 }
 
 export type AgentState = "working" | "idle" | "needs-you" | "none";
@@ -46,18 +31,10 @@ const RING: Record<AgentState, string | null> = {
   none: null,
 };
 
-/** The logo mark — the same polygon, brand ink, no ring. */
+/** The logo mark — the agent symbol in house blue. Geometry lives in agent-mark.tsx so the
+    nav, the footer, the favicon and every agent avatar cannot drift apart. */
 export function RhinoA1Mark({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 64 64" className={className} role="img" aria-label="Rhinogent">
-      <path d={HEAD} fill="var(--foreground)" />
-      <g stroke="var(--background)" strokeOpacity="0.28" strokeWidth="0.9" fill="none" strokeLinejoin="miter">
-        {CUTS.map((d) => <path key={d} d={d} />)}
-      </g>
-      <path d="M44 22 L50 12 L52 25 Z" fill="var(--accent)" />
-      <path d={EYE} fill="var(--background)" />
-    </svg>
-  );
+  return <AgentMark className={className} />;
 }
 
 /**
@@ -79,8 +56,7 @@ export function RhinoAvatar({
   size?: number;
   className?: string;
 }) {
-  const { fill, ink } = didColor(did || name || "?");
-  const ini = initialsFor(name || did || "??");
+  const { fill } = didColor(did || name || "?");
   const ring = RING[state];
   const r = 30.5;
   const c = 2 * Math.PI * r;
@@ -99,18 +75,15 @@ export function RhinoAvatar({
           />
         </>
       )}
-      <g transform="translate(5 5) scale(0.84)">
-        <path d={HEAD} fill={fill} />
-        <g stroke="#fff" strokeOpacity="0.25" strokeWidth="0.9" fill="none">
-          {CUTS.map((d) => <path key={d} d={d} />)}
-        </g>
-        <path d={EYE} fill="#fff" fillOpacity="0.9" />
-        <text
-          x="31" y="40" textAnchor="middle" fontSize="13" fontWeight="800"
-          fill={ink} fontFamily="var(--font-geist-mono), ui-monospace, monospace"
-        >
-          {ini}
-        </text>
+      {/* The agent symbol, scaled from its own 100×100 box into this 64×64 one and inset so it
+          clears the state ring. The per-DID fill stays — that is what makes two agents tell
+          apart at a glance — but the initials overlay is gone: the symbol's eye sits where the
+          text did, and the two fought. Colour plus callsign carries the identity. */}
+      <g transform="translate(13.5 13.5) scale(0.37)">
+        <polygon points="24,5 40,34 72,23 91,53 72,85 40,85 17,67 7,49 20,40" fill={fill} />
+        <circle cx="48" cy="53" r="8.5" fill="#fff" />
+        <circle cx="49.5" cy="54.5" r="4.3" fill="#141922" />
+        <circle cx="46.5" cy="51" r="1.6" fill="#fff" />
       </g>
     </svg>
   );

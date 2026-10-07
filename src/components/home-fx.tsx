@@ -55,10 +55,12 @@ export function LiveStat({ feed, className = "" }: { feed: "count" | "circulatin
 export function LiveMetric({
   name,
   className = "",
+  style,
   feedUrl = "/census_v1.json",
 }: {
   name: string;
   className?: string;
+  style?: React.CSSProperties;
   feedUrl?: string;
 }) {
   const ref = useRef<HTMLSpanElement>(null);
@@ -138,7 +140,7 @@ export function LiveMetric({
   }, [target]);
 
   return (
-    <span ref={ref} className={`tabular-nums ${className}`}>
+    <span ref={ref} style={style} className={`tabular-nums ${className}`}>
       {display}
     </span>
   );
@@ -210,9 +212,11 @@ export function FleetSignal() {
 // roll-up/in-view/reduced-motion contract as LiveMetric; "—" on failure. Nothing hardcoded.
 export function LiveAgentCount({
   className = "",
+  style,
   feedUrl = "/census_v1.json",
 }: {
   className?: string;
+  style?: React.CSSProperties;
   feedUrl?: string;
 }) {
   const ref = useRef<HTMLSpanElement>(null);
@@ -289,7 +293,7 @@ export function LiveAgentCount({
   }, [target]);
 
   return (
-    <span ref={ref} className={`tabular-nums ${className}`}>
+    <span ref={ref} style={style} className={`tabular-nums ${className}`}>
       {display}
     </span>
   );
@@ -367,5 +371,43 @@ export function StatNumber({
         </span>
       )}
     </span>
+  );
+}
+
+/* Copyable command. The CLI is the one surface a visitor can try without an account,
+   so the command has to be one click away — asking someone to hand-select a shell
+   string is where that intent dies. Clipboard API only; no fallback execCommand,
+   because a silent no-op is better than a hidden textarea stealing focus. */
+export function CopyCmd({ cmd, className = "" }: { cmd: string; className?: string }) {
+  const [copied, setCopied] = useState(false);
+  useEffect(() => {
+    if (!copied) return;
+    const t = setTimeout(() => setCopied(false), 1600);
+    return () => clearTimeout(t);
+  }, [copied]);
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        navigator.clipboard?.writeText(cmd).then(
+          () => setCopied(true),
+          () => {},
+        );
+      }}
+      className={`group flex w-full items-center justify-between gap-3 rounded-xl border border-border bg-background/70 px-3.5 py-2.5 text-left transition-colors hover:border-accent/40 ${className}`}
+      aria-label={`Copy: ${cmd}`}
+    >
+      <code className="truncate font-mono text-[12.5px] text-foreground">
+        <span className="select-none text-muted-2">$ </span>
+        {cmd}
+      </code>
+      <span
+        className={`shrink-0 font-mono text-[10px] uppercase tracking-[0.14em] ${
+          copied ? "text-emerald" : "text-muted-2 group-hover:text-accent"
+        }`}
+      >
+        {copied ? "copied" : "copy"}
+      </span>
+    </button>
   );
 }

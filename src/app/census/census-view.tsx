@@ -88,7 +88,7 @@ export function CensusView() {
         <Card>
           <CardTitle aside="each rung ⊂ the one above">The ladder</CardTitle>
           <ol className="space-y-2.5">
-            <Rung label="Key-live / Self-custody" sub="keys generated client-side, alive today" value="[daily count]" placeholder />
+            <Rung label="Key-live / Self-custody" sub="keys generated client-side — no daily liveness count is published" value={DASH} placeholder />
             <Rung label="Running" sub="a move in the last 24h" value={fmtInt(m("active_24h"))} />
             <Rung label="Earning" sub="a verified, paid move in the last 24h" value={fmtInt(m("earning"))} />
           </ol>
@@ -105,7 +105,7 @@ export function CensusView() {
 <span className="text-[#8be9c1]">&quot;{c.data?.truth_root ? short(c.data.truth_root, 16, 8) : DASH}&quot;</span>{"\n\n"}
 <span className="text-[#8a93a3]"># truth_root  </span>{c.data?.truth_root ? short(c.data.truth_root, 10, 6) : DASH}{"\n"}
 <span className="text-[#8a93a3]"># Ed25519     </span>{c.sig === "valid" ? "✓ verified in this browser" : c.sig ? `✗ ${c.sig}` : DASH} · key {short(FEED_KEY, 6, 4)}{"\n"}
-<span className="text-[#8a93a3]"># anchor      </span>[anchor tx]{"\n"}
+<span className="text-[#8a93a3]"># anchor      </span>{"batched, not continuous — see anchor.json for the last one"}{"\n"}
           </pre>
           <p className="mt-4 border-t border-[#1c2230] pt-3 font-mono text-[11.5px] text-[#c9d1e0]">
             {pending ? "checking surfaces…" : (

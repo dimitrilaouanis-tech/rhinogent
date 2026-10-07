@@ -8,10 +8,27 @@
    Stripe-style light canvas, indigo accent, gold horn + cyber on the mascot.
    ───────────────────────────────────────────── */
 :root {
+  /* GROUND: warm bone, not white. Of the 18 light sites in the 2026-10-05 scrape, every
+     single one converges on a bone/cream ground -- cursor #f7f7f4, openhands #f7f3ee,
+     cohere #f0eee9, amp #dfdfc1. Pure white now reads as an unstyled template, and it is
+     also what made our own page read as one undifferentiated scroll: with white cards on a
+     white ground there was nothing for the cards to lift off. Cards stay #fff, so the
+     contrast between paper and card does the work that extra borders were doing before. */
+  /* GROUND vs PAPER -- two tokens, because they are two things.
+     --page is the ground the document sits on; --background is the paper a card is made of.
+     They were the same value (white) for the whole life of this site, which is why the page
+     read as one undifferentiated scroll: white cards on a white ground have nothing to lift
+     off. Of the 18 light sites in the 2026-10-05 scrape every single one grounds on bone or
+     cream -- cursor #f7f7f4, openhands #f7f3ee, cohere #f0eee9, amp #dfdfc1 -- and pure white
+     now reads as an unstyled template.
+     --background stays #fff ON PURPOSE: roughly 40 call sites use bg-background as a CARD or
+     input fill (feed-ui's Card, the chat composer, every auth input). Moving that value would
+     have dissolved all of them into the page. */
+  --page: #f7f6f3;
   --background: #ffffff;
-  --surface: #f6f9fc;
-  --surface-2: #eef2f8;
-  --border: #e4e9f0;
+  --surface: #faf9f6;
+  --surface-2: #f1efe9;
+  --border: #e5e1d9;
   --foreground: #0a0e27;
   --muted: #4a5365;
   --muted-2: #8a93a3;
@@ -36,6 +53,7 @@
 }
 
 @theme inline {
+  --color-page: var(--page);
   --color-background: var(--background);
   --color-surface: var(--surface);
   --color-surface-2: var(--surface-2);
@@ -61,7 +79,7 @@
 }
 
 body {
-  background: var(--background);
+  background: var(--page);
   color: var(--foreground);
   /* Apple-inspired stack: -apple-system renders real SF on Apple devices (no font file, no license),
      Geist/Inter elsewhere. Legal per Apple's font terms — we ship no SF files. */
@@ -347,16 +365,23 @@ body { -webkit-text-size-adjust: 100%; }
    type finish, verify-card signature moment. Light theme, crisp (no grain).
    ───────────────────────────────────────────── */
 
-/* 1 · scroll-reveal (client IntersectionObserver adds .in) */
+/* 1 · scroll-reveal (client IntersectionObserver adds .in)
+   Content is VISIBLE BY DEFAULT. Hiding is opt-in, gated on html.js-reveal, which a blocking
+   inline script in layout.tsx sets before first paint. If that script never runs — JS disabled,
+   a bundle error, a hydration crash — nothing is ever hidden, so the page cannot render blank.
+   Do not move the hiding rule back onto bare `.rv`: that is what stranded the whole page below
+   the hero, final CTA included, whenever the observer failed. */
 .rv {
-  opacity: 0;
-  transform: translateY(20px);
   transition:
     opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
     transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
   transition-delay: var(--d, 0ms);
 }
-.rv.in { opacity: 1; transform: none; }
+.js-reveal .rv {
+  opacity: 0;
+  transform: translateY(20px);
+}
+.js-reveal .rv.in { opacity: 1; transform: none; }
 
 /* 4 · depth — Stripe 2-layer shadow stack on cards, violet-tinted hover lift */
 .card-x {
@@ -402,7 +427,9 @@ body { -webkit-text-size-adjust: 100%; }
 
 /* 5 · section rhythm — generous clamp padding + alternating bands + real hairlines */
 .section-pad { padding-block: clamp(96px, 12vw, 160px); }
-.band-alt { background: #fafafc; }
+/* Warm, and only just off the ground -- it was #fafafc, a COOL near-white, which against a
+   bone page read as a grey stripe rather than a band. */
+.band-alt { background: #fdfcf9; }
 .band-violet { background: linear-gradient(180deg, #fff, #f7f5ff 30%, #f7f5ff 70%, #fff); }
 .hairline-x { border-top: 1px solid rgba(17, 17, 26, 0.08); }
 
@@ -608,3 +635,20 @@ h2.display { letter-spacing: -0.03em; }
 .cli-terminal code, .cli-terminal pre {
   background: #052e1a !important; color: #6ee7b7 !important;
 }
+
+/* ── TYPE BASE, measured against the field (2026-10-05) ────────────────────────────────
+   Linear, Supabase and Clerk all set body to .9375rem (15px), and Linear/Supabase pair it
+   with a non-400 normal weight (510 / 450). 15px at 450 reads denser without reading
+   lighter — the thing that makes 16px/400 feel like a default rather than a decision. */
+body {
+  font-size: 0.9375rem;
+  font-weight: 450;
+  line-height: 1.6;
+  letter-spacing: -0.011em;
+}
+
+/* Section rhythm pinned to 96px, which is where the field converges: Stripe tokenises it,
+   Resend hard-codes sm:py-24 on every section, Supabase uses py-24 15× vs py-16 12×,
+   Vercel exposes .py-24. Our old clamp topped out at 160px — that is Linear's upper bound,
+   used once, not a default. */
+.section-pad { padding-block: clamp(64px, 9vw, 96px); }

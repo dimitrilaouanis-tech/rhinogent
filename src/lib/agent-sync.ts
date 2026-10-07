@@ -164,24 +164,46 @@ export async function pushAgents(agents: Agent[]): Promise<PushResult> {
   try {
     const tomb = await getTombstones();   // never resurrect a deleted agent
     const { data: existing } = await supabase
-      .from("agents").select("callsign,address,did,label,created_at").eq("user_id", data.user.id);
+      .from("agents").select("callsign,address,did,label,created_at,index").eq("user_id", data.user.id);
     const byAddr = new Map<string, { callsign: string; address: string; did: string; label: string; created_at: number }>();
     for (const r of existing || []) {
       const addr = String(r.address);
       if (tomb.has(addr.toLowerCase())) continue;
       byAddr.set(addr.toLowerCase(), { callsign: String(r.callsign), address: addr, did: String(r.did || ""), label: String(r.label || r.callsign), created_at: Number(r.created_at) || 0 });
     }
+    // signature of what's ALREADY in the mirror (before merging this device's agents in)
+    const sig = (m: Map<string, { callsign: string; address: string; did: string; label: string }>) =>
+      [...m.values()].map((a) => `${a.address.toLowerCase()}|${a.callsign}|${a.label}|${a.did}`).sort().join("\n");
+    const existSig = sig(byAddr);
     for (const a of agents) {  // local wins on conflict (freshest label/callsign)
       if (tomb.has(a.address.toLowerCase())) continue;
       byAddr.set(a.address.toLowerCase(), { callsign: a.id, address: a.address, did: a.did, label: a.label, created_at: a.createdAt });
     }
     const union = [...byAddr.values()].sort((x, y) => (x.created_at || 0) - (y.created_at || 0));
-    await supabase.from("agents").delete().eq("user_id", data.user.id);
-    if (union.length) {
-      const { error: insErr } = await supabase.from("agents").insert(
-        union.map((a, i) => ({ user_id: data.user.id, index: i, callsign: a.callsign, label: a.label, address: a.address, did: a.did, created_at: a.created_at }))
-      );
-      if (insErr) throw insErr;   // no longer swallowed — surfaces as a not-synced state
+    // IDEMPOTENT: only rewrite the mirror when it actually changed. The dashboard subscribes to
+    // postgres_changes on this table and re-runs sync()→pushAgents() on every change — a blind
+    // delete+insert here fired a change event that re-triggered the push, an infinite write loop
+    // that flapped the "not synced" warning and briefly wiped agents (delete before insert). No-op
+    // when unchanged breaks the loop after one round.
+    if (sig(byAddr) !== existSig) {
+      // ALL roster writes go through push_roster now. The DB itself refuses a client DELETE (RLS
+      // has no delete policy), so the old delete+insert would error — and more importantly the RPC
+      // is where the wipe is made impossible: an empty push is a no-op, a mass-remove is refused,
+      // and every write is an upsert-by-callsign that never touches an agent this device did not
+      // send. A partial-view device can ADD or UPDATE, never remove what it does not know about.
+      const existingByAddr = new Map((existing || []).map((r) => [String(r.address).toLowerCase(), r]));
+      const maxIdx = (existing || []).reduce((m, r) => Math.max(m, Number((r as { index?: number }).index) || 0), -1);
+      let appendIdx = maxIdx;
+      const pAgents = union.map((a) => {
+        const ex = existingByAddr.get(a.address.toLowerCase()) as { index?: number } | undefined;
+        const idx = ex && typeof ex.index === "number" ? ex.index : ++appendIdx;
+        return { index: idx, callsign: a.callsign, label: a.label, address: a.address, did: a.did, created_at: a.created_at };
+      });
+      const pRemove = [...tomb]
+        .map((addr) => (existingByAddr.get(addr) as { callsign?: string } | undefined)?.callsign)
+        .filter((c): c is string => !!c);
+      const { error: rpcErr } = await supabase.rpc("push_roster", { p_agents: pAgents, p_remove: pRemove });
+      if (rpcErr) throw rpcErr;   // surfaced, never swallowed
     }
     mirror = true;
   } catch (e) {
@@ -300,7 +322,9 @@ export async function deleteAgentEverywhere(address: string): Promise<void> {
     set.add(addr);
     await supabase.auth.updateUser({ data: { agentTombstones: [...set] } });
     // drop the live mirror row (RLS: match on address, case-insensitive)
-    await supabase.from("agents").delete().eq("user_id", data.user.id).ilike("address", address);
+    const { data: row } = await supabase
+      .from("agents").select("callsign").eq("user_id", data.user.id).ilike("address", address).maybeSingle();
+    if (row?.callsign) await supabase.rpc("push_roster", { p_agents: [], p_remove: [row.callsign] });
   } catch { /* best-effort */ }
   purgeLocal(new Set([addr]));
 }

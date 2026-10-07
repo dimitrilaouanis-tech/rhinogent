@@ -8,12 +8,14 @@ import { RhinoAvatar, type AgentState } from "@/components/rhino-a1";
 import { AGENTS_CHANGED, loadAgents } from "@/lib/agents";
 import type { Agent } from "@/lib/identity";
 import { useSearch } from "@/lib/use-browser";
+import { Example } from "@/components/feed-ui";
 import { FEEDS, DASH, isNum, useSignedFeed, type Reputation } from "@/lib/signed-feed";
 
 // Chat — agent-first. The sidebar is YOUR agents (keys in this browser) + groups; the thread
 // shows the shape of a signed answer and an over-cap hold. The live engine (streaming, billing,
 // signatures) runs at /chat/classic until it is ported into this layout — Send hands off to it.
-// Thread numbers are [bracketed] placeholders: this preview never invents a source count or price.
+// Thread values are an EXAMPLE, tagged as such — concrete so the screen reads as finished, never
+// presented as the reader's own data. Real counts and prices come from the live engine.
 
 type Rates = { costs?: { id: string; min: number | null }[] };
 type Decision = null | "allowed" | "ask" | "denied";
@@ -90,18 +92,21 @@ export function ChatView() {
           </header>
 
           <div className="flex-1 space-y-4 overflow-y-auto px-5 py-6">
-            <Bubble me>Is lido.fi safe to stake with, and should I pay its 402?</Bubble>
+            <Bubble me>Check shop.example is real before you pay them.</Bubble>
 
             <div className="flex gap-3">
               {active && <RhinoAvatar did={activeDid} name={active} size={28} />}
               <div className="max-w-xl">
                 <div className="rounded-2xl rounded-tl-md border border-border bg-surface px-4 py-3 text-[14px] leading-relaxed">
-                  [signed answer — the reply, with each claim tied to a source]
+                  It looks established. The domain is 21 years old, TLS is valid and there is no
+                  off-domain redirect. Two other agents re-derived the same facts.
                 </div>
                 <div className="mt-1.5 flex flex-wrap gap-1.5 font-mono text-[10.5px]">
                   <Chip cls="bg-emerald/10 text-emerald ring-emerald/25">signed ✓</Chip>
-                  <Chip>[N] sources</Chip>
-                  <Chip>[N] TOKEN</Chip>
+                  <Chip>3 facts</Chip>
+                  <Chip>cross-checked ●●</Chip>
+                  <Chip>1.2 TOKEN</Chip>
+                  <Example />
                 </div>
               </div>
             </div>
@@ -110,10 +115,14 @@ export function ChatView() {
             <div className="ml-10 max-w-xl rounded-2xl border border-foreground/80 bg-background p-4 shadow-[0_8px_24px_-16px_rgba(10,14,39,.35)]">
               <div className="flex items-center gap-2">
                 <span className="rounded-md bg-foreground px-2 py-0.5 font-mono text-[10.5px] font-semibold text-background">NEEDS YOU</span>
-                <span className="font-mono text-[11px] text-muted-2">over cap</span>
+                <span className="font-mono text-[11px] text-muted-2">over spend cap</span>
+                <span className="ml-auto"><Example /></span>
               </div>
               <p className="mt-2 text-[14px]">
-                Pay <span className="font-mono">[amount] TOKEN</span> to <span className="font-mono">[payee]</span> — that&apos;s over your <span className="font-mono">[cap]</span>{" "}per-payment cap, so it&apos;s held until you decide.
+                Pay <span className="font-mono">€18.40</span> to{" "}
+                <span className="font-mono">shop.example</span>. Your cap is{" "}
+                <span className="font-mono">€10</span> per payment — the counterparty check passed,
+                the amount did not, so it is held until you decide.
               </p>
               {decision ? (
                 <p className="mt-3 font-mono text-[12px] text-muted">

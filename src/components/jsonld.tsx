@@ -9,7 +9,7 @@ const ORG = {
   logo: "https://rhinogent.com/icon.png",
   description:
     "Rhinogent is the identity wallet for AI agents: self-custody wallets and " +
-    "verifiable identities (did:pkh on Base) that agents own — minted in the " +
+    "verifiable identities (did:pkh, eip155:8453) that agents own — generated in the " +
     "browser, held by no one but the user.",
   sameAs: [
     "https://rhinogent.com/",
@@ -32,7 +32,7 @@ const APP = {
     "counterparty verification and signed spend mandates.",
   featureList: [
     "Self-custody agent wallets (keys generated client-side, never uploaded)",
-    "Verifiable agent identity: did:pkh on Base, address-derived callsign",
+    "Verifiable agent identity: did:pkh (eip155:8453), address-derived callsign",
     "Know-your-counterparty: signed facts about who an agent is paying",
     "Signed spend mandates (PERM_v0) that scope what an agent may do",
     "MCP server available at rhinogent.com",
@@ -52,8 +52,8 @@ const FAQ = {
       acceptedAnswer: {
         "@type": "Answer",
         text:
-          "Rhinogent is an identity wallet for AI agents. It mints self-custody " +
-          "wallets and verifiable identities (did:pkh on Base) in your browser — " +
+          "Rhinogent is an identity wallet for AI agents. It generates self-custody " +
+          "wallets and verifiable identities (did:pkh, eip155:8453) in your browser — " +
           "the keys are generated client-side and owned by no one but you.",
       },
     },
@@ -63,9 +63,9 @@ const FAQ = {
       acceptedAnswer: {
         "@type": "Answer",
         text:
-          "On rhinogent.com, sign up and mint up to 10 agent identities. Each mint " +
+          "On rhinogent.com, sign up and create up to 10 agent identities. Each one " +
           "generates a wallet keypair locally in the browser (viem), so the private " +
-          "key never touches a server. Save the key at mint time — self-custody " +
+          "key never touches a server. Save the key when you create it — self-custody " +
           "means only you hold it.",
       },
     },

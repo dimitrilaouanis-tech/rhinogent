@@ -70,11 +70,23 @@ export default function RootLayout({
       data-scroll-behavior="smooth"
       className={`${geistSans.variable} ${geistMono.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
+      <head>
+        {/* Blocking and inline on purpose: it must run before first paint, so scroll-reveal
+            content is hidden only once we know JS is alive to reveal it again. Via next/script
+            or the bundle this would land after paint and flash the content before hiding it.
+            If this never executes, globals.css leaves everything visible — fail-open by design. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `document.documentElement.classList.add('js-reveal')`,
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <JsonLd />
+        {/* Localhost-only route switcher. Renders nothing anywhere else. */}
         <noscript>
           <div style={{ padding: "1rem", textAlign: "center", fontSize: "14px" }}>
-            0n1x needs JavaScript enabled to run the chat, mint identities, and verify signatures.
+            0n1x needs JavaScript enabled to run the chat, create identities, and verify signatures.
           </div>
         </noscript>
         {children}

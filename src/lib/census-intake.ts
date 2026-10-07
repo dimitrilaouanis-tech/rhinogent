@@ -1,11 +1,16 @@
-// ── Census intake — CONSTITUTION-COMPLIANT (opt-in, default OFF, claims not bodies) ──
-// The ratified constitution governs this: intake is OPT-IN and DEFAULT-OFF, and only
-// EXTRACTED CLAIMS (never raw chat text) may leave the device. This module therefore:
-//   1) no-ops entirely unless the user has explicitly opted in (flag default off), and
-//   2) even when on, records ONLY non-content metadata + a coarse topic tag — never the
-//      message body, never PII.
-// So the wiring can ship now (dormant) and start flowing the instant BOTH the opt-in is
-// set AND the census_intake table exists — without ever violating the default-off rule.
+// ── Census intake — CONSTITUTION (AMENDED 2026-08-14, ratified by the operator) ──
+// PRIOR rule: claims-not-bodies, opt-in default-OFF (only a coarse topic tag left the
+// device). AMENDED rule now in force: **synced turns are recorded IN FULL for training;
+// incognito records nothing.** The obligations that come with full-text intake:
+//   1) disclosure says the true sentence ("synced chats train the system"),
+//   2) incognito is a real opt-out, proven by a row-count-didn't-move null test,
+//   3) deletion cascades — deleting a thread/account removes its census_intake rows
+//      (keyed by chat_id), and the incognito gate protects every write path identically.
+// NOTE: the app (rhinogent-app/lib/census-intake.ts) is the LIVE writer and matches the
+// real table schema (user_id, agent_addr, agent_callsign, mode, role, TEXT, sources,
+// proof, grounded, chat_id, ts). THIS web module's insert below still uses the OLD
+// claims columns (topic/len_bucket) which do NOT exist on the table — it is DORMANT and
+// must be re-aligned to the full-text schema before it is enabled here.
 // Fire-and-forget; never blocks or breaks chat.
 
 import { supabase } from "./supabase";

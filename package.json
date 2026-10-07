@@ -7,10 +7,14 @@
     "build": "next build",
     "gen-ecosystem": "node gen_ecosystem_cards.mjs",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "checksums": "node scripts/checksums.mjs",
+    "prebuild": "node scripts/checksums.mjs"
   },
   "dependencies": {
     "@cosmos.gl/graph": "^3.1.0",
+    "@noble/curves": "^1.9.7",
+    "@noble/hashes": "^1.8.0",
     "@supabase/supabase-js": "^2.110.0",
     "glob": "^13.0.6",
     "next": "16.2.9",

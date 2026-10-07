@@ -10,7 +10,7 @@ const PRIMITIVES = [
   ["trust_score", "A signed 0–100 trust score for any agent that DeFi protocols, DAOs, and contracts read to price counterparty risk. The Web3 wedge."],
   ["attest_agent", "Verify-before-you-transact: a signed dossier on any counterparty — census membership, earned standing, honest verdict."],
   ["verify_query", "Ask a reality-resolvable question, get a signed answer settled against external sources. Refuses to sign opinion."],
-  ["census_proof", "The 1,700,000+-agent census + Merkle root — recompute it yourself from public shards."],
+  ["census_proof", "The millions-strong census + Merkle root — recompute it yourself from public shards."],
 ];
 
 export default function Onyx() {
@@ -36,7 +36,7 @@ export default function Onyx() {
               <Link href="/census" className="rounded-full border border-border bg-surface px-6 py-3 text-sm font-medium">See the live network</Link>
             </div>
             <p className="mt-6 font-mono text-[12px] text-muted-2">
-              1,700,000+ signed identities · signed ledger · reality oracle · $0 to verify
+              millions of signed identities · signed ledger · reality oracle · $0 to verify
             </p>
           </div>
         </section>
@@ -45,11 +45,13 @@ export default function Onyx() {
         <section className="mx-auto max-w-4xl px-5 py-20">
           <h2 className="display text-3xl font-semibold">Four primitives reality can settle</h2>
           <p className="mt-3 max-w-xl text-muted">Every one returns a cryptographically signed payload. You verify it yourself — no account, no trust, no cost.</p>
-          <div className="mt-8 grid gap-4 sm:grid-cols-2">
-            {PRIMITIVES.map(([name, desc]) => (
-              <div key={name} className="rounded-2xl border border-border bg-surface p-5">
+          {/* Bento: trust_score is the wedge, so it gets the room. The other three
+              are the supporting primitives. */}
+          <div className="bento mt-8">
+            {PRIMITIVES.map(([name, desc], i) => (
+              <div key={name} className={`tile rv p-6 ${i === 0 ? "b-hero" : i === 1 ? "b-tall" : "b-half"}`}>
                 <p className="font-mono text-[14px] font-semibold text-accent">{name}</p>
-                <p className="mt-2 text-sm leading-relaxed text-muted">{desc}</p>
+                <p className={`mt-2 leading-relaxed text-muted ${i === 0 ? "text-[15px]" : "text-sm"}`}>{desc}</p>
               </div>
             ))}
           </div>
@@ -80,15 +82,18 @@ export default function Onyx() {
         <section className="mx-auto max-w-4xl px-5 py-20">
           <h2 className="display text-3xl font-semibold">Don&apos;t trust it. Run it.</h2>
           <p className="mt-3 max-w-xl text-muted">One command discovers the signed card, queries the live network, verifies the signature, and recomputes a census shard against the Merkle root.</p>
-          <pre className="mt-6 overflow-x-auto rounded-xl bg-[#0d1118] p-5 font-mono text-[13px] text-[#e8ecf4]">
+          {/* The page's one ring goes on the command that proves the claim. */}
+          <div className="ring rv mt-6">
+          <pre className="overflow-x-auto rounded-xl bg-[#0d1118] p-5 font-mono text-[13px] text-[#e8ecf4]">
 {`$ python verify_0n1x.py
 
   ✓ DISCOVER — 0n1x v1.0 signed agent card (EIP-191)
   ✓ QUERY+VERIFY — live /a2a reply · Ed25519 attestation checks
-  ✓ CENSUS — 1,700,000+ signed identities · Merkle root recomputed from public shards
+  ✓ CENSUS — millions of signed identities · Merkle root recomputed from public shards
 
   trust zero, verify everything.`}
           </pre>
+          </div>
         </section>
 
         {/* standards */}

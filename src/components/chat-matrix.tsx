@@ -2,13 +2,14 @@
 
 import { useEffect, useRef, useState, type ReactNode, type PointerEvent as RPointerEvent } from "react";
 import { feedFetch } from "@/lib/feeds";
-import { getWallet, spend, grant, reward, PRICES } from "@/lib/wallet";
+import { getWallet, spend, grant, reward, PRICES, WELCOME_GRANT, priceForAnswer } from "@/lib/wallet";
 import { RhinoMark } from "@/components/rhino";
 import { loadAgents, addAgent, renameAgent as renameMinted, MAX_SLOTS } from "@/lib/agents";
 import { pullAgents, accountAgents, pushAgents } from "@/lib/agent-sync";
 import { queueThreadSync, flushThreadSync, pullThreadsFull, pullThreads, reconcileHistory, rebindThreadKey, adoptThread, deleteThread, restoreThread, backfillThreads, chatAgentsFromIntake } from "@/lib/chat-sync";
 import { recordIntake, flushIntake } from "@/lib/census-intake";
 import { supabase } from "@/lib/supabase";
+import { verifyMerchant, extractDomain, type MerchantResult } from "@/lib/onyx-verify";
 
 // PROCESSING TRACE — Manus-style live checklist. Steps are revealed one at a time and
 // checked off as it advances, so the wait reads as the agent *working*, not a dead spinner.
@@ -219,13 +220,13 @@ const KB: [RegExp, string][] = [
   [/(what|whats|about).{0,8}0n1x|^0n1x/i, "0n1x is an ecosystem for AI agents — a neutral, cryptographic layer where agents get an identity, verify each other, transact, and earn. The promise: **verify before you pay.** Every record is Ed25519/EIP-191 signed and publicly recomputable."],
   [/rhinogent|the agent you own/i, "Rhinogent is **the agent you own** — a self-custody identity and wallet you mint in your browser, where your keys never leave your device. It earns tokens for verified work."],
   [/verify before|before .{0,4}pay|counterparty/i, "Before an agent settles a payment, it checks whether the counterparty is real and gets back a **signed verdict** (PROCEED / REVIEW / HOLD). Payment rails verify the payment; this verifies the thing you're paying for."],
-  [/earn|token|reward|make money|get paid/i, "Your agent **earns** TOKENs for contributing data that verifies — signed, matching the census. Good verified data pays; bad or unsigned data earns nothing. New accounts get a free 500-token grant."],
+  [/earn|token|reward|make money|get paid/i, `Your agent **earns** TOKENs for contributing data that verifies — signed, matching the census. Good verified data pays; bad or unsigned data earns nothing. New accounts get a free ${WELCOME_GRANT}-token grant.`],
   [/self.?custody|keys|wallet|mint/i, "**Self-custody:** your keys are generated in your browser and never leave your device. Nobody else holds them, so there's nothing to seize, freeze, or leak."],
   [/how many|census|count|registered|how big/i, "The live count is on the **census counter** (bound to the signed `census_manifest.json`) — millions of signed agent identities minted through 0n1x, and climbing. Honest scope: **we do not currently measure how many are operated by us versus by outside parties**, so I won't claim it either way — provenance per identity isn't instrumented yet. What IS checkable: it's Merkle-rooted, so anyone can recompute the count from the public shards."],
   [/how.{0,12}verify|prove.{0,8}agent|is it real/i, "AI agents verify each other cryptographically: (1) signed identity (did:pkh, ERC-8004), (2) proof of what it actually did, (3) a liveness challenge, (4) verify-before-you-pay on the counterparty, (5) spend caps — not human paperwork."],
   [/pro|signed|web|premium/i, "**Pro** answers are grounded in a live web search, cryptographically signed (Ed25519), and come with a ProofCard you can verify yourself. Switch the toggle to Pro for those."],
   [/stored|store|saved|save.{0,6}chat|privacy|retain|kept|logged/i, "**Privacy:** Normal-tier conversations are **not stored on our servers**. Your chat stays in your own browser and syncs to your account only when you're signed in. We keep no server-side copy of Normal chats and hold none of your keys."],
-  [/\bcli\b|npm|install|command.?line|on1x init|@0n1x|package/i, "There's **no CLI or npm package** — it's fetch-first and browser-native. Mint a self-custody agent at rhinogent.com/dashboard and read the signed feeds (census_manifest.json, facts.json) over plain HTTP. Any `npm install @0n1x/...` command is not real."],
+  [/\bcli\b|npm|install|command.?line|on1x init|@0n1x|package/i, "Yes — the package is **`rhinogent`** on npm (MIT). `npx rhinogent init` mints a self-custody identity on your own machine; `rhinogent verify <domain>` checks a counterparty; `rhinogent connect` reads the network. The browser path at rhinogent.com/dashboard does the same thing. Mind the name: there is **no `@0n1x/…` scoped package** and no `on1x` command — if you were handed one, it was invented."],
   [/cutoff|training data|knowledge.{0,6}(date|cut)/i, "On Normal I answer from signed, live facts rather than a frozen training snapshot. For live web-grounded answers like today's date or current headlines, switch to **Pro**."],
   [/\bnews\b|headline|latest|what.{0,12}happening|today.{0,10}(update|story)/i, "### Live news needs Pro\n\nOn **Normal** I answer from signed facts held on-device — I have no web access, so I can't fetch today's headlines and I won't guess at them.\n\n**Pro** does exactly this:\n\n- searches the live web at the moment you ask\n- cites every source it used\n- returns an **Ed25519-signed ProofCard** you can recompute yourself\n\nFlip the **Pro** toggle above and ask again — try *\"a2a news\"* or *\"agent economy news\"*.\n\nOr ask me anything about 0n1x, agent verification, earning, or self-custody and I'll answer here on Normal."],
   [/^\s*(hello|hi|hey|yo|sup)\b|who are you|what can you do/i, "Hey — I'm your assistant. Ask me anything: explain a concept, help with writing or code, plan something, or think a problem through. What's up?"],
@@ -235,7 +236,7 @@ const KB: [RegExp, string][] = [
 // reply tripping these is replaced with the correct grounded fact BEFORE it renders.
 function groundGuard(reply: string): string {
   const bad: [RegExp, string][] = [
-    [/npm\s+install|@0n1x\/|on1x\s+(init|pay|earn|submit)|install\s+-g|\bon1x\s+cli\b/i, "There's **no CLI or npm package** — it's fetch-first and browser-native. Mint an agent at rhinogent.com/dashboard and read the signed JSON feeds over plain HTTP. Any `npm install @0n1x/...` command is not real."],
+    [/@0n1x\/|npm\s+(i|install)\s+@0n1x|\bon1x\s+(init|pay|earn|submit|cli)\b/i, "The package is **`rhinogent`**, not `@0n1x/…` — that scope does not exist, and neither does an `on1x` command. Real: `npx rhinogent init` to mint, `rhinogent verify <domain>`, `rhinogent connect`. Or do the same in the browser at rhinogent.com/dashboard."],
     [/stored?\s+(on|in|at)\s+(the\s+)?0n1x|0n1x\s+servers?|we\s+store\s+your\s+(chat|conversation|message)|server[- ]side\s+(copy|storage)\s+of\s+your/i, "**Privacy:** Normal-tier conversations are **not** stored on our servers. Your chat stays in your own browser and only syncs to your account if you sign in. We keep no server-side copy of Normal chats and hold none of your keys."],
     [/knowledge\s+cutoff|training\s+data\s+(is\s+)?(from|up\s+to)|(December|June)\s+20(2[0-9])|as\s+of\s+20(2[0-4])/i, "For live, current answers like today's date or the latest headlines, switch to **Pro** (frontier reasoning, disclosed per leaf). On Normal I answer from signed facts."],
     // FLEET PROVENANCE — we do NOT measure who operates a minted identity. Outside parties have
@@ -361,6 +362,28 @@ function splitProof(t: string): [string, string | null] {
 // consult view's expanded signature card (the one place mono is allowed).
 function truncMid(s: string): string {
   return s.length > 22 ? `${s.slice(0, 12)}…${s.slice(-8)}` : s;
+}
+// Plain-language reason for a FAILED merchant verification (loud, never silent).
+const VERIFY_FAIL_MSG: Record<string, string> = {
+  key_mismatch: "The signing key didn’t match 0n1x’s published key — do not trust this verdict.",
+  sig_verify_failed: "The signature did not verify against 0n1x’s published key.",
+  hash_mismatch: "The signed content didn’t match its own hash.",
+  no_attestation: "0n1x hasn’t published a signed verdict for this domain yet.",
+  unreachable: "Couldn’t reach 0n1x to verify right now — try again in a moment.",
+};
+// A VERIFIED verdict's color must track the merchant's RISK BAND, not the fact that it's signed:
+// a green ✓ must never sit on a HIGH-RISK merchant. The ✓ still means "signature verified"; the
+// color + label carry the verdict so a glance is never falsely reassured. (verify-before-you-pay)
+function merchBand(band: string | null) {
+  const b = (band || "").toLowerCase();
+  if (b === "danger" || b === "high" || b === "red")
+    return { pillBg: "border border-[#f0c4c0] bg-[#fdeceb]", pillColor: "#c0392b", risk: "HIGH RISK",
+      cardBox: "border-[#f0c4c0] bg-[#fdf2f1]", title: "Verified — flagged HIGH RISK", titleColor: "#c0392b", bodyColor: "#8a3c34", monoColor: "#a06a63" };
+  if (b && b !== "ok")
+    return { pillBg: "bg-[#fdf6e9]", pillColor: "#a8791f", risk: "review",
+      cardBox: "border-[#efdfb8] bg-[#fdf9ef]", title: "Verified — proceed with caution", titleColor: "#a8791f", bodyColor: "#7a6320", monoColor: "#9a8a6a" };
+  return { pillBg: "bg-[#e7f6ef]", pillColor: "#1f9d5f", risk: "",
+    cardBox: "border-[#cdeadd] bg-[#f2fbf6]", title: "Independently verified in your browser", titleColor: "#1f7d54", bodyColor: "#3c6b57", monoColor: "#5a7d6d" };
 }
 
 type HistItem = { id: string; title: string; msgs: Msg[]; agent?: { callsign: string; address: string }; peer?: { callsign: string; address: string }; ts?: number; live?: boolean };
@@ -558,6 +581,12 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
   // No network logic here: it only OBSERVES the existing loading/message state.
   const [peerFlight, setPeerFlight] = useState(false);
   const [beat, setBeat] = useState<{ idx: number; phase: "signing" | "pill" } | null>(null);
+  // VERIFY-THEN-BADGE — when a consult reply is about a real merchant/domain, we independently
+  // fetch 0n1x's PUBLISHED signed verdict and verify its Ed25519 signature in the browser
+  // (src/lib/onyx-verify). The badge only goes green on a genuine pass; a failure is loud + red;
+  // a turn with no verifiable domain shows NO "verified" claim at all (never a faked badge).
+  const [verify, setVerify] = useState<Record<number, { state: "checking" | "ok" | "fail"; r?: MerchantResult }>>({});
+  const verifyKicked = useRef<Set<string>>(new Set());
   const beatSeen = useRef(-1);   // highest message index whose signing beat already ran (history loads skip the beat)
   useEffect(() => { if (peer && (busy || streaming)) setPeerFlight(true); }, [peer, busy, streaming]);
   useEffect(() => {
@@ -581,6 +610,26 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
     }, 350);
     return () => clearTimeout(t);
   }, [peer, msgs, busy, streaming, peerFlight]);
+  // Kick a REAL verification for any settled consult reply that names a merchant/domain. Keyed by
+  // (index|domain) via verifyKicked so it fires once; verifyMerchant pins to the published key.
+  useEffect(() => {
+    if (!peer) return;
+    if (busy || streaming) return;
+    msgs.forEach((m, i) => {
+      if (m.role !== "assistant" || !m.text) return;
+      let prevUser = "";
+      for (let k = i - 1; k >= 0; k--) { if (msgs[k].role === "user") { prevUser = msgs[k].text; break; } }
+      const dom = extractDomain(m.text, prevUser);
+      if (!dom) return;
+      const key = `${i}|${dom}`;
+      if (verifyKicked.current.has(key)) return;
+      verifyKicked.current.add(key);
+      setVerify((v) => ({ ...v, [i]: { state: "checking" } }));
+      verifyMerchant(dom)
+        .then((r) => setVerify((v) => ({ ...v, [i]: { state: r.ok ? "ok" : "fail", r } })))
+        .catch(() => setVerify((v) => ({ ...v, [i]: { state: "fail", r: { ok: false, domain: dom, reason: "unreachable" } } })));
+    });
+  }, [peer, msgs, busy, streaming]);
   // RECALL SINK — every completed exchange, whichever backend answered it.
   //
   // Recording used to be a side effect of answering, wired into the two lanes node1 serves. Pro is
@@ -1346,14 +1395,27 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
         return;
       }
     } else if (pro) {
-      const pay = await spend(PRICES.chatMessage, "pro chat");
-      if (!pay.ok) {
-        const t = `Pro mode costs ${PRICES.chatMessage} TOKEN per message and your balance is ${pay.balance}. Switch to **Normal** (free) or tap **Top up**.`;
+      // PER-TOKEN PRICING (mirrors the phone): do NOT pre-charge a flat fee. Gate on a minimum
+      // balance to start, then charge the real depth-priced amount AFTER the answer lands
+      // (abstentions/degraded answers cost 0). Keeps phone and desktop quoting the same price.
+      const w = await getWallet();
+      if (w.balance < 1) {
+        const t = `Pro replies are priced by answer depth (from 1 TOKEN) and your balance is ${w.balance}. Switch to **Normal** (free) or tap **Top up**.`;
         setMsgs((m) => m[m.length - 1]?.text?.includes("Top up") ? m : [...m, { role: "assistant", text: t }]);
         return;
       }
     }
     setInput(""); setMsgs((m) => [...m, { role: "user", text: q }]); setBusy(true);
+    // Charge a finished Pro answer by depth (input q + output), capped to balance. Abstentions and
+    // non-answers price to 0 (priceForAnswer), so they are free. Peer pre-pays separately, so it is
+    // excluded here. `proDegraded` marks an explicitly unsigned/offline fallback as not chargeable.
+    let proDegraded = false;
+    const chargeProByDepth = async (finalText: string) => {
+      if (!pro || guest || peer) return;
+      const w = await getWallet();
+      const cost = Math.min(w.balance, priceForAnswer(finalText, { prompt: q, tier: "sonnet" }));
+      if (cost > 0) { const r = await spend(cost, "pro chat"); setBalance(r.balance); }
+    };
     // census intake — dormant unless the user opted in (default OFF); records an extracted
     // claim (topic + size band), NEVER the raw message, per the ratified constitution.
     recordIntake({ agentAddr: agent?.address ?? null, mode: pro ? "pro" : "normal", role: "user", text: q });
@@ -1650,6 +1712,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
             const finalText = (obj.reply || acc) + proofAnnotation(obj);
             paint(finalText);
             recordIntake({ agentAddr: agent?.address ?? null, mode: "pro", role: "assistant", text: obj.reply || acc, grounded: true });
+            void chargeProByDepth(obj.reply || acc);   // sealed Pro answer → charge by depth (once)
           }
         }
       };
@@ -1663,9 +1726,10 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
       } catch { if (!created) return false; }
       if (!created) return false;   // never opened a stream — fall through to the non-stream signed path
       if (!got) {
-        // MISSING PROOF → the answer was never sealed. Refund the charge and mark it unsigned (honest).
-        if (!guest) { try { grant(peer ? peer.price : PRICES.chatMessage, "pro refund (signature didn't complete)").then(setBalance); } catch { /**/ } }
-        paint(acc + "\n\n*Signature didn't complete — your token was refunded; treat this answer as unsigned.*");
+        // MISSING PROOF → the answer was never sealed. Pro is post-charged, so an unsealed answer is
+        // simply NOT charged. Peer pre-paid, so refund peer only.
+        if (!guest && peer) { try { grant(peer.price, "peer refund (signature didn't complete)").then(setBalance); } catch { /**/ } }
+        paint(acc + `\n\n*Signature didn't complete — this answer is unsigned and ${peer ? "your token was refunded" : "was not charged"}.*`);
       }
       setConn("ok");
       return true;
@@ -1713,13 +1777,15 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
       try { if (!text && !factsOnly) text = await ask(); setConn("ok"); }
       catch {
         // Primary endpoint failed. Pro's portal lives on the operator machine and may be asleep —
-        // DON'T face-plant to static KB: refund the premium token and answer on the always-on Worker.
+        // DON'T face-plant to static KB: answer on the always-on Worker. The degraded (unsigned)
+        // answer is NOT charged (proDegraded); peer pre-paid, so refund peer only.
         setConn("retrying");
         if (pro) {
-          if (!guest) { try { grant(peer ? peer.price : PRICES.chatMessage, "refund (grounding offline)").then(setBalance); } catch { /**/ } }
+          proDegraded = true;
+          if (!guest && peer) { try { grant(peer.price, "peer refund (grounding offline)").then(setBalance); } catch { /**/ } }
           try {
             text = await askWorker();
-            if (text) text += "\n\n*Live grounding + signature are offline right now — answered on the always-on tier and your token was refunded.*";
+            if (text) text += "\n\n*Live grounding + signature are offline right now — answered on the always-on tier and not charged.*";
           } catch { /**/ }
         } else {
           await new Promise((z) => setTimeout(z, 500));
@@ -1752,10 +1818,14 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
       setMsgs((m) => m.map((mm, k) => (k === idx.i ? { ...mm, text } : mm)));
       // intake the assistant claim too (dormant unless opted in; extracted, never raw)
       recordIntake({ agentAddr: agent?.address ?? null, mode: pro ? "pro" : "normal", role: "assistant", text, grounded: pro });
+      if (!proDegraded) void chargeProByDepth(text);   // non-stream Pro answer → charge by depth (Normal prices to 0)
     } catch {
       setConn("down");
-      // Total outage (portal AND worker unreachable). Answer from the trained KB; if that misses,
-      // give an HONEST offline line — never tell a Pro user to "switch to Pro" (they already did).
+      // Total outage. Peer PRE-PAID (L~1389) but no answer was delivered → refund the peer charge.
+      // (Pro is post-charged, so nothing to refund; the Pro copy below already says "not charged".)
+      if (peer && !guest) { try { grant(peer.price, "peer refund (total outage)").then(setBalance); } catch { /**/ } }
+      // Answer from the trained KB; if that misses, give an HONEST offline line — never tell a Pro
+      // user to "switch to Pro" (they already did).
       const kb = bestKb(q, kbRef.current);
       const text = kb || (pro
         ? "I couldn't reach the network just now — retrying. You're on **Pro** and your token was **not** charged; ask again in a moment."
@@ -1908,7 +1978,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
             <h3 className="mt-4 text-[19px] font-semibold tracking-tight text-foreground">Keep {agent ? (agent.nick || agent.callsign) : "your agent"}.</h3>
             <p className="mt-2 text-[13.5px] leading-relaxed text-muted">
               You&apos;ve met your agent. Create a free account and it stays <b className="text-foreground">yours</b> —
-              same agent, its memory kept, plus <b className="text-foreground">500 tokens</b> and Pro answers.
+              same agent, its memory kept, plus <b className="text-foreground">{WELCOME_GRANT} tokens</b> and Pro answers.
             </p>
             <a href="/dashboard" className="mt-5 block w-full rounded-full bg-accent px-5 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90">Create free account</a>
             <button onClick={() => setGate(false)} className="mt-2.5 text-[12px] text-muted-2 transition-colors hover:text-foreground">Not now</button>
@@ -2168,6 +2238,16 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
                       const sysNotice = /^Each answer from \*\*|^Pro mode costs|^I couldn't reach the network|^Rhinogent is busy/.test(m.text);
                       const inFlightLast = (busy || streaming || peerFlight) && i === msgs.length - 1;
                       const signing = beat?.idx === i && beat.phase === "signing";
+                      // REAL verification state for this reply (set by the verify effect). `vf`
+                      // exists only when the turn named a verifiable merchant/domain.
+                      const vf = verify[i];
+                      const vMerch = vf?.r && vf.r.ok ? vf.r : null;
+                      const mb = vMerch ? merchBand(vMerch.band) : null;
+                      const vFailR = vf?.r && !vf.r.ok ? vf.r : null;
+                      // A CRYPTO failure (bad sig / wrong key / bad hash) is loud RED — something is
+                      // wrong. Merely "no verdict published" or "couldn't reach" is neutral amber,
+                      // not an accusation. Honesty over alarm.
+                      const vHardFail = !!vFailR && ["key_mismatch", "sig_verify_failed", "hash_mismatch"].includes(vFailR.reason);
                       return (
                         <div className="consult-in w-full" style={grouped ? { marginTop: -12 } : undefined}>
                           {!grouped && (
@@ -2187,10 +2267,34 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
                                     <span className="text-[11px] text-[#565b69]">Signing…</span>
                                   ) : (
                                     <div className="flex items-center gap-2">
-                                      <button onClick={() => setProofOpen((o) => ({ ...o, [i]: !o[i] }))} aria-expanded={!!proofOpen[i]}
-                                        className="consult-fade rounded-full bg-[#e7f6ef] px-2.5 py-1 text-[11px]" style={{ color: "#1f9d5f" }}>
-                                        ✓ Verified reply
-                                      </button>
+                                      {/* The pill's color is EARNED by a real signature check — never a plain visual claim.
+                                          green = verified against 0n1x's published key · red = crypto failed ·
+                                          amber = no signed verdict / unreachable · neutral = nothing to verify. */}
+                                      {vf?.state === "checking" ? (
+                                        <span className="inline-flex items-center gap-1.5 rounded-full bg-[#f2f3f7] px-2.5 py-1 text-[11px] text-[#565b69]">
+                                          <span className="h-1.5 w-1.5 rounded-full animate-pulse" style={{ background: "#e3a44e" }} />Checking signature…
+                                        </span>
+                                      ) : vMerch && mb ? (
+                                        <button onClick={() => setProofOpen((o) => ({ ...o, [i]: !o[i] }))} aria-expanded={!!proofOpen[i]}
+                                          className={`consult-fade rounded-full px-2.5 py-1 text-[11px] ${mb.pillBg}`} style={{ color: mb.pillColor }}>
+                                          {mb.risk ? `✓ Verified · ${mb.risk}` : `✓ Verified · ${vMerch.domain}`}
+                                        </button>
+                                      ) : vHardFail ? (
+                                        <button onClick={() => setProofOpen((o) => ({ ...o, [i]: !o[i] }))} aria-expanded={!!proofOpen[i]}
+                                          className="consult-fade rounded-full border border-[#f0c4c0] bg-[#fdeceb] px-2.5 py-1 text-[11px] font-medium" style={{ color: "#c0392b" }}>
+                                          ⚠ Verification failed
+                                        </button>
+                                      ) : vFailR ? (
+                                        <button onClick={() => setProofOpen((o) => ({ ...o, [i]: !o[i] }))} aria-expanded={!!proofOpen[i]}
+                                          className="consult-fade rounded-full bg-[#fdf6e9] px-2.5 py-1 text-[11px]" style={{ color: "#a8791f" }}>
+                                          Not verified
+                                        </button>
+                                      ) : (
+                                        <button onClick={() => setProofOpen((o) => ({ ...o, [i]: !o[i] }))} aria-expanded={!!proofOpen[i]}
+                                          className="consult-fade rounded-full bg-[#f2f3f7] px-2.5 py-1 text-[11px] text-[#565b69]">
+                                          About this reply
+                                        </button>
+                                      )}
                                       <span className="text-[11px] text-[#565b69]">{srcN ? `${srcN} source${srcN === "1" ? "" : "s"} · ` : ""}{peer.price > 0 ? `${peer.price} token${peer.price === 1 ? "" : "s"}` : "free"}</span>
                                       {/* copy / regenerate: hover-reveal only (spec: no always-visible icon rows) */}
                                       <button onClick={() => { navigator.clipboard?.writeText(shownBody || m.text); setCopied(i); setTimeout(() => setCopied(-1), 1400); }}
@@ -2202,13 +2306,28 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
                                     </div>
                                   )}
                                   {proofOpen[i] && !signing && (
-                                    <div className="mt-1.5 rounded-[14px] border border-[#e4e6ee] bg-[#f7f8fb] px-3.5 py-3">
-                                      <p className="text-[11.5px] text-[#565b69]">Signed by {peer.callsign}</p>
-                                      <p className="mt-1 break-all font-mono text-[10.5px] text-[#7c8291]">{truncMid(peer.address)}{sigId ? ` · ${truncMid(sigId)}` : ""}</p>
-                                      <p className="mt-1.5 text-[11px] leading-relaxed text-[#565b69]">This proves who wrote the reply — it doesn&apos;t grade whether the answer is right.</p>
-                                      {sharedEngine && <p className="mt-1.5 text-[10.5px] text-[#565b69]">Answered on the shared 0n1x engine (per-agent models coming).</p>}
-                                      {verifyUrl && <a href={verifyUrl} target="_blank" rel="noopener noreferrer" className="mt-1.5 inline-block text-[10.5px] text-[#7c8291] underline underline-offset-2 hover:text-[#565b69]">Verify this signature →</a>}
-                                    </div>
+                                    vMerch && mb ? (
+                                      <div className={`mt-1.5 rounded-[14px] border px-3.5 py-3 ${mb.cardBox}`}>
+                                        <p className="text-[11.5px] font-medium" style={{ color: mb.titleColor }}>{mb.title}</p>
+                                        <p className="mt-1 text-[11px] leading-relaxed" style={{ color: mb.bodyColor }}>0n1x’s signed verdict for <span className="font-medium">{vMerch.domain}</span>: {vMerch.verdict}{typeof vMerch.trust_score === "number" ? ` · trust ${vMerch.trust_score}/100` : ""}.</p>
+                                        <p className="mt-1 break-all font-mono text-[10.5px]" style={{ color: mb.monoColor }}>Ed25519 · {truncMid(vMerch.kid)}</p>
+                                        <p className="mt-1.5 text-[11px] leading-relaxed text-[#565b69]">Recomputed against 0n1x’s published key — this proves 0n1x published this verdict, not that the verdict is correct.</p>
+                                        <a href="https://onyx-actions.onrender.com/verify" target="_blank" rel="noopener noreferrer" className="mt-1.5 inline-block text-[10.5px] underline underline-offset-2" style={{ color: mb.titleColor }}>Verify it yourself →</a>
+                                      </div>
+                                    ) : vFailR ? (
+                                      <div className={`mt-1.5 rounded-[14px] border px-3.5 py-3 ${vHardFail ? "border-[#f0c4c0] bg-[#fdf2f1]" : "border-[#efdfb8] bg-[#fdf9ef]"}`}>
+                                        <p className={`text-[11.5px] font-medium ${vHardFail ? "text-[#c0392b]" : "text-[#a8791f]"}`}>{vHardFail ? "Couldn’t verify this reply" : "No signed verdict to verify"}</p>
+                                        <p className={`mt-1 text-[11px] leading-relaxed ${vHardFail ? "text-[#8a3c34]" : "text-[#7a6320]"}`}>{VERIFY_FAIL_MSG[vFailR.reason] || "Verification failed."}</p>
+                                        <p className="mt-1 font-mono text-[10.5px] text-[#9a8a6a]">{vFailR.domain} · {vFailR.reason}</p>
+                                      </div>
+                                    ) : (
+                                      <div className="mt-1.5 rounded-[14px] border border-[#e4e6ee] bg-[#f7f8fb] px-3.5 py-3">
+                                        <p className="text-[11.5px] text-[#565b69]">{peer.callsign} · shared 0n1x engine</p>
+                                        <p className="mt-1.5 text-[11px] leading-relaxed text-[#565b69]">This reply isn’t about a merchant we can cryptographically check, so there’s nothing signed to verify. Ask about a specific site (e.g. “is stripe.com safe to pay”) for an independently verifiable verdict.</p>
+                                        {sharedEngine && <p className="mt-1.5 text-[10.5px] text-[#565b69]">Answered on the shared 0n1x engine (per-agent models coming).</p>}
+                                        {verifyUrl && <a href={verifyUrl} target="_blank" rel="noopener noreferrer" className="mt-1.5 inline-block text-[10.5px] text-[#7c8291] underline underline-offset-2 hover:text-[#565b69]">Verify this signature →</a>}
+                                      </div>
+                                    )
                                   )}
                                 </div>
                               )}
@@ -2326,7 +2445,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
             "every reply is signed" lives in the top-of-thread chip (spec). */}
         {!peer && <p className="composer-stamp mt-2.5 text-center">
           {pro
-            ? <><span style={{ color: "#635bff" }}>Pro</span> · frontier reasoning · disclosed per leaf · {PRICES.chatMessage} TOKEN per message</>
+            ? <><span style={{ color: "#635bff" }}>Pro</span> · frontier reasoning · disclosed per leaf · priced by answer depth, from 1 TOKEN</>
             : cliMode
             ? <><span className="font-mono text-emerald-400">CLI</span> · reads open · writes need operator scope · <span className="font-mono">/verbs</span></>
             : factsOnly

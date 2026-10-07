@@ -56,7 +56,7 @@ export function shortAddr(address: string): string {
 
 const SITE = "https://rhinogent.com";
 
-function passportMessage(agent: string, did: string, issued: string): string {
+export function passportMessage(agent: string, did: string, issued: string): string {
   return `Rhinogent Passport\nagent=${agent}\ndid=${did}\nissued=${issued}`;
 }
 

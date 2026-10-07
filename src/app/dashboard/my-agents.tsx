@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { PageShell, PageHead, Card, CardTitle, Honest, TierPill } from "@/components/feed-ui";
+import { PageShell, PageHead, Card, CardTitle, Honest, TierPill, Example } from "@/components/feed-ui";
 import { RhinoAvatar, type AgentState } from "@/components/rhino-a1";
 import { AGENTS_CHANGED, loadAgents } from "@/lib/agents";
 import type { Agent } from "@/lib/identity";
@@ -96,13 +96,15 @@ export function MyAgents() {
               </div>
               <div className="mt-4 flex-1 rounded-xl border border-border bg-surface/60 px-3 py-2.5">
                 <p className="font-mono text-[10.5px] uppercase tracking-[0.12em] text-muted-2">doing now</p>
-                <p className="mt-1 text-[13px] text-muted">[live task — streams from its workspace]</p>
+                {/* No live task stream is wired yet. DASH, not a sentence describing what it would
+                    say if it were — a description of a feature reads as the feature. */}
+                <p className="mt-1 font-mono text-[13px] text-muted-2">{DASH}</p>
               </div>
               {!s && rep.status === "ok" && <Honest>Not in the signed reputation feed yet — standing shows — until it has signed outcomes.</Honest>}
               <div className="mt-4 flex gap-1.5">
                 <Link href={`/chat?agent=${encodeURIComponent(ag.id)}`} className="flex-1 rounded-full bg-foreground px-3 py-1.5 text-center text-[12.5px] font-medium text-background">Message</Link>
                 <Link href="/terminal" className="flex-1 rounded-full border border-border px-3 py-1.5 text-center text-[12.5px] text-muted hover:text-foreground">Desk</Link>
-                <button disabled title="[rules editor]" className="flex-1 rounded-full border border-border px-3 py-1.5 text-[12.5px] text-muted-2">Rules</button>
+                <Link href={`/profile?agent=${encodeURIComponent(ag.id)}`} className="flex-1 rounded-full border border-border px-3 py-1.5 text-center text-[12.5px] text-muted hover:text-foreground">Profile</Link>
               </div>
             </Card>
           );
@@ -157,9 +159,13 @@ export function MyAgents() {
           <p className="mt-3 font-mono text-[12px] text-muted-2">{agents ? `${fmtInt(agents.length)} key${agents.length === 1 ? "" : "s"} in this browser` : DASH}</p>
           <div className="mt-4 flex gap-2">
             <button onClick={exportKeys} disabled={!agents?.length} className="rounded-full bg-foreground px-4 py-2 text-[13px] font-semibold text-background disabled:opacity-40">Export</button>
-            <button disabled title="[rotation — the old key signs the new one; not wired in this demo]" className="rounded-full border border-border px-4 py-2 text-[13px] text-muted-2">Rotate</button>
+            {/* Rotation is not built. A greyed button implies it is coming on this screen; a line
+                of prose makes the same point without parking a dead control in the UI. */}
           </div>
-          <Honest>The export file contains your private keys. Anyone holding it controls these agents — keep it offline.</Honest>
+          <Honest>
+            The export file contains your private keys. Anyone holding it controls these agents — keep
+            it offline. Key rotation (the old key signing the new one) is not built yet.
+          </Honest>
         </Card>
       </div>
     </PageShell>

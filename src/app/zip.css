@@ -1,0 +1,259 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   zip.css — the landing page's layout vocabulary.
+
+   LAYOUT comes from the design export (the .sec measure, the .shot panels, the section
+   rhythm, the FAQ). COLOUR AND TYPE come from the site's own tokens in globals.css — not
+   from the export's. The export shipped its own palette (near-black ink, a darker indigo,
+   black square buttons) and its own fonts (Sora + Instrument Sans). Running those only on
+   the landing page meant the home page used different type and a different violet from
+   every other page, which is exactly what reads as "this looks different".
+
+   So every token below aliases a global one. Change a colour in globals.css and this page
+   follows; there is no second palette to keep in sync.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* EVERYTHING BELOW IS IN @layer components, ON PURPOSE.
+
+   Unlayered CSS wins over ANY layered rule regardless of specificity, and Tailwind v4 puts
+   its utilities in a layer. While this file was unlayered, `.v2 a { color: accent }` beat
+   `text-white` on the hero button — violet text on a violet gradient, invisible. Putting these
+   rules in `components` places them before `utilities`, so a Tailwind utility on an element
+   always wins, which is what anyone writing `text-white` expects. Do not unwrap this. */
+@layer components {
+  .v2 {
+    /* ink + paper — the site's, not the export's */
+    --v2-bg: var(--page);
+    --v2-ink: var(--foreground);
+    --v2-ink-soft: var(--muted);
+    --v2-ink-faint: var(--muted-2);
+    --v2-line: var(--border);
+    --v2-line-soft: var(--border);
+    --v2-panel: var(--surface);
+    --v2-panel-2: var(--surface-2);
+
+    /* one accent — the site violet */
+    --v2-accent: var(--accent);
+    --v2-accent-hover: var(--accent-soft);
+    --v2-bubble: var(--accent);
+
+    /* dark panels (the desk, the receipt, the install lines) */
+    --v2-dark: #0d1222;
+    --v2-dark-2: #141b2e;
+    --v2-dark-line: #2c3450;
+
+    /* states — the site's emerald and gold, so a green here equals a green anywhere */
+    --v2-green: var(--emerald);
+    --v2-amber: var(--gold);
+
+    --v2-measure: 1120px;
+    --v2-gutter: 32px;
+
+    background: var(--v2-bg);
+    color: var(--v2-ink);
+    /* Geist, like the rest of the site. The export's Instrument Sans is not loaded here. */
+    font-family: var(--font-geist-sans), system-ui, sans-serif;
+  }
+
+  /* ── type ─────────────────────────────────────────────────────────────────── */
+  .v2 .h {
+    margin: 0;
+    font-family: var(--font-geist-sans), sans-serif;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+  }
+  .v2 .p {
+    margin: 0;
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--v2-ink-soft);
+  }
+  .v2 .eyebrow-v2 {
+    font-family: var(--font-geist-mono), monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    color: var(--v2-ink-faint);
+    text-transform: uppercase;
+  }
+  .v2 .mono-v2 {
+    font-family: var(--font-geist-mono), monospace;
+  }
+  .v2 a {
+    color: var(--v2-accent);
+  }
+  .v2 a:hover {
+    color: var(--v2-accent-hover);
+  }
+
+  /* ── layout ───────────────────────────────────────────────────────────────── */
+  .v2 .sec {
+    max-width: var(--v2-measure);
+    margin: 0 auto;
+    padding-inline: var(--v2-gutter);
+  }
+  /* The export sets a flat 96px rhythm. Clamped at the low end so the phone layout doesn't
+     inherit desktop air, which is what makes a 1120px design feel broken at 390px. */
+  .v2 .sec-pad {
+    padding-bottom: clamp(64px, 9vw, 96px);
+  }
+
+  /* ── controls — pills with the site's violet gradient, matching every other CTA ──── */
+  .v2 .btn-v2,
+  .v2 .btn2-v2 {
+    height: 46px;
+    padding: 0 26px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    transition:
+      transform 200ms cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 200ms ease,
+      border-color 200ms ease;
+  }
+  .v2 .btn-v2 {
+    background: linear-gradient(180deg, #7c5cfc, #6a47f5);
+    color: #fff;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.25),
+      0 1px 2px rgba(106, 71, 245, 0.3),
+      0 8px 20px -8px rgba(106, 71, 245, 0.5);
+  }
+  .v2 .btn-v2:hover {
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.25),
+      0 2px 4px rgba(106, 71, 245, 0.3),
+      0 12px 28px -8px rgba(106, 71, 245, 0.55);
+  }
+  .v2 .btn2-v2 {
+    color: var(--v2-ink);
+    border: 1px solid var(--v2-line);
+    background: color-mix(in srgb, var(--surface) 50%, transparent);
+  }
+  .v2 .btn2-v2:hover {
+    border-color: var(--v2-ink-faint);
+    color: var(--v2-ink);
+  }
+  .v2 .btn-v2:active,
+  .v2 .btn2-v2:active {
+    transform: translateY(0) scale(0.99);
+  }
+
+  /* ── surfaces ─────────────────────────────────────────────────────────────── */
+  .v2 .shot {
+    background: color-mix(in srgb, var(--surface) 55%, var(--background));
+    border: 1px solid var(--v2-line);
+    border-radius: 20px;
+  }
+  .v2 .shot-sm {
+    border-radius: 16px;
+  }
+  .v2 .card-v2 {
+    background: var(--background);
+    border: 1px solid var(--v2-line);
+    border-radius: 14px;
+  }
+
+  /* ── install line — a dark strip the eye reads as "this is a command" ─────── */
+  .v2 .cmd {
+    font-family: var(--font-geist-mono), monospace;
+    font-size: 11.5px;
+    background: var(--v2-dark);
+    color: #e6e6ef;
+    border-radius: 10px;
+    padding: 9px 11px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+    border: 0;
+    text-align: left;
+    cursor: pointer;
+  }
+  .v2 .cmd:hover {
+    background: var(--v2-dark-2);
+  }
+  .v2 .cmd-static {
+    cursor: default;
+  }
+  .v2 .cmd-static:hover {
+    background: var(--v2-dark);
+  }
+
+  /* ── focus ring ───────────────────────────────────────────────────────────── */
+  .v2 :focus-visible {
+    outline: 2px solid var(--v2-accent);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
+  /* ── FAQ: a <details> list, zero JS, so it works with the bundle dead ─────── */
+  .v2 .faq {
+    border-top: 1px solid var(--v2-line);
+  }
+  .v2 .faq details {
+    border-bottom: 1px solid var(--v2-line);
+  }
+  .v2 .faq summary {
+    cursor: pointer;
+    list-style: none;
+    padding: 18px 0;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    font-weight: 600;
+    font-size: 16px;
+  }
+  .v2 .faq summary::-webkit-details-marker {
+    display: none;
+  }
+  .v2 .faq summary::after {
+    content: "+";
+    font-family: var(--font-geist-mono), monospace;
+    font-weight: 500;
+    color: var(--v2-ink-faint);
+    flex: none;
+  }
+  .v2 .faq details[open] summary::after {
+    content: "−";
+  }
+  .v2 .faq .faq-a {
+    padding: 0 0 20px 0;
+    max-width: 68ch;
+  }
+
+  /* ── responsive ───────────────────────────────────────────────────────────────
+     The export is a desktop artboard: 84px display type and three two-column splits,
+     none of which carry to a phone. Additions, not changes. */
+  @media (max-width: 1040px) {
+    .v2 .split {
+      grid-template-columns: 1fr !important;
+      gap: 28px !important;
+    }
+    .v2 .split-flip > :first-child {
+      order: 2;
+    }
+    .v2 .quad {
+      grid-template-columns: repeat(2, 1fr) !important;
+    }
+    .v2 .shot-grid {
+      grid-template-columns: 1fr !important;
+    }
+  }
+  @media (max-width: 640px) {
+    .v2 {
+      --v2-gutter: 16px;
+    }
+    .v2 .quad {
+      grid-template-columns: 1fr !important;
+    }
+  }
+
+}
