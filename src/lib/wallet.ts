@@ -26,6 +26,15 @@ export const PRICES = {
 
 export const PRICE_MAX = 150;
 
+// Market $ value of credits: 1 credit ≈ $0.001 (the per-token scale below). Earned WORK shown
+// in $ is what the network's market rates value it at — FREE ERA means credits don't bill yet,
+// but the worth is real. Keep IDENTICAL in rhinogent-app (number sync-lock).
+export const USD_PER_CREDIT = 0.001;
+export function creditsToUsd(credits: number): string {
+  const v = Math.max(0, Number(credits) || 0) * USD_PER_CREDIT;
+  return v >= 1 ? `$${v.toFixed(2)}` : `$${v.toFixed(3)}`;
+}
+
 // An answer that did not deliver is NOT billable. Abstentions, busy notices, errors and empty
 // replies all cost ZERO — the client asked and got nothing, so there is nothing to charge for.
 // This is checked FIRST, before any depth signal, because length must never turn a non-answer
