@@ -24,7 +24,7 @@ export const PRICES = {
   mintId: 150,           // TOKEN cost to mint a self-custody agent after the free grant
 } as const;
 
-export const PRICE_MAX = 40;
+export const PRICE_MAX = 150;
 
 // An answer that did not deliver is NOT billable. Abstentions, busy notices, errors and empty
 // replies all cost ZERO — the client asked and got nothing, so there is nothing to charge for.
@@ -53,8 +53,8 @@ export function isBillableAnswer(text: string): boolean {
 // EXACT MIRROR of the app's lib/wallet.ts so both surfaces price identically.
 const CREDITS_PER_1K: Record<string, { in: number; out: number }> = {
   haiku: { in: 1, out: 5 },
-  sonnet: { in: 2, out: 10 },
-  opus: { in: 5, out: 25 },
+  sonnet: { in: 3, out: 15 },
+  opus: { in: 15, out: 75 },
 };
 export function estTokens(s: string): number { return Math.ceil(String(s || "").length / 4); } // ~4 chars/token
 
