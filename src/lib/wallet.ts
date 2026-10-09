@@ -61,9 +61,9 @@ export function isBillableAnswer(text: string): boolean {
 // Non-answers / abstentions are FREE. Normal/local lane is free elsewhere; this meters only the Pro lane.
 // EXACT MIRROR of the app's lib/wallet.ts so both surfaces price identically.
 const CREDITS_PER_1K: Record<string, { in: number; out: number }> = {
-  haiku: { in: 0.1, out: 0.5 },
-  sonnet: { in: 2, out: 10 },
-  opus: { in: 4, out: 20 },
+  haiku: { in: 0.25, out: 1 },
+  sonnet: { in: 3, out: 12 },
+  opus: { in: 6, out: 30 },
 };
 export function estTokens(s: string): number { return Math.ceil(String(s || "").length / 4); } // ~4 chars/token
 
