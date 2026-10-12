@@ -1,0 +1,43 @@
+{
+ "schema": "0n1x.census/1",
+ "epoch": 1790895944,
+ "epoch_iso": "2026-10-01T23:05:44Z",
+ "metrics": {
+  "signed_wallets": {
+   "value": 4746621,
+   "basis": "distinct addresses that signed a transfer in _token_ledger.jsonl"
+  },
+  "circulating": {
+   "value": 67469444,
+   "basis": "token-engine sum(live_bal): genesis+flow-burns (census_manifest)"
+  },
+  "transfers": {
+   "value": 2980477,
+   "basis": "lines in _token_ledger.jsonl"
+  },
+  "work_ledgers": {
+   "value": 621,
+   "basis": "*.jsonl in agent_ledger (chains intact, repairs appended)"
+  },
+  "signed_moves": {
+   "value": 289790,
+   "basis": "sum of lines across all agent ledgers"
+  },
+  "active_24h": {
+   "value": 610,
+   "basis": "ledgers with a move in the last 24h"
+  },
+  "earning": {
+   "value": 609,
+   "basis": "ledgers with a verified, xp>0 move in last 24h"
+  },
+  "facts": {
+   "value": 113866,
+   "basis": "facts_api world_facts.jsonl consensus count"
+  }
+ },
+ "disclosure": "Operator-run closed experiment: 4746621 signed self-custody wallets proving the ranking at scale; 621 run verified work ledgers, 610 active in 24h. Not external adoption. Every number recomputable from the signed sources above.",
+ "signed_by": "fgkuOgXK1HX/THpnXOximFOM2RDyxYGznd2CvFEB4kk=",
+ "sig": "6MvXcFRuCNe6l+apx7EAreWzcHsEiaPB8buQp4CwWD/x54vZe4Odtgu4CHDWMmuj/n9inbb2xx7LRWNubWJ0Dw==",
+ "truth_root": "ae34bb0a304590411965f9aa220ad6d9bce30ee8d9423761ceae2be7414e2383"
+}
