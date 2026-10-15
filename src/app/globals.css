@@ -372,14 +372,17 @@ body { -webkit-text-size-adjust: 100%; }
    Do not move the hiding rule back onto bare `.rv`: that is what stranded the whole page below
    the hero, final CTA included, whenever the observer failed. */
 .rv {
+  /* Retuned to match [data-rvx] below — the landing page and every other page must enter at
+     the same speed, or /start reads as a different product from /. 0.52s, measured: see the
+     field note at the foot of this file. */
   transition:
-    opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
-    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    opacity 0.52s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.52s cubic-bezier(0.16, 1, 0.3, 1);
   transition-delay: var(--d, 0ms);
 }
 .js-reveal .rv {
   opacity: 0;
-  transform: translateY(20px);
+  transform: translateY(14px);
 }
 .js-reveal .rv.in { opacity: 1; transform: none; }
 
@@ -652,3 +655,508 @@ body {
    Vercel exposes .py-24. Our old clamp topped out at 160px — that is Linear's upper bound,
    used once, not a default. */
 .section-pad { padding-block: clamp(64px, 9vw, 96px); }
+
+/* ═══════════════════════════════════════════════════════════
+   SCROLL FEEL + PRESS FEEL (2026-10-15)
+   Driven by src/components/scroll-fx.tsx, mounted once in the root layout so it reaches every
+   route. The numbers come off acquire.com's own stylesheet — its entrances are
+   `opacity .5s ease, transform .5s ease`, its cards `transition: box-shadow .3s ease`, its
+   header `transition: height .2s ease`. It ships no scroll-hijack library; the one
+   IntersectionObserver in its bundle runs at threshold .2 and CSS does the rest.
+
+   THE HIDING RULE IS ATTRIBUTE-GATED, NOT CLASS-GATED, AND THAT IS DELIBERATE. `[data-rvx]`
+   is written by JS in the same synchronous pass that starts observing the element. No
+   stylesheet ever hides anything on its own, so a dead bundle, a hydration crash or a parse
+   error leaves the page fully painted. `html[data-rvx-off]` is the watchdog's escape hatch for
+   the remaining case: we hid blocks and the observer then never fired.
+   ═══════════════════════════════════════════════════════════ */
+
+/* 1 · the entrance */
+[data-rvx] {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 0.52s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.52s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--d, 0ms);
+  will-change: opacity, transform;
+}
+[data-rvx][data-rvx-in] { opacity: 1; transform: none; will-change: auto; }
+
+/* watchdog + reduced motion: both un-hide everything, immediately and without a transition */
+html[data-rvx-off] [data-rvx] { opacity: 1 !important; transform: none !important; transition: none !important; }
+html[data-rvx-off] .rv { opacity: 1 !important; transform: none !important; transition: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  [data-rvx] { opacity: 1 !important; transform: none !important; transition: none !important; }
+}
+
+/* 2 · anchors glide instead of jumping, and land below the sticky header rather than under it.
+   scroll-padding-top is the fix for the classic sticky-nav bug where an anchor target lands
+   behind the bar; 5.5rem clears the 3.5–4rem nav plus breathing room. */
+html { scroll-padding-top: 5.5rem; }
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+:target { scroll-margin-top: 5.5rem; }
+
+/* 3 · PRESS. The thing that makes a click feel like it landed: a 1.5% squash on the way down,
+   released on a faster curve than it was applied. Scoped to controls — buttons, card links
+   (every one in this codebase carries `group` for its hover state) and disclosure summaries —
+   never to inline links inside a paragraph, where a moving word is just noise. */
+button:not(:disabled):not([aria-disabled="true"]),
+[role="button"],
+a.group,
+summary,
+.btn-grad,
+.card-x {
+  transition-property: transform, opacity, color, background-color, border-color, box-shadow;
+  transition-duration: 0.22s;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  button:not(:disabled):not([aria-disabled="true"]):active,
+  [role="button"]:active,
+  a.group:active,
+  summary:active,
+  .btn-grad:active,
+  .card-x:active {
+    transform: scale(0.985);
+    transition-duration: 0.08s;
+  }
+}
+
+/* 4 · card links lift and warm on hover — acquire's `box-shadow .3s ease` move, in our palette.
+   Opt-in via .lift-x so a nav pill does not start casting a shadow. */
+.lift-x { transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease, border-color 0.3s ease; }
+@media (prefers-reduced-motion: no-preference) {
+  .lift-x:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 1px 2px rgba(17, 17, 26, 0.05), 0 14px 34px -14px rgba(17, 17, 26, 0.22);
+    border-color: rgba(106, 71, 245, 0.3);
+  }
+  .lift-x:active { transform: translateY(-1px) scale(0.993); transition-duration: 0.08s; }
+}
+
+/* /download surface tabs. Hidden ONLY once the inline script in layout.tsx has proved JS is
+   alive — with scripting off, all four surfaces render stacked, as they did before the picker
+   was wired up. No file on this page is reachable only by running our code. */
+.js-reveal .dl-off { display: none; }
+
+/* ═══════════════════════════════════════════════════════════
+   MEASURED AGAINST THE FIELD (2026-10-15)
+   Twelve reference sites scanned — linear, stripe, vercel, clerk, resend, railway, raycast,
+   cursor, framer, arc, anthropic, acquire — by downloading each one's stylesheets and bundles
+   and reading what is actually in them. Three results changed what is written below.
+
+   1. NOBODY HIJACKS THE SCROLL. Lenis: 0 of 12. Locomotive: 0 of 12. GSAP/ScrollTrigger: 2
+      (anthropic, acquire). The inertia-scroll fashion is over at this tier, which settles the
+      question of whether to add one: no.
+
+   2. CSS SCROLL-DRIVEN ANIMATION IS REAL BUT IT IS NOT USED FOR ENTRANCES. Five of twelve ship
+      `animation-timeline`, and on inspection every single use is `scroll(self inline)` or
+      `scroll(self)` — edge fades on horizontally scrollable strips (clerk's and resend's tab
+      rails) and one snap dialog at stripe. Not one of them drives a content reveal with
+      `view()`. So the reveal stays on the null-tested observer, and scroll-timeline is used
+      for the one thing the field uses it for: the fade below.
+
+   3. OUR ENTRANCE WAS THE SLOWEST THING ON ANY OF THESE SITES. Median transition durations:
+      resend 150ms · linear 160 · cursor 160 · vercel 200 · clerk 200 · anthropic 200 · stripe
+      300 · raycast 300 · acquire 300. Ours was 620ms. Now 520, with the rise cut 18px → 14px.
+      The easing was already right: cubic-bezier(.16,1,.3,1) is in use at vercel, raycast and
+      anthropic verbatim.
+   ═══════════════════════════════════════════════════════════ */
+
+/* MENU SPRING. Stripe's navigation menus run on --navigation-duration:240ms (slow variant
+   300ms), so 240 is the field's number for exactly this component, not a guess. The curve is
+   a critically-damped spring sampled as linear() — the technique clerk uses on its own
+   disclosure animations. No overshoot: a nav panel that bounces reads as a toy. */
+:root {
+  --menu-dur: 240ms;
+  --spring: linear(
+    0, 0.1061, 0.3018, 0.4922, 0.6466, 0.7613, 0.8422, 0.8975, 0.9342, 0.9582,
+    0.9737, 0.9836, 0.9898, 0.9937, 0.9961, 0.9976, 0.9985, 0.9991, 1, 1
+  );
+}
+
+/* EDGE FADE on horizontally scrollable strips — the one thing the field genuinely uses
+   scroll-driven CSS for. The mask tells you there is more to the right before you touch it,
+   and stops showing you a half-sliced card at the edge. Runs on the compositor, needs no JS,
+   and where it is unsupported the strip simply has no mask: nothing is ever hidden by it. */
+@supports (animation-timeline: scroll(self inline)) {
+  @media (prefers-reduced-motion: no-preference) {
+    .edge-fade {
+      animation: edge-fade linear both;
+      animation-timeline: scroll(self inline);
+      animation-range: 0 100%;
+    }
+    @keyframes edge-fade {
+      0% {
+        -webkit-mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - 3.5rem), transparent 100%);
+        mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - 3.5rem), transparent 100%);
+      }
+      100% {
+        -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 3.5rem, #000 100%);
+        mask-image: linear-gradient(90deg, transparent 0, #000 3.5rem, #000 100%);
+      }
+    }
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   THE STATE BEFORE THE CLICK (2026-10-15)
+   Everything above animates once you have already committed — the page scrolls, the menu
+   opens, the button squashes. What this site had almost none of is the half-second BEFORE
+   that, when the pointer is over a thing and the thing has to say it is a thing. On
+   acquire.com that is one move repeated everywhere: box-shadow over .3s ease, and the card
+   rises out of the page under the cursor. It is the single most-repeated declaration in their
+   stylesheet — 10 occurrences, second only to "all .3s ease".
+
+   WHY THESE SELECTORS RATHER THAN A CLASS ON EVERY CARD. There are well over a hundred
+   card-shaped links across these pages, written over months across five files, and nearly all
+   of them already carry border-border plus a rounded-*. Matching on that is how the rule
+   reaches all of them at once, instead of a class landing on the forty files I happened to
+   open. Scoped to main on purpose: the nav and footer have their own hover language, and a
+   submenu row that lifted off its panel would look broken.
+
+   ALL OF IT BEHIND (hover: hover). On a touch screen :hover latches after a tap and stays lit
+   until you touch something else, so a phone gets the press and none of this.
+   ═══════════════════════════════════════════════════════════ */
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  main a[class*="border-border"][class*="rounded-"],
+  main button[class*="border-border"][class*="rounded-"],
+  main a[class*="border-dashed"][class*="rounded-"] {
+    transition:
+      transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 0.3s ease,
+      border-color 0.3s ease,
+      background-color 0.3s ease,
+      color 0.3s ease;
+  }
+  main a[class*="border-border"][class*="rounded-"]:hover,
+  main button[class*="border-border"][class*="rounded-"]:hover,
+  main a[class*="border-dashed"][class*="rounded-"]:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 1px 2px rgba(17, 17, 26, 0.05),
+      0 12px 30px -14px rgba(17, 17, 26, 0.24);
+  }
+  /* pressed, it travels back down THROUGH the resting position — that return is what makes a
+     click read as a click rather than as a state change */
+  main a[class*="border-border"][class*="rounded-"]:active,
+  main button[class*="border-border"][class*="rounded-"]:active {
+    transform: translateY(0) scale(0.99);
+    transition-duration: 0.08s;
+  }
+}
+
+/* TEXT LINKS DRAW THEIR OWN UNDERLINE. A line that is already there says nothing; a line that
+   draws itself under the pointer is the cheapest possible "this responds". Painted as a
+   background image so it can animate its width without shifting the text by a pixel, and kept
+   off anything card-shaped or button-shaped. */
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  main p a[href]:not([class*="rounded"]):not([class*="btn"]),
+  main li a[href]:not([class*="rounded"]):not([class*="btn"]) {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-size: 0% 1px;
+    background-position: 0 calc(100% - 1px);
+    background-repeat: no-repeat;
+    transition: background-size 0.3s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s ease;
+  }
+  main p a[href]:not([class*="rounded"]):not([class*="btn"]):hover,
+  main li a[href]:not([class*="rounded"]):not([class*="btn"]):hover {
+    background-size: 100% 1px;
+  }
+}
+
+/* THE KEYBOARD GETS THE SAME ANSWER THE POINTER DOES. One ring, every control, drawn only for
+   :focus-visible so a mouse click never paints it. :where() holds specificity at zero, so the
+   components that already style their own focus keep winning. */
+:where(a, button, [role="button"], summary, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid rgba(106, 71, 245, 0.55);
+  outline-offset: 2px;
+}
+
+/* ═══ THE DROPDOWN MENUS ═══════════════════════════════════════════════════════════════════
+   The open is choreographed; the close is instant. That asymmetry is the whole trick, and
+   every menu worth copying has it — a panel that takes as long to leave as it took to arrive
+   feels like it is arguing with the pointer.
+
+   On the way in, in order:
+     0ms    the trigger lights and HOLDS — it stays lit while the pointer is inside the panel,
+            which is what makes the item and the panel read as one object instead of two
+     0ms    the panel runs a 420ms spring from scale .97 / −8px with origin top centre, so it
+            unfolds out of the item rather than sliding in from nowhere
+     0ms    the caret draws itself at the top edge, tying the panel to the item it belongs to
+     60ms   row one begins; every following row is 42ms behind the last
+   On the way out all of it runs together in 110ms with no delay and no spring, because a
+   closing menu is not telling you anything.
+
+   Written as real classes instead of a wall of group-hover/nav: arbitrary variants: a
+   six-property transition with a per-child delay does not survive being spelled sideways.
+   The first version of this was one flat 240ms opacity+translate on the panel with nothing
+   staggered — functional, and indistinguishable from a tooltip.
+
+   REDUCED MOTION KEEPS THE FADE. A menu appearing is not decoration, it is the answer to the
+   pointer, so under `reduce` the opacity still crosses in 120ms — the spring, the scale, the
+   caret draw and the cascade are what drop. */
+
+.nav-item {
+  position: relative;
+}
+
+/* The trigger holds its LIT TEXT for as long as the panel is open — but it no longer
+   paints its own fill. The sliding pill in nav.tsx does that, and a pill travelling into a
+   box that is already filled reads as two highlights arriving at the same place. */
+.nav-item:hover > .nav-trigger,
+.nav-item:focus-within > .nav-trigger {
+  color: var(--foreground);
+}
+
+.nav-panel {
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  z-index: 50;
+  width: 30rem;
+  /* HOVER BRIDGE. Without a padded gap the pointer crosses dead space between the item and
+     the card and the menu shuts under the cursor. It is padding, not margin, so the gap is
+     inside the hover target. */
+  padding-top: 0.7rem;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateX(-50%) translateY(-8px) scale(0.97);
+  transform-origin: top center;
+  transition:
+    opacity 110ms ease,
+    transform 110ms cubic-bezier(0.4, 0, 1, 1);
+}
+
+.nav-item:hover > .nav-panel,
+.nav-item:focus-within > .nav-panel {
+  pointer-events: auto;
+  opacity: 1;
+  transform: translateX(-50%) translateY(0) scale(1);
+  transition:
+    opacity 170ms ease,
+    transform 420ms var(--spring);
+}
+
+.nav-card {
+  position: relative;
+  display: grid;
+  gap: 0.25rem;
+  border-radius: 1rem;
+  border: 1px solid var(--border);
+  background: var(--background);
+  padding: 0.5rem;
+  box-shadow:
+    0 18px 40px -12px rgba(1, 1, 26, 0.18),
+    0 2px 6px rgba(1, 1, 26, 0.06);
+}
+
+/* the caret — a rotated square with two of its four borders, so it reads as a notch cut out
+   of the card's own edge rather than a triangle parked on top of it */
+.nav-card::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -5px;
+  height: 9px;
+  width: 9px;
+  margin-left: -4.5px;
+  rotate: 45deg;
+  border-top: 1px solid var(--border);
+  border-left: 1px solid var(--border);
+  border-top-left-radius: 3px;
+  background: var(--background);
+  opacity: 0;
+  scale: 0.4;
+  transition: opacity 90ms ease, scale 90ms ease;
+}
+.nav-item:hover .nav-card::before,
+.nav-item:focus-within .nav-card::before {
+  opacity: 1;
+  scale: 1;
+  transition: opacity 200ms ease 40ms, scale 380ms var(--spring) 40ms;
+}
+
+.nav-row {
+  position: relative;
+  display: block;
+  border-radius: 0.75rem;
+  background-color: rgba(99, 91, 255, 0.035);
+  padding: 0.6rem 0.9rem;
+  opacity: 0;
+  transform: translateY(-7px);
+  transition:
+    opacity 90ms ease,
+    transform 90ms ease,
+    background-color 180ms ease;
+}
+.nav-item:hover .nav-row,
+.nav-item:focus-within .nav-row {
+  opacity: 1;
+  transform: none;
+  /* --nav-d is set per row in nav.tsx: 60ms, then 42ms apart */
+  transition:
+    opacity 240ms ease var(--nav-d, 0ms),
+    transform 460ms var(--spring) var(--nav-d, 0ms),
+    background-color 180ms ease;
+}
+.nav-row:hover {
+  background-color: rgba(99, 91, 255, 0.09);
+}
+
+.nav-row-h {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--foreground);
+  transition: color 180ms ease;
+}
+.nav-row:hover .nav-row-h {
+  color: var(--accent);
+}
+.nav-row-p {
+  margin-top: 0.1rem;
+  font-size: 11.5px;
+  line-height: 1.35;
+  color: var(--muted-2);
+}
+
+/* the arrow is the row's own answer to the pointer — it is not in the layout until it is
+   needed, so nothing moves when it appears */
+.nav-row-arrow {
+  position: absolute;
+  right: 0.85rem;
+  top: 50%;
+  margin-top: -0.6em;
+  font-size: 13px;
+  color: var(--accent);
+  opacity: 0;
+  transform: translateX(-5px);
+  transition: opacity 180ms ease, transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.nav-row:hover .nav-row-arrow {
+  opacity: 1;
+  transform: none;
+}
+
+.nav-chev {
+  transition: rotate 110ms ease;
+}
+.nav-item:hover .nav-chev,
+.nav-item:focus-within .nav-chev {
+  rotate: 180deg;
+  transition: rotate 420ms var(--spring);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-panel,
+  .nav-item:hover > .nav-panel,
+  .nav-item:focus-within > .nav-panel {
+    transform: translateX(-50%);
+    transition: opacity 120ms ease;
+  }
+  .nav-row,
+  .nav-item:hover .nav-row,
+  .nav-item:focus-within .nav-row {
+    transform: none;
+    transition: opacity 120ms ease, background-color 120ms ease;
+  }
+  .nav-card::before,
+  .nav-item:hover .nav-card::before,
+  .nav-item:focus-within .nav-card::before {
+    scale: 1;
+    transition: opacity 120ms ease;
+  }
+  .nav-chev,
+  .nav-item:hover .nav-chev,
+  .nav-item:focus-within .nav-chev {
+    transition: none;
+  }
+  .nav-row-arrow,
+  .nav-row:hover .nav-row-arrow {
+    transform: none;
+    transition: opacity 120ms ease;
+  }
+}
+
+/* ═══ THE PRIMARY BUTTON GETS A SWEEP ══════════════════════════════════════════════════════
+   Measured across six reference stylesheets (vercel, resend, clerk, stripe, railway, linear,
+   2026-10-15): mask-image is the most-used hand-authored effect in the set — 140 occurrences
+   on vercel, 144 on clerk, 108 on resend. The @property and @starting-style counts that look
+   dramatic in the same scan are mostly Tailwind v4's own internals, not design work, so they
+   are not evidence of anything except that two of those sites are on the same Tailwind we are.
+
+   What the sweep is: one band of light that crosses the button once, on hover, and leaves. A
+   transition cannot do that — it would travel out and then reverse back when the pointer left,
+   which reads as a mistake. It needs an animation, and an animation re-runs every time :hover
+   starts matching again, which is exactly the behaviour wanted.
+
+   Kept quiet on purpose: 22% white at the peak, one pass, 620ms, and nothing at all for a
+   pointer that cannot hover or a visitor who asked for less motion. A gradient button with a
+   sweep you NOTICE is a 2014 gradient button. */
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .btn-grad {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+  }
+  .btn-grad::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(
+      100deg,
+      transparent 32%,
+      rgba(255, 255, 255, 0.22) 50%,
+      transparent 68%
+    );
+    translate: -130% 0;
+  }
+  .btn-grad:hover::after {
+    animation: btn-sweep 620ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  @keyframes btn-sweep {
+    from { translate: -130% 0; }
+    to   { translate: 130% 0; }
+  }
+}
+
+/* ═══ THE SEGMENTED CONTROL ════════════════════════════════════════════════════════════════
+   The /download surface picker is four buttons that pick a panel, which is a segmented
+   control, and a segmented control without a travelling indicator is four buttons. Same
+   argument as the nav pill: with a background on whichever one is selected, switching paints
+   one box out and another in and the row reads as four things; with one indicator that moves,
+   the eye follows a single object and the row reads as one control with a position in it.
+
+   The geometry is computed in download-view.tsx from the real button rects, so it is right at
+   any width and in any font. Under reduced motion it jumps instead of gliding — the position
+   is information, the travel is not. */
+.seg {
+  position: relative;
+}
+.seg-pill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  border-radius: 0.75rem;
+  background: var(--background);
+  box-shadow:
+    0 1px 2px rgba(17, 17, 26, 0.06),
+    0 6px 16px -10px rgba(17, 17, 26, 0.22);
+  outline: 1px solid rgba(99, 91, 255, 0.22);
+  outline-offset: -1px;
+  transition:
+    transform 400ms var(--spring),
+    width 400ms var(--spring),
+    height 400ms var(--spring),
+    opacity 180ms ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .seg-pill { transition: opacity 120ms ease; }
+}

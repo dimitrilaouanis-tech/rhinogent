@@ -60,7 +60,9 @@ export function isBillableAnswer(text: string): boolean {
 // default. Cache reads bill at 10% of input, and an async/batch lane at 50% off — both industry standard.
 // Non-answers / abstentions are FREE. Normal/local lane is free elsewhere; this meters only the Pro lane.
 // EXACT MIRROR of the app's lib/wallet.ts so both surfaces price identically.
-const CREDITS_PER_1K: Record<string, { in: number; out: number }> = {
+// EXPORTED so /agents can publish the rate card from this table instead of retyping it.
+// Two surfaces, one number — the sync-lock rule. Do not copy these three rows anywhere.
+export const CREDITS_PER_1K: Record<string, { in: number; out: number }> = {
   haiku: { in: 0.25, out: 1 },
   sonnet: { in: 3, out: 12 },
   opus: { in: 6, out: 30 },

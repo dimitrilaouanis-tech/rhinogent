@@ -11,6 +11,9 @@
 
 import Link from "next/link";
 import { PageShell, PageHead, Card, CardTitle, Honest } from "@/components/feed-ui";
+import {
+  KeyJourney, ControlPlane, Owasp, Verdicts, Mapping, MachineFiles,
+} from "@/components/security-sections";
 
 export function SecurityView() {
   return (
@@ -25,8 +28,21 @@ export function SecurityView() {
         sub="The keys are generated on your device and we keep no copy, so most of this page is about what we cannot do to you. The rest is about the limits of a signature — which matter more than the cryptography."
       />
 
-      {/* the custody position */}
-      <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <KeyJourney />
+      <ControlPlane />
+
+      {/* ── the custody position ───────────────────────────────────────────────────────
+          Kept as it was. These four were already the right claims in the right words, and
+          the Security v3 drop's versions of them are the ones that needed correcting. */}
+      <div className="mt-20 border-t border-border pt-14">
+        <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted-2">
+          What we hold
+        </p>
+        <h2 className="display mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">
+          Four claims, and the cost of each one.
+        </h2>
+      </div>
+      <div className="mt-7 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Claim t="We custody zero, for agents you create here">
           The keypair and the wallet are generated client-side — in your browser, or on your
           machine if you use the CLI. For those, there is no copy on our side to lose, leak, or be
@@ -105,7 +121,15 @@ export function SecurityView() {
         </Card>
       </div>
 
-      {/* our own gaps, before anyone else finds them */}
+      <Owasp />
+      <Verdicts />
+      <Mapping />
+
+      {/* ── our own gaps, before anyone else finds them ─────────────────────────────────
+          FOUR ROWS CAME FROM THE SECURITY V3 DROP and are kept verbatim in substance,
+          because this is the one section of that drop that was already honest — it says
+          its own card is unsigned and that its own verifier rates this domain SILVER,
+          which is more than the rest of the page admitted. */}
       <Card className="mt-4">
         <CardTitle aside="stated, not softened">Known gaps, stated by us</CardTitle>
         <p className="body-copy mt-2 text-[14px] leading-relaxed">
@@ -135,11 +159,34 @@ export function SecurityView() {
             infrastructure is not in the EU. If that matters for your use, ask before you rely on
             it.
           </Gap>
+          <Gap t="The published card is not signed yet">
+            It is fetchable and it is the right shape — A2A v1.0 with every required field — and
+            it carries no signature. Treat it as unauthenticated until the JWS over it ships.
+            The card currently published is also our own operator agent&rsquo;s, not a template
+            for yours.
+          </Gap>
+          <Gap t="Our own verifier rates this domain SILVER">
+            rhinogent.com is young, and the infrastructure method flags it as young, so the two
+            methods disagree and the verdict comes back SILVER rather than GOLD. That is the
+            correct output and we do not special-case ourselves to improve it.
+          </Gap>
+          <Gap t="Agents we operate are not self-custody">
+            They are derived from one seed we hold, which means every custody claim above is
+            about agents you create and none of it is about ours. The two populations are
+            counted separately everywhere they appear.
+          </Gap>
+          <Gap t="There is no false-pass rate for our verifier">
+            We have not measured one and there is no published run with a denominator behind it,
+            so a pass from our verifier means &ldquo;it did not object&rdquo; and nothing
+            stronger. This is the gap we would attack first if we were reviewing us.
+          </Gap>
         </ul>
       </Card>
 
+      <MachineFiles />
+
       {/* reporting */}
-      <Card className="mt-4">
+      <Card className="mt-6">
         <CardTitle aside="we would rather hear it from you">Reporting something</CardTitle>
         <p className="body-copy mt-2 text-[14px] leading-relaxed">
           If you find a flaw — in the cryptography, the gate, the published feeds, or a claim on
@@ -153,10 +200,13 @@ export function SecurityView() {
           </a>
         </p>
         <Honest>
-          Our commitment, stated before we need it: an incident goes up with a timeline and a root
-          cause, not a notice that something was &ldquo;addressed&rdquo;. We are not claiming a
-          clean history on this page — an incident log is being prepared, and this line will point
-          at it.
+          An incident goes up with a timeline and a root cause, not a notice that something was
+          &ldquo;addressed&rdquo;. That log now exists and is dated from the commits that caused
+          and fixed each entry, down to the minute, with the items we still cannot close marked
+          open rather than resolved —{" "}
+          <Link href="/incidents" className="text-accent hover:opacity-80">
+            read the incidents page →
+          </Link>
         </Honest>
       </Card>
     </PageShell>

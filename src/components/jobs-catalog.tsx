@@ -1,71 +1,170 @@
-// src/components/JobsCatalog.tsx — drop into /agents between the rate card and "Hire · Sell · Trade".
-// Same conventions as AgentRates.tsx. Every count and row comes from src/lib/jobs.ts.
 "use client";
+
+/* The job catalogue — every job an agent here can be assigned, with its proof.
+   ─────────────────────────────────────────────────────────────────────────────────────────
+   REWRITTEN 2026-10-15 INTO THE SITE'S DESIGN SYSTEM. The data (src/lib/jobs.ts) is kept
+   exactly as it landed — 181 jobs across 17 families is the most valuable thing on this page
+   and none of it is touched here. What changed is the rendering, and it changed because the
+   drop's component was pasted in with its own stylesheet and measurably did not work:
+
+     · it opened with <section class="sec"><div class="wrap">, and `.wrap` is defined nowhere
+       in this repo, so the tables rendered full-bleed — measured at 1430px wide starting at
+       x=0 in a 1440px window, with no container and no gutter
+     · every border was `1px solid var(--line)`, and `--line` is not one of our tokens, so the
+       declaration was invalid and dropped: row separators and button outlines computed to
+       `0px none`. The table had no lines in it
+     · `.eyebrow-v2` and `.mono-v2` live in zip.css, which only the landing page imports, so
+       the eyebrow rendered as 15px system-font near-black instead of mono 11px tracked muted
+     · the selected filter button was hardcoded `#14141a`, the drop's near-black, and the draft
+       chip `#fff4d6`, neither of which is a colour on this site
+     · and it was mounted after <PageShell>, which closes with the footer — so the whole
+       catalogue rendered BELOW the footer (footer at y=1009, catalogue at y=1370)
+
+   All six are gone: it is Tailwind against site tokens now, it returns a bare <section>, and
+   /agents composes it inside the one shell. Nothing about which jobs exist, what they return
+   or what proof they carry has been edited.
+
+   THE CHIP IS THE HONEST PART. live = listable over x402 or MCP today, draft = built or
+   wrapped but not listed, planned = in the plan and not built. Counts are derived from the
+   array on every render, so the headline cannot drift from the rows the way a typed number
+   would. */
+
 import { useState } from "react";
 import { FAMILIES, JOBS_ASOF, jobCounts, type Job } from "@/lib/jobs";
 
-const chip = (s: Job["status"]) => ({
-  fontFamily: "var(--font-mono)", fontSize: 10, letterSpacing: ".02em", padding: "2px 7px", borderRadius: 6, whiteSpace: "nowrap",
-  color: s === "live" ? "var(--ok, #1a8f4c)" : s === "draft" ? "var(--gold, #9a6700)" : "var(--muted)",
-  background: s === "live" ? "rgba(26,143,76,.08)" : s === "draft" ? "#fff4d6" : "var(--page, #f7f6f3)",
-  border: `1px solid ${s === "live" ? "rgba(26,143,76,.3)" : s === "draft" ? "rgba(154,103,0,.3)" : "var(--line)"}`,
-} as React.CSSProperties);
-const PROOF: Record<Job["proof"], string> = { verdict: "signed verdict · two methods agree", receipt: "signed receipt", doc: "deliverable · hash in receipt", approval: "needs-you card before send / spend" };
+const CHIP: Record<Job["status"], string> = {
+  live: "bg-emerald/12 text-emerald",
+  draft: "bg-gold/15 text-gold",
+  planned: "bg-surface-2 text-muted-2",
+};
+
+const PROOF: Record<Job["proof"], string> = {
+  verdict: "signed verdict · two methods agree",
+  receipt: "signed receipt",
+  doc: "deliverable · hash in receipt",
+  approval: "needs-you card before send / spend",
+};
+
+function Chip({ s }: { s: Job["status"] }) {
+  return (
+    <span className={`inline-block whitespace-nowrap rounded-full px-2 py-0.5 font-mono text-[10px] tracking-tight ${CHIP[s]}`}>
+      {s}
+    </span>
+  );
+}
+
+function Filter({
+  on, onClick, children,
+}: { on: boolean; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={on}
+      className={`rounded-lg border px-2.5 py-1.5 font-mono text-[11px] transition-colors ${
+        on
+          ? "border-accent/40 bg-accent/[.10] text-accent"
+          : "border-border bg-background text-muted hover:border-accent/30 hover:text-foreground"
+      }`}
+    >
+      {children}
+    </button>
+  );
+}
 
 export default function JobsCatalog() {
   const [fam, setFam] = useState<string>("all");
   const [status, setStatus] = useState<"all" | Job["status"]>("all");
   const c = jobCounts();
-  const fams = FAMILIES.filter(f => fam === "all" || f.key === fam);
+  const fams = FAMILIES.filter((f) => fam === "all" || f.key === fam);
+
   return (
-    <section id="jobs" className="sec" style={{ padding: "72px 0" }}>
-      <div className="wrap">
-        <div style={{ maxWidth: 820 }}>
-          <div className="eyebrow-v2">What an agent can be assigned · {JOBS_ASOF}</div>
-          <h2 className="h" style={{ fontSize: "clamp(30px, 4.4vw, 44px)", marginTop: 12 }}>
-            {c.total} jobs in {c.families} families. {c.live} listable today.
-          </h2>
-          <p className="p" style={{ marginTop: 12, maxWidth: 680 }}>
-            Everything the market assigns to agents right now, from agent-to-agent calls priced in fractions of a cent to
-            outcomes priced per resolution. Each row says what you send, what comes back, and what proof it carries. The
-            chip is honest: <span style={chip("live")}>live</span> is sellable over x402 or MCP today,{" "}
-            <span style={chip("draft")}>draft</span> is built or wrapped and not yet listed, <span style={chip("planned")}>planned</span> is in the plan.
-          </p>
-        </div>
+    <section id="jobs" className="mt-20 border-t border-border pt-14">
+      <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted-2">
+        What an agent can be assigned · {JOBS_ASOF}
+      </p>
+      <h2 className="display mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">
+        {c.total} jobs in {c.families} families.{" "}
+        <span className="accent-gradient">{c.live} listable today.</span>
+      </h2>
+      <p className="body-copy mt-3 max-w-3xl text-[15px] leading-relaxed">
+        Everything the market assigns to agents right now, from agent-to-agent calls priced in
+        fractions of a cent to outcomes priced per resolution. Each row says what you send, what
+        comes back and what proof it carries. The chip is honest: <Chip s="live" /> is sellable
+        over x402 or MCP today, <Chip s="draft" /> is built or wrapped and not yet listed, and{" "}
+        <Chip s="planned" /> is in the plan and not built.
+      </p>
 
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 22, alignItems: "center" }} role="tablist" aria-label="family">
-          <button type="button" onClick={() => setFam("all")} className="mono-v2" style={{ fontSize: 11, padding: "6px 10px", borderRadius: 8, border: "1px solid var(--line)", background: fam === "all" ? "var(--ink, #14141a)" : "#fff", color: fam === "all" ? "#fff" : "inherit" }}>all · {c.total}</button>
-          {FAMILIES.map(f => (
-            <button key={f.key} type="button" onClick={() => setFam(f.key)} className="mono-v2" style={{ fontSize: 11, padding: "6px 10px", borderRadius: 8, border: "1px solid var(--line)", background: fam === f.key ? "var(--ink, #14141a)" : "#fff", color: fam === f.key ? "#fff" : "inherit" }}>{f.title} · {f.jobs.length}</button>
-          ))}
-          <span style={{ flex: 1 }} />
-          {(["all", "live", "draft", "planned"] as const).map(s => (
-            <button key={s} type="button" onClick={() => setStatus(s)} className="mono-v2" style={{ fontSize: 11, padding: "6px 10px", borderRadius: 8, border: "1px solid var(--line)", background: status === s ? "var(--ink, #14141a)" : "#fff", color: status === s ? "#fff" : "inherit" }}>{s}{s !== "all" ? ` · ${c[s]}` : ""}</button>
-          ))}
-        </div>
+      <div className="mt-6 flex flex-wrap items-center gap-1.5" role="group" aria-label="Filter by family">
+        <Filter on={fam === "all"} onClick={() => setFam("all")}>
+          all · {c.total}
+        </Filter>
+        {FAMILIES.map((f) => (
+          <Filter key={f.key} on={fam === f.key} onClick={() => setFam(f.key)}>
+            {f.title} · {f.jobs.length}
+          </Filter>
+        ))}
+      </div>
 
-        {fams.map(f => {
-          const rows = f.jobs.filter(j => status === "all" || j.status === status);
+      <div className="mt-2 flex flex-wrap items-center gap-1.5" role="group" aria-label="Filter by status">
+        {(["all", "live", "draft", "planned"] as const).map((s) => (
+          <Filter key={s} on={status === s} onClick={() => setStatus(s)}>
+            {s}
+            {s !== "all" ? ` · ${c[s]}` : ""}
+          </Filter>
+        ))}
+      </div>
+
+      <div className="mt-6 flex flex-col gap-6">
+        {fams.map((f) => {
+          const rows = f.jobs.filter((j) => status === "all" || j.status === status);
           if (!rows.length) return null;
           return (
-            <div key={f.key} style={{ marginTop: 22, background: "var(--background, #fff)", border: "1px solid var(--line)", borderRadius: 18, overflow: "hidden" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 16, padding: "18px 20px 12px" }}>
-                <div style={{ fontWeight: 650, fontSize: 18 }}>{f.title} <span className="mono-v2" style={{ fontSize: 11, color: "var(--muted-2)", marginLeft: 8 }}>{rows.length} of {f.jobs.length}</span></div>
-                <p className="p" style={{ margin: 0, fontSize: 13, maxWidth: 560, textAlign: "right" }}>{f.lede}</p>
+            <div key={f.key} className="overflow-hidden rounded-xl border border-border bg-background">
+              <div className="flex flex-col gap-1 border-b border-border px-5 pb-3 pt-4 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
+                <h3 className="text-[17px] font-semibold tracking-tight">
+                  {f.title}
+                  <span className="ml-2 font-mono text-[11px] font-normal text-muted-2">
+                    {rows.length} of {f.jobs.length}
+                  </span>
+                </h3>
+                <p className="body-copy max-w-xl text-[12.5px] leading-relaxed sm:text-right">
+                  {f.lede}
+                </p>
               </div>
-              <div style={{ overflowX: "auto" }}>
-                <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 820, tableLayout: "fixed" }}>
-                  <colgroup><col style={{ width: "26%" }} /><col style={{ width: "20%" }} /><col style={{ width: "26%" }} /><col style={{ width: "14%" }} /><col style={{ width: "7%" }} /><col style={{ width: "7%" }} /></colgroup>
-                  <thead><tr>{["JOB", "YOU SEND", "IT RETURNS", "PROOF", "UNIT", "STATUS"].map(h => <th key={h} style={{ fontFamily: "var(--font-mono)", fontSize: 10.5, letterSpacing: ".04em", color: "var(--muted-2)", textAlign: "left", padding: "10px 14px", borderBottom: "1px solid var(--line)", fontWeight: 500 }}>{h}</th>)}</tr></thead>
+
+              <div className="edge-fade overflow-x-auto">
+                <table className="w-full min-w-[820px] table-fixed border-collapse text-left">
+                  <colgroup>
+                    <col className="w-[25%]" />
+                    <col className="w-[19%]" />
+                    <col className="w-[25%]" />
+                    <col className="w-[15%]" />
+                    <col className="w-[8%]" />
+                    <col className="w-[8%]" />
+                  </colgroup>
+                  <thead>
+                    <tr className="border-b border-border font-mono text-[10.5px] uppercase tracking-[0.06em] text-muted-2">
+                      {["Job", "You send", "It returns", "Proof", "Unit", "Status"].map((h) => (
+                        <th key={h} className="px-4 py-2.5 font-medium">{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
                   <tbody>
-                    {rows.map(j => (
-                      <tr key={j.job}>
-                        <td style={{ padding: "11px 14px", borderBottom: "1px solid var(--line)", fontSize: 13.5, fontWeight: 600, verticalAlign: "top" }}>{j.job}</td>
-                        <td style={{ padding: "11px 14px", borderBottom: "1px solid var(--line)", fontSize: 13, color: "var(--muted)", verticalAlign: "top" }}>{j.send}</td>
-                        <td style={{ padding: "11px 14px", borderBottom: "1px solid var(--line)", fontSize: 13, color: "var(--muted)", verticalAlign: "top" }}>{j.back}</td>
-                        <td style={{ padding: "11px 14px", borderBottom: "1px solid var(--line)", fontSize: 11.5, color: "var(--muted-2)", verticalAlign: "top", fontFamily: "var(--font-mono)" }}>{PROOF[j.proof]}</td>
-                        <td style={{ padding: "11px 14px", borderBottom: "1px solid var(--line)", fontSize: 12, color: "var(--muted)", verticalAlign: "top" }}>{j.unit}</td>
-                        <td style={{ padding: "11px 14px", borderBottom: "1px solid var(--line)", verticalAlign: "top" }}><span style={chip(j.status)}>{j.status}</span></td>
+                    {rows.map((j) => (
+                      <tr key={j.job} className="border-b border-border/70 last:border-0 hover:bg-surface/60">
+                        <td className="px-4 py-2.5 align-top text-[13.5px] font-semibold tracking-tight">
+                          {j.job}
+                        </td>
+                        <td className="px-4 py-2.5 align-top text-[12.5px] text-muted">{j.send}</td>
+                        <td className="px-4 py-2.5 align-top text-[12.5px] text-muted">{j.back}</td>
+                        <td className="px-4 py-2.5 align-top font-mono text-[11px] leading-snug text-muted-2">
+                          {PROOF[j.proof]}
+                        </td>
+                        <td className="px-4 py-2.5 align-top text-[12px] text-muted">{j.unit}</td>
+                        <td className="px-4 py-2.5 align-top">
+                          <Chip s={j.status} />
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -74,10 +173,13 @@ export default function JobsCatalog() {
             </div>
           );
         })}
-        <p className="mono-v2" style={{ fontSize: 10.5, color: "var(--muted-2)", marginTop: 12 }}>
-          jobs.json carries this catalogue for machines · prices for live rows are on the rate card above · a job turns live only after its exam bank passes and the capability gate lists it
-        </p>
       </div>
+
+      <p className="mt-4 font-mono text-[11px] leading-relaxed text-muted-2">
+        Prices for the live rows are on the rate card above · a job turns live only once its exam
+        bank passes and the capability gate lists it, which is why {c.draft} rows that are built
+        still read draft
+      </p>
     </section>
   );
 }

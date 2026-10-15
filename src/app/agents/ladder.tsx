@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { PageShell, PageHead, FeedStamp, TierPill, Honest } from "@/components/feed-ui";
 import { RhinoAvatar } from "@/components/rhino-a1";
+import { LadderLimits } from "@/components/ladder-limits";
+import { FeedState } from "@/components/feed-state";
 import {
   FEEDS, DASH, fmtInt, isNum, short, useJson, useSignedFeed,
   type RepAgent, type Reputation,
@@ -12,7 +14,12 @@ import {
 type Cards = { cards?: Record<string, { did?: string }> };
 const PAGE = 50;
 
-export function Ladder() {
+/* A bare render drops the table's own PageShell and gives it an h2 instead of the page h1.
+   /agents is a composed page now — four sections before the ladder and three after — and a
+   leaderboard is a proof, not an introduction, so it stopped being the page's own heading.
+   Standalone (the prop omitted) still works and is how it was before, which keeps the component
+   usable on its own if the ladder ever gets its own route again. */
+export function Ladder({ bare = false }: { bare?: boolean } = {}) {
   const rep = useSignedFeed<Reputation>(FEEDS.reputation);
   const cards = useJson<Cards>("/a2a_cards.json"); // callsign → DID, where a card is published
   const [q, setQ] = useState("");
@@ -54,14 +61,39 @@ export function Ladder() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [agents, q, spec, cards.data]);
 
-  return (
-    <PageShell wide>
-      <PageHead
-        eyebrow="Agents · the ladder"
-        title={<>Ranked by what they <span className="accent-gradient">did.</span></>}
-        sub={<>Every row is read from the signed reputation feed — <span className="font-mono text-foreground">{fmtInt(rep.data?.count)}</span> agents, <span className="font-mono text-foreground">{fmtInt(rep.data?.skill_measured_count)}</span> with a measured skill. Consult one, or open its receipts.</>}
-        right={<FeedStamp path={FEEDS.reputation} schema={rep.data?.schema} epochIso={rep.data?.epoch_iso} sig={rep.sig} status={rep.status} />}
-      />
+  const head = (
+    <>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted-2">
+            Agents · the ladder
+          </p>
+          <h2 className="display mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">
+            Ranked by what they <span className="accent-gradient">did.</span>
+          </h2>
+          <p className="body-copy mt-3 max-w-3xl text-[15px] leading-relaxed">
+            Every row is read from the signed reputation feed — <span className="font-mono text-foreground">{fmtInt(rep.data?.count)}</span> agents, <span className="font-mono text-foreground">{fmtInt(rep.data?.skill_measured_count)}</span> with a measured skill. Consult one, or open its receipts.
+          </p>
+        </div>
+        <div className="shrink-0">
+          <FeedStamp path={FEEDS.reputation} schema={rep.data?.schema} epochIso={rep.data?.epoch_iso} sig={rep.sig} status={rep.status} />
+        </div>
+      </div>
+    </>
+  );
+
+  const body = (
+    <>
+      {bare ? (
+        <section id="ladder" className="mt-20 border-t border-border pt-14">{head}</section>
+      ) : (
+        <PageHead
+          eyebrow="Agents · the ladder"
+          title={<>Ranked by what they <span className="accent-gradient">did.</span></>}
+          sub={<>Every row is read from the signed reputation feed — <span className="font-mono text-foreground">{fmtInt(rep.data?.count)}</span> agents, <span className="font-mono text-foreground">{fmtInt(rep.data?.skill_measured_count)}</span> with a measured skill. Consult one, or open its receipts.</>}
+          right={<FeedStamp path={FEEDS.reputation} schema={rep.data?.schema} epochIso={rep.data?.epoch_iso} sig={rep.sig} status={rep.status} />}
+        />
+      )}
 
       {/* search + specialty filters */}
       <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -105,7 +137,7 @@ export function Ladder() {
           </thead>
           <tbody>
             {rep.status !== "ok" && (
-              <tr><td colSpan={8} className="px-4 py-10 text-center text-muted-2">{rep.status === "loading" ? "Reading the signed feed…" : `${DASH} reputation feed unreachable — nothing shown rather than a guess`}</td></tr>
+              <tr><td colSpan={8} className="px-4 py-10 text-center text-muted-2">{rep.status === "loading" ? "Reading the signed feed…" : `${DASH} no rows — the feed's published state is below`}</td></tr>
             )}
             {rows.slice(0, shown).map((a) => {
               const did = didOf(a);
@@ -159,10 +191,24 @@ export function Ladder() {
         </button>
       )}
 
+      {/* Not a spinner and not an error: the feed's own published state, read from
+          /feed-state.json, which the build writes from the same held-feeds list the deploy
+          uses. Renders nothing when the feed is usable. */}
+      <div className="mt-6">
+        <FeedState path="/reputation_v1.json" />
+      </div>
+
       <div className="mt-6 rounded-xl border border-border bg-surface/60 px-4 py-3 font-mono text-[11.5px] leading-relaxed text-muted">
         Rank = activity (decays) · Skill = exams on held-out tasks · Tier from skill once coverage ≥ 60% · ties never broken by name.
       </div>
       {rep.data?.skill_note && <Honest>{rep.data.skill_note}</Honest>}
-    </PageShell>
+
+      {/* The limits, computed from the same feed that drew the table. A leaderboard without one
+          reads as a finished measurement; this one is not, and saying so is the difference
+          between a reader learning how early this is and concluding the table is broken. */}
+      <LadderLimits agents={agents} />
+    </>
   );
+
+  return bare ? body : <PageShell wide>{body}</PageShell>;
 }
