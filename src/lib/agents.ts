@@ -33,10 +33,12 @@ function save(agents: Agent[]) {
   window.dispatchEvent(new CustomEvent(AGENTS_CHANGED));
 }
 
-/** Add a freshly minted agent. Returns the new list, or the unchanged list if full. */
-export function addAgent(agents: Agent[], label?: string): Agent[] {
+/** Add a freshly created agent. Returns the new list, or the unchanged list if full.
+ *  `owner` is the signed-in account's user id; both call sites now have a session before they
+ *  get here, and passing it is what binds the key to a person rather than to a browser. */
+export function addAgent(agents: Agent[], label?: string, owner?: string): Agent[] {
   if (agents.length >= MAX_SLOTS) return agents;
-  const next = [...agents, generateAgent(label)];
+  const next = [...agents, generateAgent(label, owner)];
   save(next);
   return next;
 }

@@ -157,6 +157,11 @@ export async function pushAgents(agents: Agent[]): Promise<PushResult> {
   if (!supabaseEnabled || typeof window === "undefined") return { ok: false, mirror: false, encrypted: false, skipped: "disabled" };
   const { data } = await supabase.auth.getUser();
   if (!data?.user) return { ok: false, mirror: false, encrypted: false, skipped: "signed-out" };
+  // Never upload another account's agent. A browser is a place, not a person — two people on one
+  // machine, or one person on a machine they then hand over, both end up with a localStorage
+  // holding agents stamped with a different user id, and this is the line that stops those from
+  // being merged into whoever signed in last. Unstamped agents predate the stamp and still pass.
+  agents = ownedBy(agents, data.user.id);
   let mirror = false, encrypted = false, error: string | undefined;
   // PUBLIC mirror (agents table, RLS user-scoped): callsign/address/label/did only — NEVER a key.
   // UNION-PRESERVING: read the existing mirror first and merge this device's agents INTO it by
@@ -332,10 +337,24 @@ export async function deleteAgentEverywhere(address: string): Promise<void> {
 /** The full picture for the Agents page on ANY device: local agents (with keys) unioned with the
  *  account's public mirror (identity only), MINUS anything tombstoned. Local wins on conflict —
  *  it holds the key. Also purges tombstoned agents from this device's local store. */
+/** Agents in this browser that belong to `uid` — i.e. stamped with it, or unstamped (legacy).
+ *  The one place the ownership rule is written down, so the read path and the write path can
+ *  never drift apart and show an agent the sync would refuse to carry (or the reverse). */
+function ownedBy<T extends { owner?: string }>(list: T[], uid: string | null): T[] {
+  // Only ever excludes on a MISMATCH. No signed-in account to compare against means no basis to
+  // call an agent someone else's, and /vault, /earn and the account menu all read this list on
+  // surfaces a signed-out visitor can legitimately reach with their own keys in hand.
+  if (!uid) return list;
+  return list.filter((a) => !a.owner || a.owner === uid);
+}
+
 export async function accountAgents(): Promise<AccountAgent[]> {
   const tomb = await getTombstones();
   purgeLocal(tomb);
-  const local: AccountAgent[] = loadAgents().map((a) => ({ ...a, hasKey: true }));
+  // getSession, not getUser: the id is the same and this runs on every AGENTS_CHANGED event,
+  // so it reads the cached session rather than making a network round-trip per keystroke-ish edit.
+  const me = (await supabase.auth.getSession().catch(() => null))?.data?.session?.user?.id ?? null;
+  const local: AccountAgent[] = ownedBy(loadAgents(), me).map((a) => ({ ...a, hasKey: true }));
   const remote = await pullAgentsPublic();
   const byAddr = new Map<string, AccountAgent>();
   for (const a of remote) byAddr.set(a.address.toLowerCase(), a);

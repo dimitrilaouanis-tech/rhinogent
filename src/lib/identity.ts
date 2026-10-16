@@ -8,6 +8,16 @@ export type Agent = {
   did: string; // did:pkh:eip155:8453:0x…
   privateKey: `0x${string}`; // self-custody — prototype stores locally; never sent to a server
   createdAt: number;
+  /* The account this agent was created under (a Supabase user id), stamped at creation.
+     OPTIONAL ON PURPOSE, and it must stay optional: every agent created before 2026-10-16 has
+     no stamp, and those are legitimate — treating "no owner" as "not yours" would hide people's
+     real agents the moment this shipped. So the rule is narrow: an owner that is SET and does
+     not match the signed-in account is not this account's agent, and neither accountAgents()
+     nor pushAgents() will show it or upload it. Unstamped stays exactly as it was.
+
+     This exists because a key in localStorage was the only claim of ownership there was, and
+     localStorage is per-browser, not per-person. See the gate note in dashboard/my-agents.tsx. */
+  owner?: string;
 };
 
 // Deterministic callsign from an address — Adjective-Noun-XXXX (matches 0n1x scheme).
@@ -29,7 +39,7 @@ export function callsignFor(address: string): string {
 }
 
 // Mint a fresh self-custody identity + Base wallet, entirely in the browser.
-export function generateAgent(label?: string): Agent {
+export function generateAgent(label?: string, owner?: string): Agent {
   const privateKey = generatePrivateKey();
   const account = privateKeyToAccount(privateKey);
   const address = account.address;
@@ -41,6 +51,7 @@ export function generateAgent(label?: string): Agent {
     did: `did:pkh:eip155:8453:${address}`,
     privateKey,
     createdAt: Date.now(),
+    ...(owner ? { owner } : {}),
   };
 }
 
