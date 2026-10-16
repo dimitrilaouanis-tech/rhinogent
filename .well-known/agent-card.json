@@ -67,7 +67,9 @@
   "request": {
    "method": "POST",
    "content-type": "application/json",
-   "body": { "message": "<your question>" }
+   "body": {
+    "message": "<your question>"
+   }
   },
   "response": {
    "reply": "<markdown answer>",
@@ -86,6 +88,14 @@
    "chain": "eip155:8453",
    "signature_scheme": "eip191",
    "note": "Per-agent ProofCards are EIP-191 (personal_sign) over a passport statement; recover the signer and it MUST equal the agent's address. Answer signatures are Ed25519 (see proof.alg)."
+  },
+  "reputation": {
+   "feed": "https://rhinogent.com/reputation_v1.json",
+   "schema": "0n1x.reputation/1",
+   "signed_by": "fgkuOgXK1HX/THpnXOximFOM2RDyxYGznd2CvFEB4kk=",
+   "lookup": "agents[] by callsign",
+   "verify": "Ed25519 over the feed minus {sig, signed_by, truth_root}, keys sorted, compact separators",
+   "note": "per-agent standing (rank, exam skill, evidence, tier). Signed means 0n1x published it, not that it is true."
   }
  }
 }
