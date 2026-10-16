@@ -380,8 +380,21 @@ export function Nav() {
             <span
               aria-hidden
               /* nav-pill exists so globals.css can overrule the inline transition below under
-                 prefers-reduced-motion — an inline style otherwise wins over any rule. */
-              className="nav-pill pointer-events-none absolute left-0 top-1/2 -z-0 h-[30px] -translate-y-1/2 rounded-full bg-accent/[.09] ring-1 ring-inset ring-accent/15"
+                 prefers-reduced-motion — an inline style otherwise wins over any rule.
+
+                 NO -translate-y-1/2 HERE, AND IT MUST NOT COME BACK. In Tailwind v4 that
+                 utility compiles to the INDEPENDENT `translate` property, not to `transform`.
+                 It therefore does not replace the inline transform below — it composes with
+                 it, and both carried -50%. Measured on production: translate "0px -50%" plus
+                 transform translateY(-15px) on a 30px pill, so it rendered 15px high, exactly
+                 half its own height above the word it sits behind. Centring lives in the
+                 inline transform alone (top:50% + translate3d(x, -50%, 0)) because that is the
+                 thing that also carries x and is the thing that animates.
+
+                 Every earlier check compared the pill's x and width to the item's and passed —
+                 "pill=516/106 vs item 516/106" — which is how a 15px vertical offset survived
+                 the whole suite. The regression test now asserts the midpoints in BOTH axes. */
+              className="nav-pill pointer-events-none absolute left-0 top-1/2 -z-0 h-[30px] rounded-full bg-accent/[.09] ring-1 ring-inset ring-accent/15"
               style={{
                 width: pill.w,
                 transform: `translate3d(${pill.x}px, -50%, 0)`,

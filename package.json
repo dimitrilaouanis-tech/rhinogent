@@ -11,7 +11,9 @@
     "checksums": "node scripts/checksums.mjs",
     "prebuild": "node scripts/checksums.mjs && node scripts/feed-state.mjs",
     "verify:numbers": "node scripts/number_sync_lock.cjs",
-    "verify:numbers:null": "node scripts/number_sync_lock.cjs --null"
+    "verify:numbers:null": "node scripts/number_sync_lock.cjs --null",
+    "verify:pill": "node scripts/nav_pill_geometry.cjs",
+    "verify:pill:null": "node scripts/nav_pill_geometry.cjs --null"
   },
   "dependencies": {
     "@cosmos.gl/graph": "^3.1.0",
