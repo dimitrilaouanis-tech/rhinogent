@@ -276,17 +276,31 @@ export function Nav() {
   // useLayoutEffect so the pill is already in place on the first painted frame rather than
   // sliding in from x=0 the moment the page appears.
   useLayoutEffect(() => {
+    /* The re-measure path is refreshed here rather than during render, because `measure`
+       closes over exactly these four values and this effect already runs when any of them
+       changes. setGlide(false) goes BEFORE the measurement, in the same batch: React commits
+       both in one pass, so the frame carrying the new geometry also carries the flat
+       transition and the pill lands rather than travels. Reversed, you get one frame of the
+       old transition against the new numbers — which is the glide back again. */
+    reRef.current = () => { setGlide(false); measureSheets(); measure(); };
     measureSheets();
     measure();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hover, open, activeIdx, pathname]);
 
+  /* The re-measure path, held in a ref and subscribed ONCE.
+     This is the bug that ate the pill. The subscription used to live in an effect keyed on
+     [hover, open, activeIdx], so every pointer move tore the ResizeObserver down and built a
+     new one — and a fresh observe() fires its callback immediately, by design. That callback
+     is the one that disarms the glide, so it landed in the very same frame as the hover it
+     was supposed to animate. Measured on production: the pill moved through exactly ONE
+     position, i.e. it teleported, in both motion modes. A mount-once subscription reading the
+     latest measure through a ref is the whole fix; the observer's one initial notification
+     now happens at mount, where there is nothing to animate anyway. */
+  const reRef = useRef<() => void>(() => {});
+
   useEffect(() => {
-    /* setGlide(false) BEFORE the measurement, in the same batch: React commits both in one
-       pass, so the frame that carries the new geometry also carries `transition: none` and
-       the pill lands rather than travels. The order matters — reversed, you get one frame of
-       the old transition against the new numbers, which is the glide back again. */
-    const re = () => { setGlide(false); measureSheets(); measure(); };
+    const re = () => reRef.current();
     window.addEventListener("resize", re);
     /* A ResizeObserver on the list, not just document.fonts.ready, and that is the lesson
        from v3 above: fonts.ready can resolve before the font has been requested, but the bar
@@ -302,8 +316,7 @@ export function Nav() {
     }
     if (typeof document !== "undefined" && document.fonts) document.fonts.ready.then(re).catch(() => {});
     return () => { window.removeEventListener("resize", re); ro?.disconnect(); };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hover, open, activeIdx]);
+  }, []);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setAuthed(!!data.session));
@@ -356,7 +369,9 @@ export function Nav() {
                 aria-current on the active link already carries, said in pixels. */}
             <span
               aria-hidden
-              className="pointer-events-none absolute left-0 top-1/2 -z-0 h-[30px] -translate-y-1/2 rounded-full bg-accent/[.09] ring-1 ring-inset ring-accent/15"
+              /* nav-pill exists so globals.css can overrule the inline transition below under
+                 prefers-reduced-motion — an inline style otherwise wins over any rule. */
+              className="nav-pill pointer-events-none absolute left-0 top-1/2 -z-0 h-[30px] -translate-y-1/2 rounded-full bg-accent/[.09] ring-1 ring-inset ring-accent/15"
               style={{
                 width: pill.w,
                 transform: `translate3d(${pill.x}px, -50%, 0)`,

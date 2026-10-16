@@ -1205,21 +1205,42 @@ summary,
   transition: rotate 420ms var(--spring);
 }
 
+/* ── REDUCED MOTION: FLAT AND SHORT, NOT ABSENT ───────────────────────────────────────────
+   The first version of this block went too far and it was caught the only way it could be —
+   by looking at the site on the machine that built it. Windows with animation effects off
+   reports `reduce`, so everything above was being switched off: the card TELEPORTED between
+   items (measured: one distinct position during a switch, against eleven with motion on) and
+   the whole choreography amounted to a 120ms fade. The honest report from the operator was
+   "I don't see anything", and they were right.
+
+   That was the wrong reading of the preference. The travel is not decoration here — the
+   card's movement is the statement that it is ONE object with a position, and a card that
+   jumps 250px between two items is harder to follow, not kinder. What `reduce` is owed is no
+   spring, no overshoot, no scale, no bounce, no staggered cascade and no large displacement:
+   a 150ms LINEAR move of the thing the pointer is currently on, which is the same class of
+   feedback as a scrollbar thumb following a drag.
+
+   So under reduce: positions and sizes still move, flat and fast. Scale, the row cascade, the
+   row slide, the caret draw and the chevron spin are what actually drop. */
 @media (prefers-reduced-motion: reduce) {
-  .nav-flyout,
-  .nav-flyout[data-on] {
-    transition: opacity 120ms ease;
+  .nav-flyout {
+    transition: opacity 100ms ease, transform 150ms linear;
   }
+  .nav-flyout[data-on] {
+    transition: opacity 120ms ease, transform 150ms linear;
+  }
+  /* no scale and no lift — but the box still resizes into the next menu */
   .nav-sheetbox,
   .nav-flyout[data-on] .nav-sheetbox {
     transform: none;
-    transition: none;
+    transition: height 150ms linear;
   }
   .nav-sheetbox::before,
   .nav-flyout[data-on] .nav-sheetbox::before {
     scale: 1;
-    transition: opacity 120ms ease;
+    transition: opacity 120ms ease, left 150ms linear;
   }
+  /* the rows cross together, in place: no stagger, no slide */
   .nav-row,
   .nav-sheet[data-on] .nav-row {
     translate: none;
@@ -1233,6 +1254,14 @@ summary,
   .nav-row:hover .nav-row-arrow {
     transform: none;
     transition: opacity 120ms ease;
+  }
+  /* !important because nav.tsx sets the pill's spring inline — a distance-scaled spring is
+     exactly the thing `reduce` is asking us not to do, and an inline style wins otherwise */
+  .nav-pill {
+    transition:
+      transform 150ms linear !important,
+      width 150ms linear !important,
+      opacity 120ms ease !important;
   }
 }
 
@@ -1310,6 +1339,16 @@ summary,
     height 400ms var(--spring),
     opacity 180ms ease;
 }
+/* Same correction as the nav pill: under reduce the indicator still moves to the tab you
+   picked, it just moves flat and fast instead of on a spring. An indicator that teleports
+   between four segments is the thing that made the control read as four separate boxes in
+   the first place. */
 @media (prefers-reduced-motion: reduce) {
-  .seg-pill { transition: opacity 120ms ease; }
+  .seg-pill {
+    transition:
+      transform 150ms linear,
+      width 150ms linear,
+      height 150ms linear,
+      opacity 120ms ease;
+  }
 }
