@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { JsonLd } from "@/components/jsonld";
+import { ScrollFx, ScrollProgress } from "@/components/scroll-fx";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,13 +24,15 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: "#060608",
+  // Matches --page. It was #060608, which painted the mobile address bar black above a
+  // light page — the one piece of chrome a visitor sees before the site renders.
+  themeColor: "#f7f6f3",
 };
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://rhinogent.com"),
   title: {
-    default: "Rhinogent — the identity wallet for agents",
+    default: "Rhinogent — the agent you own",
     template: "%s · Rhinogent",
   },
   description:
@@ -42,20 +45,19 @@ export const metadata: Metadata = {
     "Base",
     "agentic web",
     "0n1x",
-    "MetaMask for agents",
   ],
   openGraph: {
-    title: "Rhinogent — the identity wallet for agents",
+    title: "Rhinogent — the agent you own",
     description:
-      "Self-custody identity and wallets for AI agents.",
+      "An identity nobody issues, a wallet only you can spend, and a signed record of every move.",
     type: "website",
     siteName: "Rhinogent",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Rhinogent — the identity wallet for agents",
+    title: "Rhinogent — the agent you own",
     description:
-      "Self-custody identity and wallets for AI agents.",
+      "An identity nobody issues, a wallet only you can spend, and a signed record of every move.",
   },
 };
 
@@ -83,10 +85,15 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <JsonLd />
+        {/* Site-wide scroll behaviour: reveal-on-scroll on every route, not just the landing
+            page, plus the progress hairline. Nothing it does is load-bearing for content — see
+            the fail-open note in scroll-fx.tsx. */}
+        <ScrollProgress />
+        <ScrollFx />
         {/* Localhost-only route switcher. Renders nothing anywhere else. */}
         <noscript>
           <div style={{ padding: "1rem", textAlign: "center", fontSize: "14px" }}>
-            0n1x needs JavaScript enabled to run the chat, create identities, and verify signatures.
+            Rhinogent needs JavaScript enabled to run the chat, create identities, and verify signatures.
           </div>
         </noscript>
         {children}

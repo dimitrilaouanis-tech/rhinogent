@@ -84,7 +84,7 @@ export function Rail({
       {/* ── the tabs, bare on the ground — no panel to contain them ───────────────── */}
       <div className="flex items-center gap-3 pb-4">
         <div
-          className="-mx-1 flex min-w-0 flex-1 gap-1 overflow-x-auto px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="hscroll-quiet -mx-1 flex min-w-0 flex-1 gap-1 overflow-x-auto px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           role="tablist"
           aria-label={label}
         >
@@ -117,7 +117,7 @@ export function Rail({
         role="region"
         aria-label={label}
         tabIndex={0}
-        className="flex snap-x snap-mandatory gap-6 overflow-x-auto overscroll-x-contain scroll-smooth pb-8 pt-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="hscroll-quiet flex snap-x snap-mandatory gap-6 overflow-x-auto overscroll-x-contain scroll-smooth pb-8 pt-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {children}
       </div>

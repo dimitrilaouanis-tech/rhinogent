@@ -1,16 +1,17 @@
 import Link from "next/link";
 import { MiniNav } from "@/components/mini-nav";
+import { CensusCohort } from "@/components/census-cohort";
 
 export const metadata = {
   title: "0n1x — The Verifiable Trust Layer for the Agentic Web",
-  description: "Neutral cryptographic trust infrastructure: signed answers, a Merkle-verifiable 340k-agent census, a reality oracle, and an on-chain trust-score oracle any protocol can read.",
+  description: "Neutral cryptographic trust infrastructure: signed answers, a Merkle-verifiable signed-agent census (our proof cohort, operated by us, 0 external — recompute it yourself), a reality oracle, and an on-chain trust-score oracle any protocol can read.",
 };
 
 const PRIMITIVES = [
   ["trust_score", "A signed 0–100 trust score for any agent that DeFi protocols, DAOs, and contracts read to price counterparty risk. The Web3 wedge."],
   ["attest_agent", "Verify-before-you-transact: a signed dossier on any counterparty — census membership, earned standing, honest verdict."],
   ["verify_query", "Ask a reality-resolvable question, get a signed answer settled against external sources. Refuses to sign opinion."],
-  ["census_proof", "The millions-strong census + Merkle root — recompute it yourself from public shards."],
+  ["census_proof", "The signed-agent census + Merkle root — our proof cohort (operated by us, 0 external), recompute it yourself from public shards."],
 ];
 
 export default function Onyx() {
@@ -36,7 +37,7 @@ export default function Onyx() {
               <Link href="/census" className="rounded-full border border-border bg-surface px-6 py-3 text-sm font-medium">See the live network</Link>
             </div>
             <p className="mt-6 font-mono text-[12px] text-muted-2">
-              millions of signed identities · signed ledger · reality oracle · $0 to verify
+              <CensusCohort /> · signed ledger · reality oracle · $0 to verify
             </p>
           </div>
         </section>
@@ -84,12 +85,12 @@ export default function Onyx() {
           <p className="mt-3 max-w-xl text-muted">One command discovers the signed card, queries the live network, verifies the signature, and recomputes a census shard against the Merkle root.</p>
           {/* The page's one ring goes on the command that proves the claim. */}
           <div className="ring rv mt-6">
-          <pre className="overflow-x-auto rounded-xl bg-[#0d1118] p-5 font-mono text-[13px] text-[#e8ecf4]">
+          <pre className="hscroll hscroll-dark overflow-x-auto rounded-xl bg-[#0d1118] p-5 font-mono text-[13px] text-[#e8ecf4]">
 {`$ python verify_0n1x.py
 
   ✓ DISCOVER — 0n1x v1.0 signed agent card (EIP-191)
   ✓ QUERY+VERIFY — live /a2a reply · Ed25519 attestation checks
-  ✓ CENSUS — millions of signed identities · Merkle root recomputed from public shards
+  ✓ CENSUS — signed-agent cohort (operated by us · 0 external) · Merkle root recomputed from public shards
 
   trust zero, verify everything.`}
           </pre>

@@ -78,9 +78,14 @@ export async function flushIntake(): Promise<void> {
   finally { flushing = false; }
 }
 
-/** Record ONE message as an extracted claim. No-ops when opted out (the default). */
+// PRIVATE/INCOGNITO override — when the chat is in private mode, intake records NOTHING, even if
+// the user previously opted in. Set by the chat surface; private always wins over opt-in.
+let _private = false;
+export function setIntakePrivate(on: boolean): void { _private = on; }
+
+/** Record ONE message as an extracted claim. No-ops when opted out (the default) or in private mode. */
 export function recordIntake(input: { agentAddr: string | null; mode: "normal" | "pro"; role: "user" | "assistant"; text: string; grounded?: boolean }): void {
-  if (typeof window === "undefined" || !input.text || !intakeOptedIn()) return;
+  if (typeof window === "undefined" || !input.text || _private || !intakeOptedIn()) return;
   (async () => {
     let user: string | null = null;
     try { const { data } = await supabase.auth.getSession(); user = data.session?.user?.id ?? null; } catch { /* guest */ }

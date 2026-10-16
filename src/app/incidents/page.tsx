@@ -3,10 +3,23 @@ import { PageShell, PageHead, Card, Honest } from "@/components/feed-ui";
 
 /* /incidents — ported from the drop-in build into our design system.
 
-   ⚠️ THIS PAGE IS A DRAFT AND SAYS SO ON ITS FACE. Entry #1 is written from our own audit, but
-   two things in it are not confirmed: the exact dates, and whether the key was rotated. A wrong
-   date on an incident page is worse than no page — it is the one page where being casually
-   wrong costs more than being silent. The banner stays until an operator fills both.
+   THE DATES ARE NOW CONFIRMED, FROM THE REPOSITORY RATHER THAN FROM MEMORY (2026-10-15).
+   Two commits bound the whole thing, and their diffs say what the prose could only assert:
+
+     5f2e669cfa  2026-06-30 22:42:50 +0300  the connect block ships
+     24760cb9e9  2026-06-30 22:56:09 +0300  the fix — the removed line is literally
+                                            `RHINOGENT_KEY: agent.privateKey,`
+
+   Thirteen minutes and nineteen seconds, on one evening. A separate drop-in page circulating
+   internally dates this incident to 2026-09 with a one-hour fix; that is wrong by three months
+   and by the duration, and it was not written from the history. Dates on this page come from
+   commits, not from a document.
+
+   WHAT IS STILL OPEN, and why it is written as open rather than resolved: whether a BUILD went
+   out inside those thirteen minutes. The gh-pages history reachable here begins 2026-07-06, six
+   days after the incident, so the deploy record for that evening is simply not in hand. That is
+   missing evidence, not evidence of absence, and the entry says so. Key rotation is also still
+   unconfirmed. The banner now names those two rather than the dates.
 
    Why the page exists before there is anything comfortable to put on it: every trust
    intermediary that survived a bad week — CAs under the Mozilla policy, statutory auditors,
@@ -35,7 +48,7 @@ export default function IncidentsPage() {
         right={
           DRAFT ? (
             <span className="rounded-md bg-gold/15 px-2.5 py-1 font-mono text-[10.5px] font-semibold uppercase tracking-[0.12em] text-gold">
-              draft — unconfirmed
+              dates confirmed · two items open
             </span>
           ) : null
         }
@@ -44,13 +57,14 @@ export default function IncidentsPage() {
       {DRAFT && (
         <Card className="mt-8 border-gold/40 bg-gold-soft/[0.06]">
           <p className="text-[14px] font-medium text-foreground">
-            This page is not confirmed and must not ship as-is.
+            Two things in this entry are still open, and they are named rather than smoothed over.
           </p>
           <p className="body-copy mt-1.5 text-[13.5px] leading-relaxed">
-            The entry below is drawn from an internal audit. The dates and the rotation status are
-            marked and have not been verified by an operator. Publishing an incident report with a
-            wrong date is worse than publishing none — it is the one page where a careless error
-            costs more than silence.
+            The timings below are read from the two commits that bound the incident, so they are
+            as exact as the repository is. What is <em>not</em> established is whether a build went
+            out during the thirteen minutes — the deploy history available to us starts six days
+            later — and whether the exposed key was afterwards rotated. Both are written as open.
+            An incident page that resolves what it has not checked is worth less than no page.
           </p>
         </Card>
       )}
@@ -61,7 +75,7 @@ export default function IncidentsPage() {
             #1 · Private key shipped in the connect block
           </h2>
           <span className="font-mono text-[11px] text-muted-2">
-            [confirm: occurred YYYY-MM] · [confirm: disclosed YYYY-MM-DD]
+            2026-06-30 22:42:50 → 22:56:09 +03 · open 13m 19s
           </span>
         </div>
 
@@ -74,15 +88,25 @@ export default function IncidentsPage() {
           <Row k="Exposure">
             One key, and any transcript or provider log that contains the block. Treated as
             compromised regardless of whether misuse is observed — the alternative is assuming our
-            way out of it.
+            way out of it.{" "}
+            <span className="rounded bg-gold/15 px-1.5 py-0.5 font-mono text-[12px] text-gold">
+              open: whether a build shipped inside the 13 minutes
+            </span>{" "}
+            — the deploy history we hold begins 2026-07-06, six days later, so the record for that
+            evening is missing. Missing, not empty: we will not read it either way.
           </Row>
           <Row k="Fix">
-            The block emits only the agent name and address. Verified by searching the source, the
-            built output and the deployed site — not by the person who wrote the fix.
+            The block emits only the agent name and address; the key is injected from the
+            environment at launch and never written into a config file. Commit{" "}
+            <code className="rounded bg-surface-2 px-1 py-0.5 font-mono text-[12px]">24760cb9e9</code>,
+            which removes the line{" "}
+            <code className="rounded bg-surface-2 px-1 py-0.5 font-mono text-[12px]">RHINOGENT_KEY: agent.privateKey</code>.
+            Verified against the source, the built output and the deployed site — not by the person
+            who wrote the fix.
           </Row>
           <Row k="Rotation">
             <span className="rounded bg-gold/15 px-1.5 py-0.5 font-mono text-[12px] text-gold">
-              [confirm: rotated on YYYY-MM-DD — or state: pending]
+              open: rotation of the exposed key not confirmed
             </span>
           </Row>
           <Row k="Root cause">

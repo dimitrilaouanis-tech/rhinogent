@@ -21,7 +21,7 @@ import { useEffect, useState } from "react";
 
 const ROUTES: { href: string; label: string }[] = [
   { href: "/", label: "Home" },
-  { href: "/download", label: "Get started" },
+  { href: "/download", label: "Download" },
   { href: "/security", label: "Security" },
   { href: "/incidents", label: "Incidents" },
   { href: "/agents", label: "Agents" },

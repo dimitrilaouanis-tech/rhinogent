@@ -1,0 +1,17 @@
+# rhinogent.com
+#
+# Everything here is public and meant to be read, by people and by software alike.
+# The machine-readable surfaces are listed in /llms.txt, and the state of every
+# published feed — usable, pending, read-only, with the moment it entered that
+# state — is at /feed-state.json.
+
+User-agent: *
+Allow: /
+
+# These routes exist but are app state rather than content: the data behind them
+# lives under a key held in the visitor's own browser, so a crawler gets an empty
+# shell. Excluded to keep them out of results, not to hide anything.
+Disallow: /dashboard/
+Disallow: /profile/
+Disallow: /vault/
+Disallow: /reset-password/

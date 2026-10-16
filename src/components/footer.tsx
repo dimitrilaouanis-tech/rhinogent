@@ -20,10 +20,10 @@ const COLUMNS: { head: string; links: { href: string; label: string; external?: 
   {
     head: "product",
     links: [
-      { href: "/download", label: "Get started" },
+      { href: "/start", label: "Get started" },
+      { href: "/download", label: "Download" },
       { href: "/agents", label: "Agents" },
       { href: "/earn", label: "Earn" },
-      { href: "/pricing", label: "Pricing" },
     ],
   },
   {

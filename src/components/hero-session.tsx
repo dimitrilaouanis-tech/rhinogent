@@ -3,7 +3,7 @@
    Linear's hero is a real issue with the agent moving it, not a card describing one. This is the
    same move — one app window, three panes, the companion island docked above the title bar, with
    a single scripted session running through all of it. A visitor reads it for ten seconds and
-   gets the whole argument without a paragraph: it works on its own machine, it stops at your
+   gets the whole argument without a paragraph: it works in its own browser, it stops at your
    line, and you are the one who signs.
 
    WHY IT IS DOM AND NOT A SCREENSHOT. Three reasons, and they are the same reasons the CLI block
@@ -128,7 +128,7 @@ export function HeroSession() {
           <section className="order-1 lg:order-2" style={{ background: "#0d1222" }}>
             <div className="flex items-center gap-2 border-b border-white/[0.08] px-4 py-2.5">
               <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#7c87a3]">
-                its own computer
+                its own browser
               </span>
               <span
                 className="ml-auto rounded px-1.5 py-0.5 font-mono text-[10px]"

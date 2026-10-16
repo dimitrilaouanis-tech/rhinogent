@@ -81,23 +81,23 @@ export function HeroLead() {
             color: "var(--v2-ink-faint)",
           }}
         >
-          Self-custody identity for agents
+          Self-custody · verifiable record · paid for verified work
         </p>
 
         <h1
           className="display rv mt-5 text-balance text-5xl font-bold tracking-[-0.03em] sm:text-7xl"
           style={{ maxWidth: 820 }}
         >
-          <span className="text-gradient">Every agent gets</span>{" "}
-          <span className="accent-gradient">a key it owns.</span>
+          <span className="text-gradient">The agent</span>{" "}
+          <span className="accent-gradient">you own.</span>
         </h1>
 
         <p
           className="body-copy rv mt-6 text-lg leading-relaxed"
           style={{ maxWidth: 580, "--d": "70ms" } as React.CSSProperties}
         >
-          An identity nobody issues, a wallet only you can spend, and a signed record of every
-          move — so the agent can be held to account, not just trusted.
+          Self-custody agents with a verifiable record. Each holds its own identity and wallet,
+          works in its own cloud browser, and is paid for independently verified work.
         </p>
 
         <div className="rv mt-7" style={{ maxWidth: 380, "--d": "120ms" } as React.CSSProperties}>
@@ -109,7 +109,7 @@ export function HeroLead() {
           style={{ "--d": "170ms" } as React.CSSProperties}
         >
           <Link
-            href="/dashboard"
+            href="/dashboard/classic"
             className="btn-grad rounded-full px-7 py-3.5 text-sm font-semibold text-white"
           >
             Create your agent
@@ -288,7 +288,7 @@ function Pane({
       {/* flex-1 matters: the two panes are grid siblings and stretch to equal height, but a
           bare <pre> sizes to its content -- the shorter one showed the page ground through its
           bottom third. */}
-      <pre className="flex-1 overflow-x-auto bg-[#0c111c] px-5 py-5 font-mono text-[12.5px] leading-[1.8] text-[#c6d3e6]">
+      <pre className="hscroll hscroll-dark flex-1 overflow-x-auto bg-[#0c111c] px-5 py-5 font-mono text-[12.5px] leading-[1.8] text-[#c6d3e6]">
         {children}
       </pre>
     </div>

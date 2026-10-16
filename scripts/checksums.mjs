@@ -21,15 +21,15 @@ import { createHash } from "node:crypto";
 import { readFileSync, writeFileSync, existsSync, statSync } from "node:fs";
 import { join } from "node:path";
 
-/* Only files that are genuinely fetchable without an account. Keep this list identical to the
-   artifact table in src/app/download/download-view.tsx — if they drift, the page lists something
-   the checksum file does not cover, which is exactly the inconsistency we are trying to remove. */
+/* ONLY artifacts whose published bytes THIS deploy controls. Feeds written by the Angeal
+   (agent-card.json, a2a_cards.json, census_v1.json, reputation_v1.json, rates_v1.json) are
+   deliberately NOT overwritten at deploy time, so hashing our local copy of them would publish
+   a number that does not describe the live file. They are listed on the download page as
+   fetchable — which they are — but they are not checksummed here, and the page says why. */
 const ARTIFACTS = [
   ".well-known/jwks.json",
-  ".well-known/agent-card.json",
   ".well-known/security.txt",
-  "census_v1.json",
-  "a2a_cards.json",
+  "verify-feed.mjs",
 ];
 
 const ROOT = join(process.cwd(), "public");

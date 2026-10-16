@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { feedFetch } from "@/lib/feeds";
 
-// THE GRID — a living canvas of the 340k-agent network. A dense field of nodes (the
+// THE GRID — a living canvas of the signed-agent network (count from census_v1.json). A dense field of nodes (the
 // population), the ranked agents glowing brighter, and REAL signed token transfers
 // animating as particles that flow from sender → receiver. Canvas (not DOM) so it
 // handles the scale; all data from the real token_feed. This is the "woah" view.
@@ -57,7 +57,7 @@ export function NetworkGrid({ agentCount }: { agentCount: number }) {
     resize();
     window.addEventListener("resize", resize);
 
-    // the POPULATION field — a deterministic sample of the 340k (a few thousand faint dots)
+    // the POPULATION field — a deterministic sample of the cohort (a few thousand faint dots)
     const FIELD = 2600;
     const field: [number, number, number][] = [];
     let seed = 1337;
@@ -85,7 +85,7 @@ export function NetworkGrid({ agentCount }: { agentCount: number }) {
       ctx.fillRect(0, 0, W, H);
 
       // REAL population field — steady dots, one per agent sample (no cosmetic pulse).
-      // These map to the real 340k census, not decoration.
+      // These map to the real census (census_v1.json), not decoration.
       for (let i = 0; i < field.length; i++) {
         const [u, v] = field[i];
         ctx.fillStyle = "rgba(99,91,255,0.10)";

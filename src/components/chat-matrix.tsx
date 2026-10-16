@@ -7,7 +7,7 @@ import { RhinoMark } from "@/components/rhino";
 import { loadAgents, addAgent, renameAgent as renameMinted, MAX_SLOTS } from "@/lib/agents";
 import { pullAgents, accountAgents, pushAgents } from "@/lib/agent-sync";
 import { queueThreadSync, flushThreadSync, pullThreadsFull, pullThreads, reconcileHistory, rebindThreadKey, adoptThread, deleteThread, restoreThread, backfillThreads, chatAgentsFromIntake } from "@/lib/chat-sync";
-import { recordIntake, flushIntake } from "@/lib/census-intake";
+import { recordIntake, flushIntake, setIntakePrivate } from "@/lib/census-intake";
 import { supabase } from "@/lib/supabase";
 import { verifyMerchant, extractDomain, type MerchantResult } from "@/lib/onyx-verify";
 
@@ -540,6 +540,8 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
     try { setPrivateMode(localStorage.getItem("rhinogent.chat.private") === "1"); }
     catch { /* storage blocked — default to recording, and the banner says so */ }
   }, []);
+  // private always wins over the census opt-in: incognito records nothing, anywhere.
+  useEffect(() => { setIntakePrivate(privateMode); }, [privateMode]);
   const togglePrivate = () => {
     setPrivateMode((v) => {
       const n = !v;
@@ -825,9 +827,11 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
     if (mintingNew) return;
     // MINT REQUIRES LOGIN — the chat is already sign-in gated, but re-check the session in case
     // it expired while the tab was open, so a stale session never mints an unbound agent.
+    let owner: string | undefined;
     try {
       const { data } = await supabase.auth.getSession();
       if (!data.session) { alert("Please sign in to mint a new agent — every agent binds to your account. Open the dashboard to sign in."); setPicker(false); return; }
+      owner = data.session.user.id;   // stamped onto the agent below, so it cannot follow another account home
     } catch { /* if the check itself fails, fall through — chat access already required auth */ }
     setMintingNew(true);
     try {
@@ -839,7 +843,7 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
         const res = await spend(PRICES.mintId, "minted a self-custody ID");
         if (!res.ok) { alert(`Minting a new agent costs ${PRICES.mintId} TOKEN. Your balance is ${res.balance}. Earn more with verified work, or use your first ${PRICES.freeMints} free.`); return; }
       }
-      const next = addAgent(cur);
+      const next = addAgent(cur, undefined, owner);
       const minted = next[next.length - 1];
       setMyAgents(next.map((x) => ({ callsign: x.id, address: x.address, nick: x.label })));
       pushAgents(next).catch(() => {});   // ← sync the chat-minted agent to the account (shows on every device)
@@ -1266,9 +1270,10 @@ export function ChatMatrix({ guest = false }: { guest?: boolean } = {}) {
         });
         // ACCOUNT SYNC: mirror the thread to the signed-in user's account (chats/messages,
         // RLS-scoped) so it shows on every device. Debounced + best-effort; guests no-op.
-        if (!guest) {
+        if (!guest && !privateMode) {
           // sync under the CURRENT conversation's unique thread key (not the agent address),
           // so each conversation owns its own account row + title.
+          // PRIVATE: incognito records nothing anywhere — never mirror a private turn to the account.
           queueThreadSync(curThreadKey(agent?.address), threadTitle(msgs), msgs.slice(-100), agent?.callsign);   // persist the owner account-natively
         }
       }

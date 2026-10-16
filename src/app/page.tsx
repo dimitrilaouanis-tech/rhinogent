@@ -49,10 +49,12 @@ import Link from "next/link";
 import { AgentMark } from "@/components/agent-mark";
 import { NetworkCount } from "@/components/network-count";
 import { Architecture } from "@/components/architecture";
+import { Ecosystem } from "@/components/ecosystem";
 import { Nav } from "@/components/nav";
 import { Footer } from "@/components/footer";
 import { FxObserver, LiveMetric, LiveAgentCount, CopyCmd } from "@/components/home-fx";
 import { HeroLead, Faked, Instead, Ladder } from "@/components/home-lead";
+import { PRICE_MAX, PRICES } from "@/lib/wallet";
 import {
   WELCOME_GRANT,
   PRICING_DRAFT,
@@ -95,6 +97,7 @@ export default function Home() {
             9. how fast                  -- three minutes
            10. the awkward questions, then the close, repeating the h1 */}
         <HeroLead />
+        <Ecosystem />
         <Faked />
         <NetworkCount />
 
@@ -109,7 +112,6 @@ export default function Home() {
         <Instead />
         <HowItWorks />
         <BuiltOn />
-        <ProductShot />
         <Surfaces />
         <Ladder />
         <Faq />
@@ -151,7 +153,7 @@ export function ProductShot() {
           className="body-copy rv mx-auto mt-5 text-[15px]"
           style={{ "--d": "140ms" } as React.CSSProperties}
         >
-          On the left, the agent&apos;s browser on its own machine — every step as it takes it:
+          On the left, the agent&apos;s own cloud browser — every step as it takes it:
           what it verified, what it ran, what it tried to pay. On the right, the same agent
           answering you. Each reply is signed, and anything over your cap stops here instead of
           going through.
@@ -331,7 +333,7 @@ function HowItWorks() {
           right is something you can recompute without asking us.
         </p>
       </div>
-      <div className="mt-10 overflow-x-auto">
+      <div className="hscroll mt-10 overflow-x-auto">
         <div style={{ minWidth: 760 }}>
           <Architecture />
         </div>
@@ -394,7 +396,7 @@ export function BuiltOn() {
       <div className="rv" style={{ display: "flex", flexDirection: "column", gap: 14, maxWidth: 680 }}>
         <div className="eyebrow-v2">What it rides on</div>
         <h2 className="h" style={{ fontSize: "clamp(30px, 4.4vw, 44px)" }}>
-          Open protocols, not our API.
+          Readable by software that never heard of us.
         </h2>
         <p className="p">
           Everything this agent produces is readable by software that never heard of us. That is
@@ -737,8 +739,8 @@ export function Earn() {
               <EarnRow k="an answer that failed its check" v="not paid" tone="no" />
               <EarnRow k="a chat turn, or a premium one" v="5 tokens" tone="neutral" />
               <EarnRow k="a card call" v="2 tokens" tone="neutral" />
-              <EarnRow k="the most any single answer can cost" v="40 tokens" tone="neutral" />
-              <EarnRow k="a new agent of your own" v="150 tokens" tone="neutral" />
+              <EarnRow k="the most any single answer can cost" v={`${PRICE_MAX} tokens`} tone="neutral" />
+              <EarnRow k="a new agent of your own — your first two are free" v={`${PRICES.mintId} tokens`} tone="neutral" />
               <EarnRow k="anything on the Normal lane" v="never billed" tone="ok" />
             </div>
             <p
@@ -843,14 +845,14 @@ export function Surfaces() {
           body="Long sessions, history, the live desk. Watch it work in its own browser."
           d="80ms"
         >
-          <Link href="/dashboard" style={{ fontSize: 13.5, fontWeight: 600 }}>
-            Open the desk →
+          <Link href="/terminal" style={{ fontSize: 13.5, fontWeight: 600 }}>
+            Open a live desk →
           </Link>
         </Surface>
         <Surface
           eyebrow="phone"
           title="Rhinogent mobile"
-          status="Android · preview"
+          status="Android · paused"
           body="The same agent in your pocket, with voice. It keeps working while the screen is off."
           d="160ms"
         >
@@ -1039,22 +1041,20 @@ export function FinalCta() {
             own" after an hour of "a key it owns") reads as a second pitch, and the reader has to
             decide which one the company meant. */}
         <h2 className="h" style={{ fontSize: "clamp(34px, 6vw, 52px)", maxWidth: 760 }}>
-          Every agent gets a key it owns.
+          Built to be checked. Available today.
         </h2>
         <p className="p" style={{ maxWidth: 600 }}>
           Keys in your browser. A record anyone can check. An agent that earns its standing.
         </p>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginTop: 6 }}>
-          <Link href="/dashboard" className="btn-v2">
+          <Link href="/dashboard/classic" className="btn-v2">
             Create your agent
           </Link>
           <Link href="/chat" className="btn2-v2">
             Or chat without an account
           </Link>
         </div>
-        <div className="mono-v2" style={{ fontSize: 11, color: "var(--v2-ink-faint)", marginTop: 8 }}>
-          ● all systems observed · no data ≠ up
-        </div>
+
       </div>
     </section>
   );

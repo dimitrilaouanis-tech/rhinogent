@@ -17,6 +17,7 @@
    Failure behaviour is the whole contract: if the feed is unreachable, every value renders as
    an em-dash. Never a zero, never the last known figure, never a guess. */
 
+import { FeedState } from "@/components/feed-state";
 import { useSignedFeed, DASH, isNum, type SigState } from "@/lib/signed-feed";
 import { FeedStamp } from "./feed-ui";
 import { CensusField } from "./census-field";
@@ -129,6 +130,14 @@ export function NetworkCount({ field = false, fieldFirst = false }: { field?: bo
             <CensusField />
           </div>
         )}
+
+        {/* When census_v1.json is not served, every tile above renders an em-dash. A reader
+            seeing four dashes and no explanation concludes the site is broken; the feed's own
+            published state says who writes it and that they have not yet. Renders nothing while
+            the feed is usable. */}
+        <div className="rv mt-6">
+          <FeedState path="/census_v1.json" />
+        </div>
 
         <p className="rv mt-5 font-mono text-[11px] leading-relaxed text-muted-2">
           Every surface reads this one file. We do not measure how many of these are operated by

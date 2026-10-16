@@ -164,7 +164,7 @@ export const SURFACES: Surface[] = [
     id: "phone",
     kicker: "phone",
     name: "Rhinogent mobile",
-    status: "Android · preview",
+    status: "Android · paused",
     live: false,
     claim: "The whole desk, in your pocket.",
     body:
@@ -403,7 +403,7 @@ function TerminalBit({ which }: { which: "init" | "verify" }) {
         <span className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
         <span className="ml-2 font-mono text-[11.5px] text-[#9aa6bd]">rhinogent</span>
       </div>
-      <pre className="overflow-x-auto px-5 py-5 font-mono text-[12px] leading-[1.8] text-[#c6d3e6]">
+      <pre className="hscroll hscroll-dark overflow-x-auto px-5 py-5 font-mono text-[12px] leading-[1.8] text-[#c6d3e6]">
         {which === "init" ? (
           <>
             <span className="text-[#5b6b85]">$</span> rhinogent init{"\n\n"}

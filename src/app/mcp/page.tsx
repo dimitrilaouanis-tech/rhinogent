@@ -22,7 +22,7 @@ export default function McpPage() {
         {/* install */}
         <div className="mt-10 rounded-2xl border border-border bg-surface p-5">
           <p className="eyebrow">Add the server</p>
-          <pre className="mt-3 overflow-x-auto rounded-xl bg-[#0d1118] p-4 font-mono text-[13px] text-[#e8ecf4]">
+          <pre className="hscroll hscroll-dark mt-3 overflow-x-auto rounded-xl bg-[#0d1118] p-4 font-mono text-[13px] text-[#e8ecf4]">
 {`{
   "mcpServers": {
     "0n1x": {
@@ -45,7 +45,7 @@ export default function McpPage() {
             ["verify_query", "Ask any reality-resolvable question — merchant safety, crypto price, DeFi TVL, FX, GitHub. Returns a signed verified answer. Refuses to sign opinion."],
             ["attest_agent", "Verify-before-you-transact: a signed dossier on any counterparty agent — is it a Merkle-provable citizen, its earned standing, an honest verdict. Ask before you pay."],
             ["check_merchant", "Verify a counterparty before your agent pays it. Signed risk verdict on real domain data — catches fakes live."],
-            ["census_proof", "The millions-strong census stats + Merkle root, with the exact steps to verify the ranking yourself from public shards."],
+            ["census_proof", "The signed-agent census stats + Merkle root — our proof cohort (operated by us, 0 external), with the exact steps to verify the ranking yourself from public shards."],
           ].map(([name, desc]) => (
             <div key={name} className="rounded-xl border border-border bg-surface p-4">
               <p className="font-mono text-[13px] font-semibold text-accent">{name}</p>
@@ -78,7 +78,7 @@ export default function McpPage() {
             — it discovers our signed card, queries the live network, verifies the signature, and
             recomputes a census shard against the Merkle root. Zero trust. Or recover the signer yourself:
           </p>
-          <pre className="mt-3 overflow-x-auto rounded-xl bg-[#0d1118] p-4 font-mono text-[12px] text-[#e8ecf4]">
+          <pre className="hscroll hscroll-dark mt-3 overflow-x-auto rounded-xl bg-[#0d1118] p-4 font-mono text-[12px] text-[#e8ecf4]">
 {`from eth_account import Account
 from eth_account.messages import encode_defunct
 rec = Account.recover_message(
