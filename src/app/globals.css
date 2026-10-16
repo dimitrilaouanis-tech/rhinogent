@@ -1352,3 +1352,142 @@ summary,
       opacity 120ms ease;
   }
 }
+
+/* ═══ MOVING BETWEEN PAGES ══════════════════════════════════════════════════════════════════
+   From the 2026-10-16 motion drop, item 1 — the one thing in that package that was both new
+   to this site and worth having. Every link in the nav is a plain anchor, so going from
+   Security to Agents is a full document navigation: the old page vanishes, the new one
+   appears, and for one frame the site reads as a stack of documents rather than a product.
+   A cross-document view transition fixes that in nine lines of CSS and no JavaScript.
+
+   NOTHING IS GIVEN A view-transition-name, AND THAT IS THE DESIGN. The obvious move is to
+   name the header so it persists while the body crosses. But the header is already identical
+   on both sides of the navigation, and cross-fading identical pixels looks like nothing
+   happened — which is the goal. Naming it would instead pull it into its own snapshot layer,
+   and a layer with backdrop-filter on it samples a backdrop that no longer exists. So the
+   root crosses, the header appears to stay, and there is no ghosting to tune.
+
+   Verified rather than assumed: the @view-transition at-rule and view-transition-name both
+   survive our Tailwind v4 build — probed by compiling a throwaway rule and grepping the
+   emitted chunk, because an at-rule the compiler does not recognise is an at-rule it can drop.
+
+   Where it is unsupported the navigation is exactly what it was before: instant. There is no
+   fallback to write, which is the other reason this one is worth taking. */
+@view-transition { navigation: auto; }
+
+::view-transition-old(root) {
+  animation: vt-out 160ms cubic-bezier(0.4, 0, 1, 1) both;
+}
+::view-transition-new(root) {
+  animation: vt-in 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes vt-out {
+  to { opacity: 0; translate: 0 -5px; }
+}
+@keyframes vt-in {
+  from { opacity: 0; translate: 0 7px; }
+}
+
+/* A page arriving is the answer to a click, so under reduce it still crosses — it just does
+   not travel. Same rule as the scroll masks and the nav pill: cut the displacement, keep the
+   information that something changed. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root) { animation: vt-out-flat 120ms linear both; }
+  ::view-transition-new(root) { animation: vt-in-flat 140ms linear both; }
+  @keyframes vt-out-flat { to { opacity: 0; } }
+  @keyframes vt-in-flat { from { opacity: 0; } }
+}
+
+/* ═══ THE SPOTLIGHT ON A CARD ═══════════════════════════════════════════════════════════════
+   From the same drop, item 5, and the other one worth having: the Linear/Vercel card, where a
+   faint highlight in the border follows the pointer across the card. We already lift the card
+   2px on hover (THE STATE BEFORE THE CLICK, above). The lift says "this is a thing you can
+   press"; the spotlight says where in it you are, and together they are the difference between
+   a card that reacts and a card that tracks.
+
+   SAME SELECTORS AS THE LIFT, deliberately. There are over a hundred card-shaped links across
+   these pages and nearly all of them carry border-border plus a rounded-*; matching on that is
+   how a rule reaches all of them instead of the forty files someone happened to open. Scoped
+   to main, because the nav and the footer have their own hover language.
+
+   THE ONE THING THIS RULE ADDS TO THE CARDS THEMSELVES is `position: relative`, which an
+   inset pseudo-element needs — and that is not free: a card that was `static` and contains an
+   absolutely-positioned child would re-anchor that child to itself. So it was measured, not
+   reasoned about. Every matched element on ten routes was compared, with the declaration and
+   without it, including every descendant rect; the check is in the deploy log.
+
+   The pseudo-elements sit at z-index -1, which paints them above the card's own background and
+   border but below its content, so no child needs restacking — the drop's version forced
+   `position: relative; z-index: 2` onto every direct child of every card to achieve the same
+   thing, which is a far bigger blast radius for the same result.
+
+   --mx/--my default to -999px, so before the pointer has ever been inside a card the gradient
+   is nowhere near it. A spotlight that defaults to the centre lights up every card on the page
+   the moment the stylesheet loads. */
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  main a[class*="border-border"][class*="rounded-"],
+  main button[class*="border-border"][class*="rounded-"],
+  main a[class*="border-dashed"][class*="rounded-"] {
+    position: relative;
+  }
+
+  /* the border highlight: a 1px ring cut out of a radial gradient with a mask */
+  main a[class*="border-border"][class*="rounded-"]::before,
+  main button[class*="border-border"][class*="rounded-"]::before,
+  main a[class*="border-dashed"][class*="rounded-"]::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    padding: 1px;
+    background: radial-gradient(
+      9rem circle at var(--mx, -999px) var(--my, -999px),
+      rgba(99, 91, 255, 0.5),
+      rgba(99, 91, 255, 0) 58%
+    );
+    /* BOTH SHORTHANDS FIRST, BOTH COMPOSITES LAST, and the order is the whole rule. `mask` and
+       `-webkit-mask` are shorthands, so either one resets mask-composite to `add` — writing
+       mask-composite between them silently undoes it. The first version of this block did
+       exactly that and computed to `mask-composite: add, add`, which makes the two layers
+       paint on top of each other instead of cutting one out of the other: the 1px ring came
+       out as a solid purple disc covering 61% of the card. Caught by screenshotting a card
+       hovered and unhovered and looking at it, not by reading the opacity. */
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 260ms ease;
+    pointer-events: none;
+  }
+  main a[class*="border-border"][class*="rounded-"]:hover::before,
+  main button[class*="border-border"][class*="rounded-"]:hover::before,
+  main a[class*="border-dashed"][class*="rounded-"]:hover::before {
+    opacity: 1;
+  }
+
+  /* and a glow so faint it only registers as the card being warm under the cursor */
+  main a[class*="border-border"][class*="rounded-"]::after,
+  main button[class*="border-border"][class*="rounded-"]::after,
+  main a[class*="border-dashed"][class*="rounded-"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: radial-gradient(
+      11rem circle at var(--mx, -999px) var(--my, -999px),
+      rgba(99, 91, 255, 0.032),
+      rgba(99, 91, 255, 0) 55%
+    );
+    opacity: 0;
+    transition: opacity 260ms ease;
+    pointer-events: none;
+  }
+  main a[class*="border-border"][class*="rounded-"]:hover::after,
+  main button[class*="border-border"][class*="rounded-"]:hover::after,
+  main a[class*="border-dashed"][class*="rounded-"]:hover::after {
+    opacity: 1;
+  }
+}
