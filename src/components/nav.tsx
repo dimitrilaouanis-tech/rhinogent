@@ -33,10 +33,11 @@ const links: NavLink[] = [
   // The active test below is pathname === href || pathname.startsWith(href + "/"), which stays
   // correct for "/" -- the second half becomes startsWith("//") and never matches.
   { href: "/", label: "Home" },
-  /* SUBMENU, acquire.com's shape: the panel fades in under the item, the chevron turns
-     180deg, and each row is a card that warms on hover. Only two items carry one — acquire
-     does the same, four of its seven are plain links. A submenu on an item with nothing
-     beneath it is a drawer that opens onto a wall.
+  /* SUBMENU. One card for the whole bar — it slides and resizes between the items that carry
+     a menu instead of each item owning a panel that fades. Everything about how it moves
+     lives in globals.css under THE DROPDOWN MENUS; the geometry is measured here.
+     Only two items carry one — acquire does the same, four of its seven are plain links. A
+     submenu on an item with nothing beneath it is a drawer that opens onto a wall.
      Every href below is an anchor that EXISTS in the built HTML (ids web/cli/phone/companion
      on /start, web/cli/phone/desktop on /download) — checked against out/, not assumed. */
   {
@@ -72,6 +73,28 @@ const links: NavLink[] = [
   // Last, and the only item that opens nothing — the shape 13 of 16 comparable sites use.
 ];
 
+/* Which items carry a menu, in bar order. All of their sheets are mounted at all times so the
+   card can be told the height it is growing into before anything opens. */
+const SUBS: { i: number; sub: SubLink[] }[] = links
+  .map((l, i) => ({ i, sub: l.sub }))
+  .filter((s): s is { i: number; sub: SubLink[] } => !!s.sub);
+
+/* HOVER INTENT, in two numbers.
+   70ms before a COLD open: sweeping the pointer across the bar on the way to the CTA should
+   not flash two menus open behind it. 70 is below the threshold where a deliberate hover
+   feels like it is waiting, and above the dwell time of a pointer that is merely passing.
+   0ms to SWITCH: once a menu is open you are inside the control, and making you wait again
+   to move one item sideways is the single most annoying thing a nav can do.
+   170ms of grace on the way out: a pointer leaving the card rarely leaves it cleanly — it
+   clips a corner on the way to the page — and a menu that dies on the first pixel outside
+   itself cannot be used with a trackpad. */
+const OPEN_DELAY = 70;
+const CLOSE_GRACE = 170;
+/* 30rem, and it must match .nav-sheetbox in globals.css. The card is clamped to the viewport
+   with this, so it is read here rather than measured — a measured width of a transformed,
+   half-open element is a different number on every frame. */
+const PANEL_W = 480;
+
 export function Nav() {
   const raw = usePathname() || "/";
   const pathname = raw.length > 1 ? raw.replace(/\/$/, "") : raw; // trailingSlash export
@@ -96,11 +119,98 @@ export function Nav() {
 
      RESTING POSITION IS THE ACTIVE ITEM. The pill follows the pointer and glides back to
      where you are when the pointer leaves — so the bar never loses track of which page you
-     are on, which is what a plain hover highlight gets wrong. */
+     are on, which is what a plain hover highlight gets wrong.
+
+     THE DURATION IS THE DISTANCE. A fixed duration makes a one-item hop feel sluggish and a
+     four-item sweep feel frantic, because the pill's speed changes by 4× while the clock
+     does not. So it is computed from how far the pill actually has to go — 240ms for a
+     neighbour, up to 520ms for the full width of the bar — which keeps the apparent speed
+     roughly constant and is why it reads as a physical object rather than a timer. */
   const listRef = useRef<HTMLDivElement | null>(null);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const [pill, setPill] = useState<{ x: number; w: number; on: boolean }>({ x: 0, w: 0, on: false });
+  const flyRef = useRef<HTMLDivElement | null>(null);
+  const [pill, setPill] = useState<{ x: number; w: number; on: boolean; dur: number }>({
+    x: 0, w: 0, on: false, dur: 380,
+  });
+  const lastX = useRef(0);
+  /* THE PILL ANIMATES FOR YOU, AND NEVER FOR THE LAYOUT. Two attempts at this were wrong
+     before the right rule turned up, and the wrong ones are worth recording:
+
+       v1 transitioned every change. Measured on the live site: a cold load reads the bar in
+          the fallback font, where Security is 73px wide at x=736; the real font lands and the
+          same item is at x=625. So the pill GLIDED 111px sideways, by itself, about a second
+          into every first visit.
+       v2 suppressed the transition for one frame after mount. Wrong frame — it was long over
+          by the time the font arrived.
+       v3 suppressed it until document.fonts.ready. Also wrong, and this one is a trap worth
+          knowing: fonts.ready resolves when nothing is CURRENTLY loading, so with the font
+          request stalled it resolves BEFORE the request has even started. Measured again on
+          production with the font held back 500ms: the pill appeared at the pre-font position
+          and then travelled anyway.
+
+     The rule that is actually right has nothing to do with timing. A travel animation means
+     "you moved me". A font landing, a resize, a re-measure: those are the layout moving, and
+     the pill should move with it the way the text does — in the same frame, with no
+     transition, because nothing happened. So `glide` is turned on by the pointer and the
+     keyboard, and off by anything that merely re-measures. */
+  const [glide, setGlide] = useState(false);
   const [hover, setHover] = useState<number | null>(null);
+
+  /* ── THE MENU STATE ──────────────────────────────────────────────────────────────────
+     The menu is state, not `:hover`. It has to be: hover intent, a grace period and an
+     instant switch are three different answers to the same pointer event, and CSS only
+     knows the one. `open` is the item whose sheet is showing, `dir` is which way the card
+     travelled to get there (+1 right, −1 left) so the incoming rows can come in from the
+     side the pointer came from, and `morph` says whether this was a switch or a cold open,
+     which is what picks between the two choreographies in globals.css. */
+  const [open, setOpen] = useState<number | null>(null);
+  const [dir, setDir] = useState(1);
+  const [morph, setMorph] = useState(false);
+  const openRef = useRef<number | null>(null);
+  const openTimer = useRef<number | null>(null);
+  const closeTimer = useRef<number | null>(null);
+  const [fly, setFly] = useState<{ x: number; caret: number; h: number }>({ x: 0, caret: 240, h: 0 });
+
+  const clearTimers = () => {
+    if (openTimer.current !== null) { clearTimeout(openTimer.current); openTimer.current = null; }
+    if (closeTimer.current !== null) { clearTimeout(closeTimer.current); closeTimer.current = null; }
+  };
+
+  const openNow = (i: number | null) => {
+    clearTimers();
+    const prev = openRef.current;
+    if (prev === i) return;
+    // a switch between two open menus gets the sideways cascade; a cold open gets the drop
+    if (prev !== null && i !== null) { setDir(i > prev ? 1 : -1); setMorph(true); }
+    else if (i !== null) setMorph(false);
+    openRef.current = i;
+    setOpen(i);
+  };
+
+  const onItemEnter = (i: number) => {
+    setGlide(true); // a pointer moved: this one travels
+    setHover(i);
+    clearTimers();
+    if (!links[i].sub) {
+      // an item with no menu closes the open one, but only after the grace period, so
+      // crossing Agents on the way from Security to Download does not shut the card
+      closeTimer.current = window.setTimeout(() => openNow(null), CLOSE_GRACE);
+      return;
+    }
+    if (openRef.current !== null) { openNow(i); return; } // already inside: switch at once
+    openTimer.current = window.setTimeout(() => openNow(i), OPEN_DELAY); // cold: ask for intent
+  };
+
+  // the one way the menu goes away, wherever the dismissal came from: pointer, Escape,
+  // focus leaving the bar, or a navigation landing underneath it
+  const dismiss = () => { setGlide(true); openNow(null); setHover(null); };
+
+  const onListLeave = () => {
+    setGlide(true); // the pill glides home to the active item
+    setHover(null);
+    clearTimers();
+    closeTimer.current = window.setTimeout(() => openNow(null), CLOSE_GRACE);
+  };
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -109,34 +219,91 @@ export function Nav() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // never leave a timer behind, and never leave a menu open across a navigation
+  useEffect(() => clearTimers, []);
+  /* No route-change effect. Every link in the bar is a plain anchor, so a navigation from
+     inside the menu remounts this component outright; the only client-side navigations are
+     the logo and the CTA, and reaching either one takes the pointer out of the list, which
+     already dismisses. An effect here would be a second closing path for a case the first
+     one has already handled — and two ways to close one menu is how a menu starts flickering. */
+
   const activeIdx = links.findIndex(
     (l) => !l.external && !l.href.includes("#") && (pathname === l.href || pathname.startsWith(l.href + "/")),
   );
 
-  const measure = (i: number | null) => {
+  /* All sheet heights, measured once the DOM is up and again whenever the font or the width
+     changes. The card's height is animated, and you cannot animate to `auto`. */
+  const sheetRefs = useRef<Record<number, HTMLDivElement | null>>({});
+  const sheetH = useRef<Record<number, number>>({});
+  const measureSheets = () => {
+    for (const { i } of SUBS) {
+      const el = sheetRefs.current[i];
+      if (el) sheetH.current[i] = el.offsetHeight;
+    }
+  };
+
+  const measure = () => {
     const list = listRef.current;
-    const el = i === null ? null : itemRefs.current[i];
-    if (!list || !el) return setPill((v) => ({ ...v, on: false }));
-    const a = el.getBoundingClientRect();
+    if (!list) return;
     const b = list.getBoundingClientRect();
-    setPill({ x: a.left - b.left, w: a.width, on: true });
+
+    // the pill: hovered item, else the open one, else the page you are on
+    const pi = hover ?? open ?? (activeIdx >= 0 ? activeIdx : null);
+    const pe = pi === null ? null : itemRefs.current[pi];
+    if (pe) {
+      const a = pe.getBoundingClientRect();
+      const x = a.left - b.left;
+      const d = Math.abs(x - lastX.current);
+      lastX.current = x;
+      setPill({ x, w: a.width, on: true, dur: Math.round(Math.min(520, Math.max(240, 210 + d * 0.55))) });
+    } else {
+      setPill((v) => ({ ...v, on: false }));
+    }
+
+    // the card: centred under the open item, clamped into the viewport, caret on the item
+    const oi = open;
+    const oe = oi === null ? null : itemRefs.current[oi];
+    if (oe && oi !== null) {
+      const a = oe.getBoundingClientRect();
+      const centre = a.left - b.left + a.width / 2;
+      const min = 12 - b.left;
+      const max = window.innerWidth - 12 - PANEL_W - b.left;
+      const x = Math.min(Math.max(centre - PANEL_W / 2, min), Math.max(min, max));
+      setFly({ x, caret: centre - x, h: sheetH.current[oi] ?? 0 });
+    }
   };
 
   // useLayoutEffect so the pill is already in place on the first painted frame rather than
   // sliding in from x=0 the moment the page appears.
   useLayoutEffect(() => {
-    measure(hover ?? (activeIdx >= 0 ? activeIdx : null));
+    measureSheets();
+    measure();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hover, activeIdx, pathname]);
+  }, [hover, open, activeIdx, pathname]);
 
   useEffect(() => {
-    const re = () => measure(hover ?? (activeIdx >= 0 ? activeIdx : null));
+    /* setGlide(false) BEFORE the measurement, in the same batch: React commits both in one
+       pass, so the frame that carries the new geometry also carries `transition: none` and
+       the pill lands rather than travels. The order matters — reversed, you get one frame of
+       the old transition against the new numbers, which is the glide back again. */
+    const re = () => { setGlide(false); measureSheets(); measure(); };
     window.addEventListener("resize", re);
-    // a font landing after first paint changes every width in the bar
+    /* A ResizeObserver on the list, not just document.fonts.ready, and that is the lesson
+       from v3 above: fonts.ready can resolve before the font has been requested, but the bar
+       CHANGING WIDTH is the event itself and cannot be early. Every width in here depends on
+       the font, so the observer catches the swap, a zoom, and a container change with one
+       subscription. fonts.ready stays as well — it costs nothing and covers a font that
+       somehow lands without resizing the list. */
+    let ro: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== "undefined" && listRef.current) {
+      ro = new ResizeObserver(re);
+      ro.observe(listRef.current);
+      for (const el of itemRefs.current) if (el) ro.observe(el);
+    }
     if (typeof document !== "undefined" && document.fonts) document.fonts.ready.then(re).catch(() => {});
-    return () => window.removeEventListener("resize", re);
+    return () => { window.removeEventListener("resize", re); ro?.disconnect(); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hover, activeIdx]);
+  }, [hover, open, activeIdx]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setAuthed(!!data.session));
@@ -177,7 +344,12 @@ export function Nav() {
 
           <div
             ref={listRef}
-            onMouseLeave={() => setHover(null)}
+            onMouseLeave={onListLeave}
+            onKeyDown={(e) => { if (e.key === "Escape") dismiss(); }}
+            onBlur={(e) => {
+              // focus left the whole bar — not merely moved between two things inside it
+              if (!e.currentTarget.contains(e.relatedTarget as Node | null)) openNow(null);
+            }}
             className="relative hidden items-center gap-0.5 lg:flex"
           >
             {/* the pill, under the labels. aria-hidden: it is the same information the
@@ -188,9 +360,12 @@ export function Nav() {
               style={{
                 width: pill.w,
                 transform: `translate3d(${pill.x}px, -50%, 0)`,
-                opacity: pill.on ? 1 : 0,
-                transition:
-                  "transform 380ms var(--spring), width 380ms var(--spring), opacity 200ms ease",
+                // w > 0 because a zero-width ring is a 2px dot, and the bar is briefly
+                // measurable before it is laid out
+                opacity: pill.on && pill.w > 0 ? 1 : 0,
+                transition: glide
+                  ? `transform ${pill.dur}ms var(--spring), width ${pill.dur}ms var(--spring), opacity 200ms ease`
+                  : "opacity 200ms ease",
               }}
             />
             {links.map((l, li) => {
@@ -202,6 +377,19 @@ export function Nav() {
                   {...(l.external ? { target: "_blank", rel: "noreferrer" } : {})}
                   aria-current={active ? "page" : undefined}
                   aria-haspopup={l.sub ? "true" : undefined}
+                  aria-expanded={l.sub ? open === li : undefined}
+                  onFocus={() => (l.sub ? openNow(li) : openNow(null))}
+                  onKeyDown={(e) => {
+                    // ArrowDown walks into the menu, which is the one keyboard gesture every
+                    // menu is expected to answer. The card is a sibling of the triggers now,
+                    // so without this it is only reachable past the last item in the bar.
+                    if (!l.sub || e.key !== "ArrowDown") return;
+                    e.preventDefault();
+                    openNow(li);
+                    window.setTimeout(() => {
+                      flyRef.current?.querySelector<HTMLAnchorElement>(".nav-sheet[data-on] .nav-row")?.focus();
+                    }, 0);
+                  }}
                   className={`nav-trigger group relative z-10 flex items-center gap-1 rounded-full px-3 py-1.5 text-[13px] transition-colors duration-150 ${
                     active ? "text-foreground" : "text-muted hover:text-foreground"
                   }`}
@@ -223,46 +411,64 @@ export function Nav() {
 
               /* UNIFORM WRAPPER, submenu or not. The indicator needs one measurable element
                  per link, and a ragged structure is how an off-by-one in a ref array happens.
-                 .nav-item only does something when there is a .nav-panel inside it. */
-
-              /* The pt-3 on the panel is a HOVER BRIDGE, not decoration: without a padded gap
-                 the pointer crosses dead space between the item and the panel and the menu
-                 shuts under the cursor. acquire.com pads its submenu the same way. */
+                 The wrapper no longer CONTAINS a panel — there is one card for the bar, below
+                 — so all it carries is the measurement and the open flag the chevron reads. */
               return (
                 <div
                   key={l.href}
                   ref={(el) => { itemRefs.current[li] = el; }}
-                  onMouseEnter={() => setHover(li)}
-                  onFocus={() => setHover(li)}
+                  onMouseEnter={() => onItemEnter(li)}
+                  data-open={open === li ? "" : undefined}
                   className="nav-item"
                 >
                   {item}
-                  {!l.sub ? null : (
-                  <>
-                  {/* Everything about how this opens lives in globals.css under THE DROPDOWN
-                      MENUS — the spring, the caret, the cascade and the fast close. The only
-                      thing the component contributes is each row's place in the queue. */}
-                  <div data-submenu={l.label} className="nav-panel">
-                    <div className="nav-card">
-                      {l.sub.map((sl, j) => (
-                        <a
-                          key={sl.href}
-                          href={sl.href}
-                          className="nav-row"
-                          style={{ "--nav-d": `${60 + j * 42}ms` } as CSSProperties}
-                        >
-                          <p className="nav-row-h">{sl.label}</p>
-                          <p className="nav-row-p">{sl.desc}</p>
-                          <span className="nav-row-arrow" aria-hidden>&rarr;</span>
-                        </a>
-                      ))}
-                    </div>
-                  </div>
-                  </>
-                  )}
                 </div>
               );
             })}
+
+            {/* THE ONE CARD. A child of the list, so moving from an item into the card never
+                fires the list's mouseleave; absolutely positioned, so it slides between the
+                items that own it instead of being torn down and rebuilt. Every sheet stays
+                mounted — their measured heights are what the card grows into. */}
+            <div
+              ref={flyRef}
+              className="nav-flyout"
+              data-on={open !== null ? "" : undefined}
+              data-morph={morph ? "" : undefined}
+              aria-hidden={open === null}
+              style={{
+                transform: `translate3d(${fly.x}px, 0, 0)`,
+                "--caret-x": `${fly.caret}px`,
+                "--nav-dir": String(dir),
+              } as CSSProperties}
+            >
+              <div className="nav-sheetbox" style={fly.h ? { height: `${fly.h}px` } : undefined}>
+                {SUBS.map(({ i, sub }) => (
+                  <div
+                    key={i}
+                    ref={(el) => { sheetRefs.current[i] = el; }}
+                    className="nav-sheet"
+                    data-on={open === i ? "" : undefined}
+                    aria-hidden={open !== i}
+                    aria-label={links[i].label}
+                  >
+                    {sub.map((sl, j) => (
+                      <a
+                        key={sl.href}
+                        href={sl.href}
+                        className="nav-row"
+                        tabIndex={open === i ? 0 : -1}
+                        style={{ "--nav-i": String(j) } as CSSProperties}
+                      >
+                        <p className="nav-row-h">{sl.label}</p>
+                        <p className="nav-row-p">{sl.desc}</p>
+                        <span className="nav-row-arrow" aria-hidden>&rarr;</span>
+                      </a>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
 
           <div className="flex shrink-0 items-center justify-end gap-3">

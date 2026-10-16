@@ -100,7 +100,7 @@ export function CensusView() {
           <CardTitle aside={<span className="text-[#8a93a3]">no account · no key</span>}>
             <span className="text-[#e8ecf4]">Recompute it yourself</span>
           </CardTitle>
-          <pre className="overflow-x-auto font-mono text-[12px] leading-relaxed">
+          <pre className="hscroll hscroll-dark overflow-x-auto font-mono text-[12px] leading-relaxed">
 <span className="text-[#8a93a3]">$ </span>curl -s https://rhinogent.com/census_v1.json | jq .truth_root{"\n"}
 <span className="text-[#8be9c1]">&quot;{c.data?.truth_root ? short(c.data.truth_root, 16, 8) : DASH}&quot;</span>{"\n\n"}
 <span className="text-[#8a93a3]"># truth_root  </span>{c.data?.truth_root ? short(c.data.truth_root, 10, 6) : DASH}{"\n"}

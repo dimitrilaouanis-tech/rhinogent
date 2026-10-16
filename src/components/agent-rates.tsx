@@ -111,7 +111,7 @@ export function AgentRates() {
                 </p>
               </div>
 
-              <div className="overflow-x-auto edge-fade">
+              <div className="hscroll overflow-x-auto">
                 <table className="w-full min-w-[820px] border-collapse text-left">
                   <thead>
                     <tr className="border-b border-border font-mono text-[10.5px] uppercase tracking-[0.06em] text-muted-2">

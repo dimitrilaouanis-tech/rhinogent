@@ -29,7 +29,7 @@ export function MiniNav({ current }: { current?: string }) {
         <RhinoMark className="h-6 w-6" />
         <span className="text-[13px] font-semibold tracking-tight">Rhinogent</span>
       </Link>
-      <div className="mininav-scroll flex min-w-0 flex-1 items-center gap-1 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none]">
+      <div className="mininav-scroll hscroll-quiet flex min-w-0 flex-1 items-center gap-1 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none]">
         {links.map((l) => (
           <Link
             key={l.href}

@@ -177,7 +177,7 @@ const skillsOrDash = (n?: number) => (typeof n === "number" ? fmtInt(n) : DASH);
 
 function Code({ children }: { children: string }) {
   return (
-    <pre className="mt-4 overflow-x-auto rounded-xl bg-[#0d1118] p-4 font-mono text-[11.5px] leading-relaxed text-[#e8ecf4]">{children}</pre>
+    <pre className="hscroll hscroll-dark mt-4 overflow-x-auto rounded-xl bg-[#0d1118] p-4 font-mono text-[11.5px] leading-relaxed text-[#e8ecf4]">{children}</pre>
   );
 }
 

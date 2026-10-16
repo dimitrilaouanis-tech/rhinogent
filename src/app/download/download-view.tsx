@@ -175,7 +175,7 @@ function Term() {
       <div className="border-b border-white/[0.07] px-4 py-2.5">
         <span className="font-mono text-[11px] text-[#5b6b85]">rhinogent</span>
       </div>
-      <pre className="overflow-x-auto px-5 py-4 font-mono text-[12.5px] leading-[1.8] text-[#c6d3e6]">
+      <pre className="hscroll hscroll-dark overflow-x-auto px-5 py-4 font-mono text-[12.5px] leading-[1.8] text-[#c6d3e6]">
         <span className="text-[#5b6b85]">$</span> rhinogent init{"\n\n"}
         <span style={{ color: "#4ade80" }}>✓ Identity created</span>
         <span className={d}> · on this machine</span>
@@ -453,7 +453,7 @@ export function DownloadView() {
             <div className="mt-3">
               <CopyCmd cmd="curl -sO https://rhinogent.com/SHA256SUMS && sha256sum -c SHA256SUMS" />
             </div>
-            <pre className="mt-3 overflow-x-auto rounded-lg bg-[#0c111c] px-4 py-3 font-mono text-[11.5px] leading-[1.7] text-[#c6d3e6]">
+            <pre className="hscroll hscroll-dark mt-3 overflow-x-auto rounded-lg bg-[#0c111c] px-4 py-3 font-mono text-[11.5px] leading-[1.7] text-[#c6d3e6]">
               {"verify-feed.mjs: "}<span style={{ color: "#4ade80" }}>OK</span>{"\n"}
               {".well-known/jwks.json: "}<span style={{ color: "#4ade80" }}>OK</span>
             </pre>
@@ -468,7 +468,7 @@ export function DownloadView() {
             <div className="mt-3">
               <CopyCmd cmd="curl -sO https://rhinogent.com/verify-feed.mjs && node verify-feed.mjs" />
             </div>
-            <pre className="mt-3 overflow-x-auto rounded-lg bg-[#0c111c] px-4 py-3 font-mono text-[11.5px] leading-[1.7] text-[#c6d3e6]">
+            <pre className="hscroll hscroll-dark mt-3 overflow-x-auto rounded-lg bg-[#0c111c] px-4 py-3 font-mono text-[11.5px] leading-[1.7] text-[#c6d3e6]">
               {"null test    "}<span style={{ color: "#4ade80" }}>pass</span>{"\n"}
               {"signature    "}<span style={{ color: "#4ade80" }}>VERIFIED</span>{"\n"}
               {"kid          qH_Kx6…U_Q"}
@@ -543,7 +543,7 @@ export function DownloadView() {
                 <p className="text-[13.5px] font-semibold tracking-tight">{c.h}</p>
                 <p className="font-mono text-[10.5px] text-muted-2">{c.s}</p>
               </div>
-              <pre className="overflow-x-auto bg-[#0c111c] px-4 py-3.5 font-mono text-[11px] leading-[1.7] text-[#c6d3e6]">
+              <pre className="hscroll hscroll-dark overflow-x-auto bg-[#0c111c] px-4 py-3.5 font-mono text-[11px] leading-[1.7] text-[#c6d3e6]">
                 {c.code}
               </pre>
             </div>

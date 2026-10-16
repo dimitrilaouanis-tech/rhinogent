@@ -303,7 +303,7 @@ export function Verdicts() {
         a pass means &ldquo;this verifier did not object&rdquo;.
       </p>
 
-      <div className="mt-7 edge-fade overflow-x-auto rounded-xl border border-border bg-background">
+      <div className="mt-7 hscroll overflow-x-auto rounded-xl border border-border bg-background">
         <table className="w-full min-w-[640px] border-collapse text-left">
           <thead>
             <tr className="border-b border-border font-mono text-[10.5px] uppercase tracking-[0.06em] text-muted-2">

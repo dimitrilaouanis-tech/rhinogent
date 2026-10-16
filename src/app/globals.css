@@ -778,29 +778,132 @@ summary,
   );
 }
 
-/* EDGE FADE on horizontally scrollable strips — the one thing the field genuinely uses
-   scroll-driven CSS for. The mask tells you there is more to the right before you touch it,
-   and stops showing you a half-sliced card at the edge. Runs on the compositor, needs no JS,
-   and where it is unsupported the strip simply has no mask: nothing is ever hidden by it. */
+/* ═══ THE HORIZONTAL SCROLLER ══════════════════════════════════════════════════════════════
+   There are twenty-one strips on this site that scroll sideways — six tables, eleven code
+   blocks, the census charts, the surface rail — and until now five of them had an edge mask
+   and the other sixteen had whatever the operating system paints by default: a 15px grey
+   trough across the bottom of a rounded, bordered card. One treatment, applied to all of
+   them, is `.hscroll`.
+
+   It does three things, in order of how much they matter:
+
+   1. IT SAYS THERE IS MORE. A mask fades whichever edge you have content past, driven by the
+      actual scroll position — right edge only at the start, both edges in the middle, left
+      edge only at the end. Three keyframes, because the two-keyframe version interpolated
+      through a state where BOTH edges were half-faded at the midpoint, which looks like a
+      rendering fault rather than an affordance.
+
+   2. IT IS NOT GATED ON REDUCED MOTION ANY MORE, and that was a real bug: the old rule sat
+      inside `prefers-reduced-motion: no-preference`, so on a machine asking for less motion
+      — which is every Windows box with animations turned off, including this one — the strips
+      lost the one cue that told you they scrolled at all. A mask that reads the scroll
+      position is a readout, like a scrollbar; it does not move unless you move it. Reduced
+      motion means do not animate AT me. It does not mean withhold information.
+
+   3. IT REPLACES THE OS SCROLLBAR WITH A QUIET ONE. 6px, token-coloured, transparent track,
+      darkening while the pointer is over the strip. `.hscroll-dark` is the same thing for the
+      near-black code blocks, where a dark thumb on a dark trough is invisible. Strips that
+      are DRAGGED rather than scrolled — the surface rail, the mini-nav — take
+      `.hscroll-quiet` instead: same mask, no scrollbar at all.
+
+   Plus `overscroll-behavior-x: contain` on all of them, which stops a sideways flick inside a
+   table from reaching the browser and firing a back-navigation gesture. That one is not
+   cosmetic: losing the page because you scrolled a table is the worst bug in this file.
+
+   WHERE SCROLL-DRIVEN CSS IS UNSUPPORTED the @supports fallback paints a static right-edge
+   fade, which is correct at the only position a strip is in before you touch it. */
+
+.hscroll,
+.hscroll-quiet,
+.edge-fade {
+  overscroll-behavior-x: contain;
+}
+
+/* the visible, quiet scrollbar */
+.hscroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(17, 17, 26, 0.18) transparent;
+}
+.hscroll::-webkit-scrollbar {
+  height: 10px;
+}
+.hscroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.hscroll::-webkit-scrollbar-thumb {
+  /* a 2px transparent border clipped to the content box is how you get a 6px thumb with air
+     around it, without a wrapper element */
+  background-color: rgba(17, 17, 26, 0.16);
+  background-clip: content-box;
+  border: 2px solid transparent;
+  border-radius: 99px;
+  transition: background-color 180ms ease;
+}
+.hscroll:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(17, 17, 26, 0.34);
+}
+
+/* the dark strips: the terminal transcripts and the code blocks on #0c111c / #0d1118 */
+.hscroll-dark {
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+.hscroll-dark::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.17);
+}
+.hscroll-dark:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.34);
+}
+
+/* dragged, not scrolled: no trough, because the cards are the handle */
+.hscroll-quiet,
+.edge-fade {
+  scrollbar-width: none;
+}
+.hscroll-quiet::-webkit-scrollbar,
+.edge-fade::-webkit-scrollbar {
+  display: none;
+}
+
+/* the mask: right edge, both edges, left edge — read straight off the scroll offset */
 @supports (animation-timeline: scroll(self inline)) {
-  @media (prefers-reduced-motion: no-preference) {
-    .edge-fade {
-      animation: edge-fade linear both;
-      animation-timeline: scroll(self inline);
-      animation-range: 0 100%;
+  .hscroll,
+  .hscroll-quiet,
+  .edge-fade {
+    animation: hscroll-edges linear both;
+    animation-timeline: scroll(self inline);
+    animation-range: 0 100%;
+  }
+  @keyframes hscroll-edges {
+    0% {
+      -webkit-mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - 3.5rem), transparent 100%);
+      mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - 3.5rem), transparent 100%);
     }
-    @keyframes edge-fade {
-      0% {
-        -webkit-mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - 3.5rem), transparent 100%);
-        mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - 3.5rem), transparent 100%);
-      }
-      100% {
-        -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 3.5rem, #000 100%);
-        mask-image: linear-gradient(90deg, transparent 0, #000 3.5rem, #000 100%);
-      }
+    50% {
+      -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 3.5rem, #000 calc(100% - 3.5rem), transparent 100%);
+      mask-image: linear-gradient(90deg, transparent 0, #000 3.5rem, #000 calc(100% - 3.5rem), transparent 100%);
+    }
+    100% {
+      -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 3.5rem, #000 100%);
+      mask-image: linear-gradient(90deg, transparent 0, #000 3.5rem, #000 100%);
     }
   }
 }
+@supports not (animation-timeline: scroll(self inline)) {
+  .hscroll,
+  .hscroll-quiet,
+  .edge-fade {
+    -webkit-mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - 3.5rem), transparent 100%);
+    mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - 3.5rem), transparent 100%);
+  }
+}
+
+/* A STRIP THAT FITS GETS NO MASK, and it costs nothing to arrange: a scroll timeline on an
+   axis that cannot scroll is INACTIVE, and an animation attached to an inactive timeline
+   produces no output at all — so the mask simply is not there on a table that already fits
+   its column. Checked in the browser rather than taken from the spec. The @supports fallback
+   cannot know that and paints the right-edge fade regardless, which is the one place this
+   treatment is worse than nothing — and it only reaches browsers with no scroll-driven CSS
+   at all. */
 
 /* ═══════════════════════════════════════════════════════════
    THE STATE BEFORE THE CLICK (2026-10-15)
@@ -878,89 +981,105 @@ summary,
 }
 
 /* ═══ THE DROPDOWN MENUS ═══════════════════════════════════════════════════════════════════
-   The open is choreographed; the close is instant. That asymmetry is the whole trick, and
-   every menu worth copying has it — a panel that takes as long to leave as it took to arrive
-   feels like it is arguing with the pointer.
+   ONE PANEL THAT MOVES, not four panels that fade. This is the second version of this menu
+   and the rewrite is the point: the first one gave every item its own panel, so going from
+   Get started to Download tore one card down and built another one up in the same place. Two
+   cross-fading cards read as a flicker no matter how nicely each half is timed. Here the card
+   is a single element that SLIDES and RESIZES to the item you are pointing at, and only the
+   rows inside it change — so the menu reads as one object with a position, which is what it
+   actually is.
 
-   On the way in, in order:
-     0ms    the trigger lights and HOLDS — it stays lit while the pointer is inside the panel,
-            which is what makes the item and the panel read as one object instead of two
-     0ms    the panel runs a 420ms spring from scale .97 / −8px with origin top centre, so it
-            unfolds out of the item rather than sliding in from nowhere
-     0ms    the caret draws itself at the top edge, tying the panel to the item it belongs to
-     60ms   row one begins; every following row is 42ms behind the last
-   On the way out all of it runs together in 110ms with no delay and no spring, because a
-   closing menu is not telling you anything.
+   The timing is asymmetric and that asymmetry is the whole trick:
+     cold open    the pointer has to MEAN it (70ms of hover intent in nav.tsx), then the card
+                  springs open over 420ms from scale .97 / −8px, origin at the caret, and the
+                  rows cascade downward 60ms + 42ms apart
+     switch       instant, no intent delay — you are already in the menu, so the card springs
+                  sideways and the new rows arrive FROM THE DIRECTION YOU CAME FROM
+                  (--nav-dir), tighter and flatter: no lead, 26ms apart
+     close        110ms, flat, no spring, no stagger — a closing menu is not telling you
+                  anything, and it gets a 170ms grace period first so a diagonal cut toward
+                  the card does not kill it
 
-   Written as real classes instead of a wall of group-hover/nav: arbitrary variants: a
-   six-property transition with a per-child delay does not survive being spelled sideways.
-   The first version of this was one flat 240ms opacity+translate on the panel with nothing
-   staggered — functional, and indistinguishable from a tooltip.
+   TRANSFORM-ORIGIN FOLLOWS THE CARET. The card is clamped to the viewport, so near the right
+   edge its left edge stops moving while the item keeps going; anchoring the scale to
+   --caret-x means it still unfolds out of the item it belongs to rather than out of its own
+   corner.
 
    REDUCED MOTION KEEPS THE FADE. A menu appearing is not decoration, it is the answer to the
    pointer, so under `reduce` the opacity still crosses in 120ms — the spring, the scale, the
-   caret draw and the cascade are what drop. */
+   slide, the caret draw and the cascade are what drop. */
 
 .nav-item {
   position: relative;
 }
 
-/* The trigger holds its LIT TEXT for as long as the panel is open — but it no longer
-   paints its own fill. The sliding pill in nav.tsx does that, and a pill travelling into a
-   box that is already filled reads as two highlights arriving at the same place. */
+/* The trigger holds its LIT TEXT for as long as the panel is open — but it no longer paints
+   its own fill. The sliding pill in nav.tsx does that, and a pill travelling into a box that
+   is already filled reads as two highlights arriving at the same place. */
 .nav-item:hover > .nav-trigger,
+.nav-item[data-open] > .nav-trigger,
 .nav-item:focus-within > .nav-trigger {
   color: var(--foreground);
 }
 
-.nav-panel {
+/* ── the one panel ──────────────────────────────────────────────────────────────────────── */
+.nav-flyout {
   position: absolute;
-  left: 50%;
   top: 100%;
+  left: 0;
   z-index: 50;
-  width: 30rem;
-  /* HOVER BRIDGE. Without a padded gap the pointer crosses dead space between the item and
-     the card and the menu shuts under the cursor. It is padding, not margin, so the gap is
-     inside the hover target. */
+  /* HOVER BRIDGE. Without a padded gap the pointer crosses dead space between the bar and
+     the card. It is padding on the wrapper, so the gap is inside the hover target, and the
+     wrapper is a CHILD of the nav list — which means moving item → card never fires the
+     list's mouseleave at all. The bridge and the grace period are belt and braces. */
   padding-top: 0.7rem;
-  pointer-events: none;
   opacity: 0;
-  transform: translateX(-50%) translateY(-8px) scale(0.97);
-  transform-origin: top center;
+  pointer-events: none;
+  /* closed: the x-transition is short and flat, so a panel dismissed mid-travel does not
+     keep gliding after it has gone */
   transition:
     opacity 110ms ease,
-    transform 110ms cubic-bezier(0.4, 0, 1, 1);
+    transform 140ms cubic-bezier(0.4, 0, 1, 1);
 }
-
-.nav-item:hover > .nav-panel,
-.nav-item:focus-within > .nav-panel {
-  pointer-events: auto;
+.nav-flyout[data-on] {
   opacity: 1;
-  transform: translateX(-50%) translateY(0) scale(1);
+  pointer-events: auto;
   transition:
     opacity 170ms ease,
-    transform 420ms var(--spring);
+    transform 520ms var(--spring);
 }
 
-.nav-card {
+.nav-sheetbox {
   position: relative;
-  display: grid;
-  gap: 0.25rem;
+  width: 30rem;
   border-radius: 1rem;
   border: 1px solid var(--border);
   background: var(--background);
-  padding: 0.5rem;
   box-shadow:
     0 18px 40px -12px rgba(1, 1, 26, 0.18),
     0 2px 6px rgba(1, 1, 26, 0.06);
+  /* the height is set in px from the measured sheet in nav.tsx, so the card grows or shrinks
+     into the next menu instead of snapping */
+  transform-origin: var(--caret-x, 50%) top;
+  transform: translateY(-8px) scale(0.97);
+  transition:
+    transform 110ms cubic-bezier(0.4, 0, 1, 1),
+    height 110ms ease;
+}
+.nav-flyout[data-on] .nav-sheetbox {
+  transform: none;
+  transition:
+    transform 420ms var(--spring),
+    height 420ms var(--spring);
 }
 
 /* the caret — a rotated square with two of its four borders, so it reads as a notch cut out
-   of the card's own edge rather than a triangle parked on top of it */
-.nav-card::before {
+   of the card's own edge rather than a triangle parked on top of it. It tracks the ITEM, not
+   the card, which is the only reason the clamped case still looks deliberate. */
+.nav-sheetbox::before {
   content: "";
   position: absolute;
-  left: 50%;
+  left: var(--caret-x, 50%);
   top: -5px;
   height: 9px;
   width: 9px;
@@ -972,15 +1091,40 @@ summary,
   background: var(--background);
   opacity: 0;
   scale: 0.4;
-  transition: opacity 90ms ease, scale 90ms ease;
+  transition: opacity 90ms ease, scale 90ms ease, left 420ms var(--spring);
 }
-.nav-item:hover .nav-card::before,
-.nav-item:focus-within .nav-card::before {
+.nav-flyout[data-on] .nav-sheetbox::before {
   opacity: 1;
   scale: 1;
-  transition: opacity 200ms ease 40ms, scale 380ms var(--spring) 40ms;
+  transition: opacity 200ms ease 40ms, scale 380ms var(--spring) 40ms, left 420ms var(--spring);
 }
 
+/* ── the sheets: one per menu, all mounted, absolutely stacked ─────────────────────────────
+   All of them stay in the DOM so their heights can be measured before anything opens — the
+   card cannot grow INTO a height it has not been told. Each is top-left anchored with
+   width:100% and its own padding, so offsetHeight is exactly the height the card needs. */
+.nav-sheet {
+  position: absolute;
+  top: 0;
+  left: 0;
+  box-sizing: border-box;
+  display: grid;
+  gap: 0.25rem;
+  width: 100%;
+  padding: 0.5rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 90ms ease;
+}
+.nav-sheet[data-on] {
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity 180ms ease;
+}
+
+/* ── the rows, and the cascade ────────────────────────────────────────────────────────────
+   --nav-i is the row index (set in nav.tsx); --nav-lead and --nav-step are set on the flyout
+   and differ between a cold open and a switch. One expression, two choreographies. */
 .nav-row {
   position: relative;
   display: block;
@@ -988,21 +1132,28 @@ summary,
   background-color: rgba(99, 91, 255, 0.035);
   padding: 0.6rem 0.9rem;
   opacity: 0;
-  transform: translateY(-7px);
+  translate: var(--nav-ox, 0px) var(--nav-oy, -7px);
+  --nav-d: calc(var(--nav-i, 0) * var(--nav-step, 42ms) + var(--nav-lead, 60ms));
   transition:
     opacity 90ms ease,
-    transform 90ms ease,
+    translate 90ms ease,
     background-color 180ms ease;
 }
-.nav-item:hover .nav-row,
-.nav-item:focus-within .nav-row {
+.nav-sheet[data-on] .nav-row {
   opacity: 1;
-  transform: none;
-  /* --nav-d is set per row in nav.tsx: 60ms, then 42ms apart */
+  translate: none;
   transition:
-    opacity 240ms ease var(--nav-d, 0ms),
-    transform 460ms var(--spring) var(--nav-d, 0ms),
+    opacity 220ms ease var(--nav-d),
+    translate 440ms var(--spring) var(--nav-d),
     background-color 180ms ease;
+}
+/* a cold open drops DOWN out of the bar; a switch comes in SIDEWAYS from the direction the
+   pointer travelled, and faster, because the card is already there */
+.nav-flyout[data-morph] {
+  --nav-ox: calc(var(--nav-dir, 1) * 14px);
+  --nav-oy: 0px;
+  --nav-lead: 0ms;
+  --nav-step: 26ms;
 }
 .nav-row:hover {
   background-color: rgba(99, 91, 255, 0.09);
@@ -1043,37 +1194,39 @@ summary,
   transform: none;
 }
 
+/* The chevron turns on OPEN, not on hover. It is a state indicator, and during the 70ms of
+   hover intent the menu is not open yet — a chevron that flips for a pointer that merely
+   crossed the item is reporting something that did not happen. */
 .nav-chev {
   transition: rotate 110ms ease;
 }
-.nav-item:hover .nav-chev,
-.nav-item:focus-within .nav-chev {
+.nav-item[data-open] .nav-chev {
   rotate: 180deg;
   transition: rotate 420ms var(--spring);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .nav-panel,
-  .nav-item:hover > .nav-panel,
-  .nav-item:focus-within > .nav-panel {
-    transform: translateX(-50%);
+  .nav-flyout,
+  .nav-flyout[data-on] {
     transition: opacity 120ms ease;
   }
-  .nav-row,
-  .nav-item:hover .nav-row,
-  .nav-item:focus-within .nav-row {
+  .nav-sheetbox,
+  .nav-flyout[data-on] .nav-sheetbox {
     transform: none;
-    transition: opacity 120ms ease, background-color 120ms ease;
+    transition: none;
   }
-  .nav-card::before,
-  .nav-item:hover .nav-card::before,
-  .nav-item:focus-within .nav-card::before {
+  .nav-sheetbox::before,
+  .nav-flyout[data-on] .nav-sheetbox::before {
     scale: 1;
     transition: opacity 120ms ease;
   }
+  .nav-row,
+  .nav-sheet[data-on] .nav-row {
+    translate: none;
+    transition: opacity 120ms ease, background-color 120ms ease;
+  }
   .nav-chev,
-  .nav-item:hover .nav-chev,
-  .nav-item:focus-within .nav-chev {
+  .nav-item[data-open] .nav-chev {
     transition: none;
   }
   .nav-row-arrow,

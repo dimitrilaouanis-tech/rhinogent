@@ -143,7 +143,7 @@ export function MatrixCharts({ ranking, agents, metrics }: { ranking: Mover[]; a
         <p className="font-mono text-[10px] uppercase tracking-widest text-muted-2">
           <span className="text-accent">▮</span> epoch lane · each block = one sealed, Merkle-rooted heartbeat
         </p>
-        <div className="mt-2.5 flex items-stretch gap-2 overflow-x-auto pb-1">
+        <div className="hscroll mt-2.5 flex items-stretch gap-2 overflow-x-auto pb-1">
           {/* forming epoch — pulsing, fills until the next heartbeat seals it */}
           {/* A "forming" block that fills toward sealing is a PROMISE about the next heartbeat.
               While the heartbeat is stopped that promise is fiction, so the block states the

@@ -133,7 +133,7 @@ export default function JobsCatalog() {
                 </p>
               </div>
 
-              <div className="edge-fade overflow-x-auto">
+              <div className="hscroll overflow-x-auto">
                 <table className="w-full min-w-[820px] table-fixed border-collapse text-left">
                   <colgroup>
                     <col className="w-[25%]" />

@@ -121,7 +121,7 @@ export function Ladder({ bare = false }: { bare?: boolean } = {}) {
       </div>
 
       {/* the ladder */}
-      <div className="mt-5 overflow-x-auto rounded-2xl border border-border">
+      <div className="hscroll mt-5 overflow-x-auto rounded-2xl border border-border">
         <table className="w-full min-w-[860px] text-left text-sm">
           <thead className="bg-surface font-mono text-[10.5px] uppercase tracking-[0.12em] text-muted-2">
             <tr>
