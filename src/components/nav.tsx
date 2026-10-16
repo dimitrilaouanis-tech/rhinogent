@@ -90,10 +90,12 @@ const SUBS: { i: number; sub: SubLink[] }[] = links
    itself cannot be used with a trackpad. */
 const OPEN_DELAY = 70;
 const CLOSE_GRACE = 170;
-/* 30rem, and it must match .nav-sheetbox in globals.css. The card is clamped to the viewport
-   with this, so it is read here rather than measured — a measured width of a transformed,
-   half-open element is a different number on every frame. */
-const PANEL_W = 480;
+/* The card's width used to be this constant, matched by hand to a 30rem rule in globals.css.
+   That is what made the menu disproportionate: 480px of card under a 410px bar, and the same
+   480 for the menu with four long descriptions as for the one with four short ones. The width
+   is measured per menu now (see measureSheets) and this is only the floor a one-line menu can
+   never go below — the same 15rem min-width .nav-sheet carries, so the two cannot disagree. */
+const PANEL_MIN = 240;
 
 export function Nav() {
   const raw = usePathname() || "/";
@@ -169,7 +171,7 @@ export function Nav() {
   const openRef = useRef<number | null>(null);
   const openTimer = useRef<number | null>(null);
   const closeTimer = useRef<number | null>(null);
-  const [fly, setFly] = useState<{ x: number; caret: number; h: number }>({ x: 0, caret: 240, h: 0 });
+  const [fly, setFly] = useState<{ x: number; w: number; caret: number; h: number }>({ x: 0, w: PANEL_MIN, caret: 120, h: 0 });
 
   const clearTimers = () => {
     if (openTimer.current !== null) { clearTimeout(openTimer.current); openTimer.current = null; }
@@ -231,14 +233,19 @@ export function Nav() {
     (l) => !l.external && !l.href.includes("#") && (pathname === l.href || pathname.startsWith(l.href + "/")),
   );
 
-  /* All sheet heights, measured once the DOM is up and again whenever the font or the width
-     changes. The card's height is animated, and you cannot animate to `auto`. */
+  /* Every sheet's own size, measured once the DOM is up and again whenever the font or the
+     window changes. Both dimensions are animated and you cannot animate to `auto`, so both
+     have to be real px — and they have to come from the SHEET, which is max-content and
+     absolutely positioned, not from the card, whose width is the thing being decided. */
   const sheetRefs = useRef<Record<number, HTMLDivElement | null>>({});
   const sheetH = useRef<Record<number, number>>({});
+  const sheetW = useRef<Record<number, number>>({});
   const measureSheets = () => {
     for (const { i } of SUBS) {
       const el = sheetRefs.current[i];
-      if (el) sheetH.current[i] = el.offsetHeight;
+      if (!el) continue;
+      sheetH.current[i] = el.offsetHeight;
+      sheetW.current[i] = Math.max(PANEL_MIN, Math.ceil(el.offsetWidth));
     }
   };
 
@@ -266,10 +273,13 @@ export function Nav() {
     if (oe && oi !== null) {
       const a = oe.getBoundingClientRect();
       const centre = a.left - b.left + a.width / 2;
+      // this menu's own width, so the clamp and the centring are done against the card that is
+      // actually about to be there rather than against the widest one any menu might need
+      const w = sheetW.current[oi] ?? PANEL_MIN;
       const min = 12 - b.left;
-      const max = window.innerWidth - 12 - PANEL_W - b.left;
-      const x = Math.min(Math.max(centre - PANEL_W / 2, min), Math.max(min, max));
-      setFly({ x, caret: centre - x, h: sheetH.current[oi] ?? 0 });
+      const max = window.innerWidth - 12 - w - b.left;
+      const x = Math.min(Math.max(centre - w / 2, min), Math.max(min, max));
+      setFly({ x, w, caret: centre - x, h: sheetH.current[oi] ?? 0 });
     }
   };
 
@@ -454,6 +464,7 @@ export function Nav() {
               style={{
                 transform: `translate3d(${fly.x}px, 0, 0)`,
                 "--caret-x": `${fly.caret}px`,
+                "--sheet-w": `${fly.w}px`,
                 "--nav-dir": String(dir),
               } as CSSProperties}
             >

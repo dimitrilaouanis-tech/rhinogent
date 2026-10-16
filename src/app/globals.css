@@ -1049,38 +1049,62 @@ summary,
     transform 520ms var(--spring);
 }
 
+/* SIZED TO ITS CONTENTS, BOTH WAYS. The card used to be a flat 30rem — 480px hanging under a
+   410px menu bar, i.e. a panel wider than the whole nav it belongs to, and the same 480px for
+   the menu with four long descriptions and the one with four short ones. That is what "not
+   proportional" was: a constant where a measurement belonged.
+
+   Both numbers now come from the sheet. --sheet-w and the height are written in px by nav.tsx
+   from each sheet's own max-content size (measured: Get started wants 376px, Download 294px —
+   neither ever needed 480), so each menu gets a card the size of what is in it, and moving
+   between them animates BOTH dimensions on the same spring the card already travels on. The
+   24rem cap is a backstop for copy added later, not a target; nothing hits it today. */
 .nav-sheetbox {
   position: relative;
-  width: 30rem;
+  width: var(--sheet-w, 24rem);
   border-radius: 1rem;
   border: 1px solid var(--border);
   background: var(--background);
+  /* The sheets are their own natural width, so while the card shrinks into a narrower menu the
+     outgoing one is briefly wider than the card around it — 64px wider, measured, at the widest
+     point of a Get started → Download switch.
+     MEASURED HONESTLY: nothing actually spills today, clip or no clip. Sampled at 25/45/70/110ms
+     with overflow forced back to visible, the frames are identical (at 45ms, zero pixels differ)
+     and there is no row ink outside the card at any of them — the outgoing sheet's 90ms fade is
+     finished long before the 420ms width spring has uncovered it, and a row carries no resting
+     fill, so an outgoing row is text and the text does not reach that edge.
+     So this is a guard, not a fix: it is what keeps that true if the fade is ever slowed or a
+     row background ever comes back. It is also why the caret lives on .nav-flyout rather than
+     here — a notch drawn above the card's top edge would be clipped by this. */
+  overflow: hidden;
   box-shadow:
     0 18px 40px -12px rgba(1, 1, 26, 0.18),
     0 2px 6px rgba(1, 1, 26, 0.06);
-  /* the height is set in px from the measured sheet in nav.tsx, so the card grows or shrinks
-     into the next menu instead of snapping */
   transform-origin: var(--caret-x, 50%) top;
   transform: translateY(-8px) scale(0.97);
   transition:
     transform 110ms cubic-bezier(0.4, 0, 1, 1),
+    width 110ms ease,
     height 110ms ease;
 }
 .nav-flyout[data-on] .nav-sheetbox {
   transform: none;
   transition:
     transform 420ms var(--spring),
+    width 420ms var(--spring),
     height 420ms var(--spring);
 }
 
 /* the caret — a rotated square with two of its four borders, so it reads as a notch cut out
    of the card's own edge rather than a triangle parked on top of it. It tracks the ITEM, not
    the card, which is the only reason the clamped case still looks deliberate. */
-.nav-sheetbox::before {
+.nav-flyout::before {
   content: "";
   position: absolute;
   left: var(--caret-x, 50%);
-  top: -5px;
+  /* the flyout's own padding-top is the hover bridge; the card starts below it, so the notch
+     sits 5px above that line — the same place it was when it hung off the card itself */
+  top: calc(0.7rem - 5px);
   height: 9px;
   width: 9px;
   margin-left: -4.5px;
@@ -1093,16 +1117,18 @@ summary,
   scale: 0.4;
   transition: opacity 90ms ease, scale 90ms ease, left 420ms var(--spring);
 }
-.nav-flyout[data-on] .nav-sheetbox::before {
+.nav-flyout[data-on]::before {
   opacity: 1;
   scale: 1;
   transition: opacity 200ms ease 40ms, scale 380ms var(--spring) 40ms, left 420ms var(--spring);
 }
 
 /* ── the sheets: one per menu, all mounted, absolutely stacked ─────────────────────────────
-   All of them stay in the DOM so their heights can be measured before anything opens — the
-   card cannot grow INTO a height it has not been told. Each is top-left anchored with
-   width:100% and its own padding, so offsetHeight is exactly the height the card needs. */
+   All of them stay in the DOM so their size can be measured before anything opens — the card
+   cannot grow INTO a size it has not been told. Each is top-left anchored and absolutely
+   positioned, so `width: max-content` shrink-wraps it to its own longest line INDEPENDENTLY of
+   the card: that is what makes the measurement non-circular. Reading a width:100% sheet to
+   decide the card's width would just read back the width the card already had. */
 .nav-sheet {
   position: absolute;
   top: 0;
@@ -1110,7 +1136,9 @@ summary,
   box-sizing: border-box;
   display: grid;
   gap: 0.25rem;
-  width: 100%;
+  width: max-content;
+  min-width: 15rem;
+  max-width: 24rem;
   padding: 0.5rem;
   opacity: 0;
   pointer-events: none;
@@ -1125,11 +1153,15 @@ summary,
 /* ── the rows, and the cascade ────────────────────────────────────────────────────────────
    --nav-i is the row index (set in nav.tsx); --nav-lead and --nav-step are set on the flyout
    and differ between a cold open and a switch. One expression, two choreographies. */
+/* NO RESTING FILL. Every row used to carry rgba(99,91,255,0.035) all the time, which made four
+   rows read as four things already chosen, and left hover only 0.055 of tint to say anything
+   with — the weakest signal in the nav sitting on its most-used control. The fill is the hover
+   state now and nothing else, so the card is lighter and the row you are on is unambiguous. */
 .nav-row {
   position: relative;
   display: block;
   border-radius: 0.75rem;
-  background-color: rgba(99, 91, 255, 0.035);
+  background-color: transparent;
   padding: 0.6rem 0.9rem;
   opacity: 0;
   translate: var(--nav-ox, 0px) var(--nav-oy, -7px);
@@ -1156,7 +1188,7 @@ summary,
   --nav-step: 26ms;
 }
 .nav-row:hover {
-  background-color: rgba(99, 91, 255, 0.09);
+  background-color: rgba(99, 91, 255, 0.085);
 }
 
 .nav-row-h {
@@ -1229,14 +1261,16 @@ summary,
   .nav-flyout[data-on] {
     transition: opacity 120ms ease, transform 150ms linear;
   }
-  /* no scale and no lift — but the box still resizes into the next menu */
+  /* no scale and no lift — but the box still resizes into the next menu, in both dimensions.
+     Resizing is not decoration here: each menu's card is a different width now, and a card
+     that jumped from 376px to 294px would read as a second card replacing the first. */
   .nav-sheetbox,
   .nav-flyout[data-on] .nav-sheetbox {
     transform: none;
-    transition: height 150ms linear;
+    transition: width 150ms linear, height 150ms linear;
   }
-  .nav-sheetbox::before,
-  .nav-flyout[data-on] .nav-sheetbox::before {
+  .nav-flyout::before,
+  .nav-flyout[data-on]::before {
     scale: 1;
     transition: opacity 120ms ease, left 150ms linear;
   }
