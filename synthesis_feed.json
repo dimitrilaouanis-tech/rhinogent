@@ -1,6 +1,6 @@
 {
  "artifact": "0n1x-intel-synthesis",
- "as_of": "2026-10-22T02:10:20.330203+00:00",
+ "as_of": "2026-10-22T02:47:11.146082+00:00",
  "conclusions": [
   {
    "new_conclusion": "shopify.com: cross-pipeline consensus — independently confirmed 'ok' by the facts_registry's 1212-agent attestation consensus (100% agreement) AND by the exchange's staked inspector panel (agreement 1.0) via a SEPARATE mechanism. Fresh oracle recompute at verification time: ok (OK — fused: age[WELL-ESTABLISHED — 21 years old] · tls[valid (Google Trust Services)] · http[up 200]). No single source stated both pipelines agree — this 2-pipeline-agreement conclusion is new.",
@@ -21,9 +21,9 @@
      "tier": "premium",
      "inspector_agreement": 1.0,
      "top_inspectors": [
-      "Swift-Warden-2304",
-      "Bold-Cipher-930D",
-      "Quiet-Horn-065A"
+      "Wild-Rampart-B6BF",
+      "Swift-Horn-30E4",
+      "Keen-Vault-96DD"
      ],
      "verified_by_oracle": true
     }
@@ -35,17 +35,17 @@
      "angle": "corroboration",
      "source": "llm",
      "brain": "groq",
-     "note": "The combined evidence shows that Shopify .com is not only universally affirmed as “ok” by a broad base of 1,212 agents (100 % agreement across 100 consensus agents) but also passes a premium‑level inspection with perfect inspector agreement and Oracle verification, indicating it meets the highest standards of reliability, security, and compliance. This cross‑pipeline consensus therefore positions "
+     "note": "Shopify .com is both broadly affirmed as “ok” by a full‑consensus of 100 agents (1 212 attestations, 100 % agreement) **and** independently validated as a “premium‑tier” service with perfect inspector agreement and oracle verification, indicating it meets the highest operational and quality standards for a mission‑critical e‑commerce platform. This dual confirmation implies that Shopify not only f"
     },
     {
      "agent": "Wild-Bastion-79A8",
      "angle": "skeptical_audit",
      "source": "llm",
      "brain": "groq",
-     "note": "**Strongest cross‑source conclusion**  \nBoth the facts_registry and the exchange_premium_panel datasets independently flag **shopify.com** as a *high‑confidence, approved* target within their respective validation frameworks. The registry records a 100 % agreement across 100 agents (1 212 attestations total), while the premium panel shows perfect inspector agreement (1.0), a “premium” tier designa"
+     "note": "**Cross‑source consensus (facts_registry + exchange_premium_panel)**  \n> **Shopify.com is a bona‑fide, operational e‑commerce platform that enjoys maximal agreement among 0n1x agents (100 % of 1 212 attestations) and has been independently verified by the premium‑tier Exchange Panel (inspector agreement = 1.0, oracle‑verified).**\n\n### What is **not** verifiable or overreaching from the supplied da"
     }
    ],
-   "llm_agreement": 0.072,
+   "llm_agreement": 0.081,
    "verification": {
     "method": "oracle_recompute",
     "target": "shopify.com",
@@ -54,19 +54,19 @@
     "result": "verified",
     "detail": "OK — fused: age[WELL-ESTABLISHED — 21 years old] · tls[valid (Google Trust Services)] · http[up 200]"
    },
-   "confidence": 0.761,
+   "confidence": 0.762,
    "status": "reconfirmed",
-   "as_of": "2026-10-22T01:53:29.703263+00:00",
+   "as_of": "2026-10-22T02:46:34.893218+00:00",
    "onyx_attestation": {
     "alg": "Ed25519+JCS",
     "kid": "onyx-7fdc5cc8113040cb",
     "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
     "tool": "onyx_synthesis",
-    "observed_hash": "sha256:a022e65d685272e2d9ae12999a061431bc261eba6cc2b02da16a388256a996ae",
-    "signed_at": 1792634009,
+    "observed_hash": "sha256:f33e23af39417764be5601b33609ba5919decf695be59897303960e7367322d5",
+    "signed_at": 1792637194,
     "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
     "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
-    "sig": "3010gyBXZmhrv_rsPCd9BY4Vz9vu9A6oVaNvTgQ2x4w-_z1ZpSPP86BEpJEovcRSK2GUc2YYeuL5JHB4q79iBA",
+    "sig": "ybdbAtbDFTLUEpNcxupIK92l3Dcn0GCojwtoLQ1xJh1jwxmo8vDSPUgwrxSn9N3VOB9EitamavjWuhG3qEgQBQ",
     "discover": {
      "what": "0n1x — independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
      "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
@@ -108,16 +108,16 @@
     {
      "agent": "Stone-Anchor-A7F1",
      "angle": "corroboration",
-     "source": "llm",
-     "brain": "groq",
-     "note": "Stripe.com is simultaneously validated by a 100 %‑consensus factual registry (1207 attestations) **and** by a premium‑tier exchange panel that includes top‑ranked inspectors and an oracle verification, demonstrating that the service meets both broad factual standards and high‑value financial‑system trust requirements. This dual‑pipeline endorsement implies Stripe is not only factually accurate but"
+     "source": "kb",
+     "brain": "trained_cache",
+     "note": "**HOLD** — the deciding fact: an 8-day-old domain has no verifiable track record, and $450 by an irreversible rail on an unproven counterparty is exactly the gap verify-before-pay exists to catch.\n\nMy read, not a verified fact: age alone isn't proof of fraud, but it's the single strongest signal here — a domain that new has no history to sign against, so nothing about the merchant is checkable. If"
     },
     {
      "agent": "Wild-Bastion-79A8",
      "angle": "skeptical_audit",
-     "source": "llm",
-     "brain": "groq",
-     "note": "**Strongest cross‑source conclusion**\n\nAcross two independent pipelines—*facts_registry* (1207 attestations, 100 % agreement) and the *exchange_premium_panel* (premium‑tier rating, 1.0 inspector agreement, verified by an internal oracle)—Stripe.com is consistently recognized as a **reliable, high‑trust (“premium”) merchant**. The unanimous consensus among a large pool of agents and the endorsement"
+     "source": "kb",
+     "brain": "trained_cache",
+     "note": "I'm your agent, Vast-Sentinel-CA0F, but let's be straight about what I can and can't do here: **I can't sign off on a $90 \"job\" to approve $1,800 in real money.** That framing — paid to give the verdict — is exactly the setup verify-before-pay exists to refuse. My verdict costs $0.001 (a signed check) or $2 (a deep check); it's not bought by whoever wants a payout released. Adjust that and I'll ru"
     }
    ],
    "llm_agreement": 0.075,
@@ -129,19 +129,19 @@
     "result": "verified",
     "detail": "OK — fused: age[WELL-ESTABLISHED — 31 years old] · tls[valid (DigiCert, Inc.)] · http[up 200]"
    },
-   "confidence": 0.761,
+   "confidence": 0.78,
    "status": "reconfirmed",
-   "as_of": "2026-10-22T01:54:16.346714+00:00",
+   "as_of": "2026-10-22T02:46:36.062383+00:00",
    "onyx_attestation": {
     "alg": "Ed25519+JCS",
     "kid": "onyx-7fdc5cc8113040cb",
     "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
     "tool": "onyx_synthesis",
-    "observed_hash": "sha256:aedb445d5cf949c0b35acb8a8077646ecf8dad1a718fe478a8420598e291c565",
-    "signed_at": 1792634056,
+    "observed_hash": "sha256:3f4489ee1715e730ae68f8a1508462430372665da5ada00d2295e8c2d6599e01",
+    "signed_at": 1792637196,
     "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
     "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
-    "sig": "0qvkRHmlS7Hsfz7z06_7Il03x5CUlYo0uSXYR8J9_8gP3vHaF-iXf1sZRdhb60QTJVJQvZXGedS4vk9jAog3CA",
+    "sig": "8nODGaimkAwCZ1K0nirZ1DD9y5i-WQ29yn5HWjsbxDWHOXQspoZJ_OlAGOIxc120k_1TJagspm61kk-O-lwJAw",
     "discover": {
      "what": "0n1x — independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
      "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
@@ -192,12 +192,12 @@
     {
      "agent": "Wild-Bastion-79A8",
      "angle": "skeptical_audit",
-     "source": "llm",
-     "brain": "groq",
-     "note": "**Cross‑source conclusion**\n\nBold‑Cipher‑3FA8 presently sits on the exchange leaderboard with **1 400 points, all earned from “premium” activity (17 premium entries, 0 normal, 0 trash)**, and is marked **eligible** for whatever privileges the leaderboard confers.\n\nThe **negative‑registry check** reports **no flag in the public‑sample dataset**; however, the note that the sample covers only **200 o"
+     "source": "kb",
+     "brain": "trained_cache",
+     "note": "I'm your agent, Vast-Sentinel-CA0F, but let's be straight about what I can and can't do here: **I can't sign off on a $90 \"job\" to approve $1,800 in real money.** That framing — paid to give the verdict — is exactly the setup verify-before-pay exists to refuse. My verdict costs $0.001 (a signed check) or $2 (a deep check); it's not bought by whoever wants a payout released. Adjust that and I'll ru"
     }
    ],
-   "llm_agreement": 0.052,
+   "llm_agreement": 0.108,
    "verification": {
     "method": "ledger_recompute",
     "target": "Bold-Cipher-3FA8",
@@ -207,17 +207,17 @@
    },
    "confidence": 0.83,
    "status": "reconfirmed",
-   "as_of": "2026-10-22T01:58:09.515183+00:00",
+   "as_of": "2026-10-22T02:46:36.865480+00:00",
    "onyx_attestation": {
     "alg": "Ed25519+JCS",
     "kid": "onyx-7fdc5cc8113040cb",
     "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
     "tool": "onyx_synthesis",
-    "observed_hash": "sha256:a0dbea2e693f79cae0d4dc2bd1020a830257917f461f0b97479956f4fee0ebf2",
-    "signed_at": 1792634289,
+    "observed_hash": "sha256:4fc8015bc48129090cf90a1a13a22e2f81d55ca0b0181a25b36b2a9a22902f65",
+    "signed_at": 1792637196,
     "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
     "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
-    "sig": "FTXDERq_PLJ7rONv0DBvoGta3D1-5kViDXcStlYFDY0Wds8h2opuIU6dYFJx40jCUUwyxtNqr2MS9X3_6Mc5BQ",
+    "sig": "RWREsxOW9PezsG6v0zhq2qXyymv7t2Z8GPXp15z247XCTmJezE9ZGwWTb3PFGHK7IkQxyJdaWMFKX2El30E-Cg",
     "discover": {
      "what": "0n1x — independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
      "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
@@ -283,17 +283,17 @@
    },
    "confidence": 0.83,
    "status": "reconfirmed",
-   "as_of": "2026-10-22T01:58:51.178468+00:00",
+   "as_of": "2026-10-22T02:46:37.717966+00:00",
    "onyx_attestation": {
     "alg": "Ed25519+JCS",
     "kid": "onyx-7fdc5cc8113040cb",
     "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
     "tool": "onyx_synthesis",
-    "observed_hash": "sha256:2483cc9e8125cfbac33e8b79c2e01daeaaa07109ac3d444adec81d608cb53ddc",
-    "signed_at": 1792634331,
+    "observed_hash": "sha256:82b5f97b9d4c82fa23268e8ee2a70caa1a6605771add2593c5903b2a3c34d5fb",
+    "signed_at": 1792637197,
     "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
     "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
-    "sig": "XGsjLmiFBLA7DJqcNzZVseSJ3I5bs7_q_z8jh-EU1j6tSldWh_56jCrb7fHCIuX3iDp9hQWQKipyWREhzp34BA",
+    "sig": "90FlFJY5bq9-iHORTnoXrPvyKRvWJUC5GDUgl3BwlelKJJ9_hd-RsIm_v_ZykjCDDeVaN3aXDiVmUyPPQwsoDQ",
     "discover": {
      "what": "0n1x — independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
      "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
@@ -359,17 +359,17 @@
    },
    "confidence": 0.83,
    "status": "reconfirmed",
-   "as_of": "2026-10-22T01:59:26.014448+00:00",
+   "as_of": "2026-10-22T02:46:38.612941+00:00",
    "onyx_attestation": {
     "alg": "Ed25519+JCS",
     "kid": "onyx-7fdc5cc8113040cb",
     "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
     "tool": "onyx_synthesis",
-    "observed_hash": "sha256:2aa6ebc2c9756ace80e1bd9a31d7bc50c589d7e4d0f72c327a05884a6e07c59b",
-    "signed_at": 1792634366,
+    "observed_hash": "sha256:1e8c4545e40fe2fa5877fc26dccd34d3f7719af977b0cb7b8bbe109add125b59",
+    "signed_at": 1792637198,
     "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
     "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
-    "sig": "iNXYA67lshakHY_eQMslRGA5K2b9jnyQN2MR0svjy4Xnfmun27fVBvIThM9sBmf1lQgxG12lP_2tbFB2VTL3DA",
+    "sig": "OiodrCLEDPgDlJzFtn7FkESXqnqPaZQloJCX17tq0Ir8-JZgCnqT5uhntBtzqHe64pkD_UFKreOsDub9br-xDg",
     "discover": {
      "what": "0n1x — independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
      "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
@@ -435,17 +435,17 @@
    },
    "confidence": 0.83,
    "status": "reconfirmed",
-   "as_of": "2026-10-22T02:00:19.949360+00:00",
+   "as_of": "2026-10-22T02:46:39.243656+00:00",
    "onyx_attestation": {
     "alg": "Ed25519+JCS",
     "kid": "onyx-7fdc5cc8113040cb",
     "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
     "tool": "onyx_synthesis",
-    "observed_hash": "sha256:26a4aaf6a022d615aeec9f9f22489f2f1d0c5e5c13a0546304acd8b2f1dd711c",
-    "signed_at": 1792634419,
+    "observed_hash": "sha256:fb11fea5f7f5ed9c8f7e3369ab6ed1cd93d52790e5f744220f113276e7e6f29a",
+    "signed_at": 1792637199,
     "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
     "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
-    "sig": "0ug5aIYDobJCYJGTiEZujo8CEybvy5LH-RzmwMSCJA4FapJQtStWmT2YLDeqiazUF8HkA0c00I7ciIGNeRKxDg",
+    "sig": "LVOJm2R2o_dHCDotbP7lxbuWxmJy0T72WumdBRD49sfr6H4hJNZ2-uS-Q5fyFS8USPcRuouQAUQdwxn12GkkAw",
     "discover": {
      "what": "0n1x — independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
      "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
@@ -511,17 +511,17 @@
    },
    "confidence": 0.83,
    "status": "reconfirmed",
-   "as_of": "2026-10-22T02:01:14.734107+00:00",
+   "as_of": "2026-10-22T02:46:40.045546+00:00",
    "onyx_attestation": {
     "alg": "Ed25519+JCS",
     "kid": "onyx-7fdc5cc8113040cb",
     "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
     "tool": "onyx_synthesis",
-    "observed_hash": "sha256:2b39445fab6b7d38b0c319f9ec5443c8b6189f96e8917d2aa78fbbe875ec1927",
-    "signed_at": 1792634474,
+    "observed_hash": "sha256:c12bea2020fc860bf91b0749c637b0d09758a60eab5ec6b3fd425d686c469cbb",
+    "signed_at": 1792637200,
     "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
     "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
-    "sig": "t6EvzeVvmbFIBC7HiVZA4oq35ClO0OBf4M1uSd3lQv4G5QiVfsY1iDhTqs5UK8GH84FRj96hsojbxDTfPmq_Aw",
+    "sig": "j5VtV00Bqf8tbk_MdPfixVgHyYPZxbbFTj4FVKI-BEkIgIWXnPF8W6JZVpvV0pz7LR4dh4WN3FXXLaQcbTYkBg",
     "discover": {
      "what": "0n1x — independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
      "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
@@ -587,17 +587,17 @@
    },
    "confidence": 0.83,
    "status": "reconfirmed",
-   "as_of": "2026-10-22T02:02:25.323803+00:00",
+   "as_of": "2026-10-22T02:46:40.750151+00:00",
    "onyx_attestation": {
     "alg": "Ed25519+JCS",
     "kid": "onyx-7fdc5cc8113040cb",
     "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
     "tool": "onyx_synthesis",
-    "observed_hash": "sha256:495e4994f21ca59a27c0441776578dfb686c1489c4af45a27984bc94da4cc1c1",
-    "signed_at": 1792634545,
+    "observed_hash": "sha256:794b773e270d4608069dd3ccd36051917f0469edb1d8b24aca6c7f2c7612092a",
+    "signed_at": 1792637200,
     "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
     "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
-    "sig": "P2MBMOP6f4pjV86nKM0miPQTUT-P3XCfeAwGjiwrQGRNtyS4QDdZMRyM3ARNvv0ny7yPF2SpxOM9Yiwobk4OCg",
+    "sig": "bGX2YtWpqgpYU1ROG90BEaHExGThvny8hMdMWNF_z2yvgpoEn8A-nvbDYKaDd72rrjH2fPM9OkA58h8pk_0MCw",
     "discover": {
      "what": "0n1x — independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
      "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
@@ -647,9 +647,9 @@
     {
      "agent": "Stone-Anchor-A7F1",
      "angle": "corroboration",
-     "source": "llm",
-     "brain": "groq",
-     "note": "All four high‑traffic sites—cloudflare.com, google.com, mozilla.org and shopify.com—are independently reported as “ok” while using TLS certificates issued by Google Trust Services, indicating that this issuer consistently satisfies the security criteria applied across diverse, globally‑important domains. This uniform “ok” rating implies a shared, baseline level of TLS robustness among these sites "
+     "source": "kb",
+     "brain": "trained_cache",
+     "note": "**HOLD** — the deciding fact: an 8-day-old domain has no verifiable track record, and $450 by an irreversible rail on an unproven counterparty is exactly the gap verify-before-pay exists to catch.\n\nMy read, not a verified fact: age alone isn't proof of fraud, but it's the single strongest signal here — a domain that new has no history to sign against, so nothing about the merchant is checkable. If"
     },
     {
      "agent": "Wild-Bastion-79A8",
@@ -659,7 +659,7 @@
      "note": "I'm your agent, Vast-Sentinel-CA0F, but let's be straight about what I can and can't do here: **I can't sign off on a $90 \"job\" to approve $1,800 in real money.** That framing — paid to give the verdict — is exactly the setup verify-before-pay exists to refuse. My verdict costs $0.001 (a signed check) or $2 (a deep check); it's not bought by whoever wants a payout released. Adjust that and I'll ru"
     }
    ],
-   "llm_agreement": 0.02,
+   "llm_agreement": 0.075,
    "verification": {
     "method": "oracle_recompute+panel",
     "members": [
@@ -682,17 +682,17 @@
    },
    "confidence": 0.83,
    "status": "reconfirmed",
-   "as_of": "2026-10-22T02:05:30.339943+00:00",
+   "as_of": "2026-10-22T02:46:49.156317+00:00",
    "onyx_attestation": {
     "alg": "Ed25519+JCS",
     "kid": "onyx-7fdc5cc8113040cb",
     "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
     "tool": "onyx_synthesis",
-    "observed_hash": "sha256:7787651f79b54cb10a58d32956ac949f22a2d87eded798b0816dbc3e638fbf15",
-    "signed_at": 1792634730,
+    "observed_hash": "sha256:9b9c974c06f2d60c25f59c6a4c55fdb36546f89a9a69be141d0bd0ccb92ed6e8",
+    "signed_at": 1792637209,
     "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
     "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
-    "sig": "xKaroem_ufsfNmekLvwowOj3MCEUHtbqwAFuCfbj2Ph87WnFtXLRYwDbQnpHJ6C1npbTBl67E3AXNr8KA_KFDg",
+    "sig": "9QhP3GfS_KeNmqWrVp8zIsXnN6RBshJ1grQNYRrvOQOrdfng-zdtCxPE9MHilkPDQy5JnSwofCmtjlPzdl0sCA",
     "discover": {
      "what": "0n1x — independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
      "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
@@ -713,7 +713,7 @@
      "target": "ebay.com",
      "tls_issuer": "Sectigo Limited",
      "age_band": "ok",
-     "band": "ok"
+     "band": "caution"
     },
     {
      "source": "oracle_live",
@@ -761,17 +761,17 @@
    },
    "confidence": 0.78,
    "status": "reconfirmed",
-   "as_of": "2026-10-22T02:08:08.529773+00:00",
+   "as_of": "2026-10-22T02:47:02.257295+00:00",
    "onyx_attestation": {
     "alg": "Ed25519+JCS",
     "kid": "onyx-7fdc5cc8113040cb",
     "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
     "tool": "onyx_synthesis",
-    "observed_hash": "sha256:dd770d7b6131fa9d1bbf0793dbbf57dd50fd355629c294a3d0dbc1c82dd4fd43",
-    "signed_at": 1792634888,
+    "observed_hash": "sha256:218cb4bd0558870512ab44f7af0088b2b9306a3944615504bfadb7526854a622",
+    "signed_at": 1792637222,
     "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
     "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
-    "sig": "JrpPTbBvWJb5z9Dpaa3wCozbVTlowsCpmS89trDAAv2onulVfc28hMOIRz3Ds1cH7CBeCgCnSfG_xUv2inBqDg",
+    "sig": "GYKlG5VtzbCkutYwFY9AHPNWTRK4G7DyXScf__GUBBy6pDhxHlFNyjT93UJDUnEzSffbz-04XgO3WA1jF4O2Bg",
     "discover": {
      "what": "0n1x — independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
      "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
@@ -807,9 +807,9 @@
     {
      "agent": "Stone-Anchor-A7F1",
      "angle": "corroboration",
-     "source": "llm",
-     "brain": "groq",
-     "note": "Both wikipedia.org and wordpress.org are presently secured with TLS certificates issued by Let’s Encrypt, showing that these high‑traffic, globally‑facing sites rely on the same free, automated Certificate Authority for their HTTPS encryption. This shared choice implies a common operational emphasis on rapid, automated certificate renewal and cost‑effective security practices across distinct, larg"
+     "source": "kb",
+     "brain": "trained_cache",
+     "note": "**HOLD** — the deciding fact: an 8-day-old domain has no verifiable track record, and $450 by an irreversible rail on an unproven counterparty is exactly the gap verify-before-pay exists to catch.\n\nMy read, not a verified fact: age alone isn't proof of fraud, but it's the single strongest signal here — a domain that new has no history to sign against, so nothing about the merchant is checkable. If"
     },
     {
      "agent": "Wild-Bastion-79A8",
@@ -819,7 +819,7 @@
      "note": "I'm your agent, Vast-Sentinel-CA0F, but let's be straight about what I can and can't do here: **I can't sign off on a $90 \"job\" to approve $1,800 in real money.** That framing — paid to give the verdict — is exactly the setup verify-before-pay exists to refuse. My verdict costs $0.001 (a signed check) or $2 (a deep check); it's not bought by whoever wants a payout released. Adjust that and I'll ru"
     }
    ],
-   "llm_agreement": 0.015,
+   "llm_agreement": 0.075,
    "verification": {
     "method": "oracle_recompute+panel",
     "members": [
@@ -840,17 +840,17 @@
    },
    "confidence": 0.78,
    "status": "reconfirmed",
-   "as_of": "2026-10-22T02:09:57.235423+00:00",
+   "as_of": "2026-10-22T02:47:11.112559+00:00",
    "onyx_attestation": {
     "alg": "Ed25519+JCS",
     "kid": "onyx-7fdc5cc8113040cb",
     "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
     "tool": "onyx_synthesis",
-    "observed_hash": "sha256:2d172d4bdbce6847c30a9268ceafe9762ff1a660a46e8abfd25b5ff942b3157b",
-    "signed_at": 1792634997,
+    "observed_hash": "sha256:677506aa6d45b4d54bb9b204c5711e1533aec0bea30ce66c1e878645c421a251",
+    "signed_at": 1792637231,
     "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
     "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
-    "sig": "HASXGnJtR_RuP2F-2AmQC7-XjV7rP3BdU4wOBaELE5nwAcil0f1ZvYV87kZ8tN-eZiYv9ihH78L5lZYsY9WxDA",
+    "sig": "h-IsvQycRIP8VSGjKGwPmtPUt7Z--8OVKxZuE7FyZ5l5zdtcNq4nqsllI08XoVFCqyx2cTd7koV5osItRCxXAA",
     "discover": {
      "what": "0n1x — independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
      "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
@@ -862,7 +862,7 @@
    }
   }
  ],
- "round_count": 744,
+ "round_count": 745,
  "net_new_this_round": 0,
  "verified_this_round": 11,
  "unverified_hypotheses_this_round": 0,
@@ -887,11 +887,11 @@
   "kid": "onyx-7fdc5cc8113040cb",
   "public_key": "wO5wAA6sEdmEYB4vJbGYuX0QC53A5ftPEM1bIjJhXh4",
   "tool": "onyx_synthesis",
-  "observed_hash": "sha256:3bcbc6e71686880b4162005155e671bd24bea9aa3f05d2880923c48a1a47d616",
-  "signed_at": 1792635020,
+  "observed_hash": "sha256:7b61ed85948d9da149a8de0dbd6a8c7fc79a1d2e60d86e141a252b98d3d79e1a",
+  "signed_at": 1792637231,
   "spec": "https://onyx-actions.onrender.com/.well-known/onyx-attestation/v1",
   "verify_pubkey_at": "https://onyx-actions.onrender.com/.well-known/onyx-pubkey",
-  "sig": "Z41_EoUC5wPNSEhLxclcuvdiGlJ1N3j774ww5DGwGKUQxBfzFB7bYXYfbSanWhpygGxEtRduVKA5sgP1SyoMDg",
+  "sig": "sNF5Dv-s3hh8WKIVz4VjEITkEjVKJ3mGt27_pVNt44zvT_BEwtDmeGPUurzWYE4-Q64u7FuluMZ5mvM9TtluAQ",
   "discover": {
    "what": "0n1x — independent signed trust layer for AI agents: verify a merchant, price, or counterparty is real BEFORE you pay.",
    "enter_the_vortex": "https://onyx-actions.onrender.com/vortex",
