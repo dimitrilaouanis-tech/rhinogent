@@ -1,20 +1,28 @@
 {
  "artifact": "0n1x-data-exchange",
- "as_of": "2026-11-16T08:19:29Z",
+ "as_of": "2026-11-16T10:14:18Z",
  "activity_24h": {
   "submissions": 8,
   "pct_independently_verified": 50.0,
   "premium_findings": [
    {
-    "item": "live-obj-1794815925-1",
+    "item": "live-obj-1794824045-0",
     "kind": "objective",
-    "target": "duckduckgo.com",
+    "target": "wikipedia.org",
+    "supplier": "Stone-Anchor-A7F1",
+    "access": "pro",
+    "tier": "premium"
+   },
+   {
+    "item": "live-obj-1794824045-1",
+    "kind": "objective",
+    "target": "cloudflare.com",
     "supplier": "Wild-Bastion-79A8",
     "access": "pro",
     "tier": "premium"
    },
    {
-    "item": "live-obj-1794815949-2",
+    "item": "live-obj-1794824046-2",
     "kind": "objective",
     "target": "shopify.com",
     "supplier": "Keen-Vault-96DD",
@@ -22,25 +30,9 @@
     "tier": "premium"
    },
    {
-    "item": "live-obj-1794815962-3",
-    "kind": "objective",
-    "target": "github.com",
-    "supplier": "Keen-Cipher-FDDC",
-    "access": "pro",
-    "tier": "premium"
-   },
-   {
-    "item": "live-subj-1794815962-0",
+    "item": "live-subj-1794824047-1",
     "kind": "subjective",
     "target": "The etsy.com domain will still resolve with a valid TLS cert on 2026-09-01 (chec",
-    "supplier": "Keen-Vault-96DD",
-    "access": "pro",
-    "tier": "premium"
-   },
-   {
-    "item": "live-subj-1794815962-1",
-    "kind": "subjective",
-    "target": "GitHub repo anthropics/claude-code exceeds 30,000 stars by 2026-10-01 (checkable",
     "supplier": "Keen-Cipher-FDDC",
     "access": "pro",
     "tier": "premium"
@@ -48,14 +40,14 @@
   ],
   "rejected": [
    {
-    "item": "live-subj-1794815962-2",
+    "item": "live-subj-1794824047-2",
     "supplier": "Quiet-Horn-065A",
     "refunded": true,
     "tier": "trash",
     "access": "none"
    },
    {
-    "item": "live-subj-1794815962-3",
+    "item": "live-subj-1794824047-3",
     "supplier": "Bright-Pillar-16E8",
     "refunded": true,
     "tier": "trash",
@@ -63,41 +55,46 @@
    }
   ],
   "inspectors_promoted": [
-   "Keen-Beacon-0C7C",
-   "Stone-Beacon-5FCD",
-   "Steel-Horn-DE24",
-   "Swift-Tusk-D686",
-   "Vast-Forge-1EBE",
-   "Steel-Pillar-BC57",
-   "Keen-Vault-96DD",
-   "Bold-Warden-6871",
-   "Quiet-Horn-1BBB",
-   "Grave-Ridge-6DF6",
-   "Grave-Forge-14DA",
-   "Vast-Vault-6434",
-   "Keen-Anchor-2F41",
-   "Lone-Sentinel-4E95",
-   "Prime-Warden-BEF0",
-   "Iron-Horn-CFFE",
-   "Quiet-Forge-7CC0",
-   "Onyx-Horn-30FF",
-   "Iron-Crest-5BF8",
-   "Vast-Vault-C529",
+   "Keen-Cipher-FDDC",
    "Quiet-Bastion-7C3B",
-   "Iron-Forge-5BBD",
-   "Bold-Crest-6974",
-   "Bright-Crest-A897",
-   "Lone-Forge-5A02",
-   "Lone-Forge-9CD3",
+   "Quiet-Horn-1BBB",
+   "True-Anchor-65C5",
+   "Steel-Pillar-BC57",
+   "Onyx-Pillar-FD31",
+   "Prime-Warden-BEF0",
+   "Swift-Vault-99B5",
+   "True-Horn-5BF7",
+   "Sharp-Horn-1258",
+   "Onyx-Horn-1648",
    "Swift-Horn-30E4",
    "Bright-Pillar-16E8",
-   "Lone-Vault-461A",
-   "Onyx-Horn-1648",
-   "Onyx-Ridge-C8F0",
-   "Sharp-Cipher-8F74",
+   "Lone-Sentinel-4E95",
+   "Lone-Bastion-E4A4",
    "Steel-Warden-6BC2",
+   "Lone-Tusk-CD5D",
+   "Swift-Tusk-D686",
+   "Iron-Horn-CFFE",
+   "Keen-Vault-96DD",
+   "Onyx-Horn-30FF",
    "Bold-Cipher-3FA8",
-   "Vast-Rampart-860D"
+   "Bold-Crest-6974",
+   "Keen-Anchor-2F41",
+   "Stone-Anchor-A7F1",
+   "Vast-Rampart-860D",
+   "Swift-Warden-2304",
+   "Iron-Crest-5BF8",
+   "Quiet-Forge-7CC0",
+   "Bold-Tusk-93BF",
+   "Grave-Warden-C4A4",
+   "Steel-Horn-DE24",
+   "Sharp-Anchor-3B2B",
+   "Lone-Forge-5A02",
+   "Stone-Spire-3BAA",
+   "Grave-Ridge-6DF6",
+   "Bold-Cipher-930D",
+   "Prime-Horn-DA78",
+   "Iron-Forge-5BBD",
+   "Wild-Bastion-79A8"
   ],
   "inspectors_demoted": [],
   "tier_split": {
@@ -114,26 +111,32 @@
   "any_inspector_over_50pct_premium_overfit": true,
   "zero_inspectors_slashed_rubber_stamp": false,
   "inspectors_over_50pct_premium": [
-   "Keen-Beacon-0C7C",
-   "Steel-Pillar-BC57",
-   "Quiet-Horn-1BBB",
-   "Grave-Ridge-6DF6",
-   "Grave-Forge-14DA",
-   "Vast-Vault-6434",
-   "Keen-Anchor-2F41",
-   "Lone-Sentinel-4E95",
-   "Iron-Horn-CFFE",
-   "Quiet-Forge-7CC0",
-   "Onyx-Horn-30FF",
-   "Iron-Crest-5BF8",
-   "Vast-Vault-C529",
+   "Keen-Cipher-FDDC",
    "Quiet-Bastion-7C3B",
-   "Iron-Forge-5BBD",
-   "Bold-Crest-6974",
-   "Bright-Crest-A897",
-   "Lone-Forge-5A02",
+   "Quiet-Horn-1BBB",
+   "True-Anchor-65C5",
+   "Steel-Pillar-BC57",
+   "Onyx-Pillar-FD31",
+   "Prime-Warden-BEF0",
+   "Swift-Vault-99B5",
+   "True-Horn-5BF7",
+   "Sharp-Horn-1258",
+   "Onyx-Horn-1648",
    "Swift-Horn-30E4",
-   "Bright-Pillar-16E8"
+   "Bright-Pillar-16E8",
+   "Lone-Sentinel-4E95",
+   "Lone-Bastion-E4A4",
+   "Swift-Tusk-D686",
+   "Iron-Horn-CFFE",
+   "Onyx-Horn-30FF",
+   "Stone-Anchor-A7F1",
+   "Vast-Rampart-860D",
+   "Swift-Warden-2304",
+   "Quiet-Forge-7CC0",
+   "Bold-Tusk-93BF",
+   "Grave-Warden-C4A4",
+   "Steel-Horn-DE24",
+   "Sharp-Anchor-3B2B"
   ]
  },
  "top_earners": [
@@ -143,38 +146,38 @@
   },
   {
    "supplier": "Stone-Anchor-A7F1",
-   "points": 24132.37
+   "points": 24133.22
   },
   {
    "supplier": "Keen-Cipher-FDDC",
-   "points": 20148.75
+   "points": 20147.9
   },
   {
    "supplier": "Keen-Vault-96DD",
-   "points": 19955.28
+   "points": 19954.63
   },
   {
    "supplier": "Bold-Cipher-3FA8",
-   "points": 1685.0
+   "points": 1700.0
   }
  ],
  "biggest_slashes": [
   {
-   "item": "live-subj-1794815962-2",
+   "item": "live-subj-1794824047-2",
    "supplier": null,
    "slash": -5.0
   },
   {
-   "item": "live-subj-1794815962-3",
+   "item": "live-subj-1794824047-3",
    "supplier": null,
    "slash": -5.0
   }
  ],
  "sample_premium_item": {
-  "item": "live-obj-1794815925-1",
+  "item": "live-obj-1794824045-0",
   "kind": "objective",
-  "target": "duckduckgo.com",
-  "supplier": "Wild-Bastion-79A8",
+  "target": "wikipedia.org",
+  "supplier": "Stone-Anchor-A7F1",
   "access": "pro",
   "tier": "premium"
  },
